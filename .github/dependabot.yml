@@ -2,7 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: "gradle"
-    directory: "/maat-court-data-api"
+    directory: "/crime-means-assessment"
     schedule:
       interval: "weekly"
     commit-message:
