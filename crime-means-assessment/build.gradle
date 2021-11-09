@@ -127,13 +127,13 @@ test {
 jacocoTestReport {
     reports {
         xml.enabled true
-        html.enabled false
+        html.enabled true
     }
 }
 
 pitest {
     targetClasses = ['uk.gov.justice.laa.crime.meansassessment.*']
-    excludedClasses = ['uk.gov.justice.laa.crime.meansassessment.dto.*','uk.gov.justice.laa.crime.meansassessment.mapper.*']
+    excludedClasses = ['uk.gov.justice.laa.crime.meansassessment.dto.*','uk.gov.justice.laa.crime.meansassessment.mapper.*', 'uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication']
     threads = 5
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
