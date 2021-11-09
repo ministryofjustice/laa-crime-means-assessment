@@ -1,0 +1,63 @@
+version: 2.1
+
+orbs:
+  aws-ecr: cimg/aws-ecr@6.15.2
+  aws-eks: cimg/aws-eks@0.2.1
+  kubernetes: cimg/kubernetes@0.7.0
+  helm: cimg/helm@1.1.2
+
+commands:
+  checkout_and_decrypt:
+    steps:
+      - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install git-crypt
+#      - run: echo "${GIT_CRYPT_KEY}" | base64 -d > git-crypt.key
+#      - run: git-crypt unlock git-crypt.key
+
+jobs:
+  build-test-package:
+    docker:
+      - image: cimg/openjdk:11.0.12
+        environment:
+          JAVA_ENV: test
+    steps:
+      - checkout
+      - run:
+          name: Build, test and package jar
+          command: |
+            ./gradlew sonarqube -Dsonar.projectKey=crime-means-assessment -Dsonar.host.url=http://sonarqube.aws.ssvs.legalservices.gov.uk -Dsonar.login=${SONARQUBE_TOKEN}
+          when: always      
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
+workflows:
+  version: 2
+  test-build-master:
+    jobs:
+      - build-test-package:
+          filters:
+            branches:
+              only:
+                - master
+
+  test-branch:
+    jobs:
+      - build-test-package:
+        filters:
+          branches:
+            ignore:
+              - master
+
+  build-deploy-branch:
+    jobs:
+      - branch-build-approval:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - master

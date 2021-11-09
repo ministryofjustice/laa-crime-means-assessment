@@ -2,4 +2,12 @@
 *.bat text eol=crlf
 docker-compose.override.yml filter=git-crypt diff=git-crypt
 docker-compose-debug.yml filter=git-crypt diff=git-crypt
+# git-crypt kubernetes secrets
+helm_deploy/**/**/values-*.yaml filter=git-crypt diff=git-crypt
+# client certificate
+helm_deploy/**/**/client.crt filter=git-crypt diff=git-crypt
+# client certificate key
+helm_deploy/**/**/client.key filter=git-crypt diff=git-crypt
+# CA certificate
+helm_deploy/**/**/ca.crt filter=git-crypt diff=git-crypt
 .gitattributes !filter !diff
