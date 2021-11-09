@@ -23,8 +23,6 @@ jobs:
           JAVA_ENV: test
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install postgresql-client
       - run:
           name: Build, test and package jar
           command: |
