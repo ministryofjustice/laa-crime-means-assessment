@@ -6,7 +6,7 @@ sentry:
 
 springdoc:
   api-docs:
-    path: /maat-api
+    path: /crime-means-assessment
 
 swagger-ui:
   path: /open-api/docs.html
