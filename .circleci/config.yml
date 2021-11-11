@@ -26,7 +26,7 @@ jobs:
       - run:
           name: Build, test and package jar
           command: |
-            ./crime-means-assessment/gradlew sonarqube -Dsonar.projectKey=crime-means-assessment -Dsonar.host.url=http://sonarqube.aws.ssvs.legalservices.gov.uk -Dsonar.login=${SONARQUBE_TOKEN}
+            cd crime-means-assessment && ./gradlew sonarqube -Dsonar.projectKey=crime-means-assessment -Dsonar.host.url=http://sonarqube.aws.ssvs.legalservices.gov.uk -Dsonar.login=${SONARQUBE_TOKEN}
           when: always      
       - run:
           name: Save test results
