@@ -147,8 +147,8 @@ sonarqube {
         property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-        property "sonar.projectKey", "crime-means-assessment-api"
-        property "sonar.projectName", "Crime Apps :: crime-means-assessment-api"
+        property "sonar.projectKey", "crime-means-assessment"
+        property "sonar.projectName", "Crime Apps :: crime-means-assessment"
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
 
