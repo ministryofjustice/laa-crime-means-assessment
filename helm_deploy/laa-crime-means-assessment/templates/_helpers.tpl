@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "laa-crime-mean-assessment.name" -}}
+{{- define "laa-crime-means-assessment.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "laa-crime-mean-assessment.fullname" -}}
+{{- define "laa-crime-means-assessment.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -27,16 +27,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "laa-crime-mean-assessment.chart" -}}
+{{- define "laa-crime-means-assessment.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "laa-crime-mean-assessment.labels" -}}
-helm.sh/chart: {{ include "laa-crime-mean-assessment.chart" . }}
-{{ include "laa-crime-mean-assessment.selectorLabels" . }}
+{{- define "laa-crime-means-assessment.labels" -}}
+helm.sh/chart: {{ include "laa-crime-means-assessment.chart" . }}
+{{ include "laa-crime-means-assessment.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,17 +46,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "laa-crime-mean-assessment.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "laa-crime-mean-assessment.name" . }}
+{{- define "laa-crime-means-assessment.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "laa-crime-means-assessment.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "laa-crime-mean-assessment.serviceAccountName" -}}
+{{- define "laa-crime-means-assessment.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "laa-crime-mean-assessment.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "laa-crime-means-assessment.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
