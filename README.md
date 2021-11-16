@@ -14,9 +14,11 @@ TBD
 1. Docker
 2. SSH 
 3. An editor/IDE of some sort - preferably Intellij/Ecilipse 
-4. Grade
+4. Gradle
 5. aws cli 
 6. kubectl
+7. Helm
+8. CircleCI CLI (optional)
 
 We're using [Gradle](https://gradle.org/) to build the application. This also includes plugins for generating IntelliJ configuration.
 
