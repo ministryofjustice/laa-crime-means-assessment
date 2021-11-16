@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "laa-crime-mean-assessment.fullname" . }}
+  name: {{ include "laa-crime-means-assessment.fullname" . }}
   labels:
-    {{- include "laa-crime-mean-assessment.labels" . | nindent 4 }}
+    {{- include "laa-crime-means-assessment.labels" . | nindent 4 }}
 spec:
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
 {{- end }}
   selector:
     matchLabels:
-      {{- include "laa-crime-mean-assessment.selectorLabels" . | nindent 6 }}
+      {{- include "laa-crime-means-assessment.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "laa-crime-mean-assessment.selectorLabels" . | nindent 8 }}
+        {{- include "laa-crime-means-assessment.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "laa-crime-mean-assessment.serviceAccountName" . }}
+      serviceAccountName: {{ include "laa-crime-means-assessment.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -45,7 +45,7 @@ spec:
             httpGet:
               path: /status
               port: http
-          {{ include "laa-crime-mean-assessment.env-vars" . | nindent 10 }}
+          {{ include "laa-crime-means-assessment.env-vars" . | nindent 10 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

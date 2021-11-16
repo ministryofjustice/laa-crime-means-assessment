@@ -1,16 +1,16 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "laa-crime-mean-assessment.fullname" . -}}
+{{- $fullName := include "laa-crime-means-assessment.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 {{- else -}}
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 {{- end }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "laa-crime-mean-assessment.labels" . | nindent 4 }}
+    {{- include "laa-crime-means-assessment.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
