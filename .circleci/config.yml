@@ -20,7 +20,7 @@ jobs:
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-    docker: # run the steps with Docker
+    docker:
       - image: cimg/openjdk:11.0.12
     steps:
       - checkout_and_decrypt
@@ -59,7 +59,11 @@ jobs:
 
 
   build-and-push-app:
+    docker:
+      - image: cimg/openjdk:11.0.12
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true  
       - deploy:
           name: Push application Docker image
           command: |
@@ -108,7 +112,7 @@ workflows:
       - hold_install_on_dev:
           type: approval
           requires:
-          - build-and-push-app
+            - build-and-push-app
           filters:
             branches:
               only:
@@ -136,10 +140,10 @@ workflows:
       - build-test-package:
           requires:
             - branch-build-approval        
-        filters:
-          branches:
-            ignore:
-              - master                    
+          filters:
+            branches:
+              ignore:
+                - master                    
       - build-and-push-app:
           requires:
             - build-test-package
