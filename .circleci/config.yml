@@ -27,9 +27,9 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - restore_cache:
-          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          key: v1-gradle-wrapper-{{ checksum "crime-means-assessment/gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
-          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+          key: v1-gradle-cache-{{ checksum "crime-means-assessment/build.gradle" }}
       - run:
           command: |
             cd crime-means-assessment
@@ -37,24 +37,26 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/wrapper
-          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          key: v1-gradle-wrapper-{{ checksum "crime-means-assessment/gradle/wrapper/gradle-wrapper.properties" }}
       - save_cache:
           paths:
             - ~/.gradle/caches
-          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+          key: v1-gradle-cache-{{ checksum "crime-means-assessment/build.gradle" }}
       - store_test_results:
-          path: build/test-results/test
+          path: crime-means-assessment/build/test-results/test
       - store_artifacts:
-          path: build/test-results/test
+          path: crime-means-assessment/build/test-results/test
           when: always
       - run:
           command: |
+            cd crime-means-assessment          
             ./gradlew assemble
       - store_artifacts:
-          path: build/libs
+          path: crime-means-assessment/build/libs
       - run:
           name: Build application Docker image
           command: |
+            cd crime-means-assessment          
             docker build -t laa-crime-means-assessment --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) --build-arg COMMIT_ID=${CIRCLE_SHA1} --build-arg BUILD_TAG=${CIRCLE_SHA1} --build-arg APP_BRANCH=${CIRCLE_BRANCH}
 
 
