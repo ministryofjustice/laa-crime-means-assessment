@@ -67,10 +67,7 @@ jobs:
       - image: cimg/openjdk:11.0.12
     steps:
       - setup_remote_docker:
-          docker_layer_caching: true  
-      - run:
-          name: Install AWS CLI
-          command: sudo pip install awscli    
+          docker_layer_caching: true
       - deploy:
           name: Push application Docker image
           command: |
