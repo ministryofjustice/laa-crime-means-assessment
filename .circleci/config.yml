@@ -12,38 +12,116 @@ commands:
       - checkout
       - run: sudo apt-get update
       - run: sudo apt-get install git-crypt
-#      - run: echo "${GIT_CRYPT_KEY}" | base64 -d > git-crypt.key
-#      - run: git-crypt unlock git-crypt.key
+      - run: echo "${GIT_CRYPT_KEY}" | base64 -d > git-crypt.key
+      - run: git-crypt unlock git-crypt.key
 
 jobs:
   build-test-package:
+    environment:
+      _JAVA_OPTIONS: "-Xmx3g"
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     docker:
       - image: cimg/openjdk:11.0.12
-        environment:
-          JAVA_ENV: test
     steps:
-      - checkout
+      - checkout_and_decrypt
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ checksum "crime-means-assessment/gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-cache-{{ checksum "crime-means-assessment/build.gradle" }}
       - run:
-          name: Build, test and package jar
           command: |
-            ./gradlew sonarqube -Dsonar.projectKey=crime-means-assessment -Dsonar.host.url=http://sonarqube.aws.ssvs.legalservices.gov.uk -Dsonar.login=${SONARQUBE_TOKEN}
-          when: always      
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/test-results/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+            cd crime-means-assessment
+            ./gradlew test
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ checksum "crime-means-assessment/gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-cache-{{ checksum "crime-means-assessment/build.gradle" }}
+      - store_test_results:
+          path: crime-means-assessment/build/test-results/test
+      - store_artifacts:
+          path: crime-means-assessment/build/test-results/test
           when: always
+      - run:
+          command: |
+            cd crime-means-assessment          
+            ./gradlew assemble
+      - store_artifacts:
+          path: crime-means-assessment/build/libs
+      - run:
+          name: Build application Docker image
+          command: |
+            cd crime-means-assessment          
+            docker build -t laa-crime-means-assessment . --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) --build-arg COMMIT_ID=${CIRCLE_SHA1} --build-arg BUILD_TAG=${CIRCLE_SHA1} --build-arg APP_BRANCH=${CIRCLE_BRANCH}
+
+
+  build-and-push-app:
+    docker:
+      - image: cimg/openjdk:11.0.12
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true  
+      - deploy:
+          name: Push application Docker image
+          command: |
+            login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login --no-include-email)"
+            ${login}
+            docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+            docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:latest"
+              docker push "${ECR_ENDPOINT}:latest"
+            fi
+
+  install_on_dev:
+    executor: aws-eks/python
+    steps:
+      - checkout_and_decrypt
+      - kubernetes/install-kubeconfig:
+          kubeconfig: ENCODED_KUBECONFIG_DEV
+      - kubernetes/install-kubectl
+      - helm/install-helm-client:
+          version: 'v3.2.4'
+      - helm/upgrade-helm-chart:
+          namespace: laa-crime-means-asessment-dev
+          update-repositories: false
+          chart: ./helm_deploy/laa-crime-means-asessment
+          release-name: laa-crime-means-asessment
+          values: ./helm_deploy/laa-crime-means-asessment/dev/values-dev.yaml
+          values-to-override: image.tag=$CIRCLE_SHA1
 
 workflows:
   version: 2
-  test-build-master:
+  test-build-deploy-master:
     jobs:
       - build-test-package:
           filters:
             branches:
               only:
                 - master
+      - build-and-push-app:
+          requires:
+            - build-test-package
+          filters:
+            branches:
+              only:
+                - master
+      - hold_install_on_dev:
+          type: approval
+          requires:
+            - build-and-push-app
+          filters:
+            branches:
+              only:
+                - master          
+      - install_on_dev:
+          requires:
+            - hold_install_on_dev
 
   test-branch:
     jobs:
@@ -61,3 +139,20 @@ workflows:
             branches:
               ignore:
                 - master
+      - build-test-package:
+          requires:
+            - branch-build-approval        
+          filters:
+            branches:
+              ignore:
+                - master                    
+      - build-and-push-app:
+          requires:
+            - build-test-package
+      - hold_install_on_dev:
+          type: approval
+          requires:
+          - build-and-push-app
+      - install_on_dev:
+          requires:
+          - hold_install_on_dev         
