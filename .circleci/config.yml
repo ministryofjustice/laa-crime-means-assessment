@@ -63,7 +63,7 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: |
-            login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login --no-include-email)"
+            login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ECR_ACCOUNT_URL})"
             ${login}
             docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
             docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
