@@ -80,7 +80,7 @@ jobs:
               docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:latest"
               docker push "${ECR_ENDPOINT}:latest"
             fi
-754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-crime-apps-team/laa-crime-means-assessment-dev-ecr/image:tag
+
   install_on_dev:
     executor: aws-eks/python
     steps:
