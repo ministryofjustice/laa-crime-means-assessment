@@ -23,6 +23,7 @@ jobs:
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     docker:
       - image: cimg/openjdk:11.0.12
+        user: root
     steps:
       - checkout_and_decrypt
       - run:
