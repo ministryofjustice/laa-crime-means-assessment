@@ -1,11 +1,20 @@
 version: "3.2"
 
 services:
+  database:
+    image: postgres:10
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./src/main/resources/db/postgres/01_init.sql:/docker-entrypoint-initdb.d/1-init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   app:
     build:
       context: .
-    environment:
-    - DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:maatdb
-    - DATASOURCE_USERNAME=mla
+
     ports:
     - 8080:8080

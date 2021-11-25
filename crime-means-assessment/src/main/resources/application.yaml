@@ -1,5 +1,27 @@
 server:
   port : 8080
+spring:
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    testWhileIdle: true
+    validationQuery: SELECT 1
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    default-schema: mla
+
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: none
+  sql:
+    init:
+      platform: postgres
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
