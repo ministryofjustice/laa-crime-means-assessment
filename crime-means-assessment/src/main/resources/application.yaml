@@ -1,6 +1,26 @@
 server:
   port : 8080
 
+spring:
+  datasource:
+    url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      idle-timeout: 60000
+      max-lifetime: 3600000    
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.temp.use_jdbc_metadata_defaults: false   
+
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
   show-actuator: true
@@ -18,7 +38,7 @@ sentry:
   dsn: https://27fa5ff9451241cc8cd9aa85dac09e60@o345774.ingest.sentry.io/5372961
   environment: ${SENTRY_ENV}
   release: 1.1.0
-  servername: aws-ecs-container
+  servername: aws-eks-container
   send-default-pii: true
   logging:
     minimum-breadcrumb-level: info
@@ -26,7 +46,5 @@ sentry:
     enabled: true
   attach-stacktrace: true
 
-feature:
-  postMvpEnabled: ${POST_MVP_ENABLED}
 
 version: 0.0.1

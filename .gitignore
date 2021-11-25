@@ -46,3 +46,6 @@ docker-compose-debug.yml
 
 # CloudFormation
 *.packaged
+
+**/bin
+**/pgdata
