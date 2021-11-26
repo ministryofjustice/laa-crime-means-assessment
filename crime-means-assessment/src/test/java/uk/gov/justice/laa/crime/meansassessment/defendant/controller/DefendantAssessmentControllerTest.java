@@ -1,61 +1,97 @@
 package uk.gov.justice.laa.crime.meansassessment.defendant.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
-import uk.gov.justice.laa.crime.meansassessment.defendant.repository.DefendantAssessmentRepository;
 import uk.gov.justice.laa.crime.meansassessment.defendant.service.DefendantAssessmentService;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.DEFENDANT_ASSESSMENT_ID;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.DEFENDANT_ASSESSMENT_UPDATED_INFO;
 
-import static org.mockito.Mockito.verify;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@WebMvcTest(DefendantAssessmentController.class)
 public class DefendantAssessmentControllerTest {
 
-    private TestModelDataBuilder testModelDataBuilder;
+    @Autowired
+    private MockMvc mvc;
 
-    @InjectMocks
-    private DefendantAssessmentController defendantAssessmentController;
-
-    @Mock
+    @MockBean
     private DefendantAssessmentService defendantAssessmentService;
 
-    @Mock
-    private DefendantAssessmentRepository defendantAssessmentRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
 
+    @Test
+    public void getDefendantAssessmentByID() throws Exception {
+        //given
+        var defendantAssessment = TestModelDataBuilder.getDefendantAssessmentDTO();
+        //when
+        when(defendantAssessmentService.findById(DEFENDANT_ASSESSMENT_ID))
+                        .thenReturn(defendantAssessment);
 
-    //Make call to get defendant assessment - pass defendant assessment id
-    //assert defendant object is returned
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mvc.perform(MockMvcRequestBuilders.get("/defendantmeansassessment/"+DEFENDANT_ASSESSMENT_ID))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.updatedInfo").value(DEFENDANT_ASSESSMENT_UPDATED_INFO));
     }
 
     @Test
-    public void givenValidDefendantIDIsPassed_whenGetControllerIsInvoked_thenRetrieveDefendantAssessmmentObject(){
+    public void getDefendantAssessmentByIDNotFound() throws Exception {
+        //given
+        String idNotInDB = "484cf7b4-b910-4f28-82bd-b60c69467054";
+        //when
+        when(defendantAssessmentService.findById(idNotInDB))
+                .thenReturn(null);
 
-        DefendantAssessmentEntity defendantAssessmentDTO = TestModelDataBuilder.getDefendantAssessmentDTO();
+        mvc.perform(MockMvcRequestBuilders.get("/defendantmeansassessment/"+idNotInDB))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    public void getDefendantAssessmentByID_andExpectInternalException() throws Exception {
 
-        ResponseEntity<DefendantAssessmentEntity> response = defendantAssessmentController.getDefendantAssessment(DEFENDANT_ASSESSMENT_ID);
+        mvc.perform(MockMvcRequestBuilders.get("/defendantmeansassessment/expectInvalidRequest"))
+                .andExpect(status().is5xxServerError());
+    }
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    @Test
+    public void createNewDefendantAssessment_Success() throws Exception {
+        //given
+        var defendantAssessmentToSave = DefendantAssessmentEntity.builder().updatedInfo(DEFENDANT_ASSESSMENT_UPDATED_INFO).build();
+        // and given
+        var returnedDefendantAssessment = TestModelDataBuilder.getDefendantAssessmentDTO();
+        //when
+        when(defendantAssessmentService.save(defendantAssessmentToSave))
+                .thenReturn(returnedDefendantAssessment);
 
-        verify(defendantAssessmentService).findById(DEFENDANT_ASSESSMENT_ID);
+        String json = objectMapper.writeValueAsString(DefendantAssessmentEntity.builder()
+                .updatedInfo(DEFENDANT_ASSESSMENT_UPDATED_INFO)
+                .build());
 
-//        verify(defendantAssessmentRepository).findById(DEFENDANT_ASSESSMENT_ID);
+        mvc.perform(MockMvcRequestBuilders.post("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(returnedDefendantAssessment.getId()));
+    }
 
+    @Test
+    public void createNewDefendantAssessment_BadRequest_IdIsPresent() throws Exception {
+        //given
+        var defendantAssessmentWithID =TestModelDataBuilder.getDefendantAssessmentDTO();
 
-//        assertThat(response.getBody().getId().toString()).isEqualTo(DEFENDANT_ASSESSMENT_ID);
-//        assertThat(response.getBody().getUpdatedInfo()).isEqualTo(DEFENDANT_ASSESSMENT_UPDATED_INFO);
+        String json = objectMapper.writeValueAsString(TestModelDataBuilder.getDefendantAssessmentDTO());
+
+        mvc.perform(MockMvcRequestBuilders.post("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError());
     }
 }
