@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.defendant.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
 import uk.gov.justice.laa.crime.meansassessment.defendant.repository.DefendantAssessmentRepository;
 
@@ -19,7 +20,9 @@ public class DefendantAssessmentService {
     }
 
     public DefendantAssessmentEntity save(DefendantAssessmentEntity defendantAssessmentEntity){
-        defendantAssessmentEntity.setId(UUID.randomUUID().toString());
+        if(! StringUtils.hasLength(defendantAssessmentEntity.getId() )) {
+            defendantAssessmentEntity.setId(UUID.randomUUID().toString());
+        }
         return defendantAssessmentRepository.save(defendantAssessmentEntity);
     }
 
