@@ -1,9 +1,10 @@
 version: 2.1
 
 orbs:
+  aws-cli: circleci/aws-cli@2.0.3
   aws-ecr: circleci/aws-ecr@7.2.0
   aws-eks: circleci/aws-eks@1.1.0
-  kubernetes: circleci/kubernetes@0.12.0
+  kubernetes: circleci/kubernetes@0.12.1
   helm: circleci/helm@1.2.0
 
 commands:
@@ -24,6 +25,15 @@ jobs:
       - image: cimg/openjdk:11.0.12
     steps:
       - checkout_and_decrypt
+      - run:
+          name: Set up docker
+          command: |
+            if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
+              echo "export docker='sudo docker'" >> $BASH_ENV
+            else
+              echo "export docker='docker'" >> $BASH_ENV
+            fi      
+      - aws-cli/setup
       - setup_remote_docker:
           docker_layer_caching: true
       - restore_cache:
@@ -57,26 +67,16 @@ jobs:
           name: Build application Docker image
           command: |
             cd crime-means-assessment          
-            docker build -t laa-crime-means-assessment . --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) --build-arg COMMIT_ID=${CIRCLE_SHA1} --build-arg BUILD_TAG=${CIRCLE_SHA1} --build-arg APP_BRANCH=${CIRCLE_BRANCH}
-
-
-  build-and-push-app:
-    docker:
-      - image: cimg/openjdk:11.0.12
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true  
+            $docker build -t laa-crime-means-assessment . --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) --build-arg COMMIT_ID=${CIRCLE_SHA1} --build-arg BUILD_TAG=${CIRCLE_SHA1} --build-arg APP_BRANCH=${CIRCLE_BRANCH}
       - deploy:
           name: Push application Docker image
           command: |
-            login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login --no-include-email)"
-            ${login}
-            docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
-            docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:latest"
-              docker push "${ECR_ENDPOINT}:latest"
-            fi
+            aws ecr get-login-password | $docker login --username AWS --password-stdin ${AWS_ECR_ACCOUNT_URL}
+            $docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+            $docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:latest"
+            $docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+            $docker push "${ECR_ENDPOINT}:latest"            
+
 
   install_on_dev:
     executor: aws-eks/python
@@ -86,14 +86,23 @@ jobs:
           kubeconfig: ENCODED_KUBECONFIG_DEV
       - kubernetes/install-kubectl
       - helm/install-helm-client:
-          version: 'v3.2.4'
+          version: 'v3.2.4'      
+      - run:
+          name: Authenticate with cluster
+          command: |
+            echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
+            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt
+            kubectl config set-credentials circleci --token=${K8S_TOKEN}
+            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}
+            kubectl config use-context ${K8S_CLUSTER_NAME}
+            kubectl --namespace=${K8S_NAMESPACE} get pods
       - helm/upgrade-helm-chart:
-          namespace: laa-crime-means-asessment-dev
+          namespace: laa-crime-means-assessment-dev
           update-repositories: false
-          chart: ./helm_deploy/laa-crime-means-asessment
-          release-name: laa-crime-means-asessment
-          values: ./helm_deploy/laa-crime-means-asessment/dev/values-dev.yaml
-          values-to-override: image.tag=$CIRCLE_SHA1
+          chart: ./helm_deploy/laa-crime-means-assessment/
+          release-name: laa-crime-means-assessment
+          values: ./helm_deploy/laa-crime-means-assessment/dev/values-dev.yaml
+          values-to-override: image.tag=${CIRCLE_SHA1}      
 
 workflows:
   version: 2
@@ -104,17 +113,10 @@ workflows:
             branches:
               only:
                 - master
-      - build-and-push-app:
-          requires:
-            - build-test-package
-          filters:
-            branches:
-              only:
-                - master
       - hold_install_on_dev:
           type: approval
           requires:
-            - build-and-push-app
+            - build-test-package
           filters:
             branches:
               only:
@@ -146,13 +148,10 @@ workflows:
             branches:
               ignore:
                 - master                    
-      - build-and-push-app:
-          requires:
-            - build-test-package
       - hold_install_on_dev:
           type: approval
           requires:
-          - build-and-push-app
+          - build-test-package
       - install_on_dev:
           requires:
           - hold_install_on_dev         
