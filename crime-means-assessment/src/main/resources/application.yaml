@@ -10,7 +10,6 @@ spring:
     validationQuery: SELECT 1
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
-    default-schema: mla
 
   jpa:
     database: POSTGRESQL
