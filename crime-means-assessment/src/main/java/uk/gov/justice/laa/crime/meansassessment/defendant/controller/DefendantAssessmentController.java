@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.defendant.controller;
 
+import com.google.gson.Gson;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentIdPresentException;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentInvalidIdException;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentMissingException;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.defendant.service.DefendantAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 
@@ -32,32 +37,41 @@ public class DefendantAssessmentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Not Found.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     })
     public ResponseEntity<Object> getDefendantAssessment(@PathVariable("defendantAssessmentId") String defendantAssessmentId) {
         log.info("Retrieving DefendantAssessmentEntity with id {}",defendantAssessmentId);
+
+        validateDefendantAssessmentId(defendantAssessmentId);
+
+        var defendantAssessment = defendantAssessmentService.findById(defendantAssessmentId);
+        if (defendantAssessment == null) {
+         throw new DefendantAssessmentNotFoundException(defendantAssessmentId);
+        }
+        return ResponseEntity.ok(defendantAssessment);
+    }
+
+    private boolean isValid(String defendantAssessmentId){
         try {
-            validate(defendantAssessmentId);
-            var defendantAssessment = defendantAssessmentService.findById(defendantAssessmentId);
-            if (defendantAssessment != null) {
-                return ResponseEntity.ok(defendantAssessment);
-            }
-            return ResponseEntity.notFound().build();
+            UUID.fromString(defendantAssessmentId);
+            return true;
         } catch (RuntimeException e){
-            log.error("Unable to retrieve defendant Assessment with Id: {}",defendantAssessmentId);
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(ErrorDTO.builder().code("BAD_REQUEST").message(new StringBuilder("Unable to process request for id: ").append(defendantAssessmentId).append(". ").append(e.getMessage()).toString()).build());
+            return false;
         }
     }
 
     /**
-     * check that the defendant id is of type UUID
+     * if defendantAssessmentId is not falid, throw DefendantAssessmentInvalidIdException
      * @param defendantAssessmentId
-     * @throws IllegalArgumentException
+     * @throws DefendantAssessmentInvalidIdException
      */
-    private void validate(String defendantAssessmentId) throws IllegalArgumentException{
-        UUID.fromString(defendantAssessmentId);
+    private void validateDefendantAssessmentId(String defendantAssessmentId) throws DefendantAssessmentInvalidIdException{
+        if (!isValid(defendantAssessmentId)) {
+            throw new DefendantAssessmentInvalidIdException(defendantAssessmentId);
+        }
     }
+
 
 
     @PostMapping
@@ -67,20 +81,24 @@ public class DefendantAssessmentController {
             @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     })
     public ResponseEntity<Object> createDefendantAssessmentEntity(@RequestBody DefendantAssessmentEntity defendantAssessmentEntity){
-        try {
-            validateNoIDIsPassedFor(defendantAssessmentEntity);
+        log.info("creating DefendantAssessmentEntity {}",defendantAssessmentEntity);
 
-            return new ResponseEntity<>(defendantAssessmentService.save(defendantAssessmentEntity), HttpStatus.CREATED);
-        } catch (RuntimeException e){
-            log.error("Unable to create defendant Assessment: {}",defendantAssessmentEntity);
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(ErrorDTO.builder().code("CREATE_BAD_REQUEST").message(new StringBuilder("Unable to create defendant assessment: ").append(defendantAssessmentEntity).append(e.getMessage()).toString()).build());
+        validateDefendantAssessmentIsPresentFor(defendantAssessmentEntity);
+
+        if( isIDPresentFor(defendantAssessmentEntity)) {
+            throw new DefendantAssessmentIdPresentException(defendantAssessmentEntity.getId());
+        }
+        return new ResponseEntity<>(defendantAssessmentService.save(defendantAssessmentEntity), HttpStatus.CREATED);
+    }
+
+    private void validateDefendantAssessmentIsPresentFor(DefendantAssessmentEntity defendantAssessmentEntity) throws DefendantAssessmentMissingException{
+        if (defendantAssessmentEntity == null) {
+            throw new DefendantAssessmentMissingException();
         }
     }
-    private void validateNoIDIsPassedFor(DefendantAssessmentEntity defendantAssessmentEntity){
-        if (StringUtils.hasLength(defendantAssessmentEntity.getId())) {
-            throw new RuntimeException(" No id should be present when creating defendantAssessmentEntity");
-        }
+
+    private boolean isIDPresentFor(DefendantAssessmentEntity defendantAssessmentEntity){
+        return StringUtils.hasLength(defendantAssessmentEntity.getId());
     }
 
     @PutMapping
@@ -90,8 +108,20 @@ public class DefendantAssessmentController {
             @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     })
     public ResponseEntity<DefendantAssessmentEntity> updateDefendantAssessmentEntity(@RequestBody DefendantAssessmentEntity defendantAssessmentEntity){
+        log.info("log attempting to update {}", defendantAssessmentEntity);
+
+        validateDefendantAssessmentIsPresentFor(defendantAssessmentEntity);
+
+        validateDefendantAssessmentId(defendantAssessmentEntity.getId());
+
+        var defendantAssessment = defendantAssessmentService.findById(defendantAssessmentEntity.getId());
+        if (defendantAssessment == null) {
+            throw new DefendantAssessmentNotFoundException(defendantAssessmentEntity.getId());
+        }
+
        return ResponseEntity.ok(defendantAssessmentService.update(defendantAssessmentEntity));
     }
+
 
     @DeleteMapping(value="/{defendantAssessmentId}")
     @Operation(description = "Defendant Means Assessment API")
@@ -100,9 +130,16 @@ public class DefendantAssessmentController {
             @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class))),
             @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     })
-    public ResponseEntity<String> deleteDefendantAssessment(@PathVariable("defendantAssessmentId") String defendantAssessmentId) {
+    public ResponseEntity<Object> deleteDefendantAssessment(@PathVariable("defendantAssessmentId") String defendantAssessmentId) {
         log.info("deleting DefendantAssessmentEntity with id {}",defendantAssessmentId);
 
-        return ResponseEntity.ok(defendantAssessmentService.deleteById(defendantAssessmentId));
+        validateDefendantAssessmentId(defendantAssessmentId);
+
+        var defendantAssessment = defendantAssessmentService.findById(defendantAssessmentId);
+        if (defendantAssessment == null) {
+            throw new DefendantAssessmentNotFoundException(defendantAssessmentId);
+        }
+        final var gson = new Gson();
+        return ResponseEntity.ok(gson.toJson(defendantAssessmentService.deleteById(defendantAssessmentId)));
     }
 }

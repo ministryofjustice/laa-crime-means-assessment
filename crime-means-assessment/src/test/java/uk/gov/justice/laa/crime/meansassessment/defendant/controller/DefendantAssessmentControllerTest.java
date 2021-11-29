@@ -33,7 +33,7 @@ public class DefendantAssessmentControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void getDefendantAssessmentByID() throws Exception {
+    public void getDefendantAssessmentByID_Success() throws Exception {
         //given
         var defendantAssessment = TestModelDataBuilder.getDefendantAssessmentDTO();
         //when
@@ -43,7 +43,6 @@ public class DefendantAssessmentControllerTest {
         mvc.perform(MockMvcRequestBuilders.get("/defendantmeansassessment/"+DEFENDANT_ASSESSMENT_ID))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.updatedInfo").value(DEFENDANT_ASSESSMENT_UPDATED_INFO));
     }
 
@@ -58,11 +57,12 @@ public class DefendantAssessmentControllerTest {
         mvc.perform(MockMvcRequestBuilders.get("/defendantmeansassessment/"+idNotInDB))
                 .andExpect(status().isNotFound());
     }
-    @Test
-    public void getDefendantAssessmentByID_andExpectInternalException() throws Exception {
 
-        mvc.perform(MockMvcRequestBuilders.get("/defendantmeansassessment/expectInvalidRequest"))
-                .andExpect(status().is5xxServerError());
+    @Test
+    public void getDefendantAssessmentByID_BadRequestError_invalidID() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.get("/defendantmeansassessment/expectBadRequestError"))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -81,7 +81,15 @@ public class DefendantAssessmentControllerTest {
 
         mvc.perform(MockMvcRequestBuilders.post("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
+
                 .andExpect(jsonPath("$.id").value(returnedDefendantAssessment.getId()));
+    }
+
+    @Test
+    public void createNewDefendantAssessment_ServerError_RequestBodyIsMissing() throws Exception {
+
+       mvc.perform(MockMvcRequestBuilders.post("/defendantmeansassessment").content(new String()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError());
     }
 
     @Test
@@ -92,6 +100,113 @@ public class DefendantAssessmentControllerTest {
         String json = objectMapper.writeValueAsString(TestModelDataBuilder.getDefendantAssessmentDTO());
 
         mvc.perform(MockMvcRequestBuilders.post("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void updateDefendantAssessment_Success() throws Exception {
+        //given
+        var defendantAssessmentToUpdate = TestModelDataBuilder.getDefendantAssessmentDTO();
+        // and given
+        var updatedDefendantAssessment = TestModelDataBuilder.getDefendantAssessmentDTO();
+        //when
+
+        when(defendantAssessmentService.findById(defendantAssessmentToUpdate.getId()))
+                .thenReturn(defendantAssessmentToUpdate);
+
+        //when
+        when(defendantAssessmentService.update(defendantAssessmentToUpdate))
+                .thenReturn(updatedDefendantAssessment);
+
+        String json = objectMapper.writeValueAsString(defendantAssessmentToUpdate);
+
+        mvc.perform(MockMvcRequestBuilders.put("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.updatedInfo").value(updatedDefendantAssessment.getUpdatedInfo()));
+    }
+
+    @Test
+    public void updateDefendantAssessment_NotFoundError_notInDB() throws Exception {
+        //given
+        var defendantAssessmentNotInDB = TestModelDataBuilder.getDefendantAssessmentDTO();
+
+        String json = objectMapper.writeValueAsString(defendantAssessmentNotInDB);
+
+        mvc.perform(MockMvcRequestBuilders.put("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateDefendantAssessment_BadRequestError_invalidID() throws Exception {
+        //given
+        var defendantAssessmentNotInDB = DefendantAssessmentEntity.builder()
+                .id("484cf7b4")
+                .updatedInfo(DEFENDANT_ASSESSMENT_UPDATED_INFO)
+                .build();
+
+        String json = objectMapper.writeValueAsString(defendantAssessmentNotInDB);
+
+        mvc.perform(MockMvcRequestBuilders.put("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+    @Test
+    public void updateDefendantAssessment_BadRequestError_missingID() throws Exception {
+        //given
+        var defendantAssessmentNotInDB = DefendantAssessmentEntity.builder()
+                .updatedInfo(DEFENDANT_ASSESSMENT_UPDATED_INFO)
+                .build();
+
+        String json = objectMapper.writeValueAsString(defendantAssessmentNotInDB);
+
+        mvc.perform(MockMvcRequestBuilders.put("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    public void updateDefendantAssessment_ServerError_RequestBodyIsMissing() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.put("/defendantmeansassessment").content(new String()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is5xxServerError());
     }
+
+    @Test
+    public void deleteDefendantAssessmentByID_Success() throws Exception {
+        //given
+        var defendantAssessmentToDelete = TestModelDataBuilder.getDefendantAssessmentDTO();
+        //when
+        when(defendantAssessmentService.findById(DEFENDANT_ASSESSMENT_ID))
+                .thenReturn(defendantAssessmentToDelete);
+
+        when(defendantAssessmentService.deleteById(DEFENDANT_ASSESSMENT_ID))
+                .thenReturn("successful delete");
+
+        mvc.perform(MockMvcRequestBuilders.delete("/defendantmeansassessment/"+DEFENDANT_ASSESSMENT_ID))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteDefendantAssessment_BadRequestError_missingID() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.delete("/defendantmeansassessment/"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void deleteDefendantAssessment_NotFoundError_notInDB() throws Exception {
+        //given
+        var defendantAssessmentNotInDB = TestModelDataBuilder.getDefendantAssessmentDTO();
+
+        mvc.perform(MockMvcRequestBuilders.delete("/defendantmeansassessment/"+DEFENDANT_ASSESSMENT_ID))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteDefendantAssessment_BadRequestError_invalidID() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.delete("/defendantmeansassessment/expectBadRequestError"))
+                .andExpect(status().is4xxClientError());
+    }
+
 }
