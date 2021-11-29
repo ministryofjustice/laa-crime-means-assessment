@@ -30,12 +30,12 @@ public class DefendantAssessmentService {
         return defendantAssessmentRepository.save(defendantAssessmentEntity);
     }
 
-    public String deleteById(String licensedefendantAssessmentIdId){
+    public String deleteById(String defendantAssessmentId){
         String responseMessage = null;
         var defendantAssessmentEntity = new DefendantAssessmentEntity();
-        defendantAssessmentEntity.setId(licensedefendantAssessmentIdId);
+        defendantAssessmentEntity.setId(defendantAssessmentId);
         defendantAssessmentRepository.delete(defendantAssessmentEntity);
 
-        return new StringBuilder("Successfully deleted license defendant with id: ").append(licensedefendantAssessmentIdId).toString();
+        return new StringBuilder("Successfully defendant assessmentId with id: ").append(defendantAssessmentId).toString();
     }
 }
