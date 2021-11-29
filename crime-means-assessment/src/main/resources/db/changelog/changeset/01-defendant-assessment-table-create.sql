@@ -11,6 +11,3 @@ CREATE TABLE IF NOT EXISTS mla.defendant_assessment
     WITH (
         OIDS = FALSE
     );
-
-ALTER TABLE IF EXISTS mla.defendant_assessment
-    OWNER to postgres;
