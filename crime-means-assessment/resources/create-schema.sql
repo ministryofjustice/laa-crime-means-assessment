@@ -1,8 +1,0 @@
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
-create table mla.defendant_assessment (defendant_assessment_id varchar(255) not null, created_date_time timestamp not null, updated_date_time timestamp, updated_info varchar(255), primary key (defendant_assessment_id))
