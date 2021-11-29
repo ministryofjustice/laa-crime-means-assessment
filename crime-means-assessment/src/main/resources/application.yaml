@@ -1,26 +1,28 @@
 server:
   port : 8080
+
 spring:
   datasource:
-    url: ${DATASOURCE_URL}
+    url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    testWhileIdle: true
-    validationQuery: SELECT 1
+    hikari:
+      connection-timeout: 30000
+      idle-timeout: 60000
+      max-lifetime: 3600000
+
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
   jpa:
-    database: POSTGRESQL
-    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: false
+    generate-ddl: false
     hibernate:
-      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-      dialect: org.hibernate.dialect.PostgreSQLDialect
-      ddl-auto: none
-  sql:
-    init:
-      platform: postgres
+      ddl-auto: validate
+    properties:
+      hibernate.temp.use_jdbc_metadata_defaults: false   
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
@@ -39,7 +41,7 @@ sentry:
   dsn: https://27fa5ff9451241cc8cd9aa85dac09e60@o345774.ingest.sentry.io/5372961
   environment: ${SENTRY_ENV}
   release: 1.1.0
-  servername: aws-ecs-container
+  servername: aws-eks-container
   send-default-pii: true
   logging:
     minimum-breadcrumb-level: info
@@ -47,7 +49,5 @@ sentry:
     enabled: true
   attach-stacktrace: true
 
-feature:
-  postMvpEnabled: ${POST_MVP_ENABLED}
 
 version: 0.0.1
