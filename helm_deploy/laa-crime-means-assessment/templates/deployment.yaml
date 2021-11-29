@@ -39,11 +39,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /status
+              path: /actuator/health
               port: http
           readinessProbe:
             httpGet:
-              path: /status
+              path: /actuator/health
               port: http
           {{ include "laa-crime-means-assessment.env-vars" . | nindent 10 }}
           resources:

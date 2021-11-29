@@ -4,30 +4,30 @@ sentry:
   release: 1.1.1
   servername: aws-ecs-con
 
+spring:
+  datasource:
+    url: jdbc:h2:mem:crimemeansassessment;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+    initilization-mode: embedded
+    platform: h2
+    name: mla
+
+  liquibase:
+    enabled: false
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
 springdoc:
   api-docs:
     path: /crime-means-assessment
 
 swagger-ui:
   path: /open-api/docs.html
-
-feature:
-  postMvpEnabled: true
-
-spring:
-  liquibase:
-    enabled: false
-  datasource:
-    url: jdbc:h2:mem:mla;DB_CLOSE_DELAY=-1;
-    username: sa
-    driver-class-name: org.h2.Driver
-    initilization-mode: embedded
-    platform: h2
-    name: mla
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true
-    hibernate:
-      ddl-auto: create
 
 version: 0.0.1
