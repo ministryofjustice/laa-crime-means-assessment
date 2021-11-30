@@ -1,7 +1,7 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changeset/00-mla-create-schema.sql
+      file: db/changelog/changeset/01-crime-means-assessment-create-schema.sql
   - include:
-      file: db/changelog/changeset/01-defendant-assessment-table-create.sql
+      file: db/changelog/changeset/02-defendant-assessment-table-create.sql
   - include:
-      file: db/changelog/changeset/02-defendant-assessment-table-test-data-insert.sql
+      file: db/changelog/changeset/03-defendant-assessment-table-test-data-insert.sql
