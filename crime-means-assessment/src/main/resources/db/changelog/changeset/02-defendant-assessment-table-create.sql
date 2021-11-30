@@ -1,6 +1,6 @@
 --liquibase formatted sql
---changeset lucast:01-create-defendant-assessment-table
-CREATE TABLE IF NOT EXISTS mla.defendant_assessment
+--changeset lucast:02-create-defendant-assessment-table
+CREATE TABLE IF NOT EXISTS crime_means_assessment.defendant_assessment
 (
     "defendant_assessment_id" text NOT NULL,
     "updated_info" text,
