@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Data @Builder @AllArgsConstructor @NoArgsConstructor
 @Entity
-@Table(name = "DEFENDANT_ASSESSMENT", schema = "MLA")
+@Table(name = "DEFENDANT_ASSESSMENT", schema = "CRIME_MEANS_ASSESSMENT")
 public class DefendantAssessmentEntity {
     @Id
     @Column(name = "DEFENDANT_ASSESSMENT_ID")
