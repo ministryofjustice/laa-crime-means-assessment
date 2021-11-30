@@ -10,9 +10,15 @@ spring:
     username: sa
     password: sa
     driver-class-name: org.h2.Driver
+    platform: h2
+
+  liquibase:
+    enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
 
 springdoc:
   api-docs:
@@ -20,6 +26,5 @@ springdoc:
 
 swagger-ui:
   path: /open-api/docs.html
-
 
 version: 0.0.1

@@ -26,7 +26,8 @@ def versions = [
         festVersion     : '1.4',
         gradlePitest    : '1.4.6',
         pitest          : '1.4.10',
-        sonarPitest     : '0.5'
+        sonarPitest     : '0.5',
+        liquibase       : '4.6.1'
 
 ]
 
@@ -88,6 +89,8 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresqlVersion
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
+    //liquibase - DB versioning and change tracking
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
 
     implementation group: 'com.google.code.gson', name: 'gson', version: versions.gsonVersion
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3Version

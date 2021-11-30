@@ -10,7 +10,10 @@ spring:
     hikari:
       connection-timeout: 30000
       idle-timeout: 60000
-      max-lifetime: 3600000    
+      max-lifetime: 3600000
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
