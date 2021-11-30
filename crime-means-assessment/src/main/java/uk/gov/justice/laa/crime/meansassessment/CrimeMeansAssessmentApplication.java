@@ -9,7 +9,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class CrimeMeansAssessmentApplication {
 
     public static void main(String[] args) {
-
         SpringApplication.run(CrimeMeansAssessmentApplication.class);
     }
 }
