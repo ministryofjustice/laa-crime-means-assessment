@@ -26,13 +26,6 @@ public enum Frequency {
         return code;
     }
 
-    /***
-     * Retrieve Frequency that maps Code. If code is null, returns null.
-     * if code does not match Frequency.code, throws exception
-     * @param code
-     * @returns mapped Frequency.
-     * @throws IllegalArgumentException
-     */
     public static Frequency getFrom(String code) throws IllegalArgumentException{
         if (code == null) return null;
 
