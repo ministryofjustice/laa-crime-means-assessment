@@ -3,8 +3,6 @@ package uk.gov.justice.laa.crime.meansassessment.data.builder;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
 
-import java.util.UUID;
-
 @Component
 public class TestModelDataBuilder {
     public static final String DEFENDANT_ASSESSMENT_ID = "484cf7b4-b910-4f28-82bd-b60c69467053";
