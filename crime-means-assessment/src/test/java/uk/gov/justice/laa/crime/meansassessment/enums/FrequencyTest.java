@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.enums;
 
 import org.junit.Test;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

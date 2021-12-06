@@ -1,7 +1,7 @@
-package uk.gov.justice.laa.crime.meansassessment.enums.converter;
+package uk.gov.justice.laa.crime.meansassessment.staticdata.enums.converter;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.justice.laa.crime.meansassessment.enums.Frequency;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

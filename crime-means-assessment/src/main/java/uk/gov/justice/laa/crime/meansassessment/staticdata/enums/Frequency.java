@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.enums;
+package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
