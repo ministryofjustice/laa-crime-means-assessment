@@ -9,16 +9,16 @@ public class FrequencyTest {
 
     @Test
     public void valueOfFrequency_success() {
-        assertEquals(Frequency.get("2WEEKLY"), Frequency.TWO_WEEKLY);
+        assertEquals(Frequency.getFrom("2WEEKLY"), Frequency.TWO_WEEKLY);
     }
 
     @Test
     public void valueOfFrequency_nullParamenter_ReturnsNull() {
-        assertNull(Frequency.get(null));
+        assertNull(Frequency.getFrom(null));
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void valueOfFrequency_valueNotFound_ReturnsNull() {
-        assertNull(Frequency.get("RETURNS_NULL"));
+        assertNull(Frequency.getFrom("THROWS_EXCEPTION"));
     }
 }

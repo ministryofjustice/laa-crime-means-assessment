@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,10 +18,24 @@ public enum Frequency {
     private String code;
     private int weighting;
 
-    public static Frequency get(String code){
+    @JsonValue
+    public String getCode() {
+        return code;
+    }
+
+    /***
+     * Retrieve Frequency that maps Code. If code is null, returns null.
+     * if code does not match Frequency.code, throws exception
+     * @param code
+     * @returns mapped Frequency.
+     * @throws IllegalArgumentException
+     */
+    public static Frequency getFrom(String code) throws IllegalArgumentException{
+        if (code == null) return null;
+
         return Stream.of(Frequency.values())
                 .filter(f -> f.code.equals(code))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(IllegalArgumentException::new);
     }
 }
