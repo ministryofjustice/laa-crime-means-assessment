@@ -5,3 +5,7 @@ databaseChangeLog:
       file: db/changelog/changeset/02-defendant-assessment-table-create.sql
   - include:
       file: db/changelog/changeset/03-defendant-assessment-table-test-data-insert.sql
+  - include:
+      file: db/changelog/changeset/04-assessment-criteria-table-create.sql
+  - include:
+      file: db/changelog/changeset/05-assessment-criteria-table-data-insert.sql        
