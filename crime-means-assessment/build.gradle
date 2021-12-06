@@ -27,8 +27,8 @@ def versions = [
         gradlePitest    : '1.4.6',
         pitest          : '1.4.10',
         sonarPitest     : '0.5',
-        liquibase       : '4.6.1'
-
+        liquibase       : '4.6.1',
+        commonsCollections4Version: '4.4'
 ]
 
 dependencyManagement {
@@ -89,6 +89,10 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresqlVersion
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
+    // Utility Libraries
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: versions.commonsCollections4Version
+
+
     //liquibase - DB versioning and change tracking
     implementation group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
 
@@ -133,6 +137,17 @@ jacocoTestReport {
         xml.enabled true
         html.enabled true
     }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                              '**/entity/**',
+                              '**/dto/**',
+                              '**/config/**'
+                              ])
+        }))
+    }
+
 }
 
 pitest {
