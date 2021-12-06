@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.enums.converter;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.crime.meansassessment.enums.Frequency;
 
 import javax.persistence.AttributeConverter;
@@ -19,7 +20,7 @@ public class FrequencyConverter implements AttributeConverter<Frequency, String>
 
     @Override
     public Frequency convertToEntityAttribute(String codeFromDB) {
-        if (codeFromDB==null) { return null; }
+        if (StringUtils.isBlank(codeFromDB)) { return null; }
         return Frequency.getFrom(codeFromDB);
     }
 }
