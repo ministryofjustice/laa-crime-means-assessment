@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.stream.Stream;
 
+/**
+ * static data migrated from TOGDATA.FREQUENCIES table
+ */
 @AllArgsConstructor
 @Getter
 public enum Frequency {
