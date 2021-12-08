@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "apiSupplierInfo.json",
+  "type": "object",
+  "title": "The supplierInfo schema",
+  "description": "An explanation about the purpose of this instance.",
+  "properties": {
+    "accountNumber": {
+      "type": "integer",
+      "description": "Account Number"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the supplier"
+    },
+    "address": {
+      "description": "The  address details of the supplier",
+      "$ref": "apiAddress.json"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "accountNumber",
+    "name",
+    "address"
+  ]
+}
