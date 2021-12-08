@@ -5,11 +5,11 @@
   "title": "Initial Means Assessment Request",
   "description": "Data contract for the initial means assessment request",
   "properties": {
-    "correlationId": {
+    "laaTransactionId": {
       "type": "string",
-      "description": "The correlation UUID"
+      "description": "The txn / correlation UUID"
     },
-    "maatId": {
+    "repId": {
       "type": "integer",
       "description": "MAAT / Rep Id"
     },
@@ -21,14 +21,7 @@
       "type": "string",
       "description": "User  ID"
     },
-    "assessmentId": {
-      "type": "string",
-      "description": "The financial assessment Id"
-    },
-    "criteriaId": {
-      "type": "integer",
-      "description": "Criteria ID"
-    },
+
     "transactionDateTime": {
       "type": "string",
       "description": "Time Stamp of the transaction",
@@ -46,9 +39,9 @@
       "type": "string",
       "description": "Income Note."
     },
-    "employmentCode": {
+    "employmentStatus": {
       "type": "string",
-      "description": "User  ID"
+      "description": "Employment status code"
     },
     "notes": {
       "type": "string",
@@ -84,8 +77,8 @@
   },
   "additionalProperties": false,
   "required": [
-    "maatId",
-    "correlationId",
+    "repId",
+    "laaTransactionId",
     "cmuId",
     "userId",
     "transactionDateTime",
