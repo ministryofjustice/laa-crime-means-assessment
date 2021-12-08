@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "common/apiAssessmentDetail.json",
+  "id": "apiAssessmentDetail.json",
   "type": "object",
   "description": "Assessment details",
   "properties": {

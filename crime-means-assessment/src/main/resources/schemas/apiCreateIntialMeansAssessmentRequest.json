@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "assessment/common/apiIntialMeansRequest.json",
+  "id": "apiCreateIntialMeansAssessmentRequest.json",
   "type": "object",
   "title": "Initial Means Assessment Request",
   "description": "Data contract for the initial means assessment request",
