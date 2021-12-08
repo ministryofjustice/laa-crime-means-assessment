@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "apiIntialMeansResponse.json",
+  "id": "apiCreateInitialMeansAssessmentResponse.json",
   "type": "object",
   "title": "Initial Means Assessment Response",
   "description": "The response data of the Initial Means Assessment service",
