@@ -11,7 +11,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaChildWeightingRepository;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +47,7 @@ public class AssessmentCriteriaChildWeightingServiceTest {
     @Test
     public void givenAssessmentCriteriaChildWeightingIsPopulatedWhenAllRecordsAreRequestThenAssessmentCriteriaChildWeightingShouldBeReturned(){
         // given Assessment Criteria Child Weighting is populated
-        when(assessmentCriteriaChildWeightingRepository.findAll()).thenReturn(Arrays.asList(new AssessmentCriteriaChildWeightingEntity[]{assessmentCriteriaChildWeightingEntity}));
+        when(assessmentCriteriaChildWeightingRepository.findAll()).thenReturn(List.of(assessmentCriteriaChildWeightingEntity));
         // when all Assessment Criteria Child Weighting are requested
         var results = assessmentCriteriaChildWeightingService.findAll();
         // then expected number of results are returned
