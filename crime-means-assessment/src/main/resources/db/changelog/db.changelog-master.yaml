@@ -8,4 +8,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/changeset/04-assessment-criteria-table-create.sql
   - include:
-      file: db/changelog/changeset/05-assessment-criteria-table-data-insert.sql        
+      file: db/changelog/changeset/05-assessment-criteria-table-data-insert.sql
+  - include:
+      file: db/changelog/changeset/06-ass-criteria-child-weightings-table-create.sql
+  - include:
+      file: db/changelog/changeset/07-ass-criteria-child-weightings-table-data-insert.sql
