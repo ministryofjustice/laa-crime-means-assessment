@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Getter
-public enum HardshipReviewStatus {
+public enum AssessmentStatus {
     IN_PROGRESS("IN PROGRESS", "Incomplete"),
     COMPLETE("COMPLETE","Complete");
 
@@ -20,10 +20,10 @@ public enum HardshipReviewStatus {
     @JsonValue
     public String getStatus(){ return status; }
 
-    public static HardshipReviewStatus getFrom(String status) throws IllegalArgumentException{
+    public static AssessmentStatus getFrom(String status) throws IllegalArgumentException{
         if (StringUtils.isBlank(status)) return null;
 
-        return Stream.of(HardshipReviewStatus.values())
+        return Stream.of(AssessmentStatus.values())
                 .filter(f -> f.status.equals(status))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);

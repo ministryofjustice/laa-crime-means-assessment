@@ -5,7 +5,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentStatu
 
 import javax.persistence.AttributeConverter;
 
-public class HardshipReviewStatusConverter  implements AttributeConverter<AssessmentStatus, String> {
+public class AssessmentStatusConverter implements AttributeConverter<AssessmentStatus, String> {
 
     @Override
     public String convertToDatabaseColumn(AssessmentStatus attribute) {

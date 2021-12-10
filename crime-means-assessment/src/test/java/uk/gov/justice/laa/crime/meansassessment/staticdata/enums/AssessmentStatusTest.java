@@ -4,20 +4,20 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class HardshipReviewStatusTest {
+public class AssessmentStatusTest {
 
     @Test
-    public void valueOfHardshipReviewStatus_success() {
-        assertEquals(HardshipReviewStatus.getFrom("IN PROGRESS"), HardshipReviewStatus.IN_PROGRESS);
+    public void valueOfAssessmentStatus_success() {
+        assertEquals(AssessmentStatus.getFrom("IN PROGRESS"), AssessmentStatus.IN_PROGRESS);
     }
 
     @Test
-    public void valueOfHardshipReviewStatus_nullParamenter_ReturnsNull() {
-        assertNull(HardshipReviewStatus.getFrom(null));
+    public void valueOfAssessmentStatus_nullParamenter_ReturnsNull() {
+        assertNull(AssessmentStatus.getFrom(null));
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void valueOfHardshipReviewStatus_valueNotFound_ReturnsNull() {
-        assertNull(HardshipReviewStatus.getFrom("THROWS_EXCEPTION"));
+    public void valueOfAssessmentStatus_valueNotFound_ReturnsNull() {
+        assertNull(AssessmentStatus.getFrom("THROWS_EXCEPTION"));
     }
 }
