@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
 import java.math.BigDecimal;
@@ -23,6 +24,11 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_APPLICANT_WEIGHTING_FACTOR = BigDecimal.ONE;
     public static final LocalDateTime TEST_DATE_FROM = LocalDateTime.now().minusDays(1);
     public static final LocalDateTime TEST_DATE_TO = LocalDateTime.now().plusDays(2);
+
+    // Assessment Criteria Child Weighting
+    public static final BigDecimal TEST_INITIAL_LOWER_AGE_RANGE =  BigDecimal.valueOf(3d);
+    public static final BigDecimal TEST_INITIAL_UPPER_AGE_RANGE =  BigDecimal.valueOf(5d);
+    public static final BigDecimal TEST_WEIGHTING_FACTOR = BigDecimal.ONE;
 
     public static DefendantAssessmentEntity getDefendantAssessmentDTO(){
         return DefendantAssessmentEntity.builder()
@@ -48,5 +54,15 @@ public class TestModelDataBuilder {
                  .eligibilityThreshold(TEST_ELIGIBILITY_THRESHOLD)
                  .build();
      }
+
+    public static AssessmentCriteriaChildWeightingEntity getAssessmentCriteriaChildWeightingEntity() {
+        return AssessmentCriteriaChildWeightingEntity.builder()
+                .assessmentCriteria(AssessmentCriteriaEntity.builder().id(1L).build())
+                .lowerAgeRange(TEST_INITIAL_LOWER_AGE_RANGE)
+                .upperAgeRange(TEST_INITIAL_UPPER_AGE_RANGE)
+                .weightingFactor(TEST_WEIGHTING_FACTOR)
+                .userCreated(TEST_USER)
+                .build();
+    }
 }
 

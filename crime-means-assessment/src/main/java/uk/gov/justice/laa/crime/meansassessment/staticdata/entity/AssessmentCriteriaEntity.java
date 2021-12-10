@@ -1,14 +1,16 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data @Builder @AllArgsConstructor @NoArgsConstructor
 @Entity
@@ -60,5 +62,6 @@ public class AssessmentCriteriaEntity {
     @UpdateTimestamp
     private LocalDateTime modifiedDateTime;
 
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assessmentCriteria")
+    private Set<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightings;
 }
