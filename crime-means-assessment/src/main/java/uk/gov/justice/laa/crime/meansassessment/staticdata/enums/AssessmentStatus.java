@@ -6,7 +6,10 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.Stream;
-
+/**
+ * static data migrated from TOGDATA.HARDSHIP_REVIEW_STATUSES,
+ * TOGDATA.IOJ_APPEAL_STATUSES and TOGDATA.FIN_ASS_STATUSES tables
+ */
 @AllArgsConstructor
 @Getter
 public enum AssessmentStatus {
