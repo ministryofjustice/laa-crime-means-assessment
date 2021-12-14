@@ -18,7 +18,7 @@ public class FrequencyTest {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void valueOfFrequency_valueNotFound_ReturnsNull() {
+    public void valueOfFrequency_valueNotFound_throwsException() {
         assertNull(Frequency.getFrom("THROWS_EXCEPTION"));
     }
 }
