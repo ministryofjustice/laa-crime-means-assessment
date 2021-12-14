@@ -47,10 +47,6 @@
       "type": "string",
       "description": "Notes field."
     },
-    "assessmentStatus": {
-      "description": "Assessment Status",
-      "$ref": "common/apiAssessmentStatus.json"
-    },
     "newWorkReason": {
       "description": "Work Reason Details",
       "$ref": "common/apiNewWorkReason.json"
