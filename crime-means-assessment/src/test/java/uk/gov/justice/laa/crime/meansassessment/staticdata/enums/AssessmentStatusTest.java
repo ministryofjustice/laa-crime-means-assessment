@@ -7,17 +7,17 @@ import static org.junit.Assert.*;
 public class AssessmentStatusTest {
 
     @Test
-    public void valueOfAssessmentStatus_success() {
+    public void valueOfAssessmentStatusFromString_success() {
         assertEquals(AssessmentStatus.getFrom("IN PROGRESS"), AssessmentStatus.IN_PROGRESS);
     }
 
     @Test
-    public void valueOfAssessmentStatus_nullParamenter_ReturnsNull() {
+    public void valueOfAssessmentStatusFromString_nullParamenter_ReturnsNull() {
         assertNull(AssessmentStatus.getFrom(null));
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void valueOfAssessmentStatus_valueNotFound_ReturnsNull() {
-        assertNull(AssessmentStatus.getFrom("THROWS_EXCEPTION"));
+    public void valueOfAssessmentStatusFromString_valueNotFound_throwsException() {
+        AssessmentStatus.getFrom("THROWS_EXCEPTION");
     }
 }
