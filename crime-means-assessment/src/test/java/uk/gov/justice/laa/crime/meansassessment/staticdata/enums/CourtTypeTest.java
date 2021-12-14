@@ -7,18 +7,18 @@ import static org.junit.Assert.*;
 public class CourtTypeTest {
 
     @Test
-    public void valueOfCourtType_success() {
+    public void getValueOfCourtTypeFromString_success() {
         assertEquals(CourtType.getFrom("CROWN COURT"), CourtType.CROWN_COURT);
     }
 
     @Test
-    public void valueOfCourtType_nullParamenter_ReturnsNull() {
+    public void valueOfCourtTypeFromString_nullParamenter_ReturnsNull() {
         assertNull(CourtType.getFrom(null));
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void valueOfCourtType_valueNotFound_throwsException() {
-        assertNull(CourtType.getFrom("THROWS_EXCEPTION"));
+    public void valueOfCourtTypeFromString_valueNotFound_throwsException() {
+        CourtType.getFrom("THROWS_EXCEPTION");
     }
 
 }

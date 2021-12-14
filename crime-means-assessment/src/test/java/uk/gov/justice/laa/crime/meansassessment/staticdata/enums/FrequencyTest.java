@@ -8,17 +8,17 @@ import static org.junit.Assert.assertNull;
 public class FrequencyTest {
 
     @Test
-    public void valueOfFrequency_success() {
+    public void valueOfFrequencyFromString_success() {
         assertEquals(Frequency.getFrom("2WEEKLY"), Frequency.TWO_WEEKLY);
     }
 
     @Test
-    public void valueOfFrequency_nullParamenter_ReturnsNull() {
+    public void valueOfFrequencyFromString_nullParamenter_ReturnsNull() {
         assertNull(Frequency.getFrom(null));
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void valueOfFrequency_valueNotFound_throwsException() {
-        assertNull(Frequency.getFrom("THROWS_EXCEPTION"));
+    public void valueOfFrequencyFromString_valueNotFound_throwsException() {
+        Frequency.getFrom("THROWS_EXCEPTION");
     }
 }
