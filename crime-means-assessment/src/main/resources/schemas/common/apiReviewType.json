@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://justice.gov.uk/laa/crime/assessment/apiReviewType.json",
+  "id": "apiReviewType.json",
   "type": "object",
   "description": "An explanation about the purpose of this instance.",
   "properties": {
