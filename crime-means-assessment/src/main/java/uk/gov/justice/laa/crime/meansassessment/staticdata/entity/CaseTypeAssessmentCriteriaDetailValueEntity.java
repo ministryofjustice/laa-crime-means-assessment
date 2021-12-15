@@ -10,13 +10,14 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data @Builder @AllArgsConstructor @NoArgsConstructor
 @Entity
 @Table(name = "case_type_ass_detail_values", schema = "crime_means_assessment",
         uniqueConstraints = {@UniqueConstraint(name = "uk_ctadv_catycasetype_acrdid", columnNames = { "caty_case_type", "acrd_id" })})
-public class CaseTypeAssessmentDetailValueEntity {
+public class CaseTypeAssessmentCriteriaDetailValueEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +32,10 @@ public class CaseTypeAssessmentDetailValueEntity {
     private AssessmentCriteriaDetailEntity assessmentCriteriaDetail;
 
     @Column(name = "applicant_value")
-    private Integer applicantValue;
+    private BigDecimal applicantValue;
 
     @Column(name = "partner_value")
-    private Integer partnerValue;
+    private BigDecimal partnerValue;
 
     @Column(name = "applicant_freq_code")
     private Frequency applicantFrequency;

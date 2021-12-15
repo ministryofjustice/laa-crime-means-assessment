@@ -6,5 +6,5 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentDeta
 
 
 @Repository
-public interface AssessmentDetailRepository extends CrudRepository<AssessmentDetailEntity, Long> {
+public interface AssessmentDetailRepository extends CrudRepository<AssessmentDetailEntity, String> {
 }
