@@ -10,7 +10,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentDetailEntity;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
