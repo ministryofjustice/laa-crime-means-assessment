@@ -64,4 +64,7 @@ public class AssessmentCriteriaEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assessmentCriteria")
     private Set<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightings;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assessmentCriteria")
+    private Set<AssessmentCriteriaDetailEntity> assessmentCriteriaDetails;
 }
