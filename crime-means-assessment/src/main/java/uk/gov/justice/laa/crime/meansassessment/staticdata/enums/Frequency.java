@@ -3,6 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.Stream;
 
@@ -27,7 +28,7 @@ public enum Frequency {
     }
 
     public static Frequency getFrom(String code) throws IllegalArgumentException{
-        if (code == null) return null;
+        if (StringUtils.isBlank(code)) return null;
 
         return Stream.of(Frequency.values())
                 .filter(f -> f.code.equals(code))
