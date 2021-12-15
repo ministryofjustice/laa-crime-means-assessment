@@ -71,6 +71,14 @@
       }
     }
   },
+  "assessmentType": {
+    "description": "Type of as Assessment - Initial, full etc",
+    "type": "string",
+    "enum": [
+      "INIT",
+      "FULL"
+    ]
+  },
   "usn": {
     "type": "integer",
     "description": "Unique Submission Number - EForm Reference"
