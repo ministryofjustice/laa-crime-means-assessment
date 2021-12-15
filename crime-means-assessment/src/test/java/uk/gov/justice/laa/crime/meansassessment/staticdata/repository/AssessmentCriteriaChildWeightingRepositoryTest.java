@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
