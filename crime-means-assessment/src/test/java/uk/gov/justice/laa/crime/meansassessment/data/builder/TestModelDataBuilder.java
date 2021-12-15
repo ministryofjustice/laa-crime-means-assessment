@@ -2,8 +2,9 @@ package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,11 +25,24 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_APPLICANT_WEIGHTING_FACTOR = BigDecimal.ONE;
     public static final LocalDateTime TEST_DATE_FROM = LocalDateTime.now().minusDays(1);
     public static final LocalDateTime TEST_DATE_TO = LocalDateTime.now().plusDays(2);
+    public static final Long TEST_ASSESSMENT_CRITERIA_ID = 99999l;
 
     // Assessment Criteria Child Weighting
     public static final BigDecimal TEST_INITIAL_LOWER_AGE_RANGE =  BigDecimal.valueOf(3d);
     public static final BigDecimal TEST_INITIAL_UPPER_AGE_RANGE =  BigDecimal.valueOf(5d);
     public static final BigDecimal TEST_WEIGHTING_FACTOR = BigDecimal.ONE;
+
+    // Assessment Criteria Details
+    public static final String TEST_DETAIL_CODE = "TEST_CODE";
+    public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION";
+    public static final String TEST_SECTION = "SECTION";
+    public static final Integer TEST_SEQ = 10;
+
+    public static final Frequency TEST_FREQUENCY = Frequency.MONTHLY;
+    public static final CaseType TEST_CASETYPE = CaseType.APPEAL_CC;
+
+    private static final BigDecimal TEST_APPLICANT_VALUE = BigDecimal.valueOf(10d);
+    private static final BigDecimal TEST_PARTNER_VALUE = BigDecimal.valueOf(1d);
 
     public static DefendantAssessmentEntity getDefendantAssessmentDTO(){
         return DefendantAssessmentEntity.builder()
@@ -62,6 +76,53 @@ public class TestModelDataBuilder {
                 .upperAgeRange(TEST_INITIAL_UPPER_AGE_RANGE)
                 .weightingFactor(TEST_WEIGHTING_FACTOR)
                 .userCreated(TEST_USER)
+                .build();
+    }
+
+    public static AssessmentDetailEntity getAssessmentDetailEntity() {
+        return AssessmentDetailEntity.builder()
+                .detailCode(TEST_DETAIL_CODE)
+                .description(TEST_DESCRIPTION)
+                .createdDateTime(LocalDateTime.now())
+                .createdBy(TEST_USER)
+                .modifiedDateTime(LocalDateTime.now())
+                .modifiedBy(TEST_USER)
+                .build();
+    }
+
+    public static AssessmentCriteriaDetailEntity getAssessmentCriteriaDetailEntity() {
+        return AssessmentCriteriaDetailEntity.builder()
+                .description(TEST_DESCRIPTION)
+                .section(TEST_SECTION)
+                .seq(TEST_SEQ)
+                .createdDateTime(LocalDateTime.now())
+                .createdBy(TEST_USER)
+                .modifiedDateTime(LocalDateTime.now())
+                .modifiedBy(TEST_USER)
+                .build();
+    }
+
+    public static AssessmentCriteriaDetailFrequencyEntity getAssessmentCriteriaDetailFrequencyEntity() {
+        return AssessmentCriteriaDetailFrequencyEntity.builder()
+                .frequency(TEST_FREQUENCY)
+                .createdDateTime(LocalDateTime.now())
+                .createdBy(TEST_USER)
+                .modifiedDateTime(LocalDateTime.now())
+                .modifiedBy(TEST_USER)
+                .build();
+    }
+
+    public static CaseTypeAssessmentCriteriaDetailValueEntity getCaseTypeAssessmentCriteriaDetailValueEntity() {
+        return CaseTypeAssessmentCriteriaDetailValueEntity.builder()
+                .applicantValue(TEST_APPLICANT_VALUE)
+                .caseType(TEST_CASETYPE)
+                .applicantFrequency(TEST_FREQUENCY)
+                .partnerFrequency(TEST_FREQUENCY)
+                .partnerValue(TEST_PARTNER_VALUE)
+                .createdDateTime(LocalDateTime.now())
+                .createdBy(TEST_USER)
+                .modifiedDateTime(LocalDateTime.now())
+                .modifiedBy(TEST_USER)
                 .build();
     }
 }

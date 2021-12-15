@@ -8,8 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data @Builder @AllArgsConstructor @NoArgsConstructor
 @Entity
@@ -55,4 +55,8 @@ public class AssessmentCriteriaDetailEntity {
     @Column(name = "date_modified")
     @UpdateTimestamp
     private LocalDateTime modifiedDateTime;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assessmentCriteriaDetail")
+    private Set<CaseTypeAssessmentCriteriaDetailValueEntity> caseTypeAssessmentDetailValues;
+
 }

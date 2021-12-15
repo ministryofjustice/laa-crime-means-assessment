@@ -17,5 +17,5 @@ CREATE TABLE IF NOT EXISTS crime_means_assessment.case_type_ass_detail_values
     CONSTRAINT pk_case_type_ass_detail_values PRIMARY KEY (id),
     CONSTRAINT uk_ctadv_catycasetype_acrdid UNIQUE (caty_case_type, acrd_id),
     CONSTRAINT fk_ctadv_acrd FOREIGN KEY (acrd_id)
-    REFERENCES ass_criteria_details (id)
+    REFERENCES crime_means_assessment.ass_criteria_details (id)
 );

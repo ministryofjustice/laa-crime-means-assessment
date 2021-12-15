@@ -13,3 +13,19 @@ databaseChangeLog:
       file: db/changelog/changeset/06-ass-criteria-child-weightings-table-create.sql
   - include:
       file: db/changelog/changeset/07-ass-criteria-child-weightings-table-data-insert.sql
+  - include:
+      file: db/changelog/changeset/08-assessment-details-table-create.sql
+  - include:
+      file: db/changelog/changeset/09-assessment-details-table-data-insert.sql
+  - include:
+      file: db/changelog/changeset/10-ass-criteria-details-table-create.sql
+  - include:
+      file: db/changelog/changeset/11-ass-criteria-details-table-data-insert.sql
+  - include:
+      file: db/changelog/changeset/12-ass-criteria-detail-freq-table-create.sql
+  - include:
+      file: db/changelog/changeset/13-ass-criteria-detail-freq-table-data-insert.sql
+  - include:
+      file: db/changelog/changeset/14-case-type-ass-detail-values-table-create.sql
+  - include:
+      file: db/changelog/changeset/15-case-type-ass-detail-values-table-data-insert.sql
