@@ -12,21 +12,21 @@ import java.util.stream.Stream;
  */
 @AllArgsConstructor
 @Getter
-public enum AssessmentStatus {
+public enum CurrentStatus {
     IN_PROGRESS("IN PROGRESS", "Incomplete"),
     COMPLETE("COMPLETE","Complete");
 
     private String status;
     private String description;
 
-    /*mapping json to HardshipReviewStatus object*/
+    /*mapping json to CurrentStatus object*/
     @JsonValue
     public String getStatus(){ return status; }
 
-    public static AssessmentStatus getFrom(String status) throws IllegalArgumentException{
+    public static CurrentStatus getFrom(String status) throws IllegalArgumentException{
         if (StringUtils.isBlank(status)) return null;
 
-        return Stream.of(AssessmentStatus.values())
+        return Stream.of(CurrentStatus.values())
                 .filter(f -> f.status.equals(status))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
