@@ -12,13 +12,17 @@ public class CaseTypeConverter implements AttributeConverter<CaseType, String> {
 
     @Override
     public String convertToDatabaseColumn(CaseType caseType) {
-        if (caseType == null) {return null; }
+        if (caseType == null) {
+            return null;
+        }
         return caseType.getCaseType();
     }
 
     @Override
     public CaseType convertToEntityAttribute(String caseTypeFromDB) {
-        if (StringUtils.isBlank(caseTypeFromDB)) { return null; }
+        if (StringUtils.isBlank(caseTypeFromDB)) {
+            return null;
+        }
         return Stream.of(CaseType.values())
                 .filter(f -> f.getCaseType().equals(caseTypeFromDB))
                 .findFirst()
