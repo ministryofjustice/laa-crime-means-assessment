@@ -24,4 +24,8 @@ public enum CaseType {
     private String description;
     private Boolean mcooOutcomeRequired;
 
+    @JsonValue
+    public String getCaseType() {
+        return caseType;
+    }
 }
