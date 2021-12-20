@@ -112,12 +112,6 @@ dependencies {
     implementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
     implementation group: 'org.pitest', name: 'pitest', version: versions.pitest
 
-//    //jsonSchema2Pojo
-//    implementation 'javax.validation:validation-api:2.0.1.Final'
-//    //do I need this one?
-//    implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
-//    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
-
     // Test Only
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -198,6 +192,11 @@ jsonSchema2Pojo {
 
     // Whether to include a toString method in generated Java types.
     includeToString = false
+    includeGetters = false;
+    includeSetters = false;
+
+    includeJsr303Annotations = true
+
     // What type to use instead of string when adding string properties of format "date-time" to Java types
     dateTimeType = "java.time.LocalDateTime"
 
@@ -208,12 +207,6 @@ jsonSchema2Pojo {
     //  - moshi1 (apply annotations from the Moshi 1.x library)
     //  - none (apply no annotations at all)
     annotationStyle = 'gson'
-
-    includeJsr303Annotations = true
-
-    includeGetters = false;
-    includeSetters = false;
 }
 
 project.gradle.startParameter.excludedTaskNames.add("generateJsonSchema2DataClass0")
-
