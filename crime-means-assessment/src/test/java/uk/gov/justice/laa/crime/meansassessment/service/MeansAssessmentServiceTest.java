@@ -21,12 +21,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MeansAssessmentServiceImplTest {
+public class MeansAssessmentServiceTest {
     private static final long VALID_ASSESSMENT_CRITERIA_ID = 10000l;
     private static final long INVALID_ASSESSMENT_CRITERIA_ID = 20000l;
 
     @InjectMocks
-    private MeansAssessmentServiceImpl meansAssessmentService;
+    private MeansAssessmentService meansAssessmentService;
 
     @Mock
     private AssessmentCriteriaRepository assessmentCriteriaRepository;
@@ -81,6 +81,23 @@ public class MeansAssessmentServiceImplTest {
         // when Assessment Criteria valid after a certain time are requested
         try {
             List<AssessmentCriteriaEntity> results = meansAssessmentService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, true);
+            // then expected Assessment Criteria are returned
+            assertFalse(results.isEmpty());
+            assertEquals(1, results.size());
+            assertEquals(assessmentCriteriaEntity, results.get(0));
+            assertNull(results.get(0).getPartnerWeightingFactor());
+        } catch (Exception e) {
+            fail("Unexpected exception : "+ e.getMessage());
+        }
+    }
+
+    @Test
+    public void givenAssessmentCriteriaIsPopulatedWhenValidDateWithoutPartnerAndContraryInterestIsProvidedThenAssessmentCriteriaShouldBeReturnedWithoutPartnerWeightingFactor(){
+        // given Assessment Criteria is populated and matching results are returned
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
+        // when Assessment Criteria valid after a certain time are requested
+        try {
+            List<AssessmentCriteriaEntity> results = meansAssessmentService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
             // then expected Assessment Criteria are returned
             assertFalse(results.isEmpty());
             assertEquals(1, results.size());
