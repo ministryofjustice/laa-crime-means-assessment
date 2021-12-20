@@ -135,7 +135,7 @@ public class TestModelDataBuilder {
     }
 
 
-    public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid = true) {
+    public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid) {
         var meansAssessmentRequest =  ApiCreateMeansAssessmentRequest.builder()
                 .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .repId(isValid ? 91919 : null)
@@ -196,8 +196,8 @@ public class TestModelDataBuilder {
                 .upperThreshold(Double.valueOf("13.00"))
                 .result("testResult")
                 .resultReason("testResultReason")
-                .assessmentStatus(getApiAssessmentStatus())
-                .assessmentSummary(getApiAssessmentSummaries())
+                .assessmentStatus(isValid ? getApiAssessmentStatus() : null)
+                .assessmentSummary(getApiAssessmentSummaries(isValid) )
                 .build();
         return meansAssessmentResponse;
     }
@@ -207,10 +207,10 @@ public class TestModelDataBuilder {
                 .build();
         return assessmentStatus;
     }
-    private static List<ApiAssessmentSummary> getApiAssessmentSummaries(){
+    private static List<ApiAssessmentSummary> getApiAssessmentSummaries(boolean isValid){
         var assessmentSummary = ApiAssessmentSummary.builder()
                 .applicantAnnualTotal(Double.valueOf("14.00"))
-                .annualTotal(Double.valueOf("15.00"))
+                .annualTotal(isValid ? Double.valueOf("15.00") : null)
                 .build();
         return List.of(assessmentSummary);
     }

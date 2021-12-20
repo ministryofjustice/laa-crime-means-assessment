@@ -21,8 +21,6 @@ public class InitialMeansAssessmentService {
         log.info("Create initial means assessment - Start");
         var response = getCreateMeansAssessmentResponse();
 
-        //when
-
         return response;
     }
 
