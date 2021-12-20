@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.initial.service.InitialMeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.initial.validator.InitialMeansAssessmentValidationProcessor;
 import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentResponse;
 
 import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping("api/internal/v1/assessment/means/initial")
@@ -27,6 +29,8 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @Tag(name = "Means Assessment", description = "Intial Means Assessment API.")
 public class InitialMeansAssessmentController {
+
+    private final InitialMeansAssessmentValidationProcessor initialMeansAssessmentValidationProcessor;
 
     private final InitialMeansAssessmentService initialMeansAssessmentService;
 
@@ -39,20 +43,12 @@ public class InitialMeansAssessmentController {
     public ResponseEntity<Object> createAssessment(@Parameter(description = "Initial means assessment data", content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Create Initial Means Assessment Request Received");
-        //TODO: call validator on request object
 
-       //TODO: call validator on response object
-
-//        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-//        Validator validator = factory.getValidator();
         var createMeansAssessmentResponse = initialMeansAssessmentService.createAssessment(meansAssessment);
 
+        initialMeansAssessmentValidationProcessor.validate(createMeansAssessmentResponse);
+
         return ResponseEntity.ok(createMeansAssessmentResponse);
-
-
-//        Set<ConstraintViolation<ApiCreateMeansAssessmentResponse>> constraintViolations = validator.validate(response);
-//
-//        return ResponseEntity.ok(response);
     }
 
 }
