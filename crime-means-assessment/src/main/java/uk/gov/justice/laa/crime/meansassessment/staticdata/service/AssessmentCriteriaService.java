@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-
+/**
+ * This is a sample service and the required code should be moved to the MeansAssessmentService
+ */
+@Deprecated(forRemoval = true)
 @RequiredArgsConstructor
 @Service
 public class AssessmentCriteriaService {
