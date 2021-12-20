@@ -69,6 +69,14 @@
       "items": {
         "$ref": "common/apiAssessmentSummary.json"
       }
+    },
+    "hasPartner": {
+      "type": "boolean",
+      "description": "Indicates whether the applicant has a partner (used to check if partner weighting factor is applicable)"
+    },
+    "partnerContraryInterest": {
+      "type": "boolean",
+      "description": "Indicates whether the applicant's partner has a contrary interest' (used to check if partner weighting factor is applicable)"
     }
   },
   "assessmentType": {
@@ -93,6 +101,8 @@
     "assessmentDate",
     "newWorkReason",
     "supplierInfo",
-    "assessmentSummary"
+    "assessmentSummary",
+    "hasPartner",
+    "partnerContraryInterest"
   ]
 }
