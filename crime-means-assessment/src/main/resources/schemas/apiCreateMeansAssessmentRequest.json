@@ -29,7 +29,8 @@
     },
     "assessmentDate": {
       "type": "string",
-      "description": "Effective Date of the assessment"
+      "description": "Effective Date of the assessment",
+      "format": "date-time"
     },
     "otherBenefitNote": {
       "type": "string",

@@ -81,7 +81,6 @@ public class DefendantAssessmentControllerTest {
 
         mvc.perform(MockMvcRequestBuilders.post("/defendantmeansassessment").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-
                 .andExpect(jsonPath("$.id").value(returnedDefendantAssessment.getId()));
     }
 
