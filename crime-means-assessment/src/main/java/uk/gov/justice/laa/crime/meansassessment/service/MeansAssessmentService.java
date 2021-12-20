@@ -10,7 +10,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MeansAssessmentService {
-
-    @Transactional(propagation = Propagation.SUPPORTS, isolation = Isolation.READ_COMMITTED, readOnly = true)
     List<AssessmentCriteriaEntity> getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) throws AssessmentCriteriaNotFoundException;
 }
