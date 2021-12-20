@@ -97,6 +97,49 @@ public class AssessmentCriteriaRepositoryTest {
         assertTrue(result.size() >= 1);
     }
 
+    @Test
+    public void givenAssessmentCriteriaIsPopulatedWhenValidDateIsProvidedThenAssessmentCriteriaShouldBeReturned(){
+        // given Assessment Criteria record with given data is available
+        assessmentCriteriaEntity = TestModelDataBuilder.getAssessmentCriteriaEntity();
+        AssessmentCriteriaEntity savedAssessmentCriteriaEntity = assessmentCriteriaRepository.save(assessmentCriteriaEntity);
+        // when valid Date is given
+        List<AssessmentCriteriaEntity> result = assessmentCriteriaRepository.findAssessmentCriteriaForDate(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1));
+        // then at least one result is returned
+        assertFalse(result.isEmpty());
+        assertTrue(result.size() >= 1);
+        AssessmentCriteriaEntity queryResult = result.stream().filter(ac -> ac.getId().equals(savedAssessmentCriteriaEntity.getId())).findAny().orElse(null);
+        assertNotNull(queryResult);
+        assertEquals(savedAssessmentCriteriaEntity, queryResult);
+    }
+
+    @Test
+    public void givenAssessmentCriteriaIsPopulatedWhenValidDateIsProvidedAndDateToIsNullThenAssessmentCriteriaShouldBeReturned(){
+        // given Assessment Criteria record with given data is available
+        assessmentCriteriaEntity = TestModelDataBuilder.getAssessmentCriteriaEntity();
+        assessmentCriteriaEntity.setDateTo(null);
+        AssessmentCriteriaEntity savedAssessmentCriteriaEntity = assessmentCriteriaRepository.save(assessmentCriteriaEntity);
+        // when valid Date is given
+        List<AssessmentCriteriaEntity> result = assessmentCriteriaRepository.findAssessmentCriteriaForDate(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1));
+        // then at least one result is returned
+        assertFalse(result.isEmpty());
+        assertTrue(result.size() >= 1);
+        AssessmentCriteriaEntity queryResult = result.stream().filter(ac -> ac.getId().equals(savedAssessmentCriteriaEntity.getId())).findAny().orElse(null);
+        assertNotNull(queryResult);
+        assertEquals(savedAssessmentCriteriaEntity, queryResult);
+        assertNull(queryResult.getDateTo());
+    }
+
+    @Test
+    public void givenAssessmentCriteriaIsPopulatedWhenInvalidDateIsProvidedAThenAssessmentCriteriaShouldNotBeReturned(){
+        // given Assessment Criteria record with given data is available
+        assessmentCriteriaEntity = TestModelDataBuilder.getAssessmentCriteriaEntity();
+        AssessmentCriteriaEntity savedAssessmentCriteriaEntity = assessmentCriteriaRepository.save(assessmentCriteriaEntity);
+        // when invalid Date is given
+        List<AssessmentCriteriaEntity> result = assessmentCriteriaRepository.findAssessmentCriteriaForDate(TestModelDataBuilder.TEST_DATE_FROM.minusYears(100));
+        // then no results are returned
+        assertTrue(result.isEmpty());
+    }
+
     @After
     public void tearDown() {
         if(assessmentCriteriaEntity != null) {
