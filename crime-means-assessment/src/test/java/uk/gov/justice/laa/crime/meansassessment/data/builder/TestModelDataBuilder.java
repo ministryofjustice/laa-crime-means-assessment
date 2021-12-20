@@ -2,12 +2,16 @@ package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
+import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class TestModelDataBuilder {
@@ -43,6 +47,10 @@ public class TestModelDataBuilder {
 
     private static final BigDecimal TEST_APPLICANT_VALUE = BigDecimal.valueOf(10d);
     private static final BigDecimal TEST_PARTNER_VALUE = BigDecimal.valueOf(1d);
+
+    //create means assessment
+     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
+    public static final String MEANS_ASSESSMENT_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
 
     public static DefendantAssessmentEntity getDefendantAssessmentDTO(){
         return DefendantAssessmentEntity.builder()
@@ -124,6 +132,102 @@ public class TestModelDataBuilder {
                 .modifiedDateTime(LocalDateTime.now())
                 .modifiedBy(TEST_USER)
                 .build();
+    }
+
+
+    public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid = true) {
+        var meansAssessmentRequest =  ApiCreateMeansAssessmentRequest.builder()
+                .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .repId(isValid ? 91919 : null)
+                .cmuId(isValid ? 91919 : null)
+                .userId("test-userid")
+                .transactionDateTime(LocalDateTime.of(2021,12,16,10,0))
+                .assessmentDate(LocalDateTime.of(2021,12,16,10,0))
+                .newWorkReason(getApiNewWorkReason())
+                .supplierInfo(getApiSupplierInfo())
+                .assessmentSummary(getAssessmentSummaries())
+                .build();
+        return meansAssessmentRequest;
+    }
+    private static ApiNewWorkReason getApiNewWorkReason(){
+        var apiNewWorkReason = ApiNewWorkReason.builder()
+                .code("PBI")
+                .build();
+
+        return apiNewWorkReason;
+    }
+    private static ApiSupplierInfo getApiSupplierInfo(){
+        var apiSupplierInfo = ApiSupplierInfo.builder()
+                .accountNumber(91919)
+                .name("testSupplierName")
+                .address(getApiAddress())
+                .build();
+
+        return apiSupplierInfo;
+    }
+
+    private static ApiAddress getApiAddress(){
+        var apiAddress = ApiAddress.builder()
+                .addressId("79387182")
+                .line1("210 Kybald Street")
+                .postCode("LE7 8OU")
+                .build();
+
+        return apiAddress;
+    }
+
+    private static List<ApiAssessmentSummary> getAssessmentSummaries(){
+        var apiAssessmentSummary = ApiAssessmentSummary.builder()
+                .applicantAnnualTotal(Double.valueOf("10.00"))
+                .annualTotal(Double.valueOf("10.00"))
+                .assessmentDetail(getAssessmentDetails())
+                .build();
+
+        return List.of(apiAssessmentSummary);
+    }
+
+    public static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
+        var meansAssessmentResponse = ApiCreateMeansAssessmentResponse.builder()
+                .assessmentId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327")
+                .criteriaId(isValid ? 41 : null)
+                .totalAggregatedIncome(Double.valueOf("10.00"))
+                .adjustedIncomeValue(Double.valueOf("11.00"))
+                .lowerThreshold(Double.valueOf("12.00"))
+                .upperThreshold(Double.valueOf("13.00"))
+                .result("testResult")
+                .resultReason("testResultReason")
+                .assessmentStatus(getApiAssessmentStatus())
+                .assessmentSummary(getApiAssessmentSummaries())
+                .build();
+        return meansAssessmentResponse;
+    }
+    private static ApiAssessmentStatus getApiAssessmentStatus(){
+        var assessmentStatus = ApiAssessmentStatus.builder()
+                .status("testStatus")
+                .build();
+        return assessmentStatus;
+    }
+    private static List<ApiAssessmentSummary> getApiAssessmentSummaries(){
+        var assessmentSummary = ApiAssessmentSummary.builder()
+                .applicantAnnualTotal(Double.valueOf("14.00"))
+                .annualTotal(Double.valueOf("15.00"))
+                .build();
+        return List.of(assessmentSummary);
+    }
+    private static List<ApiAssessmentDetail> getAssessmentDetails(){
+        var assessmentDetail = ApiAssessmentDetail.builder()
+                .criteriaDetailsId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327")
+                .applicantAmount(Double.valueOf("16.00"))
+                .applicantFrequency(getFrequency())
+                .build();
+
+        return List.of(assessmentDetail);
+    }
+    private static ApiFrequency getFrequency(){
+        var frequency = ApiFrequency.builder()
+                .code("test-code")
+                .build();
+        return frequency;
     }
 }
 
