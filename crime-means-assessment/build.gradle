@@ -5,6 +5,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "org.sonarqube" version "3.3"
     id 'info.solidsoft.pitest' version '1.7.0'
+    id 'org.jsonschema2dataclass' version '4.0.1'
 }
 
 
@@ -72,8 +73,10 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
     implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
     implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springdocVersion
+
 
     implementation group: 'io.projectreactor.netty', name: 'reactor-netty'
 
@@ -108,6 +111,12 @@ dependencies {
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     implementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
     implementation group: 'org.pitest', name: 'pitest', version: versions.pitest
+
+//    //jsonSchema2Pojo
+//    implementation 'javax.validation:validation-api:2.0.1.Final'
+//    //do I need this one?
+//    implementation 'jakarta.validation:jakarta.validation-api:3.0.0'
+//    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
 
     // Test Only
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
@@ -173,4 +182,38 @@ sonarqube {
 
     }
 }
+
+jsonSchema2Pojo {
+    // Location of the JSON Schema file(s). This may refer to a single file or a directory of files.
+    source.setFrom files("${project.rootDir}/src/main/resources/schemas")
+    // Target directory for generated Java source files. The plugin will add this directory to the
+    // java source set so the compiler will find and compile the newly generated source files.
+//    targetDirectory = file("${project.buildDir}/generated/sources/js2d")
+
+    // Package name used for generated Java classes (for types where a fully qualified name has not
+    // been supplied in the schema using the 'javaType' property).
+    targetPackage = 'uk.gov.justice.laa.crime.meansassessment.model.common'
+    // Whether to include hashCode and equals methods in generated Java types.
+    includeHashcodeAndEquals = false
+
+    // Whether to include a toString method in generated Java types.
+    includeToString = false
+    // What type to use instead of string when adding string properties of format "date-time" to Java types
+    dateTimeType = "java.time.LocalDateTime"
+
+    // The style of annotations to use in the generated Java types. Supported values:
+    //  - jackson (alias of jackson2)
+    //  - jackson2 (apply annotations from the Jackson 2.x library)
+    //  - gson (apply annotations from the Gson library)
+    //  - moshi1 (apply annotations from the Moshi 1.x library)
+    //  - none (apply no annotations at all)
+    annotationStyle = 'gson'
+
+    includeJsr303Annotations = true
+
+    includeGetters = false;
+    includeSetters = false;
+}
+
+project.gradle.startParameter.excludedTaskNames.add("generateJsonSchema2DataClass0")
 
