@@ -2,7 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.validator.initial;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 
 import java.util.Optional;
 

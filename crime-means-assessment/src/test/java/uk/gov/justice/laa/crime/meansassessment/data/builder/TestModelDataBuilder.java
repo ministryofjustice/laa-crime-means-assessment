@@ -3,8 +3,6 @@ package uk.gov.justice.laa.crime.meansassessment.data.builder;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
-import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
@@ -136,100 +134,91 @@ public class TestModelDataBuilder {
 
 
     public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid) {
-        var meansAssessmentRequest =  ApiCreateMeansAssessmentRequest.builder()
-                .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
-                .repId(isValid ? 91919 : null)
-                .cmuId(isValid ? 91919 : null)
-                .userId("test-userid")
-                .transactionDateTime(LocalDateTime.of(2021,12,16,10,0))
-                .assessmentDate(LocalDateTime.of(2021,12,16,10,0))
-                .newWorkReason(getApiNewWorkReason())
-                .supplierInfo(getApiSupplierInfo())
-                .assessmentSummary(getAssessmentSummaries())
-                .hasPartner(true)
-                .partnerContraryInterest(false)
-                .build();
-        return meansAssessmentRequest;
+        var mas = new ApiCreateMeansAssessmentRequest();
+        mas.setLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID);
+        mas.setRepId(isValid ? 91919 : null);
+        mas.setCmuId(isValid ? 91919 : null);
+        mas.setUserId("test-userid");
+        mas.setTransactionDateTime(LocalDateTime.of(2021,12,16,10,0));
+        mas.setAssessmentDate(LocalDateTime.of(2021,12,16,10,0));
+        mas.setNewWorkReason(getApiNewWorkReason());
+        mas.setSupplierInfo(getApiSupplierInfo());
+        mas.setAssessmentSummary(getAssessmentSummaries());
+        mas.setHasPartner(true);
+        mas.setPartnerContraryInterest(false);
+
+        return mas;
     }
     private static ApiNewWorkReason getApiNewWorkReason(){
-        var apiNewWorkReason = ApiNewWorkReason.builder()
-                .code("PBI")
-                .build();
-
+        var apiNewWorkReason = new ApiNewWorkReason();
+        apiNewWorkReason.setCode("PBI");
         return apiNewWorkReason;
     }
     private static ApiSupplierInfo getApiSupplierInfo(){
-        var apiSupplierInfo = ApiSupplierInfo.builder()
-                .accountNumber(91919)
-                .name("testSupplierName")
-                .address(getApiAddress())
-                .build();
+        var apiSupplierInfo = new ApiSupplierInfo();
+
+        apiSupplierInfo.setAccountNumber(91919);
+        apiSupplierInfo.setName("testSupplierName");
+        apiSupplierInfo.setAddress(getApiAddress());
 
         return apiSupplierInfo;
     }
 
     private static ApiAddress getApiAddress(){
-        var apiAddress = ApiAddress.builder()
-                .addressId("79387182")
-                .line1("210 Kybald Street")
-                .postCode("LE7 8OU")
-                .build();
+        var apiAddress = new ApiAddress();
+
+        apiAddress.setAddressId("79387182");
+        apiAddress.setLine1("210 Kybald Street");
+        apiAddress.setPostCode("LE7 8OU");
 
         return apiAddress;
     }
 
     private static List<ApiAssessmentSummary> getAssessmentSummaries(){
-        var apiAssessmentSummary = ApiAssessmentSummary.builder()
-                .applicantAnnualTotal(Double.valueOf("10.00"))
-                .annualTotal(Double.valueOf("10.00"))
-                .assessmentDetail(getAssessmentDetails())
-                .build();
-
+        var apiAssessmentSummary = new ApiAssessmentSummary();
+        apiAssessmentSummary.setApplicantAnnualTotal(Double.valueOf("10.00"));
+        apiAssessmentSummary.setAnnualTotal(Double.valueOf("10.00"));
+        apiAssessmentSummary.setAssessmentDetail(getAssessmentDetails());
         return List.of(apiAssessmentSummary);
     }
 
     public static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
-        var meansAssessmentResponse = ApiCreateMeansAssessmentResponse.builder()
-                .assessmentId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327")
-                .criteriaId(isValid ? 41 : null)
-                .totalAggregatedIncome(Double.valueOf("10.00"))
-                .adjustedIncomeValue(Double.valueOf("11.00"))
-                .lowerThreshold(Double.valueOf("12.00"))
-                .upperThreshold(Double.valueOf("13.00"))
-                .result("testResult")
-                .resultReason("testResultReason")
-                .assessmentStatus(isValid ? getApiAssessmentStatus() : null)
-                .assessmentSummary(getApiAssessmentSummaries(isValid) )
-                .build();
-        return meansAssessmentResponse;
+        var mar = new ApiCreateMeansAssessmentResponse();
+        mar.setAssessmentId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327");
+        mar.setCriteriaId(isValid ? 41 : null);
+        mar.setTotalAggregatedIncome(Double.valueOf("10.00"));
+        mar.setAdjustedIncomeValue(Double.valueOf("11.00"));
+        mar.setLowerThreshold(Double.valueOf("12.00"));
+        mar.setUpperThreshold(Double.valueOf("13.00"));
+        mar.setResult("testResult");
+        mar.setResultReason("testResultReason");
+        mar.setAssessmentStatus(isValid ? getApiAssessmentStatus() : null);
+        mar.setAssessmentSummary(getApiAssessmentSummaries(isValid));
+
+        return mar;
     }
     private static ApiAssessmentStatus getApiAssessmentStatus(){
-        var assessmentStatus = ApiAssessmentStatus.builder()
-                .status("testStatus")
-                .build();
+        var assessmentStatus = new ApiAssessmentStatus();
+        assessmentStatus.setStatus("testStatus");
         return assessmentStatus;
     }
     private static List<ApiAssessmentSummary> getApiAssessmentSummaries(boolean isValid){
-        var assessmentSummary = ApiAssessmentSummary.builder()
-                .applicantAnnualTotal(Double.valueOf("14.00"))
-                .annualTotal(isValid ? Double.valueOf("15.00") : null)
-                .build();
+        var assessmentSummary = new ApiAssessmentSummary();
+        assessmentSummary.setApplicantAnnualTotal(Double.valueOf("14.00"));
+        assessmentSummary.setAnnualTotal(isValid ? Double.valueOf("15.00") : null);
+
         return List.of(assessmentSummary);
     }
     private static List<ApiAssessmentDetail> getAssessmentDetails(){
-        var assessmentDetail = ApiAssessmentDetail.builder()
-                .criteriaDetailsId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327")
-                .applicantAmount(Double.valueOf("16.00"))
-                .applicantFrequency(getFrequency())
-                .build();
-
+        var assessmentDetail = new ApiAssessmentDetail();
+        assessmentDetail.setCriteriaDetailsId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327");
+        assessmentDetail.setApplicantAmount(Double.valueOf("16.00"));
+        assessmentDetail.setApplicantFrequency(getFrequency());
         return List.of(assessmentDetail);
     }
     private static ApiFrequency getFrequency(){
-        var frequency = ApiFrequency.builder()
-                .code("test-code")
-                .build();
+        var frequency = new ApiFrequency();
+        frequency.setCode("test-code");
         return frequency;
     }
 }
-
