@@ -18,11 +18,11 @@ import javax.validation.constraints.NotNull;
  * Details of an Address
  * 
  */
-@Generated("jsonschema2pojo")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("jsonschema2pojo")
 public class ApiAddress {
 
     /**

@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.initial.validator;
+package uk.gov.justice.laa.crime.meansassessment.validator.initial;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
