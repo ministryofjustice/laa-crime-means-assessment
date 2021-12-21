@@ -19,7 +19,6 @@ import uk.gov.justice.laa.crime.meansassessment.validator.initial.InitialMeansAs
 import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-
 import javax.validation.Valid;
 
 @RestController
