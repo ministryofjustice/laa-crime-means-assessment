@@ -64,7 +64,7 @@ public class MeansAssessmentService {
             var assessmentSummary = new ApiAssessmentSummary();
             assessmentSummary.setApplicantAnnualTotal(Double.valueOf("14.00"));
             assessmentSummary.setAnnualTotal(Double.valueOf("15.00"));
-
+            assessmentSummary.setAssessmentDetail(getAssessmentDetails());
             return List.of(assessmentSummary);
         }
         private static List<ApiAssessmentDetail> getAssessmentDetails(){
