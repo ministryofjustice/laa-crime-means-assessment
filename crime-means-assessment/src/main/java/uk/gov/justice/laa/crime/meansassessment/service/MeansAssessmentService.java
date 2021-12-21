@@ -70,6 +70,7 @@ public class MeansAssessmentService {
             var assessmentSummary = ApiAssessmentSummary.builder()
                     .applicantAnnualTotal(Double.valueOf("14.00"))
                     .annualTotal(Double.valueOf("15.00"))
+                    .assessmentDetail(getAssessmentDetails())
                     .build();
             return List.of(assessmentSummary);
         }
