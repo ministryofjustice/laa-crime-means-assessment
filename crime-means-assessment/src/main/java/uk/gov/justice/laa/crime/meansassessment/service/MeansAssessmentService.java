@@ -4,12 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentStatus;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSummary;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiFrequency;
-import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 
@@ -46,47 +41,42 @@ public class MeansAssessmentService {
 
     private static class TemporaryCreateMeansAssessmentReponse{
         private static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse() {
-            var meansAssessmentResponse = ApiCreateMeansAssessmentResponse.builder()
-                    .assessmentId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327")
-                    .criteriaId(41)
-                    .totalAggregatedIncome(Double.valueOf("10.00"))
-                    .adjustedIncomeValue(Double.valueOf("11.00"))
-                    .lowerThreshold(Double.valueOf("12.00"))
-                    .upperThreshold(Double.valueOf("13.00"))
-                    .result("testResult")
-                    .resultReason("testResultReason")
-                    .assessmentStatus(getApiAssessmentStatus())
-                    .assessmentSummary(getApiAssessmentSummaries())
-                    .build();
-            return meansAssessmentResponse;
+            var mar = new ApiCreateMeansAssessmentResponse();
+            mar.setAssessmentId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327");
+            mar.setCriteriaId(41);
+            mar.setTotalAggregatedIncome(Double.valueOf("10.00"));
+            mar.setAdjustedIncomeValue(Double.valueOf("11.00"));
+            mar.setLowerThreshold(Double.valueOf("12.00"));
+            mar.setUpperThreshold(Double.valueOf("13.00"));
+            mar.setResult("testResult");
+            mar.setResultReason("testResultReason");
+            mar.setAssessmentStatus(getApiAssessmentStatus());
+            mar.setAssessmentSummary(getApiAssessmentSummaries());
+
+            return mar;
         }
         private static ApiAssessmentStatus getApiAssessmentStatus(){
-            var assessmentStatus = ApiAssessmentStatus.builder()
-                    .status("testStatus")
-                    .build();
+            var assessmentStatus = new ApiAssessmentStatus();
+            assessmentStatus.setStatus("testStatus");
             return assessmentStatus;
         }
         private static List<ApiAssessmentSummary> getApiAssessmentSummaries(){
-            var assessmentSummary = ApiAssessmentSummary.builder()
-                    .applicantAnnualTotal(Double.valueOf("14.00"))
-                    .annualTotal(Double.valueOf("15.00"))
-                    .assessmentDetail(getAssessmentDetails())
-                    .build();
+            var assessmentSummary = new ApiAssessmentSummary();
+            assessmentSummary.setApplicantAnnualTotal(Double.valueOf("14.00"));
+            assessmentSummary.setAnnualTotal(Double.valueOf("15.00"));
+
             return List.of(assessmentSummary);
         }
         private static List<ApiAssessmentDetail> getAssessmentDetails(){
-            var assessmentDetail = ApiAssessmentDetail.builder()
-                    .criteriaDetailsId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327")
-                    .applicantAmount(Double.valueOf("16.00"))
-                    .applicantFrequency(getFrequency())
-                    .build();
-
+            var assessmentDetail = new ApiAssessmentDetail();
+            assessmentDetail.setCriteriaDetailsId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327");
+            assessmentDetail.setApplicantAmount(Double.valueOf("16.00"));
+            assessmentDetail.setApplicantFrequency(getFrequency());
             return List.of(assessmentDetail);
         }
         private static ApiFrequency getFrequency(){
-            var frequency = ApiFrequency.builder()
-                    .code("test-code")
-                    .build();
+            var frequency = new ApiFrequency();
+            frequency.setCode("test-code");
             return frequency;
         }
     }

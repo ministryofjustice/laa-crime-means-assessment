@@ -187,11 +187,6 @@ jsonSchema2Pojo {
     // been supplied in the schema using the 'javaType' property).
     targetPackage = 'uk.gov.justice.laa.crime.meansassessment.model.common'
 
-    includeHashcodeAndEquals = false
-    includeToString = false
-    includeGetters = false
-    includeSetters = false
-
     // Whether to include JSR-303/349 annotations (for schema rules like minimum, maximum, etc) in
     // generated Java types. Schema rules and the annotation they produce:
     //  - maximum = @DecimalMax
@@ -214,7 +209,4 @@ jsonSchema2Pojo {
     //  - moshi1 (apply annotations from the Moshi 1.x library)
     //  - none (apply no annotations at all)
     annotationStyle = 'gson'
-
 }
-
-project.gradle.startParameter.excludedTaskNames.add("generateJsonSchema2DataClass0")
