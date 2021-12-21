@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.initial.validator;
+package uk.gov.justice.laa.crime.meansassessment.validator.initial;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,6 @@ public class InitialMeansAssessmentValidationProcessor {
     private final CreateMeansAssessmentResponseValidator createMeansAssessmentResponseValidator;
 
     public Optional<Void> validate(ApiCreateMeansAssessmentResponse response){
-        //TODO: check if it is null?
 
         createMeansAssessmentResponseValidator.validate(response);
 

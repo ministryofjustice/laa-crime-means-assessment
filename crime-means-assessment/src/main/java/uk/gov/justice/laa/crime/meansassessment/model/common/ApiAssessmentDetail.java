@@ -17,11 +17,11 @@ import javax.validation.constraints.NotNull;
  * Assessment details
  * 
  */
-@Generated("jsonschema2pojo")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("jsonschema2pojo")
 public class ApiAssessmentDetail {
 
     /**

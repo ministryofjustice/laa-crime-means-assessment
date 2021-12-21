@@ -182,19 +182,27 @@ jsonSchema2Pojo {
     source.setFrom files("${project.rootDir}/src/main/resources/schemas")
     // Target directory for generated Java source files. The plugin will add this directory to the
     // java source set so the compiler will find and compile the newly generated source files.
-//    targetDirectory = file("${project.buildDir}/generated/sources/js2d")
+//    targetDirectoryPrefix = file("${project.buildDir}/temporaryJsonToPojo/sources/js2d")
 
     // Package name used for generated Java classes (for types where a fully qualified name has not
     // been supplied in the schema using the 'javaType' property).
     targetPackage = 'uk.gov.justice.laa.crime.meansassessment.model.common'
-    // Whether to include hashCode and equals methods in generated Java types.
+
     includeHashcodeAndEquals = false
-
-    // Whether to include a toString method in generated Java types.
     includeToString = false
-    includeGetters = false;
-    includeSetters = false;
+    includeGetters = false
+    includeSetters = false
 
+    // Whether to include JSR-303/349 annotations (for schema rules like minimum, maximum, etc) in
+    // generated Java types. Schema rules and the annotation they produce:
+    //  - maximum = @DecimalMax
+    //  - minimum = @DecimalMin
+    //  - minItems,maxItems = @Size
+    //  - minLength,maxLength = @Size
+    //  - pattern = @Pattern
+    //  - required = @NotNull
+    // Any Java fields which are an object or array of objects will be annotated with @Valid to
+    // support validation of an entire document tree.
     includeJsr303Annotations = true
 
     // What type to use instead of string when adding string properties of format "date-time" to Java types
@@ -207,6 +215,7 @@ jsonSchema2Pojo {
     //  - moshi1 (apply annotations from the Moshi 1.x library)
     //  - none (apply no annotations at all)
     annotationStyle = 'gson'
+
 }
 
 project.gradle.startParameter.excludedTaskNames.add("generateJsonSchema2DataClass0")

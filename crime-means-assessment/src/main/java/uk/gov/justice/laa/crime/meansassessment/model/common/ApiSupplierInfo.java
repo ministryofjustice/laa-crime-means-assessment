@@ -19,11 +19,11 @@ import javax.validation.constraints.NotNull;
  * An explanation about the purpose of this instance.
  * 
  */
-@Generated("jsonschema2pojo")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("jsonschema2pojo")
 public class ApiSupplierInfo {
 
     /**
