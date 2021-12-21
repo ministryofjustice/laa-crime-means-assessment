@@ -23,8 +23,6 @@ import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import javax.validation.Valid;
 
 @RestController
-
-//@RequestMapping("/meansassessment")
 @RequestMapping("api/internal/v1/assessment/means")
 @Slf4j
 @RequiredArgsConstructor
@@ -34,19 +32,6 @@ public class MeansAssessmentController {
     private final InitialMeansAssessmentValidationProcessor initialMeansAssessmentValidationProcessor;
 
     private final MeansAssessmentService meansAssessmentService;
-
-//    @GetMapping ("/hello")
-//    @Operation(description = "Hello API")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", content = @Content),
-//            @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class))),
-//            @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-//    })
-//    public ResponseEntity<HelloDTO> hello(@RequestParam String name) {
-//        HelloDTO result  = new HelloDTO();
-//        result.setMessage("Hello "+name);
-//        return new ResponseEntity<HelloDTO>(result, HttpStatus.OK);
-//    }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = " This API does the buisness processing of intial means assessment.")
