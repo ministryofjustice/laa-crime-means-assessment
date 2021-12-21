@@ -52,6 +52,7 @@ public class MeansAssessmentService {
             mar.setResultReason("testResultReason");
             mar.setAssessmentStatus(getApiAssessmentStatus());
             mar.setAssessmentSummary(getApiAssessmentSummaries());
+            mar.setTransactionDateTime(LocalDateTime.of(2022, 1, 5, 0, 0));
 
             return mar;
         }
