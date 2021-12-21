@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.defendant.exceptions;
+package uk.gov.justice.laa.crime.meansassessment.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -6,11 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentIdPresentException;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentInvalidIdException;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentMissingException;
+import uk.gov.justice.laa.crime.meansassessment.defendant.exceptions.DefendantAssessmentNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 
 @RestControllerAdvice
 @Slf4j
-public class DefentantAssessmentControllerExceptionHandler {
+public class RestControllerAdviser {
 
     @ExceptionHandler(DefendantAssessmentInvalidIdException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

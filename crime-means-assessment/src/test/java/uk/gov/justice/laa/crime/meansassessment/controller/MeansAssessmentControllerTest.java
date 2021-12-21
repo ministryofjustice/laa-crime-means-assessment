@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.initial.controller;
+package uk.gov.justice.laa.crime.meansassessment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -12,27 +12,28 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.initial.service.InitialMeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.initial.validator.InitialMeansAssessmentValidationProcessor;
+import uk.gov.justice.laa.crime.meansassessment.validator.initial.InitialMeansAssessmentValidationProcessor;
 import uk.gov.justice.laa.crime.meansassessment.model.initial.ApiCreateMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(InitialMeansAssessmentController.class)
-public class InitialMeansAssessmentControllerTest {
+@WebMvcTest(MeansAssessmentController.class)
+public class MeansAssessmentControllerTest {
 
     private static final boolean IS_VALID = true;
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private InitialMeansAssessmentService initialMeansAssessmentService;
+    private MeansAssessmentService meansAssessmentService;
 
     @MockBean
     private InitialMeansAssessmentValidationProcessor initialMeansAssessmentValidationProcessor;
@@ -41,19 +42,19 @@ public class InitialMeansAssessmentControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void createAssessment_success() throws Exception {
+    public void createInitialAssessment_success() throws Exception {
         //given
         var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(initialMeansAssessmentService.createAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
 
         when(initialMeansAssessmentValidationProcessor.validate(any(ApiCreateMeansAssessmentResponse.class))).thenReturn(Optional.empty());
 
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means/initial").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.assessmentId").value(MEANS_ASSESSMENT_ID));
@@ -61,32 +62,44 @@ public class InitialMeansAssessmentControllerTest {
 
 
     @Test
-    public void createAssessment_RequestObjectFailsValidation() throws Exception {
+    public void createInitialAssessment_RequestObjectFailsValidation() throws Exception {
         //given
         var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(!IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(initialMeansAssessmentService.createAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means/initial").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
 
-    //TODO: test invalid RESPONSE object
     @Test
-    public void createAssessment_ResponseObjectFailsValidation() throws Exception {
+    public void createInitialAssessment_ResponseObjectFailsValidation() throws Exception {
         //given
         var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(!IS_VALID);
-        when(initialMeansAssessmentService.createAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
-        when(initialMeansAssessmentValidationProcessor.validate(any(ApiCreateMeansAssessmentResponse.class))).thenThrow(new ValidationException("exception"));
+        when(initialMeansAssessmentValidationProcessor.validate(any(ApiCreateMeansAssessmentResponse.class))).thenThrow(new ValidationException());
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means/initial").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    public void createInitialAssessment_ServerError_RequestBodyIsMissing() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(new String()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError());
+    }
+    @Test
+    public void createInitialAssessment_BadRequest_RequestEmtpyBody() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content("{}").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
     }
 }

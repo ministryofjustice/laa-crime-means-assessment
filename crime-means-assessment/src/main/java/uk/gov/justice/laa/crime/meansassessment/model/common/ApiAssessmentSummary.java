@@ -20,11 +20,11 @@ import java.util.List;
  * Assessment Summary
  * 
  */
-@Generated("jsonschema2pojo")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("jsonschema2pojo")
 public class ApiAssessmentSummary {
 
     /**
