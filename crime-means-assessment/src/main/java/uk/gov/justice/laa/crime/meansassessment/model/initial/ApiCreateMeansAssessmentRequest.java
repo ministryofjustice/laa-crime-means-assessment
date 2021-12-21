@@ -24,11 +24,11 @@ import java.util.List;
  * Data contract for the initial means assessment request
  * 
  */
-@Generated("jsonschema2pojo")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("jsonschema2pojo")
 public class ApiCreateMeansAssessmentRequest {
 
     /**
@@ -165,5 +165,23 @@ public class ApiCreateMeansAssessmentRequest {
     @NotNull
     @Builder.Default
     public List<ApiAssessmentSummary> assessmentSummary = new ArrayList<ApiAssessmentSummary>();
+    /**
+     * Indicates whether the applicant has a partner (used to check if partner weighting factor is applicable)
+     * (Required)
+     * 
+     */
+    @SerializedName("hasPartner")
+    @Expose
+    @NotNull
+    public Boolean hasPartner;
+    /**
+     * Indicates whether the applicant's partner has a contrary interest' (used to check if partner weighting factor is applicable)
+     * (Required)
+     * 
+     */
+    @SerializedName("partnerContraryInterest")
+    @Expose
+    @NotNull
+    public Boolean partnerContraryInterest;
 
 }

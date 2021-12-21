@@ -25,11 +25,11 @@ import java.util.List;
  * The response data of the Initial Means Assessment service
  * 
  */
-@Generated("jsonschema2pojo")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("jsonschema2pojo")
 public class ApiCreateMeansAssessmentResponse {
 
     /**
