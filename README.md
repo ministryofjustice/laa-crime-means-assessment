@@ -13,7 +13,7 @@ TBD
 
 1. Docker
 2. SSH 
-3. An editor/IDE of some sort - preferably Intellij/Ecilipse 
+3. An editor/IDE of some sort - preferably Intellij/Eclipse 
 4. Gradle
 5. aws cli 
 6. kubectl
@@ -130,6 +130,31 @@ There are several alert rules configured on Sentry that will push notification t
 
 * [New Starter Guild](https://dsdmoj.atlassian.net/wiki/spaces/LAA/pages/1391460702/New+Hire+Check+List)
 
+## JSON Schema to POJO
+Gradle plugin that converts json schema files into POJOs (Plain Old Java Objects). See [Extended jsonschema2pojo Gradle plugin](https://github.com/jsonschema2dataclass/js2d-gradle).
+### Quickstart
+In order to generate POJOs using gradle, there are a number of stpes to take.
 
+1. Navigate to crime-means-assessment/build.gradle and comment out the following line:
+```yaml
+project.gradle.startParameter.excludedTaskNames.add("generateJsonSchema2DataClass0")
+```
+**Note**: Once you have generated the POJOs and moved them to their final place, uncomment the above line, please. 
+Otherwise, the compiler will complain about duplication classes when building the project.
 
+2. Run the following command:
+```shell
+./gradlew clean generateJsonSchema2DataClass
+```
+3. Find the generated files in crime-means-assessment/build/generated/sources/js2d/
 
+### Configuration
+In the jsonSchema2Pojo section of crime-means-assessment/build.gradle file, there are a number of settings to that have 
+been set and are documented inside that section.:
+
+- source.setFrom: The location of the json schema files.
+- targetPackage: what package the POJOs should belong to
+- includeHashcodeAndEquals, includeToString, includeGetters, includeSetters
+- includeJsr303Annotations: JSR-303/349 annotations (for schema rules like minimum, maximum, etc)
+- dateTimeType: What type to use instead of string
+- annotationStyle: The style of annotations to use in the generated Java types

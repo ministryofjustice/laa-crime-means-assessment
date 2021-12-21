@@ -146,6 +146,8 @@ public class TestModelDataBuilder {
                 .newWorkReason(getApiNewWorkReason())
                 .supplierInfo(getApiSupplierInfo())
                 .assessmentSummary(getAssessmentSummaries())
+                .hasPartner(true)
+                .partnerContraryInterest(false)
                 .build();
         return meansAssessmentRequest;
     }

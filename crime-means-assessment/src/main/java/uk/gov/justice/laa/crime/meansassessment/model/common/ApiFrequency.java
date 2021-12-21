@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
  * The Frequency
  * 
  */
-@Generated("jsonschema2pojo")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("jsonschema2pojo")
 public class ApiFrequency {
 
     /**
