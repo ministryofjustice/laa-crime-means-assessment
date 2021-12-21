@@ -206,7 +206,7 @@ public class TestModelDataBuilder {
         var assessmentSummary = new ApiAssessmentSummary();
         assessmentSummary.setApplicantAnnualTotal(Double.valueOf("14.00"));
         assessmentSummary.setAnnualTotal(isValid ? Double.valueOf("15.00") : null);
-
+        assessmentSummary.setAssessmentDetail(getAssessmentDetails());
         return List.of(assessmentSummary);
     }
     private static List<ApiAssessmentDetail> getAssessmentDetails(){
