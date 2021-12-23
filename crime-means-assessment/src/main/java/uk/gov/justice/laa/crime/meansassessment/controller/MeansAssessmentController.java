@@ -18,7 +18,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.validator.initial.InitialMeansAssessmentValidationProcessor;
 
 import javax.validation.Valid;
 
@@ -28,8 +27,6 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @Tag(name = "Means Assessment", description = "Rest APIs for Means Assessment.")
 public class MeansAssessmentController {
-
-    private final InitialMeansAssessmentValidationProcessor initialMeansAssessmentValidationProcessor;
 
     private final MeansAssessmentService meansAssessmentService;
 
@@ -43,8 +40,6 @@ public class MeansAssessmentController {
         log.info("Create Initial Means Assessment Request Received");
 
         var createMeansAssessmentResponse = meansAssessmentService.createInitialAssessment(meansAssessment);
-
-        initialMeansAssessmentValidationProcessor.validate(createMeansAssessmentResponse);
 
         return ResponseEntity.ok(createMeansAssessmentResponse);
     }
