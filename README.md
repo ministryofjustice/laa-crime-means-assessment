@@ -147,4 +147,3 @@ been set and are documented inside that section.:
 - targetPackage: what package the POJOs should belong to
 - includeJsr303Annotations: JSR-303/349 annotations (for schema rules like minimum, maximum, etc)
 - dateTimeType: What type to use instead of string
-- annotationStyle: The style of annotations to use in the generated Java types. In our case, we are using gson.
