@@ -13,7 +13,7 @@ TBD
 
 1. Docker
 2. SSH 
-3. An editor/IDE of some sort - preferably Intellij/Ecilipse 
+3. An editor/IDE of some sort - preferably Intellij/Eclipse 
 4. Gradle
 5. aws cli 
 6. kubectl
@@ -130,6 +130,20 @@ There are several alert rules configured on Sentry that will push notification t
 
 * [New Starter Guild](https://dsdmoj.atlassian.net/wiki/spaces/LAA/pages/1391460702/New+Hire+Check+List)
 
+## JSON Schema to POJO
+Gradle plugin that converts json schema files into POJOs (Plain Old Java Objects). See [Extended jsonschema2pojo Gradle plugin](https://github.com/jsonschema2dataclass/js2d-gradle).
+
+The generated POJO files can be found in crime-means-assessment/build/generated/sources/js2d, after each build, or by running the following command:
+```shell
+./gradlew clean generateJsonSchema2DataClass
+```
 
 
+### Configuration
+In the jsonSchema2Pojo section of crime-means-assessment/build.gradle file, there are a number of settings to that have 
+been set and are documented inside that section.:
 
+- source.setFrom: The location of the json schema files.
+- targetPackage: what package the POJOs should belong to
+- includeJsr303Annotations: JSR-303/349 annotations (for schema rules like minimum, maximum, etc)
+- dateTimeType: What type to use instead of string
