@@ -29,3 +29,5 @@ databaseChangeLog:
       file: db/changelog/changeset/14-case-type-ass-detail-values-table-create.sql
   - include:
       file: db/changelog/changeset/15-case-type-ass-detail-values-table-data-insert.sql
+  - include:
+      file: db/changelog/changeset/16-defendant-assessment-table-drop.sql
