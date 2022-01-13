@@ -31,7 +31,7 @@ public class MeansAssessmentController {
     private final MeansAssessmentService meansAssessmentService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = " This API does the buisness processing of intial means assessment.")
+    @Operation(description = " This API does the business processing of initial means assessment.")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiCreateMeansAssessmentResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
