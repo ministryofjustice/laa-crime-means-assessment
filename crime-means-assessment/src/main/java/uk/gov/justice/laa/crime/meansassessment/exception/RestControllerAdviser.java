@@ -15,15 +15,15 @@ public class RestControllerAdviser {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorDTO> handleRequestObjectValidation(MethodArgumentNotValidException ex) {
-        log.error(" ERROR with request object validation: ", ex);
-        return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getBindingResult() == null ? ex.getMessage(): String.valueOf(ex.getBindingResult()));
+    public ResponseEntity<ErrorDTO> adviceBadRequests(MethodArgumentNotValidException ex) {
+        log.error(" EA Bad request is passed in: ", ex);
+        return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, String.valueOf(ex.getBindingResult()));
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorDTO> handleDefendantAssessmentInternalServerError(RuntimeException ex) {
-        log.error("Defendant assessment - Internal server error.", ex);
+    public ResponseEntity<ErrorDTO> adviceServiceErrors(RuntimeException ex) {
+        log.error("Service is failed due to in internal error.", ex);
         return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
