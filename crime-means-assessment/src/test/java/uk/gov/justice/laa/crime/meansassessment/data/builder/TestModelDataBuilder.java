@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.meansassessment.defendant.entity.DefendantAssessmentEntity;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -13,8 +12,6 @@ import java.util.List;
 
 @Component
 public class TestModelDataBuilder {
-    public static final String DEFENDANT_ASSESSMENT_ID = "484cf7b4-b910-4f28-82bd-b60c69467053";
-    public static final String DEFENDANT_ASSESSMENT_UPDATED_INFO = "updated info test";
 
     // For Assessment Criteria
     public static final BigDecimal TEST_INITIAL_LOWER_THRESHOLD =  BigDecimal.valueOf(12500d);
@@ -27,7 +24,6 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_APPLICANT_WEIGHTING_FACTOR = BigDecimal.ONE;
     public static final LocalDateTime TEST_DATE_FROM = LocalDateTime.now().minusDays(1);
     public static final LocalDateTime TEST_DATE_TO = LocalDateTime.now().plusDays(2);
-    public static final Long TEST_ASSESSMENT_CRITERIA_ID = 99999l;
 
     // Assessment Criteria Child Weighting
     public static final BigDecimal TEST_INITIAL_LOWER_AGE_RANGE =  BigDecimal.valueOf(3d);
@@ -41,7 +37,7 @@ public class TestModelDataBuilder {
     public static final Integer TEST_SEQ = 10;
 
     public static final Frequency TEST_FREQUENCY = Frequency.MONTHLY;
-    public static final CaseType TEST_CASETYPE = CaseType.APPEAL_CC;
+    public static final CaseType TEST_CASE_TYPE = CaseType.APPEAL_CC;
 
     private static final BigDecimal TEST_APPLICANT_VALUE = BigDecimal.valueOf(10d);
     private static final BigDecimal TEST_PARTNER_VALUE = BigDecimal.valueOf(1d);
@@ -49,13 +45,6 @@ public class TestModelDataBuilder {
     //create means assessment
      public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final String MEANS_ASSESSMENT_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
-
-    public static DefendantAssessmentEntity getDefendantAssessmentDTO(){
-        return DefendantAssessmentEntity.builder()
-                .id(DEFENDANT_ASSESSMENT_ID)
-                .updatedInfo(DEFENDANT_ASSESSMENT_UPDATED_INFO)
-                .build();
-    }
 
      public static AssessmentCriteriaEntity getAssessmentCriteriaEntity(){
          return AssessmentCriteriaEntity.builder()
@@ -121,7 +110,7 @@ public class TestModelDataBuilder {
     public static CaseTypeAssessmentCriteriaDetailValueEntity getCaseTypeAssessmentCriteriaDetailValueEntity() {
         return CaseTypeAssessmentCriteriaDetailValueEntity.builder()
                 .applicantValue(TEST_APPLICANT_VALUE)
-                .caseType(TEST_CASETYPE)
+                .caseType(TEST_CASE_TYPE)
                 .applicantFrequency(TEST_FREQUENCY)
                 .partnerFrequency(TEST_FREQUENCY)
                 .partnerValue(TEST_PARTNER_VALUE)
