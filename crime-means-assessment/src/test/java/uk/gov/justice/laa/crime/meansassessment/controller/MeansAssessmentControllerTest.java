@@ -3,6 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -10,9 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.justice.laa.crime.meansassessment.client.WorkReasonsClient;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.model.AuthorizationResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
@@ -25,8 +29,13 @@ public class MeansAssessmentControllerTest {
     @Autowired
     private MockMvc mvc;
 
+
+
     @MockBean
     private MeansAssessmentService meansAssessmentService;
+
+    @Mock
+    private WorkReasonsClient workReasonsClient;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -38,8 +47,7 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
-                .thenReturn(initialMeansAssessmentResponse);
+        //when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest)).thenReturn(initialMeansAssessmentResponse);
 
 
         mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
@@ -56,8 +64,9 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
-                .thenReturn(initialMeansAssessmentResponse);
+        //when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest)).thenReturn(initialMeansAssessmentResponse);
+
+        when(workReasonsClient.checkWorkReasonStatus(any())).thenReturn(AuthorizationResponse.builder().result(true).build());
 
         mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
