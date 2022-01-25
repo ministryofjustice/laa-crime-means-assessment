@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class MeansAssessmentController {
 
     private final MeansAssessmentService meansAssessmentService;
 
+    @SneakyThrows
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = " This API does the business processing of initial means assessment.")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiCreateMeansAssessmentResponse.class)))
@@ -39,8 +41,13 @@ public class MeansAssessmentController {
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Create Initial Means Assessment Request Received");
 
-        var createMeansAssessmentResponse = meansAssessmentService.createInitialAssessment(meansAssessment);
+        meansAssessmentService.createInitialAssessment(meansAssessment);
 
-        return ResponseEntity.ok(createMeansAssessmentResponse);
+
+        return ResponseEntity.ok(null);
     }
+
+
+
+
 }

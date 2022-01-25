@@ -49,5 +49,12 @@ sentry:
     enabled: true
   attach-stacktrace: true
 
+maat-api-client:
+  base-url: localhost:8080
+#  check-new-worker-path: /authorization/users/{username}/work-reasons/
+
+
+
+
 
 version: 0.0.1
