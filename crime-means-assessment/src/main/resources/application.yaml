@@ -1,6 +1,9 @@
 server:
   port : 8080
 
+
+maatApi:
+  validationUrl: " "
 spring:
   datasource:
     url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
@@ -11,6 +14,21 @@ spring:
       connection-timeout: 30000
       idle-timeout: 60000
       max-lifetime: 3600000
+
+  security:
+    oauth2:
+      client:
+        provider:
+          maatapi:
+            tokenUri:
+        registration:
+          maatapi:
+            clientId:
+            clientSecret:
+            authorizationGrantType: client_credentials
+
+
+
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
