@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import uk.gov.justice.laa.crime.meansassessment.client.WorkReasonsClient;
+import uk.gov.justice.laa.crime.meansassessment.client.AuthorisationMeansAssessmentClient;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.AuthorizationResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
@@ -35,7 +35,7 @@ public class MeansAssessmentControllerTest {
     private MeansAssessmentService meansAssessmentService;
 
     @Mock
-    private WorkReasonsClient workReasonsClient;
+    private AuthorisationMeansAssessmentClient workReasonsClient;
 
     @Autowired
     private ObjectMapper objectMapper;
