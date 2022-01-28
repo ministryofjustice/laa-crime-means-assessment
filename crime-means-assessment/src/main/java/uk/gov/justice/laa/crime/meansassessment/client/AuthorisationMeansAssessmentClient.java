@@ -9,8 +9,7 @@ import uk.gov.justice.laa.crime.meansassessment.model.AuthorizationResponse;
 
 @Slf4j
 @Component
-//might change to authorisation
-public class WorkReasonsClient {
+public class AuthorisationMeansAssessmentClient {
 
     @Value("${maat-api-client.base-url}")
     public String baseURL = "";
@@ -20,7 +19,7 @@ public class WorkReasonsClient {
 
     private final WebClient webClient;
 
-    public WorkReasonsClient(WebClient.Builder webClientBuilder) {
+    public AuthorisationMeansAssessmentClient(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(baseURL).build();
     }
 
