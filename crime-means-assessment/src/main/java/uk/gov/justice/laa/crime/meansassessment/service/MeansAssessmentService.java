@@ -3,7 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.meansassessment.client.WorkReasonsClient;
+import uk.gov.justice.laa.crime.meansassessment.client.AuthorisationMeansAssessmentClient;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.MeansAssessmentValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.AuthorizationResponse;
@@ -20,7 +20,7 @@ import java.util.List;
 public class MeansAssessmentService {
 
     private final AssessmentCriteriaRepository assessmentCriteriaRepository;
-    private final WorkReasonsClient workReasonsClient;
+    private final AuthorisationMeansAssessmentClient workReasonsClient;
 
     protected List<AssessmentCriteriaEntity> getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) throws AssessmentCriteriaNotFoundException {
         List<AssessmentCriteriaEntity> assessmentCriteriaForDate = assessmentCriteriaRepository.findAssessmentCriteriaForDate(assessmentDate);
@@ -58,28 +58,4 @@ public class MeansAssessmentService {
 
         }
     }
-
-
-//    PROCEDURE check_init_assessment  (p_initial_object  IN  initial_assessmenttype) IS
-//
-//    BEGIN
-//            IF p_initial_object.assessment_date IS NULL
-//            OR p_initial_object.new_work_reason_object.code  IS NULL
-//            then
-//            raise_application_error(-20245,'Null mandatory fields');
-//            END IF;
-//
-//            check_new_work_reason(p_user      => USER_ADMIN.GR_USER_SESSION.user_name
-//            ,p_nwor_code => p_initial_object.new_work_reason_object.code);
-//
-//            IF p_application_object.crown_court_overview_object.crown_court_summary_object.cc_reporder_decision = 'Refused - Ineligible'
-//            AND p_initial_object.review_type_object.code IS NULL  --placeholder just in case AND p_initial_object.result IS NULL
-//            then
-//            raise_application_error(-20246, 'Review Type - As the current Crown Court Rep Order Decision is Refused - Ineligible (applicants disposable income was assessed as ¿37,500 or more) you must select the appropriate review type - Eligibility Review, Miscalculation Review or New Application Following Ineligibility.');
-//
-//            END IF;
-//
-//            END check_init_assessment;
-
-
 }
