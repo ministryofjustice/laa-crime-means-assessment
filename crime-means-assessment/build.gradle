@@ -78,6 +78,7 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springdocVersion
 
 
+
     implementation group: 'io.projectreactor.netty', name: 'reactor-netty'
 
     // AWS
