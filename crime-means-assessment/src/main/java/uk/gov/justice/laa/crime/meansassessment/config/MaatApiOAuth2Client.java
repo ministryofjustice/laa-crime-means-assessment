@@ -23,6 +23,13 @@ public class MaatApiOAuth2Client {
 
     private static final String REGISTERED_ID = "maatapi";
 
+    @Value("${maatApi.url}")
+    private String baseUrl;
+
+    @Value("${maatApi.oauth.enabled}")
+    private boolean isOAuthEnabled;
+
+
     /**
      * @param tokenUri
      * @param clientId
@@ -51,8 +58,7 @@ public class MaatApiOAuth2Client {
      * @return
      */
     @Bean
-    public OAuth2AuthorizedClientManager authorizedClientManager(
-            ClientRegistrationRepository clientRegistrationRepository) {
+    public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository) {
 
         // grant_type = client_credentials flow.
         OAuth2AuthorizedClientProvider authorizedClientProvider =
@@ -79,15 +85,19 @@ public class MaatApiOAuth2Client {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2Client =
                 new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
         oauth2Client.setDefaultClientRegistrationId(REGISTERED_ID);
-        return WebClient.builder()
+
+        WebClient.Builder client = WebClient.builder()
                 .filter(loggingRequest())
                 .filter(loggingResponse())
-                .filter(oauth2Client)
-                .build();
+                .baseUrl(baseUrl);
+
+        if (isOAuthEnabled) {
+            client.filter(oauth2Client);
+        }
+        return client.build();
     }
 
     /**
-     *
      * @return
      */
     private ExchangeFilterFunction loggingRequest() {
@@ -100,7 +110,6 @@ public class MaatApiOAuth2Client {
     }
 
     /**
-     *
      * @return
      */
     private ExchangeFilterFunction loggingResponse() {
