@@ -1,9 +1,10 @@
 server:
-  port : 8080
-
+  port: 8080
 
 maatApi:
-  validationUrl: " "
+  oauth.enabled: false
+  url: ${MAAT_API_URL}
+
 spring:
   datasource:
     url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
@@ -20,15 +21,12 @@ spring:
       client:
         provider:
           maatapi:
-            tokenUri:
+            tokenUri: ${MAAT_API_OAUTH_URL}
         registration:
           maatapi:
-            clientId:
-            clientSecret:
+            clientId: ${MAAT_API_OAUTH_CLIENT_ID}
+            clientSecret: ${MAAT_API_OAUTH_CLIENT_SECRET}
             authorizationGrantType: client_credentials
-
-
-
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
@@ -40,7 +38,7 @@ spring:
     hibernate:
       ddl-auto: validate
     properties:
-      hibernate.temp.use_jdbc_metadata_defaults: false   
+      hibernate.temp.use_jdbc_metadata_defaults: false
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
@@ -53,7 +51,6 @@ springdoc:
     path: /open-api/docs.html
     enabled: true
     operationsSorter: method
-
 
 sentry:
   dsn: https://27fa5ff9451241cc8cd9aa85dac09e60@o345774.ingest.sentry.io/5372961
