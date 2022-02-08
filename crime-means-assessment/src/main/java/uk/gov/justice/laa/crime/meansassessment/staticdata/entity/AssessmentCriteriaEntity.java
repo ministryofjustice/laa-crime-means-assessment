@@ -1,18 +1,21 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
-@Data @Builder @AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@Builder @AllArgsConstructor @NoArgsConstructor
 @Entity
 @Table(name = "ASSESSMENT_CRITERIA", schema = "CRIME_MEANS_ASSESSMENT")
 public class AssessmentCriteriaEntity {
@@ -63,8 +66,10 @@ public class AssessmentCriteriaEntity {
     private LocalDateTime modifiedDateTime;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assessmentCriteria")
+    @ToString.Exclude
     private Set<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightings;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assessmentCriteria")
+    @ToString.Exclude
     private Set<AssessmentCriteriaDetailEntity> assessmentCriteriaDetails;
 }
