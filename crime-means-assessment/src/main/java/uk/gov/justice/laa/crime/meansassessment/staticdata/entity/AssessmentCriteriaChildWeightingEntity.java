@@ -1,14 +1,19 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,5 +53,4 @@ public class AssessmentCriteriaChildWeightingEntity {
 
     @Column(name = "user_modified")
     private String userModified;
-
 }

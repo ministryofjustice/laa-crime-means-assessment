@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -11,10 +8,17 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Data @Builder @AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "ass_criteria_details", schema = "crime_means_assessment",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_acdt_seq_section", columnNames = { "ass_criteria_id", "seq", "section" })})
+@Table(name = "ass_criteria_details", schema = "crime_means_assessment", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_acdt_seq_section", columnNames = {"ass_criteria_id", "seq", "section"})
+})
 public class AssessmentCriteriaDetailEntity {
     @Id
     @Column(name = "id")
@@ -43,20 +47,20 @@ public class AssessmentCriteriaDetailEntity {
     private Boolean useFrequency;
 
     @Column(name = "created_by", nullable = false)
-    private String createdBy;    
+    private String createdBy;
 
     @Column(name = "date_created", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdDateTime;
 
     @Column(name = "modified_by", nullable = true)
-    private String modifiedBy;    
+    private String modifiedBy;
 
     @Column(name = "date_modified")
     @UpdateTimestamp
     private LocalDateTime modifiedDateTime;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assessmentCriteriaDetail")
+    @ToString.Exclude
     private Set<CaseTypeAssessmentCriteriaDetailValueEntity> caseTypeAssessmentDetailValues;
-
 }
