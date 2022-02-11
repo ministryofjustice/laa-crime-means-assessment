@@ -106,13 +106,13 @@ jobs:
 
 workflows:
   version: 2
-  test-build-deploy-master:
+  test-build-deploy-main:
     jobs:
       - build-test-package:
           filters:
             branches:
               only:
-                - master
+                - main
       - hold_install_on_dev:
           type: approval
           requires:
@@ -120,7 +120,7 @@ workflows:
           filters:
             branches:
               only:
-                - master          
+                - main          
       - install_on_dev:
           requires:
             - hold_install_on_dev
@@ -131,7 +131,7 @@ workflows:
         filters:
           branches:
             ignore:
-              - master
+              - main
 
   build-deploy-branch:
     jobs:
@@ -140,14 +140,14 @@ workflows:
           filters:
             branches:
               ignore:
-                - master
+                - main
       - build-test-package:
           requires:
             - branch-build-approval        
           filters:
             branches:
               ignore:
-                - master                    
+                - main                    
       - hold_install_on_dev:
           type: approval
           requires:
