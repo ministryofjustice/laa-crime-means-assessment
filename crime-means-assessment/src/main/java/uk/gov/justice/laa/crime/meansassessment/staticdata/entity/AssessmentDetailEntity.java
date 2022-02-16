@@ -1,13 +1,11 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -16,7 +14,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "assessment_details", schema = "crime_means_assessment")
 public class AssessmentDetailEntity {

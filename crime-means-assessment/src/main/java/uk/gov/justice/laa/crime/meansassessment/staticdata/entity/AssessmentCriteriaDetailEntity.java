@@ -14,7 +14,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "ass_criteria_details", schema = "crime_means_assessment", uniqueConstraints = {
         @UniqueConstraint(name = "uk_acdt_seq_section", columnNames = {"ass_criteria_id", "seq", "section"})
@@ -23,7 +22,7 @@ public class AssessmentCriteriaDetailEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "ass_criteria_id", referencedColumnName = "id", nullable = false)

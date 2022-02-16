@@ -5,7 +5,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.util.stream.Stream;
 
 @Converter(autoApply = true)
 public class CaseTypeConverter implements AttributeConverter<CaseType, String> {
@@ -23,9 +22,6 @@ public class CaseTypeConverter implements AttributeConverter<CaseType, String> {
         if (StringUtils.isBlank(caseTypeFromDB)) {
             return null;
         }
-        return Stream.of(CaseType.values())
-                .filter(f -> f.getCaseType().equals(caseTypeFromDB))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+        return CaseType.getFrom(caseTypeFromDB);
     }
 }
