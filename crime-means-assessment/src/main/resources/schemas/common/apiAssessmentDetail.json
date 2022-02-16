@@ -4,8 +4,8 @@
   "type": "object",
   "description": "Assessment details",
   "properties": {
-    "criteriaDetailsId": {
-      "type": "string",
+    "criteriaDetailId": {
+      "type": "integer",
       "description": "Criteria Id"
     },
     "applicantAmount": {
