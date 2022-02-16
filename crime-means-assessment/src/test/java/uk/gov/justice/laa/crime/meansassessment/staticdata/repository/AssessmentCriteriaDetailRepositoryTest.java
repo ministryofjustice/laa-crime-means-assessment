@@ -2,7 +2,6 @@ package uk.gov.justice.laa.crime.meansassessment.staticdata.repository;
 
 import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentDetailEntity;
 
-import javax.persistence.EntityManager;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -24,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 @DataJpaTest
 public class AssessmentCriteriaDetailRepositoryTest {
 
-    public static final Long INVALID_ID = 10000000l;
+    public static final int INVALID_ID = 1000;
 
     @Autowired
     private TestEntityManager testEntityManager;
@@ -35,7 +33,7 @@ public class AssessmentCriteriaDetailRepositoryTest {
     private AssessmentCriteriaDetailEntity assessmentCriteriaDetailEntity;
 
     @Test
-    public void givenAssessmentCriteriaDetailIsPopulatedWhenAllRecordsAreRequestThenAssessmentCriteriaDetailShouldBeReturned(){
+    public void givenAssessmentCriteriaDetailIsPopulated_WhenAllRecordsAreRequested_ThenAssessmentCriteriaDetailShouldBeReturned() {
         // given Assessment Criteria Details has been populated by Liquibase
         // when all records are requested
         Iterable<AssessmentCriteriaDetailEntity> results = assessmentCriteriaDetailRepository.findAll();
@@ -44,7 +42,7 @@ public class AssessmentCriteriaDetailRepositoryTest {
     }
 
     @Test
-    public void givenAssessmentCriteriaDetailIsPopulatedWhenCorrectIdIsProvidedThenAssessmentCriteriaDetailShouldBeReturned(){
+    public void givenAssessmentCriteriaDetailIsPopulated_WhenCorrectIdIsProvided_ThenAssessmentCriteriaDetailShouldBeReturned() {
         // given Assessment Criteria Detail record with given id is available
         AssessmentCriteriaDetailEntity assessmentCriteriaDetailEntity = TestModelDataBuilder.getAssessmentCriteriaDetailEntity();
         AssessmentCriteriaEntity assessmentCriteriaEntity = TestModelDataBuilder.getAssessmentCriteriaEntity();
@@ -65,7 +63,7 @@ public class AssessmentCriteriaDetailRepositoryTest {
     }
 
     @Test
-    public void givenAssessmentCriteriaDetailIsPopulatedWhenUnknownIdIsProvidedThenAssessmentCriteriaDetailIsnNotReturned(){
+    public void givenAssessmentCriteriaDetailIsPopulated_WhenUnknownIdIsProvided_ThenAssessmentCriteriaDetailIsnNotReturned() {
         // given Assessment Criteria Details has been populated by Liquibase
         // when unknown id is provided
         Optional<AssessmentCriteriaDetailEntity> result = assessmentCriteriaDetailRepository.findById(INVALID_ID);
@@ -76,7 +74,7 @@ public class AssessmentCriteriaDetailRepositoryTest {
 
     @After
     public void tearDown() {
-        if(assessmentCriteriaDetailEntity != null) {
+        if (assessmentCriteriaDetailEntity != null) {
             assessmentCriteriaDetailRepository.delete(assessmentCriteriaDetailEntity);
             assessmentCriteriaDetailEntity = null;
         }

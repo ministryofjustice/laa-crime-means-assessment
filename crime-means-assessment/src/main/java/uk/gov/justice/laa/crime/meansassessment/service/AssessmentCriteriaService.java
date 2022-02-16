@@ -7,8 +7,8 @@ import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotF
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,17 +17,17 @@ public class AssessmentCriteriaService {
 
     private final AssessmentCriteriaRepository assessmentCriteriaRepository;
 
-    protected List<AssessmentCriteriaEntity> getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) throws AssessmentCriteriaNotFoundException {
-        List<AssessmentCriteriaEntity> assessmentCriteriaForDate = assessmentCriteriaRepository.findAssessmentCriteriaForDate(assessmentDate);
-        if(!assessmentCriteriaForDate.isEmpty()){
+    protected AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
+        AssessmentCriteriaEntity assessmentCriteriaForDate = assessmentCriteriaRepository.findAssessmentCriteriaForDate(assessmentDate);
+        if (assessmentCriteriaForDate != null) {
             // If there is no partner or there is a partner with contrary interest, set partnerWeightingFactor to null
-            if(!hasPartner ||  contraryInterest){
-                assessmentCriteriaForDate.forEach(ac -> ac.setPartnerWeightingFactor(null));
+            if (!hasPartner || contraryInterest) {
+                assessmentCriteriaForDate.setPartnerWeightingFactor(BigDecimal.ZERO);
             }
             return assessmentCriteriaForDate;
         } else {
             log.error("No Assessment Criteria found for date {}", assessmentDate);
-            throw new AssessmentCriteriaNotFoundException(String.format("No Assessment Criteria found for date %s",assessmentDate));
+            throw new AssessmentCriteriaNotFoundException(String.format("No Assessment Criteria found for date %s", assessmentDate));
         }
     }
 }

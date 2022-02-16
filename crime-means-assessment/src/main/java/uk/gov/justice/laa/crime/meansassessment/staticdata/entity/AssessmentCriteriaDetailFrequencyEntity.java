@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "ass_criteria_detail_freq", schema = "crime_means_assessment",
         uniqueConstraints = {@UniqueConstraint(name = "uk_acdf_acrdid_freqcode", columnNames = {"acrd_id", "freq_code"})})
@@ -22,7 +21,7 @@ public class AssessmentCriteriaDetailFrequencyEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "acrd_id", referencedColumnName = "id", nullable = false)
