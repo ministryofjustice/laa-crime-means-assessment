@@ -198,11 +198,9 @@ jsonSchema2Pojo {
     //  - required = @NotNull
     // Any Java fields which are an object or array of objects will be annotated with @Valid to
     // support validation of an entire document tree.
-    generateBuilders = true
-    useInnerClassBuilders = true
+
     includeJsr303Annotations = true
-    useBigDecimals = true
-    includeDynamicBuilders = true
+
 
     // What type to use instead of string when adding string properties of format "date-time" to Java types
     dateTimeType = "java.time.LocalDateTime"
