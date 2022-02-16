@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 @DataJpaTest
 public class AssessmentCriteriaDetailFrequencyRepositoryTest {
 
-    public static final Long INVALID_ID = 10000000l;
+    public static final int INVALID_ID = 1000;
 
     @Autowired
     private TestEntityManager testEntityManager;
@@ -33,10 +33,8 @@ public class AssessmentCriteriaDetailFrequencyRepositoryTest {
 
     private AssessmentCriteriaDetailFrequencyEntity assessmentCriteriaDetailFrequency;
 
-
-
     @Test
-    public void givenAssessmentCriteriaDetailFrequencyIsPopulatedWhenAllRecordsAreRequestThenAssessmentCriteriaDetailFrequencyShouldBeReturned(){
+    public void givenAssessmentCriteriaDetailFrequencyIsPopulated_WhenAllRecordsAreRequest_ThenAssessmentCriteriaDetailFrequencyShouldBeReturned(){
         // given Assessment Criteria Detail Frequency has been populated by Liquibase
         // when all records are requested
         Iterable<AssessmentCriteriaDetailFrequencyEntity> results = assessmentCriteriaDetailFrequencyRepository.findAll();
@@ -45,7 +43,7 @@ public class AssessmentCriteriaDetailFrequencyRepositoryTest {
     }
 
     @Test
-    public void givenAssessmentCriteriaDetailFrequencyIsPopulatedWhenCorrectIdIsProvidedThenAssessmentCriteriaDetailFrequencyShouldBeReturned(){
+    public void givenAssessmentCriteriaDetailFrequencyIsPopulated_WhenCorrectIdIsProvided_ThenAssessmentCriteriaDetailFrequencyShouldBeReturned(){
         // given Assessment Criteria Detail Frequency record with given id is available
         AssessmentCriteriaDetailEntity assessmentCriteriaDetailEntity = TestModelDataBuilder.getAssessmentCriteriaDetailEntity();
         AssessmentCriteriaEntity assessmentCriteriaEntity = TestModelDataBuilder.getAssessmentCriteriaEntity();
@@ -71,7 +69,7 @@ public class AssessmentCriteriaDetailFrequencyRepositoryTest {
     }
 
     @Test
-    public void givenAssessmentCriteriaDetailFrequencyIsPopulatedWhenUnknownIdIsProvidedThenAssessmentCriteriaDetailFrequencyIsnNotReturned(){
+    public void givenAssessmentCriteriaDetailFrequencyIsPopulated_WhenUnknownIdIsProvided_ThenAssessmentCriteriaDetailFrequencyIsnNotReturned(){
         // given Assessment Criteria Detail Frequency has been populated by Liquibase
         // when unknown id is provided
         Optional<AssessmentCriteriaDetailFrequencyEntity> result = assessmentCriteriaDetailFrequencyRepository.findById(INVALID_ID);

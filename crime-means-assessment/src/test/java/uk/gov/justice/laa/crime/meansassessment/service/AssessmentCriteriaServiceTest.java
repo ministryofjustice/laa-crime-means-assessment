@@ -11,6 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotF
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +23,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AssessmentCriteriaServiceTest {
-    private static final long VALID_ASSESSMENT_CRITERIA_ID = 10000l;
-    private static final long INVALID_ASSESSMENT_CRITERIA_ID = 20000l;
+
+    private static final int VALID_ASSESSMENT_CRITERIA_ID = 1000;
 
     @InjectMocks
     private AssessmentCriteriaService assessmentCriteriaService;
@@ -41,78 +42,53 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenAssessmentCriteriaIsPopulatedWhenValidDateWithPartnerAndNoContraryInterestIsProvidedThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor(){
+    public void givenAssessmentCriteriaIsPopulated_WhenValidDateWithPartnerAndNoContraryInterestIsProvided_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
         // given Assessment Criteria is populated and matching results are returned
-        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(assessmentCriteriaEntity);
         // when Assessment Criteria valid after a certain time are requested
-        try {
-            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false);
-            // then expected Assessment Criteria are returned
-            assertFalse(results.isEmpty());
-            assertEquals(1, results.size());
-            assertEquals(assessmentCriteriaEntity, results.get(0));
-            assertEquals(assessmentCriteriaEntity.getPartnerWeightingFactor(), results.get(0).getPartnerWeightingFactor());
-        } catch (Exception e) {
-            fail("Unexpected exception : "+ e.getMessage());
-        }
+        AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false);
+        // then expected Assessment Criteria are returned
+        assertEquals(assessmentCriteriaEntity.getPartnerWeightingFactor(), result.getPartnerWeightingFactor());
     }
 
     @Test
-    public void givenAssessmentCriteriaIsPopulatedWhenValidDateAndNoPartnerIsProvidedThenAssessmentCriteriaShouldBeReturnedWithoutPartnerWeightingFactor(){
+    public void givenAssessmentCriteriaIsPopulated_WhenValidDateAndNoPartnerIsProvided_ThenAssessmentCriteriaShouldBeReturnedWithZeroedPartnerWeightingFactor() {
         // given Assessment Criteria is populated and matching results are returned
-        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(assessmentCriteriaEntity);
         // when Assessment Criteria valid after a certain time are requested
-        try {
-            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
-            // then expected Assessment Criteria are returned
-            assertFalse(results.isEmpty());
-            assertEquals(1, results.size());
-            assertEquals(assessmentCriteriaEntity, results.get(0));
-            assertNull(results.get(0).getPartnerWeightingFactor());
-        } catch (Exception e) {
-            fail("Unexpected exception : "+ e.getMessage());
-        }
+        AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
+        // then expected Assessment Criteria are returned
+        assertEquals(assessmentCriteriaEntity, result);
+        assertEquals(result.getPartnerWeightingFactor(), BigDecimal.ZERO);
     }
 
     @Test
-    public void givenAssessmentCriteriaIsPopulatedWhenValidDateWithPartnerAndContraryInterestIsProvidedThenAssessmentCriteriaShouldBeReturnedWithoutPartnerWeightingFactor(){
+    public void givenAssessmentCriteriaIsPopulated_WhenValidDateWithPartnerAndContraryInterestIsProvided_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
         // given Assessment Criteria is populated and matching results are returned
-        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(assessmentCriteriaEntity);
         // when Assessment Criteria valid after a certain time are requested
-        try {
-            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, true);
-            // then expected Assessment Criteria are returned
-            assertFalse(results.isEmpty());
-            assertEquals(1, results.size());
-            assertEquals(assessmentCriteriaEntity, results.get(0));
-            assertNull(results.get(0).getPartnerWeightingFactor());
-        } catch (Exception e) {
-            fail("Unexpected exception : "+ e.getMessage());
-        }
+        AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, true);
+        // then expected Assessment Criteria are returned
+        assertEquals(assessmentCriteriaEntity, result);
+        assertEquals(result.getPartnerWeightingFactor(), assessmentCriteriaEntity.getPartnerWeightingFactor());
     }
 
     @Test
-    public void givenAssessmentCriteriaIsPopulatedWhenValidDateWithoutPartnerAndContraryInterestIsProvidedThenAssessmentCriteriaShouldBeReturnedWithoutPartnerWeightingFactor(){
+    public void givenAssessmentCriteriaIsPopulated_WhenValidDateWithoutPartnerAndContraryInterestIsProvided_ThenAssessmentCriteriaShouldBeReturnedWithZeroedPartnerWeightingFactor() {
         // given Assessment Criteria is populated and matching results are returned
-        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(assessmentCriteriaEntity);
         // when Assessment Criteria valid after a certain time are requested
-        try {
-            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
-            // then expected Assessment Criteria are returned
-            assertFalse(results.isEmpty());
-            assertEquals(1, results.size());
-            assertEquals(assessmentCriteriaEntity, results.get(0));
-            assertNull(results.get(0).getPartnerWeightingFactor());
-        } catch (Exception e) {
-            fail("Unexpected exception : "+ e.getMessage());
-        }
+        AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
+        // then expected Assessment Criteria are returned
+        assertEquals(assessmentCriteriaEntity, result);
+        assertEquals(result.getPartnerWeightingFactor(), BigDecimal.ZERO);
     }
 
     @Test(expected = AssessmentCriteriaNotFoundException.class)
-    public void givenAssessmentCriteriaIsPopulatedWhenInvalidDateWithPartnerAndNoContraryInterestIsProvidedThenAssessmentCriteriaNotFoundExceptionIsThrown() throws AssessmentCriteriaNotFoundException {
+    public void givenAssessmentCriteriaIsPopulated_WhenInvalidDateWithPartnerAndNoContraryInterestIsProvided_ThenAssessmentCriteriaNotFoundExceptionIsThrown() throws AssessmentCriteriaNotFoundException {
         // given Assessment Criteria is populated and no results are returned
-        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(new ArrayList<>());
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(null);
         // when Assessment Criteria with invalid date are requested
-        List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.minusYears(100), true, true);
+        AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.minusYears(100), true, true);
     }
 }

@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "case_type_ass_detail_values", schema = "crime_means_assessment", uniqueConstraints = {
         @UniqueConstraint(name = "uk_ctadv_catycasetype_acrdid", columnNames = {"caty_case_type", "acrd_id"})
@@ -25,7 +24,7 @@ public class CaseTypeAssessmentCriteriaDetailValueEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     // TODO Check if nullable is ok here, dev data suggests that it is
     @Column(name = "caty_case_type")
