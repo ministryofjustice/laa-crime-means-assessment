@@ -50,13 +50,13 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "common/apiAssessmentSummary.json"
+        "$ref": "common/apiAssessmentSectionSummary.json"
       }
+    },
+    "fullAssessmentAvailable": {
+      "type": "boolean",
+      "description": "Indicates the availability of Full Means Assessment."
     }
-  },
-  "fullAssessmentAvailable": {
-    "type": "boolean",
-    "description": "Indicates the availability of Full Means Assessment."
   },
   "additionalProperties": false,
   "required": [

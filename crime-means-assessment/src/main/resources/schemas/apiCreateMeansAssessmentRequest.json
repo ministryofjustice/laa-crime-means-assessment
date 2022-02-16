@@ -21,7 +21,6 @@
       "type": "string",
       "description": "User  ID"
     },
-
     "transactionDateTime": {
       "type": "string",
       "description": "Time Stamp of the transaction",
@@ -64,11 +63,18 @@
       "description": "The  address details of the supplier",
       "$ref": "common/apiSupplierInfo.json"
     },
-    "assessmentSummary": {
+    "sectionSummaries": {
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "common/apiAssessmentSummary.json"
+        "$ref": "common/apiAssessmentSectionSummary.json"
+      }
+    },
+    "childWeightings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common/apiAssessmentChildWeighting.json"
       }
     },
     "hasPartner": {
@@ -78,19 +84,33 @@
     "partnerContraryInterest": {
       "type": "boolean",
       "description": "Indicates whether the applicant's partner has a contrary interest' (used to check if partner weighting factor is applicable)"
+    },
+    "assessmentType": {
+      "description": "Type of as Assessment - Initial, full etc",
+      "type": "string",
+      "enum": [
+        "INIT",
+        "FULL"
+      ]
+    },
+    "usn": {
+      "type": "integer",
+      "description": "Unique Submission Number - EForm Reference"
+    },
+    "caseType": {
+      "type": "string",
+      "description": "The case type"
+    },
+    "userSession": {
+      "type": "object",
+      "description": "The current users session",
+      "$ref": "common/apiUserSession.json"
+    },
+    "incomeEvidenceSummary": {
+      "type": "object",
+      "description": "Income Evidence Summary",
+      "$ref": "common/apiIncomeEvidenceSummary.json"
     }
-  },
-  "assessmentType": {
-    "description": "Type of as Assessment - Initial, full etc",
-    "type": "string",
-    "enum": [
-      "INIT",
-      "FULL"
-    ]
-  },
-  "usn": {
-    "type": "integer",
-    "description": "Unique Submission Number - EForm Reference"
   },
   "additionalProperties": false,
   "required": [
@@ -104,6 +124,7 @@
     "supplierInfo",
     "assessmentSummary",
     "hasPartner",
-    "partnerContraryInterest"
+    "partnerContraryInterest",
+    "userSession"
   ]
 }
