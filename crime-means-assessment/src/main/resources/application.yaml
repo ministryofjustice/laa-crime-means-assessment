@@ -56,9 +56,9 @@ springdoc:
 
 
 sentry:
-  dsn: https://27fa5ff9451241cc8cd9aa85dac09e60@o345774.ingest.sentry.io/5372961
+  dsn: https://f6f14768c95b4cc38f597ebd5cfd0129@o345774.ingest.sentry.io/6212907
   environment: ${SENTRY_ENV}
-  release: 1.1.0
+  release: 0.0.1
   servername: aws-eks-container
   send-default-pii: true
   logging:
