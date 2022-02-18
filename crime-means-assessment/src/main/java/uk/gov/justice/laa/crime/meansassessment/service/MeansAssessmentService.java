@@ -6,19 +6,21 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
+import uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MeansAssessmentService {
 
-    private final MeansAssessmentValidationService meansAssessmentValidationService;
+    private final CreateAssessmentValidator createAssessmentValidator;
 
     public ApiCreateMeansAssessmentResponse createInitialAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Create initial means assessment - Start");
-        meansAssessmentValidationService.validate(meansAssessment);
+        createAssessmentValidator.validate(meansAssessment);
+        log.info("Create initial means assessment validation completed for Rep ID {}", meansAssessment.getRepId());
 
-        log.info("Validation completed for Rep ID {}", meansAssessment.getRepId());
+
         // TODO check the type of assessment
         /*
         * if(INIT){
