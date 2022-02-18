@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -43,10 +45,11 @@ public class TestModelDataBuilder {
     private static final BigDecimal TEST_PARTNER_VALUE = BigDecimal.valueOf(1d);
 
     //create means assessment
-     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
+    public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final String MEANS_ASSESSMENT_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
+    private static final String TEST_SESSION_ID = "TEST_SESSION_ID";
 
-     public static AssessmentCriteriaEntity getAssessmentCriteriaEntity(){
+    public static AssessmentCriteriaEntity getAssessmentCriteriaEntity(){
          return AssessmentCriteriaEntity.builder()
                  .dateFrom(TEST_DATE_FROM)
                  .dateTo(TEST_DATE_TO)
@@ -128,6 +131,8 @@ public class TestModelDataBuilder {
         mas.setRepId(isValid ? 91919 : null);
         mas.setCmuId(isValid ? 91919 : null);
         mas.setUserId("test-userid");
+        mas.setReservationId(isValid ? 12345 : null);
+        mas.setSessionId(isValid ? TEST_SESSION_ID : null);
         mas.setTransactionDateTime(LocalDateTime.of(2021,12,16,10,0));
         mas.setAssessmentDate(LocalDateTime.of(2021,12,16,10,0));
         mas.setNewWorkReason(getApiNewWorkReason());
@@ -186,6 +191,16 @@ public class TestModelDataBuilder {
 
         return mar;
     }
+
+    public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid){
+        return AuthorizationResponseDTO.builder().result(valid).build();
+    }
+
+    public static OutstandingAssessmentResultDTO getOutstandingAssessmentResultDTO(boolean outstandingAssessmentsFound){
+        return OutstandingAssessmentResultDTO.builder().outstandingAssessments(outstandingAssessmentsFound).build();
+    }
+
+
     private static ApiAssessmentStatus getApiAssessmentStatus(){
         var assessmentStatus = new ApiAssessmentStatus();
         assessmentStatus.setStatus("testStatus");
@@ -210,4 +225,5 @@ public class TestModelDataBuilder {
         frequency.setCode("test-code");
         return frequency;
     }
+
 }
