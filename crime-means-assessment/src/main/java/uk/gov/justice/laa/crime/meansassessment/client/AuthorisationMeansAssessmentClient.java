@@ -11,11 +11,11 @@ import uk.gov.justice.laa.crime.meansassessment.model.AuthorizationResponse;
 @Component
 public class AuthorisationMeansAssessmentClient {
 
-    @Value("${maat-api-client.base-url}")
-    public String baseURL = "";
+    @Value("${maatApi.baseUrl}")
+    public String baseURL;
 
-    @Value("${maat-api-client.base-url}")
-    public String workReasonPath = "";
+    @Value("${maatApi.validation.endpoints.newWorkReasonEndpoint}")
+    public String workReasonPath;
 
     private final WebClient webClient;
 
