@@ -16,7 +16,7 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.model.AuthorizationResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
@@ -66,7 +66,7 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
         //when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest)).thenReturn(initialMeansAssessmentResponse);
 
-        when(workReasonsClient.checkWorkReasonStatus(any())).thenReturn(AuthorizationResponse.builder().result(true).build());
+        when(workReasonsClient.checkWorkReasonStatus(anyString(),anyString())).thenReturn(AuthorizationResponse.builder().result(true).build());
 
         mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());

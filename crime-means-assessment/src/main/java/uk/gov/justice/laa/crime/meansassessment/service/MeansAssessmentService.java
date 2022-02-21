@@ -22,68 +22,31 @@ import java.util.List;
 @Slf4j
 public class MeansAssessmentService {
 
-    private final AssessmentCriteriaRepository assessmentCriteriaRepository;
-    private final MeansAssessmentValidationService meansAssessmentValidationService;
     private final AuthorisationMeansAssessmentClient workReasonsClient;
 
+    private final InitialMeansAssessmentService initialMeansAssessmentService;
+    private final FullMeansAssessmentService fullMeansAssessmentService;
 
-    protected List<AssessmentCriteriaEntity> getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) throws AssessmentCriteriaNotFoundException {
-        List<AssessmentCriteriaEntity> assessmentCriteriaForDate = assessmentCriteriaRepository.findAssessmentCriteriaForDate(assessmentDate);
-        if(!assessmentCriteriaForDate.isEmpty()){
-            // If there is no partner or there is a partner with contrary interest, set partnerWeightingFactor to null
-            if(!hasPartner ||  contraryInterest){
-                assessmentCriteriaForDate.forEach(ac -> ac.setPartnerWeightingFactor(null));
-            }
-            return assessmentCriteriaForDate;
-        } else {
-            log.error("No Assessment Criteria found for date {}", assessmentDate);
-            throw new AssessmentCriteriaNotFoundException(String.format("No Assessment Criteria found for date %s",assessmentDate));
-        }
-    }
-
-    public void createInitialAssessment(ApiCreateMeansAssessmentRequest apiCreateMeansAssessmentRequest) throws AssessmentCriteriaNotFoundException, MeansAssessmentValidationException {
-        log.info("Create initial means assessment - Start");
-        meansAssessmentValidationService.validate(meansAssessment);
-
-        log.info("Validation completed for Rep ID {}", meansAssessment.getRepId());
-        // TODO check the type of assessment
-        /*
-        * if(INIT){
-        * Call --> Initial Assessment service  (INIT Assessment validation + Calculation)
-        * }else{
-        * Call Full Assessment  service  -->   //TODO - This is where we will invoke services to do calcualtion upon successful validation
-        * }
-        * */
+    public void checkInitialAssessment(ApiCreateMeansAssessmentRequest apiCreateMeansAssessmentRequest) throws AssessmentCriteriaNotFoundException, MeansAssessmentValidationException {
 
         if (apiCreateMeansAssessmentRequest.getAssessmentDate() == null
                 || apiCreateMeansAssessmentRequest.getNewWorkReason() == null
                 || apiCreateMeansAssessmentRequest.getNewWorkReason().getCode() == null) {
-
-            throw new AssessmentCriteriaNotFoundException("-20245,'Null mandatory fields'");
+            throw new MeansAssessmentValidationException("-20245,'Null mandatory fields'");
         }
-
-        AuthorizationResponse authorizationResponse = workReasonsClient.checkWorkReasonStatus(apiCreateMeansAssessmentRequest.getNewWorkReason().getCode());
-
+        //todo: is the userId is same as session user name?
+        AuthorizationResponse authorizationResponse = workReasonsClient.checkWorkReasonStatus(apiCreateMeansAssessmentRequest.getUserId(), apiCreateMeansAssessmentRequest.getNewWorkReason().getCode());
+        //todo: missing condition - p_application_object.crown_court_overview_object.crown_court_summary_object.cc_reporder_decision = 'Refused - Ineligible'
         if (!authorizationResponse.isResult()
                 || apiCreateMeansAssessmentRequest.getReviewType().getCode() == null
                 || apiCreateMeansAssessmentRequest.getReviewType().getCode().isEmpty()) {
 
+            initialMeansAssessmentService.createInitialAssessment(apiCreateMeansAssessmentRequest);
             log.info("-20246, 'Review Type - As the current Crown Court Rep Order Decision is Refused - Ineligible (applicants disposable income was assessed as ¿37,500 or more) you must select the appropriate review type - Eligibility Review, Miscalculation Review or New Application Following Ineligibility");
+            //throw new MeansAssessmentValidationException("-20246, 'Review Type - As the current Crown Court Rep Order Decision is Refused - Ineligible (applicants disposable income was assessed as ¿37,500 or more) you must select the appropriate review type - Eligibility Review, Miscalculation Review or New Application Following Ineligibility.");
 
-            throw new MeansAssessmentValidationException("-20246, 'Review Type - As the current Crown Court Rep Order Decision is Refused - Ineligible (applicants disposable income was assessed as ¿37,500 or more) you must select the appropriate review type - Eligibility Review, Miscalculation Review or New Application Following Ineligibility.");
-
+        }  else {
+            fullMeansAssessmentService.createFullAssessment(apiCreateMeansAssessmentRequest);
         }
-
-
-
-
-        // TODO - Few post processing needs to occur - Create a Post Assessment Service
-                //TODO - process txn data - call MAAT API to perform CRUD on financial_assessments, fin_assessment_details,
-                // fin_ass_child_weightings
-                // process Old Assessment
-                // full_assessment_available, post_assessment_processing,get_assessments_summary
-
-
-
     }
 }
