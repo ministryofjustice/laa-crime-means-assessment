@@ -23,15 +23,14 @@ public class AuthorisationMeansAssessmentClient {
         this.webClient = webClientBuilder.baseUrl(baseURL).build();
     }
 
-    public AuthorizationResponse checkWorkReasonStatus(String newWorkerCode) {
+    public AuthorizationResponse checkWorkReasonStatus(String username, String newWorkerCode) {
         log.info("Calling Rest API - /users/{username}/work-reasons/{nworCode}");
 
-        AuthorizationResponse responseMono = this.webClient
+       return this.webClient
                     .get()
-                    .uri("/authorization/users/{username}/work-reasons/{newWorkerCode}",newWorkerCode)
+                    .uri("/authorization/users/{username}/work-reasons/{newWorkerCode}",username,newWorkerCode)
                     .retrieve()
                     .bodyToMono(AuthorizationResponse.class)
                     .block();
-            return responseMono;
     }
 }
