@@ -39,16 +39,10 @@ public class MeansAssessmentController {
     @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Initial means assessment data", content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
+        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
         log.info("Create Initial Means Assessment Request Received");
-
-        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
-        var createMeansAssessmentResponse = meansAssessmentService.createInitialAssessment(meansAssessment);
-        meansAssessmentService.createInitialAssessment(meansAssessment);
-        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
-        return ResponseEntity.ok(createMeansAssessmentResponse);
+        meansAssessmentService.checkInitialAssessment(meansAssessment);
+        log.info("Finished processing Means Assessment Request for MAAT ID:  {}", meansAssessment.getRepId());
+        return ResponseEntity.ok(null);
     }
-
-
-
-
 }
