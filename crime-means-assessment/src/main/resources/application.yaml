@@ -1,6 +1,9 @@
 server:
   port : 8080
 
+
+maatApi:
+  validationUrl: " "
 spring:
   datasource:
     url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
@@ -11,6 +14,21 @@ spring:
       connection-timeout: 30000
       idle-timeout: 60000
       max-lifetime: 3600000
+
+  security:
+    oauth2:
+      client:
+        provider:
+          maatapi:
+            tokenUri:
+        registration:
+          maatapi:
+            clientId:
+            clientSecret:
+            authorizationGrantType: client_credentials
+
+
+
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
@@ -38,9 +56,9 @@ springdoc:
 
 
 sentry:
-  dsn: https://27fa5ff9451241cc8cd9aa85dac09e60@o345774.ingest.sentry.io/5372961
+  dsn: https://f6f14768c95b4cc38f597ebd5cfd0129@o345774.ingest.sentry.io/6212907
   environment: ${SENTRY_ENV}
-  release: 1.1.0
+  release: 0.0.1
   servername: aws-eks-container
   send-default-pii: true
   logging:
