@@ -1,9 +1,3 @@
-sentry:
-  environment: ${SENTRY_ENV}
-  dsn: https://39f002f57fb94029b7f96843e59d1b55:f14e3ee3bf7d4c72aea8b6a0b93e569b@sentry.service.dsd.io/173?stacktrace.app.packages=uk.gov
-  release: 1.1.1
-  servername: aws-ecs-con
-
 spring:
   datasource:
     url: jdbc:h2:mem:crime_means_assessment;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
