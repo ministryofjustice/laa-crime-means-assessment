@@ -3,7 +3,21 @@ server:
 
 
 maatApi:
-  validationUrl: " "
+  baseUrl: ${MAAT_API_BASE_URL}
+  validation:
+    endpoints:
+      roleActionEndpoint: /authorization/users/{username}/actions/{action}
+      newWorkReasonEndpoint: /authorization/users/{username}/work-reasons/{nworCode}
+      reservationEndpoint: /authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
+      outstandingAssessmentsEndpoint: /financial-assessments/check-outstanding/{repId}
+# The meansAssessment section is an example only
+  meansAssessment:
+    endpoints:
+      create: /financial-assessments/
+      update: /financial-assessments/{financialAssessmentId}
+      get: /financial-assessments/{financialAssessmentId}
+
+
 spring:
   datasource:
     url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
@@ -14,21 +28,6 @@ spring:
       connection-timeout: 30000
       idle-timeout: 60000
       max-lifetime: 3600000
-
-  security:
-    oauth2:
-      client:
-        provider:
-          maatapi:
-            tokenUri:
-        registration:
-          maatapi:
-            clientId:
-            clientSecret:
-            authorizationGrantType: client_credentials
-
-
-
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
@@ -41,6 +40,18 @@ spring:
       ddl-auto: validate
     properties:
       hibernate.temp.use_jdbc_metadata_defaults: false   
+
+  security:
+    oauth2:
+      client:
+        provider:
+          maatapi:
+            token-uri: http://dummyserver:9999
+        registration:
+          maatapi:
+            client-id: dummy-client
+            client-secret: dummy-secret
+
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
