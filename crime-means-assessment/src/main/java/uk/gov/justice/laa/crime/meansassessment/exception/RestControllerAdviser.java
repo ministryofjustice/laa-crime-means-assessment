@@ -20,6 +20,22 @@ public class RestControllerAdviser {
         return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, String.valueOf(ex.getBindingResult()));
     }
 
+    @ExceptionHandler(APIClientException.class)
+    public ResponseEntity<ErrorDTO> handleApiClientError(Exception ex) {
+        return ResponseEntity.badRequest().body(ErrorDTO.builder()
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                .message(ex.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorDTO> handleValidationError(Exception ex) {
+        return ResponseEntity.badRequest().body(ErrorDTO.builder()
+                .code(HttpStatus.BAD_REQUEST.name())
+                .message(ex.getMessage())
+                .build());
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorDTO> adviceServiceErrors(RuntimeException ex) {

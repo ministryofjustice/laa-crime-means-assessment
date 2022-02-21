@@ -10,6 +10,8 @@ env:
     value: {{ .Values.sentry_dsn }}
   - name: SENTRY_CURRENT_ENV
     value: {{ .Values.java.host_env }}
+  - name: MAAT_API_BASE_URL
+    value: {{ .Values.maatApi.baseUrl }}    
   - name: DATASOURCE_HOST_PORT
     valueFrom:
       secretKeyRef:
