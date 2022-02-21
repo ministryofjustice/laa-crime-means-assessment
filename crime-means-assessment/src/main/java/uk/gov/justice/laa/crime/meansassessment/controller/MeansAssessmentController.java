@@ -41,10 +41,11 @@ public class MeansAssessmentController {
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Create Initial Means Assessment Request Received");
 
+        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
+        var createMeansAssessmentResponse = meansAssessmentService.createInitialAssessment(meansAssessment);
         meansAssessmentService.createInitialAssessment(meansAssessment);
-
-
-        return ResponseEntity.ok(null);
+        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
+        return ResponseEntity.ok(createMeansAssessmentResponse);
     }
 
 

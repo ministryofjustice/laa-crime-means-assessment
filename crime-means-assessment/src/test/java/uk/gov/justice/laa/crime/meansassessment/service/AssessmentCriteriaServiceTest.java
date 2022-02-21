@@ -21,12 +21,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MeansAssessmentServiceTest {
+public class AssessmentCriteriaServiceTest {
     private static final long VALID_ASSESSMENT_CRITERIA_ID = 10000l;
     private static final long INVALID_ASSESSMENT_CRITERIA_ID = 20000l;
 
     @InjectMocks
-    private MeansAssessmentService meansAssessmentService;
+    private AssessmentCriteriaService assessmentCriteriaService;
 
     @Mock
     private AssessmentCriteriaRepository assessmentCriteriaRepository;
@@ -46,7 +46,7 @@ public class MeansAssessmentServiceTest {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
         // when Assessment Criteria valid after a certain time are requested
         try {
-            List<AssessmentCriteriaEntity> results = meansAssessmentService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false);
+            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false);
             // then expected Assessment Criteria are returned
             assertFalse(results.isEmpty());
             assertEquals(1, results.size());
@@ -63,7 +63,7 @@ public class MeansAssessmentServiceTest {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
         // when Assessment Criteria valid after a certain time are requested
         try {
-            List<AssessmentCriteriaEntity> results = meansAssessmentService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
+            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
             // then expected Assessment Criteria are returned
             assertFalse(results.isEmpty());
             assertEquals(1, results.size());
@@ -80,7 +80,7 @@ public class MeansAssessmentServiceTest {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
         // when Assessment Criteria valid after a certain time are requested
         try {
-            List<AssessmentCriteriaEntity> results = meansAssessmentService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, true);
+            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, true);
             // then expected Assessment Criteria are returned
             assertFalse(results.isEmpty());
             assertEquals(1, results.size());
@@ -97,7 +97,7 @@ public class MeansAssessmentServiceTest {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(Arrays.asList(assessmentCriteriaEntity));
         // when Assessment Criteria valid after a certain time are requested
         try {
-            List<AssessmentCriteriaEntity> results = meansAssessmentService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
+            List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
             // then expected Assessment Criteria are returned
             assertFalse(results.isEmpty());
             assertEquals(1, results.size());
@@ -113,6 +113,6 @@ public class MeansAssessmentServiceTest {
         // given Assessment Criteria is populated and no results are returned
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(new ArrayList<>());
         // when Assessment Criteria with invalid date are requested
-        List<AssessmentCriteriaEntity> results = meansAssessmentService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.minusYears(100), true, true);
+        List<AssessmentCriteriaEntity> results = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.minusYears(100), true, true);
     }
 }
