@@ -48,8 +48,9 @@
       "description": "Notes field."
     },
     "assessmentStatus": {
+      "type": "object",
       "description": "Assessment Status",
-      "$ref": "common/apiAssessmentStatus.json"
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus"
     },
     "newWorkReason": {
       "description": "Work Reason Details",
@@ -98,8 +99,9 @@
       "description": "Unique Submission Number - EForm Reference"
     },
     "caseType": {
-      "type": "string",
-      "description": "The case type"
+      "type": "object",
+      "description": "The case type",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType"
     },
     "userSession": {
       "type": "object",
@@ -125,6 +127,8 @@
     "assessmentSummary",
     "hasPartner",
     "partnerContraryInterest",
+    "assessmentStatus",
+    "caseType",
     "userSession"
   ]
 }
