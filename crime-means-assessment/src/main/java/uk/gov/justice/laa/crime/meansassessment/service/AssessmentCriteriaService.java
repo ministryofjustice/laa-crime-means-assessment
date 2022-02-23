@@ -61,12 +61,6 @@ public class AssessmentCriteriaService {
                                         section, detail.getCriteriaDetailId(), assessmentCriteria.getId()))
                 );
 
-        Optional.ofNullable(detail.getApplicantAmount()).orElseThrow(
-                () -> new ValidationException(String.format(
-                        "Criteria detail item with id: %d is missing amount", detail.getCriteriaDetailId())
-                )
-        );
-
         Frequency applicantFrequency = detail.getApplicantFrequency();
         if (applicantFrequency != null) {
             checkCriteriaDetailFrequency(criteriaDetail, applicantFrequency);
