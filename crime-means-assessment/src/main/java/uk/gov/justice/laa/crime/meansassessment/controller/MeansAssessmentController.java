@@ -18,6 +18,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator;
 
 import javax.validation.Valid;
 
@@ -29,6 +30,7 @@ import javax.validation.Valid;
 public class MeansAssessmentController {
 
     private final MeansAssessmentService meansAssessmentService;
+    private final CreateAssessmentValidator createAssessmentValidator;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = " This API creates an initial means assessment.")
@@ -39,7 +41,9 @@ public class MeansAssessmentController {
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
 
-        var createMeansAssessmentResponse = meansAssessmentService.createInitialAssessment(meansAssessment);
+//        createAssessmentValidator.validate(meansAssessment);
+        var createMeansAssessmentResponse =
+                meansAssessmentService.createInitialAssessment(meansAssessment);
 
         log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
         return ResponseEntity.ok(createMeansAssessmentResponse);

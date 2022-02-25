@@ -327,13 +327,6 @@ public class TestModelDataBuilder {
         return OutstandingAssessmentResultDTO.builder().outstandingAssessments(outstandingAssessmentsFound).build();
     }
 
-
-    private static ApiAssessmentStatus getApiAssessmentStatus() {
-        var assessmentStatus = new ApiAssessmentStatus();
-        assessmentStatus.setStatus("testStatus");
-        return assessmentStatus;
-    }
-
     public static List<ApiAssessmentSectionSummary> getApiAssessmentSummaries(boolean isValid) {
         return List.of(new ApiAssessmentSectionSummary()
                 .withApplicantAnnualTotal(BigDecimal.valueOf(14))

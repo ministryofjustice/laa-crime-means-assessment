@@ -29,19 +29,13 @@ public class RestControllerAdviser {
     }
 
     @ExceptionHandler(APIClientException.class)
-    public ResponseEntity<ErrorDTO> handleApiClientError(Exception ex) {
-        return ResponseEntity.badRequest().body(ErrorDTO.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.name())
-                .message(ex.getMessage())
-                .build());
+    public ResponseEntity<ErrorDTO> handleApiClientError(APIClientException ex) {
+        return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorDTO> handleValidationError(Exception ex) {
-        return ResponseEntity.badRequest().body(ErrorDTO.builder()
-                .code(HttpStatus.BAD_REQUEST.name())
-                .message(ex.getMessage())
-                .build());
+    public ResponseEntity<ErrorDTO> handleValidationError(ValidationException ex) {
+        return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
