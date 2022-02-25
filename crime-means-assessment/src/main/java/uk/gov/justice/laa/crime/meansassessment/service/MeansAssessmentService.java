@@ -12,7 +12,7 @@ import uk.gov.justice.laa.crime.meansassessment.builder.CreateInitialAssessmentB
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.InitialMeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.exception.MAATCourtDataException;
+import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -30,7 +30,7 @@ public class MeansAssessmentService {
 
     @Qualifier("maatAPIOAuth2WebClient")
     private final WebClient webClient;
-    private final MaatApiConfiguration config;
+    private final MaatApiConfiguration configuration;
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
@@ -110,7 +110,7 @@ public class MeansAssessmentService {
                 );
 
                 partnerAnnualTotal = partnerAnnualTotal.add(
-                        getDetailTotal(assessmentDetail, false)
+                        getDetailTotal(assessmentDetail, true)
                 );
             }
         }
@@ -118,7 +118,7 @@ public class MeansAssessmentService {
     }
 
     protected BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail) {
-        return getDetailTotal(assessmentDetail, true);
+        return getDetailTotal(assessmentDetail, false);
     }
 
     protected BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail, boolean usePartner) {
@@ -144,7 +144,7 @@ public class MeansAssessmentService {
 
     public ApiCreateMeansAssessmentResponse persistAssessment(ApiCreateAssessment createAssessment, String laaTransactionId) {
         ApiCreateMeansAssessmentResponse response = webClient.post()
-                .uri(config.getFinancialAssessmentUrl())
+                .uri(configuration.getFinancialAssessmentEndpoints().getCreateUrl())
                 .headers(httpHeaders -> httpHeaders.setAll(Map.of(
                         "Laa-Transaction-Id", laaTransactionId
                 )))
@@ -152,7 +152,7 @@ public class MeansAssessmentService {
                 .body(BodyInserters.fromValue(createAssessment))
                 .retrieve()
                 .bodyToMono(ApiCreateMeansAssessmentResponse.class)
-                .onErrorMap(throwable -> new MAATCourtDataException("Call to Court Data API failed, invalid response."))
+                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
                 .block();
 

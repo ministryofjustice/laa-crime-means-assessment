@@ -21,14 +21,6 @@
       "type": "string",
       "description": "User ID"
     },
-    "reservationId": {
-      "type": "integer",
-      "description": "Reservation ID"
-    },
-    "sessionId": {
-      "type": "string",
-      "description": "Session ID"
-    },
     "transactionDateTime": {
       "type": "string",
       "description": "Time Stamp of the transaction",
