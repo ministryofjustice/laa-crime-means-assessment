@@ -66,9 +66,10 @@ public class MeansAssessmentControllerTest {
     @Test
     public void createInitialAssessment_ServerError_RequestBodyIsMissing() throws Exception {
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(new String()).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is5xxServerError());
+        mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content("").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
     }
+
     @Test
     public void createInitialAssessment_BadRequest_RequestEmtpyBody() throws Exception {
 
