@@ -1,6 +1,8 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -53,6 +55,7 @@ public class TestModelDataBuilder {
     //create means assessment
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final String MEANS_ASSESSMENT_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
+    private static final String TEST_SESSION_ID = "TEST_SESSION_ID";
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -296,14 +299,6 @@ public class TestModelDataBuilder {
                 .withPostCode("LE7 8OU");
     }
 
-//    public static List<ApiAssessmentSectionSummary> getAssessmentSummaries() {
-//        return List.of(new ApiAssessmentSectionSummary()
-//                .withApplicantAnnualTotal(BigDecimal.valueOf(10.00))
-//                .withAnnualTotal(BigDecimal.valueOf(10.00))
-//                .withAssessmentDetails(getApiAssessmentDetails())
-//        );
-//    }
-
     public static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
         return new ApiCreateMeansAssessmentResponse()
                 .withAssessmentId("7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327")
@@ -322,6 +317,21 @@ public class TestModelDataBuilder {
     public static ApiAssessmentStatus getApiAssessmentStatus() {
         return new ApiAssessmentStatus()
                 .withStatus("testStatus");
+    }
+
+    public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid){
+        return AuthorizationResponseDTO.builder().result(valid).build();
+    }
+
+    public static OutstandingAssessmentResultDTO getOutstandingAssessmentResultDTO(boolean outstandingAssessmentsFound){
+        return OutstandingAssessmentResultDTO.builder().outstandingAssessments(outstandingAssessmentsFound).build();
+    }
+
+
+    private static ApiAssessmentStatus getApiAssessmentStatus() {
+        var assessmentStatus = new ApiAssessmentStatus();
+        assessmentStatus.setStatus("testStatus");
+        return assessmentStatus;
     }
 
     public static List<ApiAssessmentSectionSummary> getApiAssessmentSummaries(boolean isValid) {

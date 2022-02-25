@@ -3,8 +3,19 @@ server:
 
 maatApi:
   oAuthEnabled: false
-  baseUrl: ${MAAT_API_URL}
-  financialAssessmentUrl: financial-assessments
+  baseUrl: ${MAAT_API_BASE_URL}
+  validation:
+    endpoints:
+      roleActionEndpoint: /authorization/users/{username}/actions/{action}
+      newWorkReasonEndpoint: /authorization/users/{username}/work-reasons/{nworCode}
+      reservationEndpoint: /authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
+      outstandingAssessmentsEndpoint: /financial-assessments/check-outstanding/{repId}
+# The meansAssessment section is an example only
+  meansAssessment:
+    endpoints:
+      create: /financial-assessments/
+      update: /financial-assessments/{financialAssessmentId}
+      get: /financial-assessments/{financialAssessmentId}
 
 
 spring:
@@ -55,9 +66,9 @@ springdoc:
     operationsSorter: method
 
 sentry:
-  dsn: https://27fa5ff9451241cc8cd9aa85dac09e60@o345774.ingest.sentry.io/5372961
+  dsn: https://f6f14768c95b4cc38f597ebd5cfd0129@o345774.ingest.sentry.io/6212907
   environment: ${SENTRY_ENV}
-  release: 1.1.0
+  release: 0.0.1
   servername: aws-eks-container
   send-default-pii: true
   logging:
@@ -65,6 +76,5 @@ sentry:
     minimum-event-level: info
     enabled: true
   attach-stacktrace: true
-
 
 version: 0.0.1

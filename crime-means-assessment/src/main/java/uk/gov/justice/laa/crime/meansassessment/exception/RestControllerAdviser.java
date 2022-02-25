@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.exception;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +26,22 @@ public class RestControllerAdviser {
     public ResponseEntity<ErrorDTO> adviceParseError(HttpMessageNotReadableException ex) {
         log.error("Failed to parse request JSON: ", ex);
         return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(APIClientException.class)
+    public ResponseEntity<ErrorDTO> handleApiClientError(Exception ex) {
+        return ResponseEntity.badRequest().body(ErrorDTO.builder()
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                .message(ex.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorDTO> handleValidationError(Exception ex) {
+        return ResponseEntity.badRequest().body(ErrorDTO.builder()
+                .code(HttpStatus.BAD_REQUEST.name())
+                .message(ex.getMessage())
+                .build());
     }
 
     @ExceptionHandler(RuntimeException.class)

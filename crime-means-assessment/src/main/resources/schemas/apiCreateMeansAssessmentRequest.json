@@ -19,7 +19,15 @@
     },
     "userId": {
       "type": "string",
-      "description": "User  ID"
+      "description": "User ID"
+    },
+    "reservationId": {
+      "type": "integer",
+      "description": "Reservation ID"
+    },
+    "sessionId": {
+      "type": "string",
+      "description": "Session ID"
     },
     "transactionDateTime": {
       "type": "string",
@@ -120,6 +128,8 @@
     "laaTransactionId",
     "cmuId",
     "userId",
+    "reservationId",
+    "sessionId",
     "transactionDateTime",
     "assessmentDate",
     "newWorkReason",
