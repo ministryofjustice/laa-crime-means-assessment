@@ -33,7 +33,6 @@ public enum CaseType {
         return caseType;
     }
 
-//    @JsonCreator
     public static CaseType getFrom(String caseType) throws IllegalArgumentException{
         if (StringUtils.isBlank(caseType)) return null;
 

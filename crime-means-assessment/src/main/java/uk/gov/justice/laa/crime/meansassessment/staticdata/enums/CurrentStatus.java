@@ -23,7 +23,6 @@ public enum CurrentStatus {
     private String status;
     private String description;
 
-    /*mapping json to CurrentStatus object*/
     @JsonValue
     public String getStatus(){ return status; }
 
