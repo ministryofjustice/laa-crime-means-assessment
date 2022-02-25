@@ -2,8 +2,10 @@ server:
   port: 8080
 
 maatApi:
-  oauth.enabled: false
-  url: ${MAAT_API_URL}
+  oAuthEnabled: false
+  baseUrl: ${MAAT_API_URL}
+  financialAssessmentUrl: financial-assessments
+
 
 spring:
   datasource:
