@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
+import uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -22,11 +24,15 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 public class MeansAssessmentControllerTest {
 
     private static final boolean IS_VALID = true;
+
     @Autowired
     private MockMvc mvc;
 
     @MockBean
     private MeansAssessmentService meansAssessmentService;
+
+    @MockBean
+    private CreateAssessmentValidator assessmentValidator;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -40,7 +46,6 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
         when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
-
 
         mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

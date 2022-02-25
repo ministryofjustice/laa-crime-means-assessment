@@ -34,7 +34,6 @@
   },
   "additionalProperties": false,
   "required": [
-    "criteriaDetailsId",
-    "applicantAmount"
+    "criteriaDetailsId"
   ]
 }

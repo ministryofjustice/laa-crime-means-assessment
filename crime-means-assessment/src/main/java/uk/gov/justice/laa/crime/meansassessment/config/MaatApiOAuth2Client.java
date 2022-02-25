@@ -1,10 +1,12 @@
 package uk.gov.justice.laa.crime.meansassessment.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.*;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -12,8 +14,10 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 
 /**
  * <code>MaatApiOAuth2Client.java</code>
@@ -88,8 +92,14 @@ public class MaatApiOAuth2Client {
         WebClient.Builder client = WebClient.builder()
                 .filter(loggingRequest())
                 .filter(loggingResponse())
-                .baseUrl(config.getBaseUrl());
-
+                .baseUrl(config.getBaseUrl())
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .filter(ExchangeFilterFunctions.statusError(
+                        HttpStatus::isError, r -> new APIClientException(
+                                String.format("Received error %s due to %s", r.statusCode().value(), r.statusCode().getReasonPhrase()))
+                        )
+                );
         if (config.isOAuthEnabled()) {
             client.filter(oauth2Client);
         }
@@ -113,7 +123,7 @@ public class MaatApiOAuth2Client {
      */
     private ExchangeFilterFunction loggingResponse() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
-            log.info("Response status: {}",clientResponse.statusCode());
+            log.info("Response status: {}", clientResponse.statusCode());
             return Mono.just(clientResponse);
         });
     }

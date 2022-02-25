@@ -8,8 +8,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
@@ -27,19 +29,27 @@ public class MeansAssessmentValidationServiceIT {
 
     public static MockWebServer mockBackEnd;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    @InjectMocks
     private MeansAssessmentValidationService meansAssessmentValidationService;
+
+    @Mock
+    private MaatApiConfiguration configuration;
 
     @Before
     public void initialize() throws IOException {
         mockBackEnd = new MockWebServer();
         mockBackEnd.start();
-        String baseUrl = String.format("http://localhost:%s", mockBackEnd.getPort());
-        meansAssessmentValidationService = new MeansAssessmentValidationService();
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "maatAPIBaseUrl", baseUrl);
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "validateRoleActionEndpoint", "/authorization/users/{username}/actions/{action}");
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "validateNewWorkReasonEndpoint", "/authorization/users/{username}/work-reasons/{nworCode}");
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "validateReservationEndpoint", "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}");
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "checkOutstandingAssessmentsEndpoint", "/financial-assessments/check-outstanding/{repId}");
+        configuration = new MaatApiConfiguration();
+        configuration.setBaseUrl(String.format("http://localhost:%s", mockBackEnd.getPort()));
+        MaatApiConfiguration.ValidationEndpoints validationEndpoints = new MaatApiConfiguration.ValidationEndpoints(
+                "/authorization/users/{username}/actions/{action}",
+                "/authorization/users/{username}/work-reasons/{nworCode}",
+                "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}",
+                "/financial-assessments/check-outstanding/{repId}"
+        );
+        configuration.setValidationEndpoints(validationEndpoints);
+        meansAssessmentValidationService = new MeansAssessmentValidationService(configuration);
         meansAssessmentValidationService.initializeWebClient();
     }
 
@@ -49,7 +59,7 @@ public class MeansAssessmentValidationServiceIT {
     }
 
     @Test
-    public void whenNworCodeIsNull_thenFalseResultIsReturned() throws Exception{
+    public void whenNworCodeIsNull_thenFalseResultIsReturned() {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         request.setNewWorkReason(null);
         try {
@@ -57,13 +67,13 @@ public class MeansAssessmentValidationServiceIT {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(0, mockBackEnd.getRequestCount());
     }
 
     @Test
-    public void whenNworCodeIsInvalid_thenFalseResultIsReturned() throws Exception{
+    public void whenNworCodeIsInvalid_thenFalseResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
 
@@ -74,17 +84,17 @@ public class MeansAssessmentValidationServiceIT {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/"+request.getUserId()+"/work-reasons/"+request.getNewWorkReason().getCode(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + request.getUserId() + "/work-reasons/" + request.getNewWorkReason().getCode(), recordedRequest.getPath());
     }
 
     @Test
-    public void whenNworCodeIsValid_thenTrueResultIsReturned() throws Exception{
+    public void whenNworCodeIsValid_thenTrueResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
 
@@ -95,17 +105,17 @@ public class MeansAssessmentValidationServiceIT {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/"+request.getUserId()+"/work-reasons/"+request.getNewWorkReason().getCode(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + request.getUserId() + "/work-reasons/" + request.getNewWorkReason().getCode(), recordedRequest.getPath());
     }
 
     @Test
-    public void whenRoleActionIsNull_thenFalseResultIsReturned() throws Exception{
+    public void whenRoleActionIsNull_thenFalseResultIsReturned() {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         request.setUserId(null);
 
@@ -114,13 +124,13 @@ public class MeansAssessmentValidationServiceIT {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(0, mockBackEnd.getRequestCount());
     }
 
     @Test
-    public void whenRoleActionIsInvalid_thenFalseResultIsReturned() throws Exception{
+    public void whenRoleActionIsInvalid_thenFalseResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
 
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
@@ -131,17 +141,17 @@ public class MeansAssessmentValidationServiceIT {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/"+request.getUserId()+"/actions/"+ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        assertEquals("/authorization/users/" + request.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
     }
 
     @Test
-    public void whenRoleActionIsValid_thenTrueResultIsReturned() throws Exception{
+    public void whenRoleActionIsValid_thenTrueResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
 
@@ -152,32 +162,32 @@ public class MeansAssessmentValidationServiceIT {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/"+request.getUserId()+"/actions/"+ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        assertEquals("/authorization/users/" + request.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
     }
 
     @Test
-    public void whenRoleReservationIsNull_thenFalseResultIsReturned() throws Exception{
+    public void whenRoleReservationIsNull_thenFalseResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
-        request.setReservationId(null);
+        request.setRepId(null);
 
         try {
             boolean result = meansAssessmentValidationService.validateRoleReservation(request);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(0, mockBackEnd.getRequestCount());
     }
 
     @Test
-    public void whenRoleReservationIsInvalid_thenFalseResultIsReturned() throws Exception{
+    public void whenRoleReservationIsInvalid_thenFalseResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
 
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
@@ -188,17 +198,17 @@ public class MeansAssessmentValidationServiceIT {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/"+request.getUserId()+"/reservations/"+request.getReservationId()+"/sessions/"+request.getSessionId(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + request.getUserId() + "/reservations/" + request.getRepId() + "/sessions/" + request.getUserSession().getSessionId(), recordedRequest.getPath());
     }
 
     @Test
-    public void whenRoleReservationIsValid_thenTrueResultIsReturned() throws Exception{
+    public void whenRoleReservationIsValid_thenTrueResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
 
@@ -209,18 +219,18 @@ public class MeansAssessmentValidationServiceIT {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/"+request.getUserId()+"/reservations/"+request.getReservationId()+"/sessions/"+request.getSessionId(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + request.getUserId() + "/reservations/" + request.getRepId() + "/sessions/" + request.getUserSession().getSessionId(), recordedRequest.getPath());
     }
 
 
     @Test
-    public void whenOutstandingAssessmentRepIdIsNull_thenFalseResultIsReturned() throws Exception{
+    public void whenOutstandingAssessmentRepIdIsNull_thenFalseResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         request.setRepId(null);
 
@@ -229,13 +239,13 @@ public class MeansAssessmentValidationServiceIT {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(0, mockBackEnd.getRequestCount());
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreFound_thenFalseResultIsReturned() throws Exception{
+    public void whenOutstandingAssessmentsAreFound_thenFalseResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
 
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(true);
@@ -246,17 +256,17 @@ public class MeansAssessmentValidationServiceIT {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/financial-assessments/check-outstanding/"+request.getRepId(), recordedRequest.getPath());
+        assertEquals("/financial-assessments/check-outstanding/" + request.getRepId(), recordedRequest.getPath());
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreNotFound_thenTrueResultIsReturned() throws Exception{
+    public void whenOutstandingAssessmentsAreNotFound_thenTrueResultIsReturned() throws Exception {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
 
@@ -267,12 +277,12 @@ public class MeansAssessmentValidationServiceIT {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
         assertEquals(1, mockBackEnd.getRequestCount());
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/financial-assessments/check-outstanding/"+request.getRepId(), recordedRequest.getPath());
+        assertEquals("/financial-assessments/check-outstanding/" + request.getRepId(), recordedRequest.getPath());
     }
 }

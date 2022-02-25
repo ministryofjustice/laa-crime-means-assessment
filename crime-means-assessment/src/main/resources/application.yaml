@@ -4,19 +4,15 @@ server:
 maatApi:
   oAuthEnabled: false
   baseUrl: ${MAAT_API_BASE_URL}
-  validation:
-    endpoints:
-      roleActionEndpoint: /authorization/users/{username}/actions/{action}
-      newWorkReasonEndpoint: /authorization/users/{username}/work-reasons/{nworCode}
-      reservationEndpoint: /authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
-      outstandingAssessmentsEndpoint: /financial-assessments/check-outstanding/{repId}
-# The meansAssessment section is an example only
-  meansAssessment:
-    endpoints:
-      create: /financial-assessments/
-      update: /financial-assessments/{financialAssessmentId}
-      get: /financial-assessments/{financialAssessmentId}
-
+  validation-endpoints:
+    role-action-url: /authorization/users/{username}/actions/{action}
+    new-work-reason-url: /authorization/users/{username}/work-reasons/{nworCode}
+    reservations-url: /authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
+    outstanding-assessments-url: /financial-assessments/check-outstanding/{repId}
+  financial-assessment-endpoints:
+    create-url: /financial-assessments/
+    find-url: /financial-assessments/{financialAssessmentId}
+    update-url: /financial-assessments/{financialAssessmentId}
 
 spring:
   datasource:
