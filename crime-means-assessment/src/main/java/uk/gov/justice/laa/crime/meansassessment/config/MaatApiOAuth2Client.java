@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,14 +22,12 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class MaatApiOAuth2Client {
 
+    private final MaatApiConfiguration config;
     private static final String REGISTERED_ID = "maatapi";
 
-    @Value("${maatApi.url}")
-    private String baseUrl;
-
-    @Value("${maatApi.oauth.enabled}")
-    private boolean isOAuthEnabled;
-
+    public MaatApiOAuth2Client(MaatApiConfiguration config) {
+        this.config = config;
+    }
 
     /**
      * @param tokenUri
@@ -89,9 +88,9 @@ public class MaatApiOAuth2Client {
         WebClient.Builder client = WebClient.builder()
                 .filter(loggingRequest())
                 .filter(loggingResponse())
-                .baseUrl(baseUrl);
+                .baseUrl(config.getBaseUrl());
 
-        if (isOAuthEnabled) {
+        if (config.isOAuthEnabled()) {
             client.filter(oauth2Client);
         }
         return client.build();

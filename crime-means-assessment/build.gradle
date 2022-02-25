@@ -11,25 +11,26 @@ plugins {
 
 
 def versions = [
-        mapstructVersion: '1.3.1.Final',
-        sentryVersion   : '5.0.1',
-        springdocVersion: '1.4.2',
-        postgresqlVersion : '42.3.1',
-        gsonVersion     : '2.8.6',
-        commonsLang3Version  : '3.10',
-        lombokVersion   : '1.18.6',
-        sonarVersion    : '2.7',
-        h2DBVersion     : '1.4.200',
-        mockitoVersion  : '3.3.3',
-        junitVersion    : '4.13',
-        harmcrestVersion: '1.3',
-        testngVersion   : '6.10',
-        festVersion     : '1.4',
-        gradlePitest    : '1.4.6',
-        pitest          : '1.4.10',
-        sonarPitest     : '0.5',
-        liquibase       : '4.6.1',
-        commonsCollections4Version: '4.4'
+        mapstructVersion                        : '1.3.1.Final',
+        sentryVersion                           : '5.0.1',
+        springdocVersion                        : '1.4.2',
+        postgresqlVersion                       : '42.3.1',
+        gsonVersion                             : '2.8.6',
+        commonsLang3Version                     : '3.10',
+        lombokVersion                           : '1.18.6',
+        sonarVersion                            : '2.7',
+        h2DBVersion                             : '1.4.200',
+        mockitoVersion                          : '3.3.3',
+        junitVersion                            : '4.13',
+        harmcrestVersion                        : '1.3',
+        testngVersion                           : '6.10',
+        festVersion                             : '1.4',
+        gradlePitest                            : '1.4.6',
+        pitest                                  : '1.4.10',
+        sonarPitest                             : '0.5',
+        liquibase                               : '4.6.1',
+        commonsCollections4Version              : '4.4',
+        springConfigurationProcessorVersion     : '2.6.3'
 ]
 
 dependencyManagement {
@@ -65,19 +66,17 @@ repositories {
 
 
 dependencies {
-
     // Spring
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
     implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springdocVersion
 
-
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: versions.springConfigurationProcessorVersion
 
     implementation group: 'io.projectreactor.netty', name: 'reactor-netty'
 
