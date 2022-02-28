@@ -99,6 +99,10 @@
     "type": "integer",
     "description": "Unique Submission Number - EForm Reference"
   },
+  "otherHousingNote": {
+    "type": "string",
+    "description": "Other housing note field."
+  },
   "additionalProperties": false,
   "required": [
     "repId",
