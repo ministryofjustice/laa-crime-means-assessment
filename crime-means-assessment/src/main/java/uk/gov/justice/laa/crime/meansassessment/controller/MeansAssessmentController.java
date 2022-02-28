@@ -41,7 +41,7 @@ public class MeansAssessmentController {
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
 
-//        createAssessmentValidator.validate(meansAssessment);
+        createAssessmentValidator.validate(meansAssessment);
         var createMeansAssessmentResponse =
                 meansAssessmentService.createInitialAssessment(meansAssessment);
 
