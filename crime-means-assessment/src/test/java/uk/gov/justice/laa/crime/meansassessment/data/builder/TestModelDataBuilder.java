@@ -11,6 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -187,11 +188,13 @@ public class TestModelDataBuilder {
         return new ApiAssessmentSectionSummary()
                 .withSection("INITA")
                 .withAssessmentDetails(
-                        List.of(
-                                new ApiAssessmentDetail()
-                                        .withCriteriaDetailId(132)
-                                        .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                        .withApplicantFrequency(TEST_FREQUENCY)
+                        new ArrayList<>(
+                                List.of(
+                                        new ApiAssessmentDetail()
+                                                .withCriteriaDetailId(132)
+                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
+                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                )
                         )
                 );
     }
@@ -201,11 +204,13 @@ public class TestModelDataBuilder {
         return List.of(section, new ApiAssessmentSectionSummary()
                 .withSection("INITB")
                 .withAssessmentDetails(
-                        List.of(
-                                new ApiAssessmentDetail()
-                                        .withCriteriaDetailId(142)
-                                        .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                        .withApplicantFrequency(TEST_FREQUENCY)
+                        new ArrayList<>(
+                                List.of(
+                                        new ApiAssessmentDetail()
+                                                .withCriteriaDetailId(142)
+                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
+                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                )
                         )
                 )
         );
@@ -319,11 +324,11 @@ public class TestModelDataBuilder {
                 .withStatus("testStatus");
     }
 
-    public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid){
+    public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid) {
         return AuthorizationResponseDTO.builder().result(valid).build();
     }
 
-    public static OutstandingAssessmentResultDTO getOutstandingAssessmentResultDTO(boolean outstandingAssessmentsFound){
+    public static OutstandingAssessmentResultDTO getOutstandingAssessmentResultDTO(boolean outstandingAssessmentsFound) {
         return OutstandingAssessmentResultDTO.builder().outstandingAssessments(outstandingAssessmentsFound).build();
     }
 
