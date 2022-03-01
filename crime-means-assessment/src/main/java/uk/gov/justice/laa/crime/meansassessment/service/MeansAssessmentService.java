@@ -11,12 +11,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.builder.CreateInitialAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.InitialMeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -46,14 +46,14 @@ public class MeansAssessmentService {
         BigDecimal annualTotal = getAnnualTotal(meansAssessment.getCaseType(), assessmentCriteria, sectionSummaries);
         BigDecimal adjustedIncomeValue = getAdjustedIncome(meansAssessment, assessmentCriteria, annualTotal);
 
-        BigDecimal initialLowerThreshold = assessmentCriteria.getInitialLowerThreshold();
-        BigDecimal initialUpperThreshold = assessmentCriteria.getInitialUpperThreshold();
-
+        InitialAssessmentResult result;
         CurrentStatus status = meansAssessment.getAssessmentStatus();
         String newWorkReasonCode = meansAssessment.getNewWorkReason().getCode();
-        MeansAssessmentResultDTO result = getAssessmentResult(
-                status, adjustedIncomeValue, initialUpperThreshold, initialLowerThreshold, newWorkReasonCode
-        );
+        if (status.equals(CurrentStatus.COMPLETE)) {
+            result = getAssessmentResult(adjustedIncomeValue, assessmentCriteria, newWorkReasonCode);
+        } else {
+            result = InitialAssessmentResult.NONE;
+        }
 
         log.info("Initial means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
 
@@ -76,68 +76,49 @@ public class MeansAssessmentService {
         return BigDecimal.ZERO;
     }
 
-    protected MeansAssessmentResultDTO getAssessmentResult(CurrentStatus status, BigDecimal adjustedIncomeValue, BigDecimal upperThreshold, BigDecimal lowerThreshold, String newWorkReasonCode) {
-        MeansAssessmentResultDTO resultDTO = new MeansAssessmentResultDTO();
-        if (status.equals(CurrentStatus.COMPLETE)) {
-            if (adjustedIncomeValue.compareTo(lowerThreshold) <= 0) {
-                resultDTO.setResult("PASS");
-                resultDTO.setReason("Gross income below the lower threshold");
-            } else if (adjustedIncomeValue.compareTo(upperThreshold) >= 0) {
-                // TODO: Comment in PL/SQL suggests this should also apply to crown court cases
-                if (newWorkReasonCode.equals("HR")) {
-                    resultDTO.setResult("HARDSHIP APPLICATION");
-                } else {
-                    resultDTO.setResult("FAIL");
-                    resultDTO.setReason("Gross income above the upper threshold");
-                }
+    protected InitialAssessmentResult getAssessmentResult(BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, String newWorkReasonCode) {
+        if (adjustedIncomeValue.compareTo(assessmentCriteria.getInitialLowerThreshold()) <= 0) {
+            return InitialAssessmentResult.PASS;
+        } else if (adjustedIncomeValue.compareTo(assessmentCriteria.getInitialUpperThreshold()) >= 0) {
+            // TODO: Comment in PL/SQL suggests this should also apply to crown court cases
+            if (newWorkReasonCode.equalsIgnoreCase("HR")) {
+                return InitialAssessmentResult.HARDSHIP;
             } else {
-                resultDTO.setResult("FULL");
-                resultDTO.setReason("Gross income in between the upper and lower thresholds");
+                return InitialAssessmentResult.FAIL;
             }
+        } else {
+            return InitialAssessmentResult.FULL;
         }
-        return resultDTO;
     }
 
     protected BigDecimal getAnnualTotal(CaseType caseType, AssessmentCriteriaEntity assessmentCriteria, List<ApiAssessmentSectionSummary> sectionSummaries) {
-        BigDecimal applicantAnnualTotal, partnerAnnualTotal;
-        applicantAnnualTotal = partnerAnnualTotal = BigDecimal.ZERO;
+        BigDecimal annualTotal = BigDecimal.ZERO;
         for (ApiAssessmentSectionSummary sectionSummary : sectionSummaries) {
             for (ApiAssessmentDetail assessmentDetail : sectionSummary.getAssessmentDetails()) {
                 assessmentCriteriaService.checkAssessmentDetail(caseType, sectionSummary.getSection(), assessmentCriteria, assessmentDetail);
-
-                applicantAnnualTotal = applicantAnnualTotal.add(
-                        getDetailTotal(assessmentDetail)
-                );
-
-                partnerAnnualTotal = partnerAnnualTotal.add(
-                        getDetailTotal(assessmentDetail, true)
-                );
+                annualTotal = annualTotal.add(getDetailTotal(assessmentDetail));
             }
         }
-        return applicantAnnualTotal.add(partnerAnnualTotal);
+        return annualTotal;
     }
 
     protected BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail) {
-        return getDetailTotal(assessmentDetail, false);
-    }
-
-    protected BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail, boolean usePartner) {
-        BigDecimal detailAmount;
         BigDecimal detailTotal = BigDecimal.ZERO;
-        if (usePartner) {
-            if (assessmentDetail.getPartnerAmount() != null) {
-                detailAmount = assessmentDetail.getPartnerAmount();
-                detailTotal = detailAmount.multiply(
-                        BigDecimal.valueOf(assessmentDetail.getPartnerFrequency().getWeighting())
-                );
-            }
-        } else {
-            if (assessmentDetail.getApplicantAmount() != null) {
-                detailAmount = assessmentDetail.getApplicantAmount();
-                detailTotal = detailAmount.multiply(
-                        BigDecimal.valueOf(assessmentDetail.getApplicantFrequency().getWeighting())
-                );
-            }
+        BigDecimal partnerAmount = assessmentDetail.getPartnerAmount();
+        if (partnerAmount != null && !BigDecimal.ZERO.equals(partnerAmount)) {
+            detailTotal = detailTotal.add(
+                    partnerAmount.multiply(
+                            BigDecimal.valueOf(assessmentDetail.getPartnerFrequency().getWeighting())
+                    )
+            );
+        }
+        BigDecimal applicationAmount = assessmentDetail.getApplicantAmount();
+        if (applicationAmount != null && !BigDecimal.ZERO.equals(applicationAmount)) {
+            detailTotal = detailTotal.add(
+                    applicationAmount.multiply(
+                            BigDecimal.valueOf(assessmentDetail.getApplicantFrequency().getWeighting())
+                    )
+            );
         }
         return detailTotal;
     }
