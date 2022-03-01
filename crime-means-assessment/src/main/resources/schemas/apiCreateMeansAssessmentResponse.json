@@ -68,11 +68,11 @@
       "items": {
         "$ref": "common/apiAssessmentSummary.json"
       }
+    },
+    "fullAssessmentAvailable": {
+      "type": "boolean",
+      "description": "Indicates the availability of Full Means Assessment."
     }
-  },
-  "fullAssessmentAvailable": {
-    "type": "boolean",
-    "description": "Indicates the availability of Full Means Assessment."
   },
   "additionalProperties": false,
   "required": [
