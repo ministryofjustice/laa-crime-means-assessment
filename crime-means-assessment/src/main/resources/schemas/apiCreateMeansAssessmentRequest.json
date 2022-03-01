@@ -87,12 +87,9 @@
       "description": "Indicates whether the applicant's partner has a contrary interest' (used to check if partner weighting factor is applicable)"
     },
     "assessmentType": {
-      "description": "Type of as Assessment - Initial, full etc",
-      "type": "string",
-      "enum": [
-        "INIT",
-        "FULL"
-      ]
+      "description": "Type of as Assessment - Initial, full etc.",
+      "type": "object",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType"
     },
     "usn": {
       "type": "integer",
