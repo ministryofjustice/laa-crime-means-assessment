@@ -11,6 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAsses
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
+import uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,13 +21,13 @@ import java.util.List;
 @Slf4j
 public class InitialMeansAssessmentService {
 
-    private final MeansAssessmentValidationService meansAssessmentValidationService;
+    private final CreateAssessmentValidator createAssessmentValidator;
     private final AssessmentCriteriaRepository assessmentCriteriaRepository;
 
     public void createInitialAssessment(ApiCreateMeansAssessmentRequest apiCreateMeansAssessmentRequest) throws AssessmentCriteriaNotFoundException {
 
         log.info("Starting initial means assessment");
-        meansAssessmentValidationService.validate(apiCreateMeansAssessmentRequest);
+        createAssessmentValidator.validate(apiCreateMeansAssessmentRequest);
         log.info("Validation completed for Rep ID {}", apiCreateMeansAssessmentRequest.getRepId());
         getAssessmentCriteria(apiCreateMeansAssessmentRequest.getAssessmentDate(),
                 apiCreateMeansAssessmentRequest.getHasPartner(),
