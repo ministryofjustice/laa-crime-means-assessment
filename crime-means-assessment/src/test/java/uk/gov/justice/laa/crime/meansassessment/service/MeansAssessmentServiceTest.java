@@ -29,21 +29,6 @@ public class MeansAssessmentServiceTest {
     @Mock
     private AuthorisationMeansAssessmentClient workReasonsClient;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void testWhenAuthorisationResponseIsFalseAndReviewTypeIsNotNull() throws MeansAssessmentValidationException, AssessmentCriteriaNotFoundException {
-        AuthorizationResponse authorizationResponse = AuthorizationResponse.builder().result(true).build();
-        when(workReasonsClient.checkWorkReasonStatus(anyString(), anyString())).thenReturn(authorizationResponse);
-
-        meansAssessmentService.checkInitialAssessment(getApiCreateMeansAssessmentRequest());
-
-        verify(workReasonsClient).checkWorkReasonStatus(anyString(), anyString());
-
-    }
 
     @Test (expected = MeansAssessmentValidationException.class)
     public void testWhenAuthorisationResponseTypeIsNull() throws MeansAssessmentValidationException, AssessmentCriteriaNotFoundException {
