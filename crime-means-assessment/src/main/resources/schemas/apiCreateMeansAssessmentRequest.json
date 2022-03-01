@@ -85,19 +85,23 @@
     "partnerContraryInterest": {
       "type": "boolean",
       "description": "Indicates whether the applicant's partner has a contrary interest' (used to check if partner weighting factor is applicable)"
+    },
+    "assessmentType": {
+      "description": "Type of as Assessment - Initial, full etc",
+      "type": "string",
+      "enum": [
+        "INIT",
+        "FULL"
+      ]
+    },
+    "usn": {
+      "type": "integer",
+      "description": "Unique Submission Number - EForm Reference"
+    },
+    "otherHousingNote": {
+      "type": "string",
+      "description": "Other housing note field."
     }
-  },
-  "assessmentType": {
-    "description": "Type of as Assessment - Initial, full etc",
-    "type": "string",
-    "enum": [
-      "INIT",
-      "FULL"
-    ]
-  },
-  "usn": {
-    "type": "integer",
-    "description": "Unique Submission Number - EForm Reference"
   },
   "additionalProperties": false,
   "required": [
