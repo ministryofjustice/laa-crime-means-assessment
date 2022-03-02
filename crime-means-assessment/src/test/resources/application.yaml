@@ -4,7 +4,6 @@ spring:
     username: sa
     password: sa
     driver-class-name: org.h2.Driver
-    platform: h2
 
   liquibase:
     enabled: true
@@ -17,6 +16,10 @@ spring:
       ddl-auto: validate
     show-sql: true
     generate-ddl: false
+
+  sql:
+    init:
+      platform: h2
 
 springdoc:
   api-docs:

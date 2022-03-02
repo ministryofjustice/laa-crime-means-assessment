@@ -9,7 +9,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentDetailEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.CaseTypeAssessmentCriteriaDetailValueEntity;
 
 import java.util.Optional;
 
@@ -20,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 @DataJpaTest
 public class CaseTypeAssessmentCriteriaDetailValueRepositoryTest {
 
-    public static final Long INVALID_ID = 10000000l;
+    public static final int INVALID_ID = 1000;
 
     @Autowired
     private TestEntityManager testEntityManager;
@@ -31,7 +34,7 @@ public class CaseTypeAssessmentCriteriaDetailValueRepositoryTest {
     private CaseTypeAssessmentCriteriaDetailValueEntity caseTypeAssessmentCriteriaDetailValueEntity;
 
     @Test
-    public void givenCaseTypeAssessmentCriteriaDetailValueIsPopulatedWhenAllRecordsAreRequestThenCaseTypeAssessmentCriteriaDetailValueShouldBeReturned(){
+    public void givenCaseTypeAssessmentCriteriaDetailValueIsPopulated_WhenAllRecordsAreRequest_ThenCaseTypeAssessmentCriteriaDetailValueShouldBeReturned() {
         // given CaseType Assessment Criteria Detail Value has been populated by Liquibase
         // when all records are requested
         Iterable<CaseTypeAssessmentCriteriaDetailValueEntity> results = caseTypeAssessmentCriteriaDetailValueRepository.findAll();
@@ -40,7 +43,7 @@ public class CaseTypeAssessmentCriteriaDetailValueRepositoryTest {
     }
 
     @Test
-    public void givenCaseTypeAssessmentCriteriaDetailValueIsPopulatedWhenCorrectIdIsProvidedThenCaseTypeAssessmentCriteriaDetailValueShouldBeReturned(){
+    public void givenCaseTypeAssessmentCriteriaDetailValueIsPopulated_WhenCorrectIdIsProvided_ThenCaseTypeAssessmentCriteriaDetailValueShouldBeReturned() {
         // given CaseType Assessment Criteria Detail Value record with given id is available
         AssessmentCriteriaDetailEntity assessmentCriteriaDetailEntity = TestModelDataBuilder.getAssessmentCriteriaDetailEntity();
         AssessmentCriteriaEntity assessmentCriteriaEntity = TestModelDataBuilder.getAssessmentCriteriaEntity();
@@ -66,7 +69,7 @@ public class CaseTypeAssessmentCriteriaDetailValueRepositoryTest {
     }
 
     @Test
-    public void givenCaseTypeAssessmentCriteriaDetailValueIsPopulatedWhenUnknownIdIsProvidedThenCaseTypeAssessmentCriteriaDetailValueIsnNotReturned(){
+    public void givenCaseTypeAssessmentCriteriaDetailValueIsPopulated_WhenUnknownIdIsProvided_ThenCaseTypeAssessmentCriteriaDetailValueIsnNotReturned() {
         // given CaseType Assessment Criteria Detail Value has been populated by Liquibase
         // when unknown id is provided
         Optional<CaseTypeAssessmentCriteriaDetailValueEntity> result = caseTypeAssessmentCriteriaDetailValueRepository.findById(INVALID_ID);
@@ -77,7 +80,7 @@ public class CaseTypeAssessmentCriteriaDetailValueRepositoryTest {
 
     @After
     public void tearDown() {
-        if(caseTypeAssessmentCriteriaDetailValueEntity != null) {
+        if (caseTypeAssessmentCriteriaDetailValueEntity != null) {
             caseTypeAssessmentCriteriaDetailValueRepository.delete(caseTypeAssessmentCriteriaDetailValueEntity);
             caseTypeAssessmentCriteriaDetailValueEntity = null;
         }
