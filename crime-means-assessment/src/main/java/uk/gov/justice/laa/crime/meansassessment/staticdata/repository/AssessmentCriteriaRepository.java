@@ -11,16 +11,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface AssessmentCriteriaRepository extends CrudRepository<AssessmentCriteriaEntity, Long> {
-
-    @Deprecated(forRemoval = true)
-    List<AssessmentCriteriaEntity> findByDateFromAfter(LocalDateTime dateFrom);
-    @Deprecated(forRemoval = true)
-    List<AssessmentCriteriaEntity> findByDateToBefore(LocalDateTime dateTo);
-    @Deprecated(forRemoval = true)
-    List<AssessmentCriteriaEntity> findByDateFromAfterAndDateToBefore(LocalDateTime dateFrom, LocalDateTime dateTo);
+public interface AssessmentCriteriaRepository extends CrudRepository<AssessmentCriteriaEntity, Integer> {
 
     @Query("SELECT ace from AssessmentCriteriaEntity ace where ace.dateFrom <= :date and (ace.dateTo >= :date or ace.dateTo is null)")
-    List<AssessmentCriteriaEntity> findAssessmentCriteriaForDate(@Param("date") LocalDateTime date);
+    AssessmentCriteriaEntity findAssessmentCriteriaForDate(@Param("date") LocalDateTime date);
 
 }

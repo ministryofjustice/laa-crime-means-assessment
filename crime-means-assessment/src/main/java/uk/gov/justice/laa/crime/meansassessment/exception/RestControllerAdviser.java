@@ -3,6 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,20 +21,21 @@ public class RestControllerAdviser {
         return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, String.valueOf(ex.getBindingResult()));
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDTO> adviceParseError(HttpMessageNotReadableException ex) {
+        log.error("Failed to parse request JSON: ", ex);
+        return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(APIClientException.class)
-    public ResponseEntity<ErrorDTO> handleApiClientError(Exception ex) {
-        return ResponseEntity.badRequest().body(ErrorDTO.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.name())
-                .message(ex.getMessage())
-                .build());
+    public ResponseEntity<ErrorDTO> handleApiClientError(APIClientException ex) {
+        return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorDTO> handleValidationError(Exception ex) {
-        return ResponseEntity.badRequest().body(ErrorDTO.builder()
-                .code(HttpStatus.BAD_REQUEST.name())
-                .message(ex.getMessage())
-                .build());
+    public ResponseEntity<ErrorDTO> handleValidationError(ValidationException ex) {
+        return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
