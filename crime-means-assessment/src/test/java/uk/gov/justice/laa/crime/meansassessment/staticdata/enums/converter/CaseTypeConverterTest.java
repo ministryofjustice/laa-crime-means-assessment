@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNull;
 
 public class CaseTypeConverterTest {
 
-    private static final String VALID_VALUE = "APPEAL_CC";
+    private static final String VALID_VALUE = "APPEAL CC";
     private static final String INVALID_VALUE = "INVALID_VALUE";
 
     private CaseTypeConverter caseTypeConverter = new CaseTypeConverter();

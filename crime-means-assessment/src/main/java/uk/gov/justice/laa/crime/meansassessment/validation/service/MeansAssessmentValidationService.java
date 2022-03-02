@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,7 +12,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
@@ -29,38 +30,25 @@ import static uk.gov.justice.laa.crime.meansassessment.common.Constants.*;
 /**
  * This service provides methods for validation of means assessment requests
  */
+@Slf4j
+@Getter
 @Service
 @RequiredArgsConstructor
-@Getter
-@Slf4j
 public class MeansAssessmentValidationService {
 
     private WebClient webClient;
-
-    @Value("${maatApi.baseUrl}")
-    private String maatAPIBaseUrl;
-
-    @Value("${maatApi.validation.endpoints.roleActionEndpoint}")
-    private String validateRoleActionEndpoint;
-
-    @Value("${maatApi.validation.endpoints.newWorkReasonEndpoint}")
-    private String validateNewWorkReasonEndpoint;
-
-    @Value("${maatApi.validation.endpoints.reservationEndpoint}")
-    private String validateReservationEndpoint;
-
-    @Value("${maatApi.validation.endpoints.outstandingAssessmentsEndpoint}")
-    private String checkOutstandingAssessmentsEndpoint;
-
+    private final MaatApiConfiguration configuration;
 
     public boolean validateRoleAction(final ApiCreateMeansAssessmentRequest meansAssessmentRequest, String action) {
         boolean result = false;
-        if(StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(action) ){
+        if (StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(action)) {
             HashMap<String, Object> uriVariables = new HashMap<>();
             uriVariables.put(URIVAR_USERNAME, meansAssessmentRequest.getUserId());
             uriVariables.put(URIVAR_ACTION, action);
-            Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(validateRoleActionEndpoint, uriVariables, AuthorizationResponseDTO.class, meansAssessmentRequest.getLaaTransactionId());
-            if(apiResponse.isPresent()){
+            Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(
+                    configuration.getValidationEndpoints().getRoleActionUrl(), uriVariables, AuthorizationResponseDTO.class, meansAssessmentRequest.getLaaTransactionId()
+            );
+            if (apiResponse.isPresent()) {
                 result = apiResponse.get().isResult();
             }
         }
@@ -69,12 +57,14 @@ public class MeansAssessmentValidationService {
 
     public boolean validateNewWorkReason(final ApiCreateMeansAssessmentRequest meansAssessmentRequest) {
         boolean result = false;
-        if(meansAssessmentRequest.getNewWorkReason() != null && StringUtils.isNotBlank(meansAssessmentRequest.getNewWorkReason().getCode()) ){
+        if (meansAssessmentRequest.getNewWorkReason() != null && StringUtils.isNotBlank(meansAssessmentRequest.getNewWorkReason().getCode())) {
             HashMap<String, Object> uriVariables = new HashMap<>();
             uriVariables.put(URIVAR_USERNAME, meansAssessmentRequest.getUserId());
             uriVariables.put(URIVAR_NWOR_CODE, meansAssessmentRequest.getNewWorkReason().getCode());
-            Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(validateNewWorkReasonEndpoint, uriVariables, AuthorizationResponseDTO.class, meansAssessmentRequest.getLaaTransactionId());
-            if(apiResponse.isPresent()){
+            Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(
+                    configuration.getValidationEndpoints().getNewWorkReasonUrl(), uriVariables, AuthorizationResponseDTO.class, meansAssessmentRequest.getLaaTransactionId()
+            );
+            if (apiResponse.isPresent()) {
                 result = apiResponse.get().isResult();
             }
         }
@@ -87,11 +77,13 @@ public class MeansAssessmentValidationService {
 
     public boolean validateOutstandingAssessments(final ApiCreateMeansAssessmentRequest meansAssessmentRequest) {
         boolean result = false;
-        if(meansAssessmentRequest.getRepId() != null){
+        if (meansAssessmentRequest.getRepId() != null) {
             HashMap<String, Object> uriVariables = new HashMap<>();
             uriVariables.put(URIVAR_REP_ID, meansAssessmentRequest.getRepId());
-            Optional<OutstandingAssessmentResultDTO> apiResponse = getApiResponseViaGET(checkOutstandingAssessmentsEndpoint, uriVariables, OutstandingAssessmentResultDTO.class, meansAssessmentRequest.getLaaTransactionId());
-            if(apiResponse.isPresent()){
+            Optional<OutstandingAssessmentResultDTO> apiResponse = getApiResponseViaGET(
+                    configuration.getValidationEndpoints().getOutstandingAssessmentsUrl(), uriVariables, OutstandingAssessmentResultDTO.class, meansAssessmentRequest.getLaaTransactionId()
+            );
+            if (apiResponse.isPresent()) {
                 result = !(apiResponse.get().isOutstandingAssessments());
             }
         }
@@ -100,20 +92,22 @@ public class MeansAssessmentValidationService {
 
     public boolean validateRoleReservation(final ApiCreateMeansAssessmentRequest meansAssessmentRequest) {
         boolean result = false;
-        if(StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(meansAssessmentRequest.getSessionId()) &&  meansAssessmentRequest.getReservationId() != null){
+        if (StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(meansAssessmentRequest.getUserSession().getSessionId()) && meansAssessmentRequest.getRepId() != null) {
             HashMap<String, Object> uriVariables = new HashMap<>();
             uriVariables.put(URIVAR_USERNAME, meansAssessmentRequest.getUserId());
-            uriVariables.put(URIVAR_RESERVATION_ID, meansAssessmentRequest.getReservationId());
-            uriVariables.put(URIVAR_SESSION_ID, meansAssessmentRequest.getSessionId());
-            Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(validateReservationEndpoint, uriVariables, AuthorizationResponseDTO.class, meansAssessmentRequest.getLaaTransactionId());
-            if(apiResponse.isPresent()){
+            uriVariables.put(URIVAR_RESERVATION_ID, meansAssessmentRequest.getRepId());
+            uriVariables.put(URIVAR_SESSION_ID, meansAssessmentRequest.getUserSession().getSessionId());
+            Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(
+                    configuration.getValidationEndpoints().getReservationsUrl(), uriVariables, AuthorizationResponseDTO.class, meansAssessmentRequest.getLaaTransactionId()
+            );
+            if (apiResponse.isPresent()) {
                 result = apiResponse.get().isResult();
             }
         }
         return result;
     }
 
-    private <T, R> Optional<R> getApiResponseViaGET(final String endpoint, final Map<String, Object> uriVariables, final Class<R> responseClass, final String laaTransactionId){
+    private <T, R> Optional<R> getApiResponseViaGET(final String endpoint, final Map<String, Object> uriVariables, final Class<R> responseClass, final String laaTransactionId) {
         Mono<R> response;
         response = webClient
                 .get()
@@ -121,44 +115,36 @@ public class MeansAssessmentValidationService {
                 .retrieve()
                 .bodyToMono(responseClass);
         R responseBody = response.block();
-        if(responseClass.equals(Void.class)){
+        if (responseClass.equals(Void.class)) {
             return Optional.empty();
         }
-        return Optional.of(responseBody);
+        return Optional.ofNullable(responseBody);
     }
 
-    private <T, R> Optional<R> getApiResponseViaPOST(final String endpoint, final Map<String, Object> uriVariables, final Optional<T> requestBody, final Class<R> responseClass, final String laaTransactionId){
+    private <T, R> Optional<R> getApiResponseViaPOST(final String endpoint, final Map<String, Object> uriVariables, final Optional<T> requestBody, final Class<R> responseClass, final String laaTransactionId) {
         Mono<R> response;
-        if(requestBody.isPresent()){
-            response = webClient
-                    .post()
-                    .uri(uriBuilder -> {
-                        return uriBuilder.build();
-                    })
-                    .bodyValue(requestBody.get())
-                    .retrieve()
-                    .bodyToMono(responseClass);
-        } else {
-            response = webClient
-                    .post()
-                    .uri(uriBuilder -> {
-                        return uriBuilder.build();
-                    })
-                    .body(BodyInserters.empty())
-                    .retrieve()
-                    .bodyToMono(responseClass);
-        }
+        response = requestBody.map(t -> webClient
+                .post()
+                .uri(UriBuilder::build)
+                .bodyValue(t)
+                .retrieve()
+                .bodyToMono(responseClass)).orElseGet(() -> webClient
+                .post()
+                .uri(UriBuilder::build)
+                .body(BodyInserters.empty())
+                .retrieve()
+                .bodyToMono(responseClass));
 
         R responseBody = response.block();
-        if(responseClass.equals(Void.class)){
+        if (responseClass.equals(Void.class)) {
             return Optional.empty();
         }
-        return Optional.of(responseBody);
+        return Optional.ofNullable(responseBody);
     }
 
     @PostConstruct
     public void initializeWebClient() {
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(maatAPIBaseUrl);
+        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(configuration.getBaseUrl());
         factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
         webClient = WebClient
                 .builder()
