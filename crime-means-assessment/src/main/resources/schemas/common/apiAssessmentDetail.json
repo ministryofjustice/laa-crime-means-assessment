@@ -4,8 +4,8 @@
   "type": "object",
   "description": "Assessment details",
   "properties": {
-    "criteriaDetailsId": {
-      "type": "string",
+    "criteriaDetailId": {
+      "type": "integer",
       "description": "Criteria Id"
     },
     "applicantAmount": {
@@ -17,12 +17,15 @@
       "description": "An explanation about the purpose of this instance."
     },
     "applicantFrequency": {
+      "type": "object",
       "description": "The Frequency of Applicant",
-      "$ref": "apiFrequency.json"
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency"
+
     },
     "partnerFrequency": {
+      "type": "object",
       "description": "The Frequency of the Partner",
-      "$ref": "apiFrequency.json"
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency"
     },
     "description": {
       "type": "string",
@@ -31,8 +34,6 @@
   },
   "additionalProperties": false,
   "required": [
-    "criteriaDetailsId",
-    "applicantAmount",
-    "applicantFrequency"
+    "criteriaDetailsId"
   ]
 }

@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator;
 
 import javax.validation.Valid;
 
@@ -30,8 +30,8 @@ import javax.validation.Valid;
 public class MeansAssessmentController {
 
     private final MeansAssessmentService meansAssessmentService;
+    private final CreateAssessmentValidator createAssessmentValidator;
 
-    @SneakyThrows
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = " This API creates an initial means assessment.")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiCreateMeansAssessmentResponse.class)))
@@ -40,9 +40,12 @@ public class MeansAssessmentController {
     public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Initial means assessment data", content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
-        log.info("Create Initial Means Assessment Request Received");
-        meansAssessmentService.checkInitialAssessment(meansAssessment);
-        log.info("Finished processing Means Assessment Request for MAAT ID:  {}", meansAssessment.getRepId());
-        return ResponseEntity.ok(null);
+
+        createAssessmentValidator.validate(meansAssessment);
+        var createMeansAssessmentResponse =
+                meansAssessmentService.createInitialAssessment(meansAssessment);
+
+        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
+        return ResponseEntity.ok(createMeansAssessmentResponse);
     }
 }

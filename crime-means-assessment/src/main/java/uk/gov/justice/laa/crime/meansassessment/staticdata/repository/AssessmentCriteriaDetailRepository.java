@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 
 @Repository
-public interface AssessmentCriteriaDetailRepository extends CrudRepository<AssessmentCriteriaDetailEntity, Long> {
+public interface AssessmentCriteriaDetailRepository extends CrudRepository<AssessmentCriteriaDetailEntity, Integer> {
 
 }
