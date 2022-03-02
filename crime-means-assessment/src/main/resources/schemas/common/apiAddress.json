@@ -6,7 +6,7 @@
   "description": "Details of an Address",
   "properties": {
     "addressId": {
-      "type": "string",
+      "type": "integer",
       "description": "Address ID"
     },
     "line1": {

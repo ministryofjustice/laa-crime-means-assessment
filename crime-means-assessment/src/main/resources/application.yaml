@@ -1,22 +1,18 @@
 server:
-  port : 8080
-
+  port: 8080
 
 maatApi:
+  oAuthEnabled: false
   baseUrl: ${MAAT_API_BASE_URL}
-  validation:
-    endpoints:
-      roleActionEndpoint: /authorization/users/{username}/actions/{action}
-      newWorkReasonEndpoint: /authorization/users/{username}/work-reasons/{nworCode}
-      reservationEndpoint: /authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
-      outstandingAssessmentsEndpoint: /financial-assessments/check-outstanding/{repId}
-# The meansAssessment section is an example only
-  meansAssessment:
-    endpoints:
-      create: /financial-assessments/
-      update: /financial-assessments/{financialAssessmentId}
-      get: /financial-assessments/{financialAssessmentId}
-
+  validation-endpoints:
+    role-action-url: /authorization/users/{username}/actions/{action}
+    new-work-reason-url: /authorization/users/{username}/work-reasons/{nworCode}
+    reservations-url: /authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
+    outstanding-assessments-url: /financial-assessments/check-outstanding/{repId}
+  financial-assessment-endpoints:
+    create-url: /financial-assessments/
+    find-url: /financial-assessments/{financialAssessmentId}
+    update-url: /financial-assessments/{financialAssessmentId}
 
 spring:
   datasource:
@@ -28,6 +24,18 @@ spring:
       connection-timeout: 30000
       idle-timeout: 60000
       max-lifetime: 3600000
+
+  security:
+    oauth2:
+      client:
+        provider:
+          maatapi:
+            tokenUri: ${MAAT_API_OAUTH_URL}
+        registration:
+          maatapi:
+            clientId: ${MAAT_API_OAUTH_CLIENT_ID}
+            clientSecret: ${MAAT_API_OAUTH_CLIENT_SECRET}
+            authorizationGrantType: client_credentials
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
@@ -41,18 +49,6 @@ spring:
     properties:
       hibernate.temp.use_jdbc_metadata_defaults: false   
 
-  security:
-    oauth2:
-      client:
-        provider:
-          maatapi:
-            token-uri: http://dummyserver:9999
-        registration:
-          maatapi:
-            client-id: dummy-client
-            client-secret: dummy-secret
-
-
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
   show-actuator: true
@@ -64,7 +60,6 @@ springdoc:
     path: /open-api/docs.html
     enabled: true
     operationsSorter: method
-
 
 sentry:
   dsn: https://f6f14768c95b4cc38f597ebd5cfd0129@o345774.ingest.sentry.io/6212907

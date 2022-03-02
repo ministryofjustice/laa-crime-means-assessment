@@ -1,6 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.validation.service;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -8,6 +8,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
@@ -24,27 +25,33 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentValidationServiceTest {
 
-    public static final String MAAT_API_BASE_URL = "http://localhost:8090/";
     private static WebClient webClient;
+    public static final String MAAT_API_BASE_URL = "http://localhost:8090/";
+
+    private MaatApiConfiguration configuration;
+    private MeansAssessmentValidationService meansAssessmentValidationService;
 
     private WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
     private WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
     private WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
     private WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
     private WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
-    private static MeansAssessmentValidationService meansAssessmentValidationService;
 
 
-    @BeforeClass
-    public static void setup(){
+    @Before
+    public void setup() {
         webClient = mock(WebClient.class);
-        meansAssessmentValidationService = new MeansAssessmentValidationService();
+        configuration = new MaatApiConfiguration();
+        configuration.setBaseUrl(MAAT_API_BASE_URL);
+        MaatApiConfiguration.ValidationEndpoints validationEndpoints = new MaatApiConfiguration.ValidationEndpoints(
+                "/authorization/users/{username}/actions/{action}",
+                "/authorization/users/{username}/work-reasons/{nworCode}",
+                "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}",
+                "/financial-assessments/check-outstanding/{repId}"
+        );
+        configuration.setValidationEndpoints(validationEndpoints);
+        meansAssessmentValidationService = new MeansAssessmentValidationService(configuration);
         ReflectionTestUtils.setField(meansAssessmentValidationService, "webClient", webClient);
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "maatAPIBaseUrl", MAAT_API_BASE_URL);
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "validateRoleActionEndpoint", "/authorization/users/{username}/actions/{action}");
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "validateNewWorkReasonEndpoint", "/authorization/users/{username}/work-reasons/{nworCode}");
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "validateReservationEndpoint", "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}");
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "checkOutstandingAssessmentsEndpoint", "/financial-assessments/check-outstanding/{repId}");
     }
 
     @Test
@@ -72,7 +79,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getValidateNewWorkReasonEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getNewWorkReasonUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
@@ -83,7 +90,7 @@ public class MeansAssessmentValidationServiceTest {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
@@ -96,7 +103,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getValidateNewWorkReasonEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getNewWorkReasonUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
@@ -107,7 +114,7 @@ public class MeansAssessmentValidationServiceTest {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
@@ -120,7 +127,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getValidateRoleActionEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getRoleActionUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
@@ -131,7 +138,7 @@ public class MeansAssessmentValidationServiceTest {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
@@ -144,7 +151,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getValidateRoleActionEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getRoleActionUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
@@ -155,7 +162,7 @@ public class MeansAssessmentValidationServiceTest {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
@@ -168,7 +175,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getValidateReservationEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getReservationsUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
@@ -179,7 +186,7 @@ public class MeansAssessmentValidationServiceTest {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
@@ -192,7 +199,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getValidateReservationEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getReservationsUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
@@ -203,7 +210,7 @@ public class MeansAssessmentValidationServiceTest {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
@@ -216,7 +223,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getCheckOutstandingAssessmentsEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(OutstandingAssessmentResultDTO.class)).thenReturn(Mono.just(response));
@@ -227,7 +234,7 @@ public class MeansAssessmentValidationServiceTest {
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
@@ -240,7 +247,7 @@ public class MeansAssessmentValidationServiceTest {
         ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(meansAssessmentValidationService.getCheckOutstandingAssessmentsEndpoint()),any(HashMap.class)))
+        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl()), any(HashMap.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(OutstandingAssessmentResultDTO.class)).thenReturn(Mono.just(response));
@@ -251,13 +258,11 @@ public class MeansAssessmentValidationServiceTest {
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("UnexpectedException : "+e.getMessage());
+            fail("UnexpectedException : " + e.getMessage());
         }
 
         StepVerifier.create(Mono.just(response))
                 .expectNext(response)
                 .verifyComplete();
     }
-
-
 }

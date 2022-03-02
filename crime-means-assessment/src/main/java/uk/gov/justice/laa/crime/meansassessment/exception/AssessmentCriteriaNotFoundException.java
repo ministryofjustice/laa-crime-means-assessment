@@ -2,7 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.exception;
 
 import java.io.Serializable;
 
-public class AssessmentCriteriaNotFoundException extends Exception implements Serializable {
+public class AssessmentCriteriaNotFoundException extends RuntimeException implements Serializable {
 
     private static final String DEFAULT_MESSAGE = "Assessment Criteria not found for given assessment date";
 
