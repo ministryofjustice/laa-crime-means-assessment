@@ -109,6 +109,10 @@
       "type": "object",
       "description": "Income Evidence Summary",
       "$ref": "common/apiIncomeEvidenceSummary.json"
+    },
+    "otherHousingNote": {
+      "type": "string",
+      "description": "Other housing note field."
     }
   },
   "additionalProperties": false,
