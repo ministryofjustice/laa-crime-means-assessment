@@ -6,7 +6,7 @@
   "properties": {
     "code": {
       "type": "string",
-      "description": "This wll have the frequency code of the selection"
+      "description": "This will have the frequency code of the selection"
     },
     "description": {
       "type": "string",

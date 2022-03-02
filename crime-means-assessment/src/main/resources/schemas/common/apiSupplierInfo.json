@@ -6,7 +6,7 @@
   "description": "An explanation about the purpose of this instance.",
   "properties": {
     "accountNumber": {
-      "type": "integer",
+      "type": "string",
       "description": "Account Number"
     },
     "name": {
