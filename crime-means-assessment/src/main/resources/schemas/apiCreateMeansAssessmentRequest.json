@@ -113,6 +113,11 @@
     "otherHousingNote": {
       "type": "string",
       "description": "Other housing note field."
+    },
+    "magCourtOutcome": {
+      "type": "object",
+      "description": "Magistrate Court Outcome",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome"
     }
   },
   "additionalProperties": false,
