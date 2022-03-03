@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
-public interface AssessmentCriteriaChildWeightingRepository extends CrudRepository<AssessmentCriteriaChildWeightingEntity, Long> {
+public interface AssessmentCriteriaChildWeightingRepository extends CrudRepository<AssessmentCriteriaChildWeightingEntity, Integer> {
 
-    List<AssessmentCriteriaChildWeightingEntity> findByLowerAgeRangeGreaterThanEqual(BigDecimal lowerAgeRangeFrom);
-    List<AssessmentCriteriaChildWeightingEntity> findByUpperAgeRangeIsLessThanEqual(BigDecimal upperAgeRangeTo);
-    List<AssessmentCriteriaChildWeightingEntity> findByLowerAgeRangeGreaterThanEqualAndUpperAgeRangeIsLessThanEqual(BigDecimal lowerAgeRangeFrom,BigDecimal upperAgeRangeTo);
+    List<AssessmentCriteriaChildWeightingEntity> findByLowerAgeRangeGreaterThanEqual(Integer lowerAgeRangeFrom);
+    List<AssessmentCriteriaChildWeightingEntity> findByUpperAgeRangeIsLessThanEqual(Integer upperAgeRangeTo);
+    List<AssessmentCriteriaChildWeightingEntity> findByLowerAgeRangeGreaterThanEqualAndUpperAgeRangeIsLessThanEqual(Integer lowerAgeRangeFrom, Integer upperAgeRangeTo);
 
     List<AssessmentCriteriaChildWeightingEntity> findByWeightingFactor(BigDecimal weightFactor);
 }
