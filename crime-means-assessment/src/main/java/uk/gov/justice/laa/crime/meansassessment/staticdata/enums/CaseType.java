@@ -17,8 +17,7 @@ public enum CaseType {
     CC_ALREADY("CC_ALREADY","Trial already in Crown Court", Boolean.TRUE),
     APPEAL_CC("APPEAL_CC","Appeal to Crown Court", Boolean.FALSE),
     COMMITTAL("COMMITTAL","Committal for Sentence", Boolean.TRUE),
-    EITHER_WAY("EITHER_WAY","Either-Way", Boolean.FALSE),
-    ;
+    EITHER_WAY("EITHER_WAY","Either-Way", Boolean.FALSE);
 
     private String caseType;
     private String description;
