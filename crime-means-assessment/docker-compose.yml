@@ -5,14 +5,14 @@ services:
     build:
       context: .
     ports:
-    - 8080:8080
+    - "8080:8080"
     depends_on:
       - postgres
 
   postgres:
     image: postgres:13.5
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     healthcheck:

@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
@@ -11,15 +8,20 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data @Builder @AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "ass_criteria_detail_freq", schema = "crime_means_assessment",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_acdf_acrdid_freqcode", columnNames = { "acrd_id", "freq_code" })})
+        uniqueConstraints = {@UniqueConstraint(name = "uk_acdf_acrdid_freqcode", columnNames = {"acrd_id", "freq_code"})})
 public class AssessmentCriteriaDetailFrequencyEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "acrd_id", referencedColumnName = "id", nullable = false)
@@ -29,14 +31,14 @@ public class AssessmentCriteriaDetailFrequencyEntity {
     private Frequency frequency;
 
     @Column(name = "created_by", nullable = false)
-    private String createdBy;    
+    private String createdBy;
 
     @Column(name = "date_created", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdDateTime;
 
     @Column(name = "modified_by", nullable = false)
-    private String modifiedBy;    
+    private String modifiedBy;
 
     @Column(name = "date_modified")
     @UpdateTimestamp

@@ -25,7 +25,7 @@ public class AssessmentDetailRepositoryTest {
     private AssessmentDetailEntity assessmentDetailEntity;
 
     @Test
-    public void givenAssessmentCriteriaIsPopulatedWhenAllRecordsAreRequestThenAssessmentCriteriaShouldBeReturned(){
+    public void givenAssessmentCriteriaIsPopulated_WhenAllRecordsAreRequest_ThenAssessmentCriteriaShouldBeReturned(){
         // given Assessment Details has been populated by Liquibase
         // when all records are requested
         Iterable<AssessmentDetailEntity> results = assessmentDetailRepository.findAll();
@@ -34,7 +34,7 @@ public class AssessmentDetailRepositoryTest {
     }
 
     @Test
-    public void givenAssessmentCriteriaIsPopulatedWhenCorrectIdIsProvidedThenAssessmentCriteriaShouldBeReturned(){
+    public void givenAssessmentCriteriaIsPopulated_WhenCorrectIdIsProvided_ThenAssessmentCriteriaShouldBeReturned(){
         // given Assessment Detail record with given id is available
         assessmentDetailEntity = TestModelDataBuilder.getAssessmentDetailEntity();
         AssessmentDetailEntity savedAssessmentDetailEntity = assessmentDetailRepository.save(assessmentDetailEntity);
@@ -45,11 +45,11 @@ public class AssessmentDetailRepositoryTest {
         // then correct Assessment Detail is returned
         assertTrue(result.isPresent());
         AssessmentDetailEntity assessmentDetailEntityResult = result.get();
-        assertEquals(assessmentDetailEntity, assessmentDetailEntityResult);
+        assertEquals(assessmentDetailEntity.getDetailCode(), assessmentDetailEntityResult.getDetailCode());
     }
 
     @Test
-    public void givenAssessmentCriteriaIsPopulatedWhenUnknownIdIsProvidedThenAssessmentCriteriaIsnNotReturned(){
+    public void givenAssessmentCriteriaIsPopulated_WhenUnknownIdIsProvided_ThenAssessmentCriteriaIsnNotReturned(){
         // given Assessment Details has been populated by Liquibase
         // when unknown id is provided
         Optional<AssessmentDetailEntity> result = assessmentDetailRepository.findById(INVALID_ID);
