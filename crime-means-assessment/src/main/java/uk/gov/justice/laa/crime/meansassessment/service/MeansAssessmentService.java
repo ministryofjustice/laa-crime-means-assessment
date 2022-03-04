@@ -30,7 +30,7 @@ public class MeansAssessmentService {
         List<ApiAssessmentSectionSummary> sectionSummaries = meansAssessment.getSectionSummaries();
         AssessmentCriteriaEntity assessmentCriteria =
                 assessmentCriteriaService.getAssessmentCriteria(
-                        meansAssessment.getAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
+                        meansAssessment.getInitialAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
                 );
 
         BigDecimal annualTotal = getAnnualTotal(meansAssessment.getCaseType(), assessmentCriteria, sectionSummaries);

@@ -12,18 +12,17 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public enum InitialAssessmentResult {
 
-    NONE,
+    NONE("NONE","No result"),
     PASS("PASS", "Gross income below the lower threshold"),
     FAIL("FAIL", "Gross income above the upper threshold"),
     HARDSHIP("HARDSHIP APPLICATION", "Hardship application"),
     FULL("FULL", "Gross income in between the upper and lower thresholds");
 
-
     private String result;
     private String reason;
 
     public static InitialAssessmentResult getFrom(String result) throws IllegalArgumentException {
-        if (StringUtils.isBlank(result)) return null;
+        if (StringUtils.isBlank(result)) return NONE;
 
         return Stream.of(InitialAssessmentResult.values())
                 .filter(a -> a.result.equals(result))
