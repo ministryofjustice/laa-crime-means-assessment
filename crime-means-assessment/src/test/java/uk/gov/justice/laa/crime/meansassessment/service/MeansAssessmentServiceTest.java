@@ -8,15 +8,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.justice.laa.crime.meansassessment.builder.CreateInitialAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.ApiCreateAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.InitialMeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateAssessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
 
@@ -48,7 +45,7 @@ public class MeansAssessmentServiceTest {
     private AssessmentCriteriaChildWeightingService childWeightingService;
 
     @Mock
-    private CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
+    private ApiCreateAssessmentBuilder createInitialAssessmentBuilder;
 
     @Before
     public void setUp() {
@@ -226,7 +223,10 @@ public class MeansAssessmentServiceTest {
         when(childWeightingService.getTotalChildWeighting(anyList(), any(AssessmentCriteriaEntity.class))).thenReturn(
                 BigDecimal.valueOf(0.85)
         );
-        when(createInitialAssessmentBuilder.build(any(InitialMeansAssessmentDTO.class))).thenReturn(new ApiCreateAssessment());
+        when(createInitialAssessmentBuilder.build(any(BigDecimal.class), any(CurrentStatus.class), any(BigDecimal.class),
+                any(InitialAssessmentResult.class), any(AssessmentCriteriaEntity.class), any(ApiCreateMeansAssessmentRequest.class))).thenReturn(
+                        new ApiCreateAssessment()
+        );
 
         doReturn(new ApiCreateMeansAssessmentResponse()).when(meansAssessmentService)
                 .persistAssessment(any(ApiCreateAssessment.class), anyString());
