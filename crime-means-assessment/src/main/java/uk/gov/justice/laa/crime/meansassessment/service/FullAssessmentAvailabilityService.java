@@ -37,7 +37,7 @@ public class FullAssessmentAvailabilityService {
                     break;
                 }
                 case FAIL: {
-                    processFullAssessmentAvailableOnFail(meansAssessmentRequest, meansAssessmentResponse);
+                    processFullAssessmentAvailableOnResultFail(meansAssessmentRequest, meansAssessmentResponse);
                     break;
                 }
                 case HARDSHIP: {
@@ -54,10 +54,11 @@ public class FullAssessmentAvailabilityService {
                     meansAssessmentResponse.setFullAssessmentAvailable(false);
             }
         }
+        log.info("fullAssessmentAvailable set to {}", meansAssessmentResponse.getFullAssessmentAvailable());
     }
 
-    private void processFullAssessmentAvailableOnFail(final ApiCreateMeansAssessmentRequest meansAssessmentRequest,
-                                                      final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
+    private void processFullAssessmentAvailableOnResultFail(final ApiCreateMeansAssessmentRequest meansAssessmentRequest,
+                                                            final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
         switch (meansAssessmentRequest.getCaseType()) {
             case INDICTABLE:
             case CC_ALREADY:

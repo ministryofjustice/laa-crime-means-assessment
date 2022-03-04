@@ -37,15 +37,14 @@ public class MeansAssessmentController {
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiCreateMeansAssessmentResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-    public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Initial means assessment data", content = @Content(mediaType = "application/json",
+    public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Means assessment data", content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
 
         createAssessmentValidator.validate(meansAssessment);
-        var createMeansAssessmentResponse =
-                meansAssessmentService.createInitialAssessment(meansAssessment);
+        var createMeansAssessmentResponse = meansAssessmentService.createMeansAssessment(meansAssessment);
 
-        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
+        log.info("Successfully processed Means Assessment Request for MAAT ID:  {}", meansAssessment.getRepId());
         return ResponseEntity.ok(createMeansAssessmentResponse);
     }
 }
