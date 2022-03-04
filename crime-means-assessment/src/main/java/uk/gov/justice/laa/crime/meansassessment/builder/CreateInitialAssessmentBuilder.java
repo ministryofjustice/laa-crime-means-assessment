@@ -17,7 +17,7 @@ public class CreateInitialAssessmentBuilder {
                 .withInitialAscrId(initialMeansAssessmentDTO.getAssessmentCriteria().getId())
                 .withCmuId(initialMeansAssessmentDTO.getMeansAssessment().getCmuId())
                 .withFassInitStatus(initialMeansAssessmentDTO.getInitStatus().getStatus())
-                .withInitialAssessmentDate(initialMeansAssessmentDTO.getMeansAssessment().getAssessmentDate())
+//                .withInitialAssessmentDate(initialMeansAssessmentDTO.getMeansAssessment().getAssessmentDate())
                 .withInitOtherBenefitNote(initialMeansAssessmentDTO.getMeansAssessment().getOtherBenefitNote())
                 .withInitOtherIncomeNote(initialMeansAssessmentDTO.getMeansAssessment().getOtherIncomeNote())
                 .withInitTotAggregatedIncome(initialMeansAssessmentDTO.getAnnualTotal())
