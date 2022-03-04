@@ -48,10 +48,7 @@ public class FullAssessmentAvailabilityService {
                             meansAssessmentResponse.setFullAssessmentAvailable(false);
                         }
                     });
-                    break;
                 }
-                default:
-                    meansAssessmentResponse.setFullAssessmentAvailable(false);
             }
         }
         log.info("fullAssessmentAvailable set to {}", meansAssessmentResponse.getFullAssessmentAvailable());
@@ -74,13 +71,9 @@ public class FullAssessmentAvailabilityService {
                         meansAssessmentResponse.setFullAssessmentAvailable(false);
                     }
                 });
-                break;
             }
-            default:
-                meansAssessmentResponse.setFullAssessmentAvailable(false);
         }
     }
-
 }
 
 
