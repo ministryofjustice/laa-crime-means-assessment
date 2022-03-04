@@ -20,11 +20,6 @@ spring:
     show-sql: true
     generate-ddl: false
 
-
-  sql:
-    init:
-      platform: h2
-
   security:
     oauth2:
       client:

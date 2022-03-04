@@ -132,7 +132,7 @@ public class MeansAssessmentControllerTest {
                         .header("Authorization", "Bearer " + accessToken)
                         .content(new String())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is5xxServerError());
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
