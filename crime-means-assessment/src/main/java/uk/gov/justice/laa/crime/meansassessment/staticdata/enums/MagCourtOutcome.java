@@ -1,7 +1,9 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public enum MagCourtOutcome {
 
@@ -13,12 +15,4 @@ public enum MagCourtOutcome {
 
     private String outcome;
     private String description;
-
-    public String getOutcome() {
-        return outcome;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }
