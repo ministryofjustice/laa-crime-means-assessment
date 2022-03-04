@@ -8,8 +8,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessme
 
 import java.util.Objects;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome.COMMITTED_FOR_TRIAL;
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason.HR;
 
@@ -23,15 +21,12 @@ public class FullAssessmentAvailabilityService {
         log.info("Start full assessment available check for create means assessment request {} and response {}",
                 meansAssessmentRequest, meansAssessmentResponse);
 
-        requireNonNull(meansAssessmentRequest, "meansAssessmentRequest must not be null");
-        requireNonNull(meansAssessmentResponse, "meansAssessmentResponse must not be null");
-
         meansAssessmentResponse.setFullAssessmentAvailable(false);
 
-        if (!Objects.isNull(meansAssessmentRequest.getAssessmentDate())) {
+        if (!Objects.isNull(meansAssessmentRequest.getFullAssessmentDate())) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         } else {
-            switch (InitialAssessmentResult.valueOf(meansAssessmentResponse.getResult())) {
+            switch (InitialAssessmentResult.getFrom(meansAssessmentResponse.getResult())) {
                 case FULL: {
                     meansAssessmentResponse.setFullAssessmentAvailable(true);
                     break;
@@ -41,13 +36,9 @@ public class FullAssessmentAvailabilityService {
                     break;
                 }
                 case HARDSHIP: {
-                    ofNullable(meansAssessmentRequest.getNewWorkReason()).ifPresent(newWorkReason -> {
-                        if (newWorkReason == HR) {
-                            meansAssessmentResponse.setFullAssessmentAvailable(true);
-                        } else {
-                            meansAssessmentResponse.setFullAssessmentAvailable(false);
-                        }
-                    });
+                    if (meansAssessmentRequest.getNewWorkReason() == HR) {
+                        meansAssessmentResponse.setFullAssessmentAvailable(true);
+                    }
                 }
             }
         }
@@ -64,13 +55,9 @@ public class FullAssessmentAvailabilityService {
                 break;
             }
             case EITHER_WAY: {
-                ofNullable(meansAssessmentRequest.getMagCourtOutcome()).ifPresent(magCourtOutcome -> {
-                    if (magCourtOutcome == COMMITTED_FOR_TRIAL) {
-                        meansAssessmentResponse.setFullAssessmentAvailable(true);
-                    } else {
-                        meansAssessmentResponse.setFullAssessmentAvailable(false);
-                    }
-                });
+                if (meansAssessmentRequest.getMagCourtOutcome() == COMMITTED_FOR_TRIAL) {
+                    meansAssessmentResponse.setFullAssessmentAvailable(true);
+                }
             }
         }
     }

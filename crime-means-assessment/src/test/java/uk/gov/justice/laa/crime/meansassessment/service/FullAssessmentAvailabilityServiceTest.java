@@ -11,8 +11,9 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FullAssessmentAvailabilityServiceTest {
@@ -28,25 +29,28 @@ public class FullAssessmentAvailabilityServiceTest {
         fullAssessmentAvailabilityService = new FullAssessmentAvailabilityService();
         meansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         meansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(true);
+        meansAssessmentRequest.setFullAssessmentDate(null);
     }
 
     @Test
-    public void whenAssessmentDateIsNotNull_thenFullAssessmentAvailableIsTrue() {
+    public void givenMeansAssessmentRequestAndResponse_WhenFullAssessmentDateIsNotNull_ThenFullAssessmentAvailableIsTrue() {
+        meansAssessmentResponse.setResult("");
+        meansAssessmentRequest.setFullAssessmentDate(LocalDateTime.of(2021, 12, 20, 10, 0));
+
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
     }
 
     @Test
-    public void whenResultIsFull_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFull_ThenFullAssessmentAvailableIsTrue() {
         meansAssessmentResponse.setResult("FULL");
+
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
     }
 
     @Test
-    public void whenResultIsFailAndCaseTypeIsIndictable_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsIndictable_ThenFullAssessmentAvailableIsTrue() {
         meansAssessmentRequest.setCaseType(CaseType.INDICTABLE);
         meansAssessmentResponse.setResult("FAIL");
 
@@ -55,8 +59,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void whenResultIsFailAndCaseTypeIsCCAlready_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsCCAlready_ThenFullAssessmentAvailableIsTrue() {
         meansAssessmentRequest.setCaseType(CaseType.CC_ALREADY);
         meansAssessmentResponse.setResult("FAIL");
 
@@ -65,8 +68,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void whenResultIsFailAndCaseTypeIsAppealCC_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsAppealCC_ThenFullAssessmentAvailableIsTrue() {
         meansAssessmentRequest.setCaseType(CaseType.APPEAL_CC);
         meansAssessmentResponse.setResult("FAIL");
 
@@ -75,8 +77,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void whenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeNull_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeNull_ThenFullAssessmentAvailableIsTrue() {
         meansAssessmentRequest.setCaseType(CaseType.EITHER_WAY);
         meansAssessmentResponse.setResult("FAIL");
 
@@ -85,8 +86,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void whenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeCommittedForTrial_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeCommittedForTrial_ThenFullAssessmentAvailableIsTrue() {
         meansAssessmentRequest.setCaseType(CaseType.EITHER_WAY);
         meansAssessmentRequest.setMagCourtOutcome(MagCourtOutcome.COMMITTED_FOR_TRIAL);
         meansAssessmentResponse.setResult("FAIL");
@@ -96,8 +96,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void whenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeAppealCC_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeAppealCC_ThenFullAssessmentAvailableIsFalse() {
         meansAssessmentRequest.setCaseType(CaseType.EITHER_WAY);
         meansAssessmentRequest.setMagCourtOutcome(MagCourtOutcome.APPEAL_TO_CC);
         meansAssessmentResponse.setResult("FAIL");
@@ -107,51 +106,45 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void whenResultIsHardshipAndNewWorkReasonNull_thenFullAssessmentAvailableIsFalse() {
-        meansAssessmentRequest.setAssessmentDate(null);
-        meansAssessmentResponse.setResult("HARDSHIP");
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonNull_ThenFullAssessmentAvailableIsFalse() {
+        meansAssessmentResponse.setResult("HARDSHIP APPLICATION");
+
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
     }
 
     @Test
-    public void whenResultIsHardshipAndNewWorkReasonIsHR_thenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setAssessmentDate(null);
-        meansAssessmentResponse.setResult("HARDSHIP");
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonIsHR_ThenFullAssessmentAvailableIsTrue() {
+        meansAssessmentResponse.setResult("HARDSHIP APPLICATION");
         meansAssessmentRequest.setNewWorkReason(NewWorkReason.HR);
+
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
     }
 
     @Test
-    public void whenResultIsHardshipAndNewWorkReasonIsPBI_thenFullAssessmentAvailableIsFalse() {
-        meansAssessmentRequest.setAssessmentDate(null);
-        meansAssessmentResponse.setResult("HARDSHIP");
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonIsPBI_ThenFullAssessmentAvailableIsFalse() {
+        meansAssessmentResponse.setResult("HARDSHIP APPLICATION");
         meansAssessmentRequest.setNewWorkReason(NewWorkReason.PBI);
+
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
     }
 
     @Test
-    public void whenResultIsNone_thenFullAssessmentAvailableIsFalse() {
-        meansAssessmentRequest.setAssessmentDate(null);
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsNone_ThenFullAssessmentAvailableIsFalse() {
         meansAssessmentResponse.setResult("NONE");
+
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
     }
 
     @Test
-    public void whenMeansRequestIsNull_thenThrowNPE() {
-        assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> fullAssessmentAvailabilityService.processFullAssessmentAvailable(null, meansAssessmentResponse))
-                .withMessageContaining("meansAssessmentRequest must not be null");
-    }
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsEmpty_ThenFullAssessmentAvailableIsFalse() {
+        meansAssessmentResponse.setResult("");
 
-    @Test
-    public void whenMeansResponseIsNull_thenThrowNPE() {
-        assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, null))
-                .withMessageContaining("meansAssessmentResponse must not be null");
+        fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
     }
 
 }
