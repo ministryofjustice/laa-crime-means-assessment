@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome;
 
 import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome.COMMITTED_FOR_TRIAL;
+import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason.HR;
 
 @Slf4j
 @Service
@@ -16,10 +20,13 @@ public class FullAssessmentAvailabilityService {
     public void processFullAssessmentAvailable(final ApiCreateMeansAssessmentRequest meansAssessmentRequest,
                                                final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
 
-        log.info("Start full assessment available check");
+        log.info("Start full assessment available check for create means assessment request {} and response {}",
+                meansAssessmentRequest, meansAssessmentResponse);
 
-        Objects.requireNonNull(meansAssessmentRequest, "meansAssessmentRequest must not be null");
-        Objects.requireNonNull(meansAssessmentResponse, "meansAssessmentResponse must not be null");
+        requireNonNull(meansAssessmentRequest, "meansAssessmentRequest must not be null");
+        requireNonNull(meansAssessmentResponse, "meansAssessmentResponse must not be null");
+
+        meansAssessmentResponse.setFullAssessmentAvailable(false);
 
         if (!Objects.isNull(meansAssessmentRequest.getAssessmentDate())) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
@@ -34,8 +41,13 @@ public class FullAssessmentAvailabilityService {
                     break;
                 }
                 case HARDSHIP: {
-                    if (meansAssessmentRequest.getNewWorkReason().getCode().equals("HR"))
-                        meansAssessmentResponse.setFullAssessmentAvailable(true);
+                    ofNullable(meansAssessmentRequest.getNewWorkReason()).ifPresent(newWorkReason -> {
+                        if (newWorkReason == HR) {
+                            meansAssessmentResponse.setFullAssessmentAvailable(true);
+                        } else {
+                            meansAssessmentResponse.setFullAssessmentAvailable(false);
+                        }
+                    });
                     break;
                 }
                 default:
@@ -54,9 +66,17 @@ public class FullAssessmentAvailabilityService {
                 break;
             }
             case EITHER_WAY: {
-                if (meansAssessmentRequest.getMagCourtOutcome().equals(MagCourtOutcome.COMMITTED_FOR_TRIAL))
-                    meansAssessmentResponse.setFullAssessmentAvailable(true);
+                ofNullable(meansAssessmentRequest.getMagCourtOutcome()).ifPresent(magCourtOutcome -> {
+                    if (magCourtOutcome == COMMITTED_FOR_TRIAL) {
+                        meansAssessmentResponse.setFullAssessmentAvailable(true);
+                    } else {
+                        meansAssessmentResponse.setFullAssessmentAvailable(false);
+                    }
+                });
+                break;
             }
+            default:
+                meansAssessmentResponse.setFullAssessmentAvailable(false);
         }
     }
 
