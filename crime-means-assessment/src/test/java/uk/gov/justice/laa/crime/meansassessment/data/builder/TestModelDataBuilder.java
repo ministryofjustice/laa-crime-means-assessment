@@ -172,7 +172,7 @@ public class TestModelDataBuilder {
                 .withCmuId(isValid ? 91919 : null)
                 .withUserId("test-userid")
                 .withTransactionDateTime(LocalDateTime.of(2021, 12, 16, 10, 0))
-                .withAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withNewWorkReason(NewWorkReason.PBI)
                 .withSupplierInfo(getApiSupplierInfo())
                 .withSectionSummaries(getAllApiAssessmentSectionSummaries())
