@@ -113,6 +113,10 @@
     "otherHousingNote": {
       "type": "string",
       "description": "Other housing note field."
+    },
+    "initTotalAggregatedIncome": {
+      "type": "number",
+      "description": "The total aggregated income calculated during the initial assessment"
     }
   },
   "additionalProperties": false,
