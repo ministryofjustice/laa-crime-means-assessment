@@ -135,7 +135,6 @@
     "sessionId",
     "transactionDateTime",
     "initialAssessmentDate",
-    "fullAssessmentDate",
     "newWorkReason",
     "supplierInfo",
     "assessmentSummary",
