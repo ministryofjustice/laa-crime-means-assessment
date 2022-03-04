@@ -8,6 +8,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -172,7 +173,7 @@ public class TestModelDataBuilder {
                 .withUserId("test-userid")
                 .withTransactionDateTime(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
-                .withNewWorkReason(getApiNewWorkReason())
+                .withNewWorkReason(NewWorkReason.PBI)
                 .withSupplierInfo(getApiSupplierInfo())
                 .withSectionSummaries(getAllApiAssessmentSectionSummaries())
                 .withHasPartner(true)
@@ -283,11 +284,6 @@ public class TestModelDataBuilder {
                         .withUpperAgeRange(4)
                         .withNoOfChildren(2)
         );
-    }
-
-    public static ApiNewWorkReason getApiNewWorkReason() {
-        return new ApiNewWorkReason()
-                .withCode("PBI");
     }
 
     public static ApiSupplierInfo getApiSupplierInfo() {

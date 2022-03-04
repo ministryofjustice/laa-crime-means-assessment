@@ -54,7 +54,7 @@
     },
     "newWorkReason": {
       "description": "Work Reason Details",
-      "$ref": "common/apiNewWorkReason.json"
+      "existingJavaType":"uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason"
     },
     "reviewType": {
       "description": "Review Type Info",
