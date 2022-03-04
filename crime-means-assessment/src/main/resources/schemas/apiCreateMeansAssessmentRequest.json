@@ -113,6 +113,11 @@
     "otherHousingNote": {
       "type": "string",
       "description": "Other housing note field."
+    },
+    "crownCourtOverview": {
+      "type": "object",
+      "description": "Crown court overview details",
+      "$ref": "common/apiCrownCourtOverview.json"
     }
   },
   "additionalProperties": false,

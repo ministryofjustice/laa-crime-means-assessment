@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator;
 
 import static org.mockito.Mockito.when;
@@ -44,7 +43,7 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.createAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
 
         mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
@@ -61,7 +60,7 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createInitialAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.createAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
 
         mvc.perform(MockMvcRequestBuilders.post("/api/internal/v1/assessment/means").content(initialMeansAssessmentRequestJson).contentType(MediaType.APPLICATION_JSON))
