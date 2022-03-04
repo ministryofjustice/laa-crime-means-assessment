@@ -32,7 +32,7 @@ public class MeansAssessmentService {
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
     private final AssessmentCriteriaService assessmentCriteriaService;
-    private final CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
+    private final ApiCreateAssessmentBuilder createInitialAssessmentBuilder;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     public ApiCreateMeansAssessmentResponse createInitialAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
@@ -58,7 +58,9 @@ public class MeansAssessmentService {
         log.info("Initial means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
 
         ApiCreateAssessment assessment = createInitialAssessmentBuilder.build(
-                new InitialMeansAssessmentDTO(annualTotal, status, adjustedIncomeValue, result, assessmentCriteria, meansAssessment, sectionSummaries));
+                annualTotal, status, adjustedIncomeValue, result, assessmentCriteria, meansAssessment
+        );
+
         return persistAssessment(assessment, meansAssessment.getLaaTransactionId());
     }
 
