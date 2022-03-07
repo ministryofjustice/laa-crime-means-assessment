@@ -1,17 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.builder.CreateInitialAssessmentBuilder;
-import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.InitialMeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -21,26 +14,23 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessme
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MeansAssessmentService {
 
-    @Qualifier("maatAPIOAuth2WebClient")
-    private final WebClient webClient;
-    private final MaatApiConfiguration configuration;
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
+    private final CourtDataService courtDataService;
 
-    public ApiCreateMeansAssessmentResponse createInitialAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
-        log.info("Create initial means assessment - Start");
+    public ApiCreateMeansAssessmentResponse createMeansAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
+        log.info("Create means assessment - Start");
         List<ApiAssessmentSectionSummary> sectionSummaries = meansAssessment.getSectionSummaries();
         AssessmentCriteriaEntity assessmentCriteria =
                 assessmentCriteriaService.getAssessmentCriteria(
-                        meansAssessment.getAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
+                        meansAssessment.getInitialAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
                 );
 
         BigDecimal annualTotal = getAnnualTotal(meansAssessment.getCaseType(), assessmentCriteria, sectionSummaries);
@@ -59,7 +49,7 @@ public class MeansAssessmentService {
 
         ApiCreateAssessment assessment = createInitialAssessmentBuilder.build(
                 new InitialMeansAssessmentDTO(annualTotal, status, adjustedIncomeValue, result, assessmentCriteria, meansAssessment, sectionSummaries));
-        return persistAssessment(assessment, meansAssessment.getLaaTransactionId());
+        return courtDataService.postMeansAssessment(assessment, meansAssessment.getLaaTransactionId());
     }
 
     protected BigDecimal getAdjustedIncome(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
@@ -121,23 +111,5 @@ public class MeansAssessmentService {
             );
         }
         return detailTotal;
-    }
-
-    public ApiCreateMeansAssessmentResponse persistAssessment(ApiCreateAssessment createAssessment, String laaTransactionId) {
-        ApiCreateMeansAssessmentResponse response = webClient.post()
-                .uri(configuration.getFinancialAssessmentEndpoints().getCreateUrl())
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of(
-                        "Laa-Transaction-Id", laaTransactionId
-                )))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(createAssessment))
-                .retrieve()
-                .bodyToMono(ApiCreateMeansAssessmentResponse.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
-
-        log.info(String.format("Response from Court Data API: %s", response));
-        return response;
     }
 }
