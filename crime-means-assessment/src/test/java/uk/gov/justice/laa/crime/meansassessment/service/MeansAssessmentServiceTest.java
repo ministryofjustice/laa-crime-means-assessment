@@ -50,6 +50,9 @@ public class MeansAssessmentServiceTest {
     @Mock
     private CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
 
+    @Mock
+    private CourtDataService courtDataService;
+
     @Before
     public void setUp() {
         assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
@@ -227,12 +230,10 @@ public class MeansAssessmentServiceTest {
                 BigDecimal.valueOf(0.85)
         );
         when(createInitialAssessmentBuilder.build(any(InitialMeansAssessmentDTO.class))).thenReturn(new ApiCreateAssessment());
+        when(courtDataService.postMeansAssessment(any(ApiCreateAssessment.class), anyString())).thenReturn(new ApiCreateMeansAssessmentResponse());
 
-        doReturn(new ApiCreateMeansAssessmentResponse()).when(meansAssessmentService)
-                .persistAssessment(any(ApiCreateAssessment.class), anyString());
-
-        meansAssessmentService.createInitialAssessment(TestModelDataBuilder.getCreateMeansAssessmentRequest(true));
-        verify(meansAssessmentService).persistAssessment(any(ApiCreateAssessment.class), anyString());
+        meansAssessmentService.createMeansAssessment(TestModelDataBuilder.getCreateMeansAssessmentRequest(true));
+        verify(courtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
     }
 
     @Test
