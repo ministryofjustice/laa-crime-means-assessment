@@ -118,6 +118,11 @@
       "type": "object",
       "description": "Crown court overview details",
       "$ref": "common/apiCrownCourtOverview.json"
+    },
+    "magCourtOutcome": {
+      "type": "object",
+      "description": "Magistrate Court Outcome",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome"
     }
   },
   "additionalProperties": false,
