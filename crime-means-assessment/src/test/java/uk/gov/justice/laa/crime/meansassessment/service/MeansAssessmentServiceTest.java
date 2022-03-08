@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.exception.MeansAssessmentValidationException;
+import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.InitialAssessmentValidator;
@@ -31,7 +31,7 @@ public class MeansAssessmentServiceTest {
     private CourtDataService courtDataService;
 
     @Test
-    public void testWhenAssessmentTypeIsInit_thenVerifyInitAssessmentIsCalled() throws MeansAssessmentValidationException {
+    public void testWhenAssessmentTypeIsInit_thenVerifyInitAssessmentIsCalled() throws ValidationException {
 
         ApiCreateMeansAssessmentRequest apiCreateMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         apiCreateMeansAssessmentRequest.setAssessmentType(AssessmentType.INIT);
