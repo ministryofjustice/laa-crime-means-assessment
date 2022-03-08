@@ -50,6 +50,9 @@ public class InitialMeansAssessmentServiceTest {
     @Mock
     private CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
 
+    @Mock
+    private CourtDataService courtDataService;
+
     @Before
     public void setUp() {
         assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
@@ -228,11 +231,10 @@ public class InitialMeansAssessmentServiceTest {
         );
         when(createInitialAssessmentBuilder.build(any(InitialMeansAssessmentDTO.class))).thenReturn(new ApiCreateAssessment());
 
-        doReturn(new ApiCreateMeansAssessmentResponse()).when(meansAssessmentService)
-                .persistAssessment(any(ApiCreateAssessment.class), anyString());
+        doReturn(new ApiCreateMeansAssessmentResponse()).when(courtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
 
         meansAssessmentService.createInitialAssessment(TestModelDataBuilder.getCreateMeansAssessmentRequest(true));
-        verify(meansAssessmentService).persistAssessment(any(ApiCreateAssessment.class), anyString());
+        verify(courtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
     }
 
     @Test

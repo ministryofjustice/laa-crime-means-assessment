@@ -26,9 +26,14 @@
       "description": "Time Stamp of the transaction",
       "format": "date-time"
     },
-    "assessmentDate": {
+    "initialAssessmentDate": {
       "type": "string",
-      "description": "Effective Date of the assessment",
+      "description": "Effective Date of initial assessment",
+      "format": "date-time"
+    },
+    "fullAssessmentDate": {
+      "type": "string",
+      "description": "Effective Date of full assessment",
       "format": "date-time"
     },
     "otherBenefitNote": {
@@ -54,7 +59,7 @@
     },
     "newWorkReason": {
       "description": "Work Reason Details",
-      "$ref": "common/apiNewWorkReason.json"
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason"
     },
     "reviewType": {
       "description": "Review Type Info",
@@ -134,7 +139,7 @@
     "reservationId",
     "sessionId",
     "transactionDateTime",
-    "assessmentDate",
+    "initialAssessmentDate",
     "newWorkReason",
     "supplierInfo",
     "assessmentSummary",
