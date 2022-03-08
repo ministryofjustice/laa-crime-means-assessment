@@ -34,13 +34,14 @@ public class InitialMeansAssessmentService {
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
+    private final CourtDataService courtDataService;
 
     public ApiCreateMeansAssessmentResponse createInitialAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Create initial means assessment - Start");
         List<ApiAssessmentSectionSummary> sectionSummaries = meansAssessment.getSectionSummaries();
         AssessmentCriteriaEntity assessmentCriteria =
                 assessmentCriteriaService.getAssessmentCriteria(
-                        meansAssessment.getAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
+                        meansAssessment.getInitialAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
                 );
 
         BigDecimal annualTotal = getAnnualTotal(meansAssessment.getCaseType(), assessmentCriteria, sectionSummaries);
@@ -59,7 +60,7 @@ public class InitialMeansAssessmentService {
 
         ApiCreateAssessment assessment = createInitialAssessmentBuilder.build(
                 new InitialMeansAssessmentDTO(annualTotal, status, adjustedIncomeValue, result, assessmentCriteria, meansAssessment, sectionSummaries));
-        return persistAssessment(assessment, meansAssessment.getLaaTransactionId());
+        return courtDataService.postMeansAssessment(assessment, meansAssessment.getLaaTransactionId());
     }
 
     protected BigDecimal getAdjustedIncome(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
@@ -121,23 +122,5 @@ public class InitialMeansAssessmentService {
             );
         }
         return detailTotal;
-    }
-
-    public ApiCreateMeansAssessmentResponse persistAssessment(ApiCreateAssessment createAssessment, String laaTransactionId) {
-        ApiCreateMeansAssessmentResponse response = webClient.post()
-                .uri(configuration.getFinancialAssessmentEndpoints().getCreateUrl())
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of(
-                        "Laa-Transaction-Id", laaTransactionId
-                )))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(createAssessment))
-                .retrieve()
-                .bodyToMono(ApiCreateMeansAssessmentResponse.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
-
-        log.info(String.format("Response from Court Data API: %s", response));
-        return response;
     }
 }
