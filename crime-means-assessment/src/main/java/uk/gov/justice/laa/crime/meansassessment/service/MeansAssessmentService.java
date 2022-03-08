@@ -3,7 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.meansassessment.exception.MeansAssessmentValidationException;
+import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.InitialAssessmentValidator;
@@ -17,7 +17,7 @@ public class MeansAssessmentService {
     private final FullMeansAssessmentService fullMeansAssessmentService;
     private final InitialAssessmentValidator initialAssessmentValidator;
 
-    public ApiCreateMeansAssessmentResponse createAssessment(ApiCreateMeansAssessmentRequest apiCreateMeansAssessmentRequest) throws MeansAssessmentValidationException {
+    public ApiCreateMeansAssessmentResponse createAssessment(ApiCreateMeansAssessmentRequest apiCreateMeansAssessmentRequest) throws ValidationException {
         log.info("Starting - Create means assessment");
 
         if (apiCreateMeansAssessmentRequest.getAssessmentType() == AssessmentType.INIT) {
