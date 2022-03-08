@@ -43,7 +43,7 @@ public class MeansAssessmentController {
 
         createAssessmentValidator.validate(meansAssessment);
         var createMeansAssessmentResponse =
-                meansAssessmentService.createInitialAssessment(meansAssessment);
+                meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
         return ResponseEntity.ok(createMeansAssessmentResponse);
