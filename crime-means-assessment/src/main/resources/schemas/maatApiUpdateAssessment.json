@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "apiUpdateAssessment.json",
+  "type": "object",
+  "title": "Update financial assessment request",
+  "description": "Data contract between laa-crime-means-assessment service & Maa court data API for the initial means assessment processing",
+  "properties": {
+    "laaTransactionId": {
+      "type": "string",
+      "description": "The correlation / transaction UUID"
+    },
+    "repId": {
+      "type": "integer",
+      "description": "MAAT / Rep Id"
+    },
+    "assessmentType": {
+      "type": "string",
+      "description": "The type of assessment"
+    },
+    "cmuId": {
+      "type": "integer",
+      "description": "Case Management Unit Id"
+    },
+    "fassInitStatus": {
+      "type": "string",
+      "description": "Initial assessment status"
+    },
+    "fassFullStatus": {
+      "type": "string",
+      "description": "Full assessment status"
+    },
+    "initialAssessmentDate": {
+      "type": "string",
+      "description": "Initial assessment date",
+      "format": "date-time"
+    },
+    "fullAssessmentDate": {
+      "type": "string",
+      "description": "Full assessment date",
+      "format": "date-time"
+    },
+    "initApplicationEmploymentStatus": {
+      "type": "string",
+      "description": "Code for the employment status"
+    },
+    "initialAscrId": {
+      "type": "integer",
+      "description": "Initial assessment criteria ID"
+    },
+    "initOtherBenefitNote": {
+      "type": "string",
+      "description": "Benefit Note"
+    },
+    "initOtherIncomeNote": {
+      "type": "string",
+      "description": "Income Note."
+    },
+    "initTotAggregatedIncome": {
+      "type": "number",
+      "description": "Total Aggregated income of the application."
+    },
+    "initAdjustedIncomeValue": {
+      "type": "number",
+      "description": "Adjusted Income of the Application"
+    },
+    "initNotes": {
+      "type": "string",
+      "description": "Init assessment notes"
+    },
+    "initResult": {
+      "type": "string",
+      "description": "Initial assessment result"
+    },
+    "initResultReason": {
+      "type": "string",
+      "description": "Initial assessment result reason"
+    },
+    "fullResult": {
+      "type": "string",
+      "description": "Full assessment result"
+    },
+    "fullResultReason": {
+      "type": "string",
+      "description": "Full assessment result reason"
+    },
+    "fullAssessmentNotes": {
+      "type": "string",
+      "description": "Full assessment notes"
+    },
+    "fullAdjustedLivingAllowance": {
+      "type": "number",
+      "description": "Full adjusted living allowance"
+    },
+    "fullTotalAnnualDisposableIncome": {
+      "type": "number",
+      "description": "Full total annual disposable income"
+    },
+    "fullOtherHousingNote": {
+      "type": "string",
+      "description": "Full other housing note"
+    },
+    "fullTotalAggregatedExpenses": {
+      "type": "number",
+      "description": "Full total aggregated expenses"
+    },
+    "fullAscrId": {
+      "type": "integer",
+      "description": "Full assessment criteria ID"
+    },
+    "incomeEvidenceDueDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Income Evidence Due Date"
+    },
+    "incomeEvidenceNotes": {
+      "type": "string",
+      "description": "Income Evidence Notes"
+    },
+    "userModified": {
+      "type": "string",
+      "description": "ID of the user that last modified the assessment"
+    },
+    "assessmentDetailsList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common/apiAssessmentDetail.json"
+      }
+    },
+    "childWeightingsList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common/apiAssessmentChildWeighting.json"
+      }
+    }
+  },
+  "javaInterfaces" : ["uk.gov.justice.laa.crime.meansassessment.dto.MaatApiAssessmentRequest"],
+  "additionalProperties": false,
+  "required": [
+    "repId",
+    "cmuId",
+    "userModified",
+    "assessmentType",
+    "assessmentDetailsList",
+    "childWeightingsList"
+  ]
+}
