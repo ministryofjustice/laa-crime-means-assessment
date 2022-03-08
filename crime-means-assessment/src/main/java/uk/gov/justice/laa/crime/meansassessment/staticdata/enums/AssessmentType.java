@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
@@ -11,17 +12,17 @@ import javax.validation.constraints.NotNull;
 import java.util.stream.Stream;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public enum AssessmentType {
-    INIT, FULL;
+    INIT("INIT"), FULL("FULL");
 
     @NotNull
     @JsonPropertyDescription("Determines the assessment type")
     private String type;
 
     @JsonValue
-    public String getCode() {
+    public String getType() {
         return type;
     }
 

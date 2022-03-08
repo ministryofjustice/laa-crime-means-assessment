@@ -8,18 +8,17 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import uk.gov.justice.laa.crime.meansassessment.builder.CreateInitialAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.ApiCreateAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.ApiUpdateAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.dto.InitialMeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -31,110 +30,169 @@ public class MeansAssessmentService {
     @Qualifier("maatAPIOAuth2WebClient")
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
+    private final FullMeansAssessmentService fullMeansAssessmentService;
+    private final InitMeansAssessmentService initMeansAssessmentService;
     private final AssessmentCriteriaService assessmentCriteriaService;
-    private final ApiCreateAssessmentBuilder createInitialAssessmentBuilder;
-    private final AssessmentCriteriaChildWeightingService childWeightingService;
 
-    public ApiCreateMeansAssessmentResponse createInitialAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
-        log.info("Create initial means assessment - Start");
-        List<ApiAssessmentSectionSummary> sectionSummaries = meansAssessment.getSectionSummaries();
+    public ApiCreateMeansAssessmentResponse doAssessment(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentRequestType requestType) {
         AssessmentCriteriaEntity assessmentCriteria =
                 assessmentCriteriaService.getAssessmentCriteria(
                         meansAssessment.getAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
                 );
+        String targetEndpoint;
+        MeansAssessmentDTO assessment;
+        if (meansAssessment.getAssessmentType().equals(AssessmentType.INIT)) {
+            log.info("Create initial means assessment - Start");
+            assessment = doInitAssessment(meansAssessment, assessmentCriteria);
+            log.info("Init means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
+        } else {
+            log.info("Create full means assessment - Start");
+            assessment = doFullAssessment(meansAssessment, assessmentCriteria);
+            log.info("Full means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
+        }
 
-        BigDecimal annualTotal = getAnnualTotal(meansAssessment.getCaseType(), assessmentCriteria, sectionSummaries);
-        BigDecimal adjustedIncomeValue = getAdjustedIncome(meansAssessment, assessmentCriteria, annualTotal);
+        MaatApiAssessmentRequest assessmentPayload;
+        if (requestType.equals(AssessmentRequestType.CREATE)) {
+            targetEndpoint = configuration.getFinancialAssessmentEndpoints().getCreateUrl();
+            assessmentPayload = ApiCreateAssessmentBuilder.build(assessment);
+        } else {
+            targetEndpoint = configuration.getFinancialAssessmentEndpoints().getUpdateUrl();
+            assessmentPayload = ApiUpdateAssessmentBuilder.build(assessment);
+        }
+
+        MaatApiAssessmentResponse response =
+                persistAssessment(assessmentPayload, meansAssessment.getLaaTransactionId(), targetEndpoint);
+
+        return new ApiCreateMeansAssessmentResponse()
+                .withAssessmentId(response.getId().toString())
+                .withCriteriaId(assessmentCriteria.getId())
+                .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
+                .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())
+                .withTotalAggregatedIncome(assessment.getTotalAggregatedIncome())
+                .withResult(assessment.getInitialAssessmentResult().getResult())
+                .withResultReason(assessment.getInitialAssessmentResult().getReason())
+                .withAdjustedIncomeValue(assessment.getAdjustedIncomeValue())
+                .withAssessmentStatus(new ApiAssessmentStatus()
+                        .withStatus(assessment.getCurrentStatus().getStatus())
+                        .withDescription(assessment.getCurrentStatus().getDescription())
+                        .withComplete(assessment.getCurrentStatus().equals(CurrentStatus.COMPLETE))
+                )
+                .withAssessmentSummary(assessment.getMeansAssessment().getSectionSummaries());
+
+    }
+
+    public MeansAssessmentDTO doInitAssessment(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
+        BigDecimal annualTotal = calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal adjustedIncomeValue = initMeansAssessmentService.getAdjustedIncome(
+                meansAssessment, assessmentCriteria, annualTotal);
 
         InitialAssessmentResult result;
         CurrentStatus status = meansAssessment.getAssessmentStatus();
         String newWorkReasonCode = meansAssessment.getNewWorkReason().getCode();
         if (status.equals(CurrentStatus.COMPLETE)) {
-            result = getAssessmentResult(adjustedIncomeValue, assessmentCriteria, newWorkReasonCode);
+            result = initMeansAssessmentService.getAssessmentResult(adjustedIncomeValue, assessmentCriteria, newWorkReasonCode);
         } else {
             result = InitialAssessmentResult.NONE;
         }
+        return MeansAssessmentDTO
+                .builder()
+                .currentStatus(status)
+                .initialAssessmentResult(result)
+                .meansAssessment(meansAssessment)
+                .assessmentCriteria(assessmentCriteria)
+                .adjustedIncomeValue(adjustedIncomeValue)
+                .totalAggregatedIncome(annualTotal)
+                .build();
 
-        log.info("Initial means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
+    }
 
-        ApiCreateAssessment assessment = createInitialAssessmentBuilder.build(
-                annualTotal, status, adjustedIncomeValue, result, assessmentCriteria, meansAssessment
+    public MeansAssessmentDTO doFullAssessment(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
+        BigDecimal expenditureTotal = calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal adjustedLivingAllowance =
+                fullMeansAssessmentService.getAdjustedLivingAllowance(meansAssessment, assessmentCriteria);
+        BigDecimal totalDisposableIncome = fullMeansAssessmentService.getDisposableIncome(
+                meansAssessment, expenditureTotal, adjustedLivingAllowance
         );
-
-        return persistAssessment(assessment, meansAssessment.getLaaTransactionId());
-    }
-
-    protected BigDecimal getAdjustedIncome(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
-        BigDecimal totalChildWeighting =
-                childWeightingService.getTotalChildWeighting(meansAssessment.getChildWeightings(), assessmentCriteria);
-
-        if (BigDecimal.ZERO.compareTo(annualTotal) <= 0) {
-            return annualTotal
-                    .divide(assessmentCriteria.getApplicantWeightingFactor()
-                                    .add(assessmentCriteria.getPartnerWeightingFactor())
-                                    .add(totalChildWeighting),
-                            RoundingMode.UP);
-        }
-        return BigDecimal.ZERO;
-    }
-
-    protected InitialAssessmentResult getAssessmentResult(BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, String newWorkReasonCode) {
-        if (adjustedIncomeValue.compareTo(assessmentCriteria.getInitialLowerThreshold()) <= 0) {
-            return InitialAssessmentResult.PASS;
-        } else if (adjustedIncomeValue.compareTo(assessmentCriteria.getInitialUpperThreshold()) >= 0) {
-            // TODO: Comment in PL/SQL suggests this should also apply to crown court cases
-            if (newWorkReasonCode.equalsIgnoreCase("HR")) {
-                return InitialAssessmentResult.HARDSHIP;
-            } else {
-                return InitialAssessmentResult.FAIL;
-            }
+        FullAssessmentResult result;
+        CurrentStatus status = meansAssessment.getAssessmentStatus();
+        if (status.equals(CurrentStatus.COMPLETE)) {
+            result = fullMeansAssessmentService.getAssessmentResult(totalDisposableIncome, assessmentCriteria);
         } else {
-            return InitialAssessmentResult.FULL;
+            result = FullAssessmentResult.NONE;
         }
+        return MeansAssessmentDTO
+                .builder()
+                .currentStatus(status)
+                .fullAssessmentResult(result)
+                .adjustedLivingAllowance(adjustedLivingAllowance)
+                .totalAggregatedExpense(expenditureTotal)
+                .totalAnnualDisposableIncome(totalDisposableIncome)
+                .meansAssessment(meansAssessment)
+                .assessmentCriteria(assessmentCriteria)
+                .build();
     }
 
-    protected BigDecimal getAnnualTotal(CaseType caseType, AssessmentCriteriaEntity assessmentCriteria, List<ApiAssessmentSectionSummary> sectionSummaries) {
+    protected BigDecimal calculateSummariesTotal(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
+        List<ApiAssessmentSectionSummary> sectionSummaries = meansAssessment.getSectionSummaries();
         BigDecimal annualTotal = BigDecimal.ZERO;
         for (ApiAssessmentSectionSummary sectionSummary : sectionSummaries) {
+            BigDecimal partnerTotal = BigDecimal.ZERO;
+            BigDecimal applicantTotal = BigDecimal.ZERO;
             for (ApiAssessmentDetail assessmentDetail : sectionSummary.getAssessmentDetails()) {
-                assessmentCriteriaService.checkAssessmentDetail(caseType, sectionSummary.getSection(), assessmentCriteria, assessmentDetail);
-                annualTotal = annualTotal.add(getDetailTotal(assessmentDetail));
+                assessmentCriteriaService.checkAssessmentDetail(meansAssessment.getCaseType(), sectionSummary.getSection(), assessmentCriteria, assessmentDetail);
+
+                applicantTotal = applicantTotal.add(
+                        getDetailTotal(assessmentDetail, false));
+
+                partnerTotal = partnerTotal.add(
+                        getDetailTotal(assessmentDetail, true));
+
             }
+            annualTotal = annualTotal.add(
+                    applicantTotal.add(partnerTotal)
+            );
+            sectionSummary.setAnnualTotal(annualTotal);
+            sectionSummary.setApplicantAnnualTotal(applicantTotal);
+            sectionSummary.setPartnerAnnualTotal(partnerTotal);
         }
         return annualTotal;
     }
 
-    protected BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail) {
+    protected BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail, boolean usePartner) {
         BigDecimal detailTotal = BigDecimal.ZERO;
-        BigDecimal partnerAmount = assessmentDetail.getPartnerAmount();
-        if (partnerAmount != null && !BigDecimal.ZERO.equals(partnerAmount)) {
-            detailTotal = detailTotal.add(
-                    partnerAmount.multiply(
-                            BigDecimal.valueOf(assessmentDetail.getPartnerFrequency().getWeighting())
-                    )
-            );
-        }
-        BigDecimal applicationAmount = assessmentDetail.getApplicantAmount();
-        if (applicationAmount != null && !BigDecimal.ZERO.equals(applicationAmount)) {
-            detailTotal = detailTotal.add(
-                    applicationAmount.multiply(
-                            BigDecimal.valueOf(assessmentDetail.getApplicantFrequency().getWeighting())
-                    )
-            );
+
+        if (usePartner) {
+            BigDecimal partnerAmount = assessmentDetail.getPartnerAmount();
+            if (partnerAmount != null && !BigDecimal.ZERO.equals(partnerAmount)) {
+                detailTotal = detailTotal.add(
+                        partnerAmount.multiply(
+                                BigDecimal.valueOf(assessmentDetail.getPartnerFrequency().getWeighting())
+                        )
+                );
+            }
+        } else {
+            BigDecimal applicationAmount = assessmentDetail.getApplicantAmount();
+            if (applicationAmount != null && !BigDecimal.ZERO.equals(applicationAmount)) {
+                detailTotal = detailTotal.add(
+                        applicationAmount.multiply(
+                                BigDecimal.valueOf(assessmentDetail.getApplicantFrequency().getWeighting())
+                        )
+                );
+            }
         }
         return detailTotal;
     }
 
-    public ApiCreateMeansAssessmentResponse persistAssessment(ApiCreateAssessment createAssessment, String laaTransactionId) {
-        ApiCreateMeansAssessmentResponse response = webClient.post()
-                .uri(configuration.getFinancialAssessmentEndpoints().getCreateUrl())
+    public MaatApiAssessmentResponse persistAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
+        MaatApiAssessmentResponse response = webClient.post()
+                .uri(endpointUrl)
                 .headers(httpHeaders -> httpHeaders.setAll(Map.of(
                         "Laa-Transaction-Id", laaTransactionId
                 )))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(createAssessment))
+                .body(BodyInserters.fromValue(assessment))
                 .retrieve()
-                .bodyToMono(ApiCreateMeansAssessmentResponse.class)
+                .bodyToMono(MaatApiAssessmentResponse.class)
                 .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
                 .block();
