@@ -17,6 +17,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 @EnableWebSecurity
 public class ResourceServerConfiguration {
 
+    public static final String SCOPE_READ = "SCOPE_READ";
+    public static final String SCOPE_READ_WRITE = "SCOPE_READ_WRITE";
+
     @Bean
     protected BearerTokenAuthenticationEntryPoint bearerTokenAuthenticationEntryPoint() {
         BearerTokenAuthenticationEntryPoint bearerTokenAuthenticationEntryPoint = new BearerTokenAuthenticationEntryPoint();
@@ -42,11 +45,11 @@ public class ResourceServerConfiguration {
                     .antMatchers("/actuator/**").permitAll()
                     .antMatchers("/error").permitAll()
                     .antMatchers(HttpMethod.GET,"/crime-means-assessment/**").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/**").hasAnyAuthority("SCOPE_READ", "SCOPE_READ_WRITE")
-                    .antMatchers(HttpMethod.POST, "/api/**").hasAuthority("SCOPE_READ_WRITE")
-                    .antMatchers(HttpMethod.PUT, "/api/**").hasAuthority("SCOPE_READ_WRITE")
-                    .antMatchers(HttpMethod.DELETE, "/api/**").hasAuthority("SCOPE_READ_WRITE")
-                    .antMatchers(HttpMethod.PATCH, "/api/**").hasAuthority("SCOPE_READ_WRITE")
+                    .antMatchers(HttpMethod.GET, "/api/**").hasAnyAuthority(SCOPE_READ, SCOPE_READ_WRITE)
+                    .antMatchers(HttpMethod.POST, "/api/**").hasAuthority(SCOPE_READ_WRITE)
+                    .antMatchers(HttpMethod.PUT, "/api/**").hasAuthority(SCOPE_READ_WRITE)
+                    .antMatchers(HttpMethod.DELETE, "/api/**").hasAuthority(SCOPE_READ_WRITE)
+                    .antMatchers(HttpMethod.PATCH, "/api/**").hasAuthority(SCOPE_READ_WRITE)
                     .anyRequest().authenticated())
                 .oauth2ResourceServer().accessDeniedHandler(bearerTokenAccessDeniedHandler()).authenticationEntryPoint(bearerTokenAuthenticationEntryPoint())
                 .jwt()
