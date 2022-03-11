@@ -11,5 +11,11 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if not (eq (toString .Values.actuator.port) "http") }}
+    - port: {{ .Values.actuator.port }}
+      targetPort: actuator
+      protocol: TCP
+      name: actuator
+    {{- end }}      
   selector:
     {{- include "laa-crime-means-assessment.selectorLabels" . | nindent 4 }}
