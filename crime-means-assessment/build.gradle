@@ -103,6 +103,8 @@ dependencies {
     // Utility Libraries
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: versions.commonsCollections4Version
 
+    // Metrics
+    runtimeOnly group: 'io.micrometer', name: 'micrometer-registry-prometheus'
 
     //liquibase - DB versioning and change tracking
     implementation group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
