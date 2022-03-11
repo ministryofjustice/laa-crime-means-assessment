@@ -8,10 +8,12 @@ logging:
     org.springframework.security: DEBUG
 
 management:
+  server:
+    port: 8096
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
 
 maatApi:
   oAuthEnabled: false

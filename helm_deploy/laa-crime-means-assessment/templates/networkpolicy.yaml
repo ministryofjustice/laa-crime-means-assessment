@@ -1,0 +1,19 @@
+{{- if .Values.actuator.metrics.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "laa-crime-means-assessment.fullname" . }}-monitoring
+  labels:
+    {{- include "laa-crime-means-assessment.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "laa-crime-means-assessment.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            component: monitoring
+{{- end }}
