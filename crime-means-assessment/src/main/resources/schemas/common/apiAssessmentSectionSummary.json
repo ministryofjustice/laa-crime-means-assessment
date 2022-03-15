@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "apiAssessmentSummary.json",
+  "id": "apiAssessmentSectionSummary.json",
   "type": "object",
-  "description": "Assessment Summary",
+  "description": "Assessment Section Summary",
   "properties": {
     "section": {
       "type": "string",
