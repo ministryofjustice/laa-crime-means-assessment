@@ -30,6 +30,10 @@ maatApi:
     update-url: /financial-assessments/{financialAssessmentId}
   passport-assessment-endpoints:
     find-url: /passport-assessments/{repId}
+  hardship-review-endpoints:
+    find-url: /hardship/{repId}
+  ioj-appeal-endpoints:
+    find-url: /ioj-appeal/{repId}
 
 means-assessment:
   security:
