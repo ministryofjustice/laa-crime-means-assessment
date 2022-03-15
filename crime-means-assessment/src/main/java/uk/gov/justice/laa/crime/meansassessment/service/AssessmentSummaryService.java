@@ -3,6 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSummary;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -22,8 +23,8 @@ public class AssessmentSummaryService {
         var assesmentsSummary = new ArrayList<ApiAssessmentSummary>();
 
         assesmentsSummary.add(getFinancialAssessmentSummary(assessmentResponse));
+        assesmentsSummary.add(getPassportAssessmentSummary(assessmentResponse.getRepId(), laaTransactionId));
 
-        //get passport assessment summary
         //get hardship reviews summary
         //get IOJ appeals summary
 
@@ -53,6 +54,21 @@ public class AssessmentSummaryService {
             finAssessmentSummary.setAssessmentDate(assessmentResponse.getInitialAssessmentDate());
         }
         return finAssessmentSummary;
+    }
+
+    private ApiAssessmentSummary getPassportAssessmentSummary(final Integer repId,
+                                                              final String laaTransactionId) {
+        PassportAssessmentDTO passportAssessmentDTO = courtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
+
+        ApiAssessmentSummary passportAssessmentSummary = new ApiAssessmentSummary()
+                .withId(passportAssessmentDTO.getId().toString())
+                .withType(WorkType.Passported)
+                .withAssessmentDate(passportAssessmentDTO.getAssessmentDate())
+                .withStatus(passportAssessmentDTO.getPastStatus())
+                .withReviewType(passportAssessmentDTO.getRtCode())
+                .withResult(passportAssessmentDTO.getResult());
+
+        return passportAssessmentSummary;
     }
 
 }
