@@ -28,6 +28,8 @@ maatApi:
     create-url: /financial-assessments/
     find-url: /financial-assessments/{financialAssessmentId}
     update-url: /financial-assessments/{financialAssessmentId}
+  passport-assessment-endpoints:
+    find-url: /passport-assessments/{repId}
 
 means-assessment:
   security:
