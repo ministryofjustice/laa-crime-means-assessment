@@ -309,15 +309,10 @@ public class TestModelDataBuilder {
                 .withAdjustedIncomeValue(BigDecimal.valueOf(12))
                 .withLowerThreshold(BigDecimal.valueOf(12))
                 .withUpperThreshold(BigDecimal.valueOf(13))
-                .withResult("testResult")
-                .withResultReason("testResultReason")
-                .withAssessmentStatus(isValid ? getApiAssessmentStatus() : null)
-                .withAssessmentSummary(getApiAssessmentSummaries(isValid));
-    }
-
-    public static ApiAssessmentStatus getApiAssessmentStatus() {
-        return new ApiAssessmentStatus()
-                .withStatus("testStatus");
+                .withInitResult("testResult")
+                .withInitResultReason("testResultReason")
+                .withFassInitStatus(isValid ? CurrentStatus.COMPLETE : null)
+                .withAssessmentSectionSummary(getApiAssessmentSummaries(isValid));
     }
 
     public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid) {
