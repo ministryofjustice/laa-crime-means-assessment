@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
@@ -41,4 +42,20 @@ public class CourtDataService {
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
+
+    public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
+        PassportAssessmentDTO response = webClient.get()
+                .uri(configuration.getPassportAssessmentEndpoints().getFindUrl())
+                .headers(httpHeaders -> httpHeaders.setAll(Map.of(
+                        "Laa-Transaction-Id", laaTransactionId)))
+                .retrieve()
+                .bodyToMono(PassportAssessmentDTO.class)
+                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
+                .doOnError(Sentry::captureException)
+                .block();
+
+        log.info(String.format("PassportAssessmentDTO response from Court Data API: %s", response));
+        return response;
+    }
+
 }

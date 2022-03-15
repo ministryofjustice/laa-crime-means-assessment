@@ -29,6 +29,9 @@ public class MaatApiConfiguration {
     @NotNull
     private FinancialAssessmentEndpoints financialAssessmentEndpoints;
 
+    @NotNull
+    private PassportAssessmentEndpoints passportAssessmentEndpoints;
+
     @Getter
     @AllArgsConstructor
     @Setter
@@ -82,5 +85,15 @@ public class MaatApiConfiguration {
         @NotNull
         private String updateUrl;
 
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PassportAssessmentEndpoints {
+
+        @NotNull
+        private String findUrl;
     }
 }
