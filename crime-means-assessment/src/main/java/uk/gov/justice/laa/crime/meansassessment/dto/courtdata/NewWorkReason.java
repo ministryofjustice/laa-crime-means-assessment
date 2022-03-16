@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NewWorkReason {
 
-    @JsonValue
     private String code;
     private String type;
     private String description;
