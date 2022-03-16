@@ -53,7 +53,7 @@ public class MeansAssessmentService {
         var createMeansAssessmentResponse = courtDataService.postMeansAssessment(assessment, meansAssessment.getLaaTransactionId());
 
         //post processing
-        createMeansAssessmentResponse = assessmentSummaryService.getAssessmentsSummary(createMeansAssessmentResponse, meansAssessment.getLaaTransactionId());
+        assessmentSummaryService.getAssessmentsSummary(createMeansAssessmentResponse, meansAssessment.getLaaTransactionId());
 
         return createMeansAssessmentResponse;
     }
