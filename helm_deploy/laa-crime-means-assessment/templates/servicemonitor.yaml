@@ -10,7 +10,7 @@ spec:
       {{- include "laa-crime-means-assessment.selectorLabels" . | nindent 6 }}
   endpoints:
     {{- if not (eq (toString .Values.actuator.port) "http") }}
-    - port: metrics
+    - port: actuator
     {{- else }}
     - port: http
     {{- end }}
