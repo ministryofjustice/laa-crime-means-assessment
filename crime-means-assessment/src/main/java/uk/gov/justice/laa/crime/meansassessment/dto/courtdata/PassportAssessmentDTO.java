@@ -44,8 +44,7 @@ public class PassportAssessmentDTO {
     private LocalDateTime lastSignOnDate;
     private String esa;
     private String pastStatus;
-    @Builder.Default
-    private String replaced = "N";
+    private String replaced;
     private LocalDateTime passportEvidenceDueDate;
     private LocalDateTime allPassportEvidenceReceivedDate;
     private Integer passportUpliftPercentage;

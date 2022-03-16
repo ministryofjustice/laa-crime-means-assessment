@@ -53,6 +53,9 @@ public class MeansAssessmentServiceTest {
     @Mock
     private CourtDataService courtDataService;
 
+    @Mock
+    private AssessmentSummaryService assessmentSummaryService;
+
     @Before
     public void setUp() {
         assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
