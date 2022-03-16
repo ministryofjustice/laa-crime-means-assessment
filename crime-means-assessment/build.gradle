@@ -4,7 +4,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "org.sonarqube" version "3.3"
-    id 'info.solidsoft.pitest' version '1.7.0'
+    id 'info.solidsoft.pitest' version '1.7.4'
     id 'org.jsonschema2dataclass' version '4.2.0'
 }
 
@@ -41,7 +41,7 @@ dependencyManagement {
     imports {
         mavenBom "org.springframework.boot:spring-boot-dependencies:2.6.4"
         mavenBom "org.springframework:spring-framework-bom:5.3.16"
-        mavenBom "com.amazonaws:aws-java-sdk-bom:1.12.172"
+        mavenBom "com.amazonaws:aws-java-sdk-bom:1.12.177"
         mavenBom "org.springframework.security:spring-security-bom:5.6.2"
     }
     dependencies {
