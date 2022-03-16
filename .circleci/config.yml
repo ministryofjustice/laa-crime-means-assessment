@@ -18,6 +18,8 @@ commands:
 
 jobs:
   build-test-package:
+    machine:
+      image: ubuntu-2004:202111-02  
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
