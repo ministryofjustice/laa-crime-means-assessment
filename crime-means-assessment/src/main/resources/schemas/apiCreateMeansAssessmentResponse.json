@@ -6,7 +6,7 @@
   "description": "The response data of the Initial Means Assessment service",
   "properties": {
     "assessmentId": {
-      "type": "string",
+      "type": "integer",
       "description": "Unique Identifier of an Assessment."
     },
     "criteriaId": {
