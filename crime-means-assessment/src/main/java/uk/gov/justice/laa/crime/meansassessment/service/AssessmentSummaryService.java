@@ -3,9 +3,9 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.HardshipReviewDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.IOJAppealDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.PassportAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSummary;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -23,10 +23,10 @@ import static java.util.Optional.*;
 @RequiredArgsConstructor
 public class AssessmentSummaryService {
 
-    private final CourtDataService courtDataService;
+    private final MaatCourtDataService maatCourtDataService;
 
-    public ApiCreateMeansAssessmentResponse getAssessmentsSummary(final ApiCreateMeansAssessmentResponse assessmentResponse,
-                                                                  final String laaTransactionId) {
+    public ApiCreateMeansAssessmentResponse addAssessmentSummaryToMeansResponse(final ApiCreateMeansAssessmentResponse assessmentResponse,
+                                                                                final String laaTransactionId) {
         log.info("Generating assessment summary for means assessment response");
         try {
             var assesmentsSummary = new ArrayList<ApiAssessmentSummary>();
@@ -79,7 +79,7 @@ public class AssessmentSummaryService {
         log.info("Generating assessment summary for passport assessment");
         try {
             ApiAssessmentSummary passportAssessmentSummary = new ApiAssessmentSummary();
-            PassportAssessmentDTO passportAssessmentDTO = courtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
+            PassportAssessmentDTO passportAssessmentDTO = maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
             passportAssessmentSummary.withId(passportAssessmentDTO.getId().toString())
                     .withType(WorkType.Passported)
                     .withAssessmentDate(passportAssessmentDTO.getAssessmentDate())
@@ -91,14 +91,13 @@ public class AssessmentSummaryService {
             log.error("Failed to retrieve passportAssessmentDTO from court-data-api", ex);
             return empty();
         }
-
     }
 
     private Optional<ApiAssessmentSummary> getHardshipReviewsSummary(final Integer repId, final String laaTransactionId) {
         log.info("Generating assessment summary for hardship reviews");
         try {
             ApiAssessmentSummary hardshipReviewSummary = new ApiAssessmentSummary();
-            HardshipReviewDTO hardshipReviewDTO = courtDataService.getHardshipReviewFromRepId(repId, laaTransactionId);
+            HardshipReviewDTO hardshipReviewDTO = maatCourtDataService.getHardshipReviewFromRepId(repId, laaTransactionId);
 
             hardshipReviewSummary.withId(hardshipReviewDTO.getId().toString())
                     .withAssessmentDate(hardshipReviewDTO.getReviewDate())
@@ -122,7 +121,7 @@ public class AssessmentSummaryService {
         log.info("Generating assessment summary for IOJ Appeal");
         try {
             ApiAssessmentSummary iOJAppealSummary = new ApiAssessmentSummary();
-            IOJAppealDTO iojAppealDTO = courtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
+            IOJAppealDTO iojAppealDTO = maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
 
             iOJAppealSummary.withId(iojAppealDTO.getId().toString())
                     .withAssessmentDate(iojAppealDTO.getAppealSetupDate())
