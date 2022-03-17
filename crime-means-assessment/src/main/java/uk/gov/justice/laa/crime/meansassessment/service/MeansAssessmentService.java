@@ -23,7 +23,7 @@ public class MeansAssessmentService {
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
-    private final CourtDataService courtDataService;
+    private final MaatCourtDataService maatCourtDataService;
     private final AssessmentSummaryService assessmentSummaryService;
 
     public ApiCreateMeansAssessmentResponse createMeansAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
@@ -50,10 +50,10 @@ public class MeansAssessmentService {
 
         ApiCreateAssessment assessment = createInitialAssessmentBuilder.build(
                 new InitialMeansAssessmentDTO(annualTotal, status, adjustedIncomeValue, result, assessmentCriteria, meansAssessment, sectionSummaries));
-        var createMeansAssessmentResponse = courtDataService.postMeansAssessment(assessment, meansAssessment.getLaaTransactionId());
+        var createMeansAssessmentResponse = maatCourtDataService.postMeansAssessment(assessment, meansAssessment.getLaaTransactionId());
 
         //post processing
-        assessmentSummaryService.getAssessmentsSummary(createMeansAssessmentResponse, meansAssessment.getLaaTransactionId());
+        assessmentSummaryService.addAssessmentSummaryToMeansResponse(createMeansAssessmentResponse, meansAssessment.getLaaTransactionId());
 
         return createMeansAssessmentResponse;
     }

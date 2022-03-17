@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.dto.courtdata;
+package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

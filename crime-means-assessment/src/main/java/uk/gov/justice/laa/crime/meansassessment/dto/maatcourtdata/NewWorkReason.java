@@ -1,6 +1,5 @@
-package uk.gov.justice.laa.crime.meansassessment.dto.courtdata;
+package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
