@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.HardshipReviewDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.IOJAppealDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.courtdata.PassportAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CourtDataService {
+public class MaatCourtDataService {
 
     @Qualifier("maatAPIOAuth2WebClient")
     private final WebClient webClient;
@@ -56,7 +56,7 @@ public class CourtDataService {
                 .doOnError(Sentry::captureException)
                 .block();
 
-        log.info(String.format("PassportAssessmentDTO response from Court Data API: %s", response));
+        log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
@@ -71,7 +71,7 @@ public class CourtDataService {
                 .doOnError(Sentry::captureException)
                 .block();
 
-        log.info(String.format("HardshipReviewDTO response from Court Data API: %s", response));
+        log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
@@ -86,7 +86,7 @@ public class CourtDataService {
                 .doOnError(Sentry::captureException)
                 .block();
 
-        log.info(String.format("IOJAppealDTO response from Court Data API: %s", response));
+        log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 

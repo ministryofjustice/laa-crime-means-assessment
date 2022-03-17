@@ -51,7 +51,7 @@ public class MeansAssessmentServiceTest {
     private CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
 
     @Mock
-    private CourtDataService courtDataService;
+    private MaatCourtDataService maatCourtDataService;
 
     @Mock
     private AssessmentSummaryService assessmentSummaryService;
@@ -233,10 +233,10 @@ public class MeansAssessmentServiceTest {
                 BigDecimal.valueOf(0.85)
         );
         when(createInitialAssessmentBuilder.build(any(InitialMeansAssessmentDTO.class))).thenReturn(new ApiCreateAssessment());
-        when(courtDataService.postMeansAssessment(any(ApiCreateAssessment.class), anyString())).thenReturn(new ApiCreateMeansAssessmentResponse());
+        when(maatCourtDataService.postMeansAssessment(any(ApiCreateAssessment.class), anyString())).thenReturn(new ApiCreateMeansAssessmentResponse());
 
         meansAssessmentService.createMeansAssessment(TestModelDataBuilder.getCreateMeansAssessmentRequest(true));
-        verify(courtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
+        verify(maatCourtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
     }
 
     @Test
