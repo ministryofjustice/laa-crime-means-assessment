@@ -18,10 +18,8 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.tuple;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.mockito.Mockito.*;
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.WorkType.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,10 +45,10 @@ public class AssessmentSummaryServiceTest {
     @Test
     public void givenMeansAssessmentResponse_WhenGetAssessmentSummaryIsInvoked_ThenAssessmentSummaryShouldBeReturnedWithInitFinAssSummary() {
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
-        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(1);
-        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type", "status")
-                .containsExactly(tuple(Initial_Assessment, "Complete"));
 
+        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
+                .contains(Initial_Assessment)
+                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -60,10 +58,10 @@ public class AssessmentSummaryServiceTest {
     public void givenMeansAssessmentResponse_WhenGetAssessmentSummaryIsInvoked_ThenAssessmentSummaryShouldBeReturnedWithFullFinAssSummary() {
         meansAssessmentResponse.setAssessmentType(AssessmentType.FULL);
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
-        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(1);
-        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type", "status")
-                .containsExactly(tuple(Full_Means_Test, null));
 
+        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
+                .contains(Full_Means_Test)
+                .doesNotContain(Initial_Assessment, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -74,9 +72,10 @@ public class AssessmentSummaryServiceTest {
         meansAssessmentResponse.setAssessmentType(AssessmentType.FULL);
         meansAssessmentResponse.setFullAssessmentDate(LocalDateTime.of(2022, 1, 20, 10, 0));
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
-        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(1);
-        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type", "status")
-                .containsExactlyInAnyOrder(tuple(Full_Means_Test, null));
+
+        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
+                .contains(Full_Means_Test)
+                .doesNotContain(Initial_Assessment, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
 
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
@@ -89,10 +88,9 @@ public class AssessmentSummaryServiceTest {
 
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
-        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(2);
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .containsExactlyInAnyOrder(Initial_Assessment, Passported);
-
+                .contains(Initial_Assessment, Passported)
+                .doesNotContain(Full_Means_Test, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -104,10 +102,9 @@ public class AssessmentSummaryServiceTest {
 
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
-        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(2);
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .containsExactlyInAnyOrder(Initial_Assessment, Hardship_Review_CrownCourt);
-
+                .contains(Initial_Assessment, Hardship_Review_CrownCourt)
+                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_Magistrate, IoJ_Appeal);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -121,10 +118,9 @@ public class AssessmentSummaryServiceTest {
 
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
-        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(2);
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .containsExactlyInAnyOrder(Initial_Assessment, Hardship_Review_Magistrate);
-
+                .contains(Initial_Assessment, Hardship_Review_Magistrate)
+                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_CrownCourt, IoJ_Appeal);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -136,10 +132,9 @@ public class AssessmentSummaryServiceTest {
 
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
-        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(2);
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .containsExactlyInAnyOrder(Initial_Assessment, IoJ_Appeal);
-
+                .contains(Initial_Assessment, IoJ_Appeal)
+                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -156,10 +151,19 @@ public class AssessmentSummaryServiceTest {
         assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(4);
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
                 .containsExactlyInAnyOrder(Initial_Assessment, IoJ_Appeal, Hardship_Review_CrownCourt, Passported);
-
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
+    }
+
+    @Test
+    public void givenMeansAssessmentResponse_WhenGetAssessmentSummaryIsInvokedAndExceptionIsThrown_ThenAssessmentSummaryIsNotSet() {
+        when(maatCourtDataService.getPassportAssessmentFromRepId(1234, null)).thenReturn(new PassportAssessmentDTO());
+
+        assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
+
+        assertThat(meansAssessmentResponse.getAssessmentSummary().size()).isEqualTo(0);
+        verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
     }
 
     private PassportAssessmentDTO buildPassportAssessmentDTO() {
