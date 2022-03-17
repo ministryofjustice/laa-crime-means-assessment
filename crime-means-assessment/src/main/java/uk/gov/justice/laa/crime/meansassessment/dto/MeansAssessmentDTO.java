@@ -9,13 +9,11 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentR
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class MeansAssessmentDTO {
     private String userCreated;
-    private BigDecimal annualTotal;
     private CurrentStatus currentStatus;
     private BigDecimal adjustedIncomeValue;
     private BigDecimal totalAggregatedIncome;
@@ -23,8 +21,6 @@ public class MeansAssessmentDTO {
     private BigDecimal adjustedLivingAllowance;
     private AssessmentCriteriaEntity assessmentCriteria;
     private ApiCreateMeansAssessmentRequest meansAssessment;
-    private LocalDateTime incomeUpliftApplyDate;
-    private LocalDateTime incomeUpliftRemoveDate;
     private BigDecimal totalAnnualDisposableIncome;
     private InitialAssessmentResult initialAssessmentResult;
     private FullAssessmentResult fullAssessmentResult;
