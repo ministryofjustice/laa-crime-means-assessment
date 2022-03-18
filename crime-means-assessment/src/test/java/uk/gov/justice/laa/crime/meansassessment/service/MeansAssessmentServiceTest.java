@@ -3,22 +3,21 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.justice.laa.crime.meansassessment.builder.ApiCreateAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatAPIAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +29,17 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentServiceTest {
 
-    private AssessmentCriteriaEntity assessmentCriteria;
-    private final BigDecimal upperThreshold = TestModelDataBuilder.TEST_INITIAL_UPPER_THRESHOLD;
-    private final BigDecimal lowerThreshold = TestModelDataBuilder.TEST_INITIAL_LOWER_THRESHOLD;
+    private final AssessmentCriteriaEntity assessmentCriteria =
+            TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
+
+    private final ApiCreateMeansAssessmentRequest meansAssessment =
+            TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+
+    private final MaatApiConfiguration.FinancialAssessmentEndpoints financialAssessmentEndpoints =
+            new MaatApiConfiguration.FinancialAssessmentEndpoints();
+
+    @Mock
+    private MaatApiConfiguration configuration;
 
     @Spy
     @InjectMocks
@@ -42,89 +49,80 @@ public class MeansAssessmentServiceTest {
     private AssessmentCriteriaService assessmentCriteriaService;
 
     @Mock
-    private AssessmentCriteriaChildWeightingService childWeightingService;
+    private InitMeansAssessmentService initMeansAssessmentService;
 
     @Mock
-    private ApiCreateAssessmentBuilder createInitialAssessmentBuilder;
+    private FullMeansAssessmentService fullMeansAssessmentService;
+
+    @Mock
+    private MaatAPIAssessmentBuilder assessmentBuilder;
 
     @Before
-    public void setUp() {
-        assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
+    public void setup() {
+        assessmentCriteria.setId(TestModelDataBuilder.TEST_CRITERIA_ID);
+        financialAssessmentEndpoints.setCreateUrl("");
+    }
+
+    @AfterEach
+    public void resetMeansAssessment() {
+        meansAssessment
+                .withAssessmentStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS)
+                .withSectionSummaries(TestModelDataBuilder.getApiAssessmentSummaries(true));
     }
 
     @Test
-    public void givenIncomeBelowLowerThreshold_whenGetAssessmentResultIsInvoked_thenResultIsPass() {
-        BigDecimal adjustedIncome = lowerThreshold.subtract(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
-                meansAssessmentService.getAssessmentResult(adjustedIncome, assessmentCriteria, "FMA");
-        SoftAssertions.assertSoftly(softly -> {
-            assertThat(result).isEqualTo(InitialAssessmentResult.PASS);
-        });
-    }
-
-    @Test
-    public void givenIncomeBetweenThresholds_whenGetAssessmentResultIsInvoked_thenResultIsFull() {
-        BigDecimal adjustedIncome = lowerThreshold.add(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
-                meansAssessmentService.getAssessmentResult(adjustedIncome, assessmentCriteria, "FMA");
-        SoftAssertions.assertSoftly(softly -> {
-            assertThat(result).isEqualTo(InitialAssessmentResult.FULL);
-        });
-    }
-
-    @Test
-    public void givenIncomeAboveUpperThreshold_whenGetAssessmentResultIsInvoked_thenResultIsFail() {
-        BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
-                meansAssessmentService.getAssessmentResult(adjustedIncome, assessmentCriteria, "FMA");
-        SoftAssertions.assertSoftly(softly -> {
-            assertThat(result).isEqualTo(InitialAssessmentResult.FAIL);
-        });
-    }
-
-    @Test
-    public void givenIncomeAboveUpperThresholdAndHardshipApplication_whenGetAssessmentResultIsInvoked_thenResultIsHardship() {
-        BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
-                meansAssessmentService.getAssessmentResult(adjustedIncome, assessmentCriteria, "HR");
-        SoftAssertions.assertSoftly(softly -> {
-            assertThat(result).isEqualTo(InitialAssessmentResult.HARDSHIP);
-        });
-    }
-
-    @Test
-    public void givenNullAmounts_whenGetDetailTotalIsInvoked_thenTotalIsZero() {
+    public void givenNullAmountsAndUsePartnerIsFalse_whenGetDetailTotalIsInvoked_thenTotalIsZero() {
         ApiAssessmentDetail detail = new ApiAssessmentDetail()
-                .withPartnerAmount(null)
                 .withApplicantAmount(null);
-        BigDecimal total = meansAssessmentService.getDetailTotal(detail);
+        BigDecimal total = meansAssessmentService.getDetailTotal(detail, false);
         assertThat(total).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
-    public void givenZeroAmounts_whenGetDetailTotalIsInvoked_thenTotalIsZero() {
+    public void givenNullAmountsAndUsePartnerIsTrue_whenGetDetailTotalIsInvoked_thenTotalIsZero() {
         ApiAssessmentDetail detail = new ApiAssessmentDetail()
-                .withPartnerAmount(BigDecimal.ZERO)
-                .withApplicantAmount(BigDecimal.ZERO);
-        BigDecimal total = meansAssessmentService.getDetailTotal(detail);
+                .withPartnerAmount(null);
+        BigDecimal total = meansAssessmentService.getDetailTotal(detail, true);
         assertThat(total).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
-    public void givenValidAAmountsAndFrequencies_whenGetDetailTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    public void givenZeroAmountsAndUsePartnerIsTrue_whenGetDetailTotalIsInvoked_thenTotalIsZero() {
+        ApiAssessmentDetail detail = new ApiAssessmentDetail()
+                .withPartnerAmount(BigDecimal.ZERO);
+        BigDecimal total = meansAssessmentService.getDetailTotal(detail, true);
+        assertThat(total).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    public void givenZeroAmountsAndUsePartnerIsFalse_whenGetDetailTotalIsInvoked_thenTotalIsZero() {
+        ApiAssessmentDetail detail = new ApiAssessmentDetail()
+                .withApplicantAmount(BigDecimal.ZERO);
+        BigDecimal total = meansAssessmentService.getDetailTotal(detail, false);
+        assertThat(total).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    public void givenValidAmountAndFrequencyAndUsePartnerIsFalse_whenGetDetailTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentDetail detail = new ApiAssessmentDetail()
                 .withApplicantAmount(BigDecimal.TEN)
-                .withApplicantFrequency(Frequency.MONTHLY)
-                .withPartnerAmount(BigDecimal.ONE)
-                .withPartnerFrequency(Frequency.MONTHLY);
-        BigDecimal total = meansAssessmentService.getDetailTotal(detail);
-        assertThat(total).isEqualTo(BigDecimal.valueOf(132));
+                .withApplicantFrequency(Frequency.MONTHLY);
+        BigDecimal total = meansAssessmentService.getDetailTotal(detail, false);
+        assertThat(total).isEqualTo(BigDecimal.valueOf(120));
     }
 
     @Test
-    public void givenSingleSectionSingleDetailNoPartner_whenGetAnnualTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        ApiAssessmentSectionSummary section = TestModelDataBuilder.getApiAssessmentSectionSummary();
-        BigDecimal annualTotal = meansAssessmentService.getAnnualTotal(CaseType.EITHER_WAY, assessmentCriteria, List.of(section));
+    public void givenValidAmountAndFrequencyAndUsePartnerIsTrue_whenGetDetailTotalIsInvoked_thenCorrectTotalIsCalculated() {
+        ApiAssessmentDetail detail = new ApiAssessmentDetail()
+                .withPartnerAmount(BigDecimal.TEN)
+                .withPartnerFrequency(Frequency.MONTHLY);
+        BigDecimal total = meansAssessmentService.getDetailTotal(detail, true);
+        assertThat(total).isEqualTo(BigDecimal.valueOf(120));
+    }
+
+    @Test
+    public void givenSingleSectionSingleDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(
                 TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                         BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
@@ -133,15 +131,15 @@ public class MeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenSingleSectionTwoDetailNoPartner_whenGetAnnualTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        ApiAssessmentSectionSummary section = TestModelDataBuilder.getApiAssessmentSectionSummary();
+    public void givenSingleSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+        ApiAssessmentSectionSummary section = meansAssessment.getSectionSummaries().get(0);
         section.getAssessmentDetails().add(
                 new ApiAssessmentDetail()
                         .withApplicantAmount(BigDecimal.TEN)
                         .withApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY)
         );
 
-        BigDecimal annualTotal = meansAssessmentService.getAnnualTotal(CaseType.EITHER_WAY, assessmentCriteria, List.of(section));
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(
                 TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                         BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
@@ -153,7 +151,7 @@ public class MeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenSingleSectionSingleDetailWithPartner_whenGetAnnualTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    public void givenSingleSectionSingleDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentSectionSummary section = new ApiAssessmentSectionSummary()
                 .withAssessmentDetails(
                         new ArrayList<>(
@@ -163,14 +161,14 @@ public class MeansAssessmentServiceTest {
                                 )
                         )
                 );
-
-        BigDecimal annualTotal = meansAssessmentService.getAnnualTotal(CaseType.EITHER_WAY, assessmentCriteria, List.of(section));
+        meansAssessment.withSectionSummaries(List.of(section));
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(BigDecimal.valueOf(120));
     }
 
     @Test
-    public void givenSingleSectionTwoDetailWithPartner_whenGetAnnualTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        ApiAssessmentSectionSummary section = TestModelDataBuilder.getApiAssessmentSectionSummary();
+    public void givenSingleSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+        ApiAssessmentSectionSummary section = meansAssessment.getSectionSummaries().get(0);
         section.getAssessmentDetails().add(
                 new ApiAssessmentDetail()
                         .withApplicantAmount(BigDecimal.TEN)
@@ -179,7 +177,7 @@ public class MeansAssessmentServiceTest {
                         .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY)
         );
 
-        BigDecimal annualTotal = meansAssessmentService.getAnnualTotal(CaseType.EITHER_WAY, assessmentCriteria, List.of(section));
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(
                 TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                         BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
@@ -191,9 +189,9 @@ public class MeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenTwoSectionTwoDetailNoPartner_whenGetAnnualTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        List<ApiAssessmentSectionSummary> summaries = TestModelDataBuilder.getAssessmentSummaries();
-        BigDecimal annualTotal = meansAssessmentService.getAnnualTotal(CaseType.EITHER_WAY, assessmentCriteria, summaries);
+    public void givenTwoSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+        meansAssessment.withSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                 BigDecimal.valueOf(
                         TestModelDataBuilder.TEST_FREQUENCY.getWeighting()
@@ -202,67 +200,101 @@ public class MeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenTwoSectionTwoDetailWithPartner_whenGetAnnualTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        List<ApiAssessmentSectionSummary> summaries = TestModelDataBuilder.getAssessmentSummaries();
-        List<ApiAssessmentDetail> section = summaries.get(0).getAssessmentDetails();
+    public void givenTwoSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+        meansAssessment.withSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
+
+        List<ApiAssessmentDetail> section =
+                meansAssessment.getSectionSummaries().get(0).getAssessmentDetails();
         section.get(0).setPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY);
         section.get(0).setPartnerAmount(TestModelDataBuilder.TEST_APPLICANT_VALUE);
-        BigDecimal annualTotal = meansAssessmentService.getAnnualTotal(CaseType.EITHER_WAY, assessmentCriteria, summaries);
+
+        BigDecimal summariesTotal =
+                meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+
         BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                 BigDecimal.valueOf(
                         TestModelDataBuilder.TEST_FREQUENCY.getWeighting()
                 ).multiply(BigDecimal.valueOf(3)));
-        assertThat(annualTotal).isEqualTo(expected);
+
+        assertThat(summariesTotal).isEqualTo(expected);
     }
 
-    @Test
-    public void givenValidRequest_whenCreateInitialAssessmentIsInvoked_thenAssessmentIsPersisted() {
-        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean())).thenReturn(
-                TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails()
-        );
-        when(childWeightingService.getTotalChildWeighting(anyList(), any(AssessmentCriteriaEntity.class))).thenReturn(
-                BigDecimal.valueOf(0.85)
-        );
-        when(createInitialAssessmentBuilder.build(any(BigDecimal.class), any(CurrentStatus.class), any(BigDecimal.class),
-                any(InitialAssessmentResult.class), any(AssessmentCriteriaEntity.class), any(ApiCreateMeansAssessmentRequest.class))).thenReturn(
-                        new ApiCreateAssessment()
-        );
 
-        doReturn(new ApiCreateMeansAssessmentResponse()).when(meansAssessmentService)
-                .persistAssessment(any(ApiCreateAssessment.class), anyString());
 
-        meansAssessmentService.createInitialAssessment(TestModelDataBuilder.getCreateMeansAssessmentRequest(true));
-        verify(meansAssessmentService).persistAssessment(any(ApiCreateAssessment.class), anyString());
-    }
 
-    @Test
-    public void givenPositiveAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
-        BigDecimal annualTotal = BigDecimal.valueOf(11000);
-        BigDecimal totalChildWeighting = BigDecimal.valueOf(0.5);
-        BigDecimal combinedWeightingFactor =
-                TestModelDataBuilder.TEST_APPLICANT_WEIGHTING_FACTOR.add(
-                        TestModelDataBuilder.TEST_PARTNER_WEIGHTING_FACTOR
-                ).add(totalChildWeighting);
-
-        BigDecimal expected = annualTotal.divide(combinedWeightingFactor, RoundingMode.UP);
-
-        when(childWeightingService.getTotalChildWeighting(
-                anyList(), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(totalChildWeighting);
-
-        assertThat(meansAssessmentService.getAdjustedIncome(
-                TestModelDataBuilder.getCreateMeansAssessmentRequest(true), assessmentCriteria, annualTotal)
-        ).isEqualTo(expected);
-    }
-
-    @Test
-    public void givenZeroAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenReturnsZero() {
-        BigDecimal annualTotal = BigDecimal.ZERO;
-        when(childWeightingService.getTotalChildWeighting(
-                anyList(), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(BigDecimal.ZERO);
-        assertThat(meansAssessmentService.getAdjustedIncome(
-                TestModelDataBuilder.getCreateMeansAssessmentRequest(true), assessmentCriteria, annualTotal)
-        ).isEqualTo(BigDecimal.ZERO);
-    }
+//    private void setupDoAssessmentStubbing() {
+//        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+//                .thenReturn(assessmentCriteria);
+//        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class))).thenReturn(
+//                new MaatApiAssessmentRequest()
+//        );
+//        when(configuration.getFinancialAssessmentEndpoints()).thenReturn(
+//                financialAssessmentEndpoints
+//        );
+//
+//        MeansAssessmentDTO mockAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
+//        doReturn(mockAssessment).when(meansAssessmentService)
+//                .doInitAssessment(any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class));
+//
+//        doReturn(mockAssessment).when(meansAssessmentService)
+//                .doFullAssessment(any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class));
+//
+//        MaatApiAssessmentResponse maatApiAssessmentResponse =
+//                new MaatApiAssessmentResponse()
+//                        .withId(TestModelDataBuilder.MEANS_ASSESSMENT_ID)
+//                        .withInitTotAggregatedIncome(TestModelDataBuilder.TEST_AGGREGATED_INCOME)
+//                        .withInitResult(InitialAssessmentResult.PASS.getResult())
+//                        .withInitResultReason(InitialAssessmentResult.PASS.getReason())
+//                        .withInitAdjustedIncomeValue(TestModelDataBuilder.TEST_ADJUSTED_INCOME)
+//                        .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
+//
+//        doReturn(maatApiAssessmentResponse).when(meansAssessmentService).persistAssessment(
+//                any(MaatApiAssessmentRequest.class), anyString(), anyString()
+//        );
+//    }
+//
+//    @Test
+//    public void givenCreateAssessmentRequest_whenDoAssessmentIsInvoked_thenAssessmentIsPersisted() {
+//
+//        setupDoAssessmentStubbing();
+//
+//        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(
+//                meansAssessment, AssessmentRequestType.CREATE
+//        );
+//
+//        verify(assessmentBuilder).build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class));
+//        verify(configuration.getFinancialAssessmentEndpoints()).getByRequestType(any(AssessmentRequestType.class));
+//
+//        SoftAssertions.assertSoftly(softly -> {
+//            assertThat(result.getAssessmentId()).isEqualTo(TestModelDataBuilder.MEANS_ASSESSMENT_ID);
+//            assertThat(result.getCriteriaId()).isEqualTo(TestModelDataBuilder.TEST_CRITERIA_ID);
+//            assertThat(result.getLowerThreshold()).isEqualTo(TestModelDataBuilder.TEST_INITIAL_LOWER_THRESHOLD);
+//            assertThat(result.getUpperThreshold()).isEqualTo(TestModelDataBuilder.TEST_INITIAL_UPPER_THRESHOLD);
+//            assertThat(result.getTotalAggregatedIncome()).isEqualTo(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
+//            assertThat(result.getResult()).isEqualTo(InitialAssessmentResult.PASS.getResult());
+//            assertThat(result.getResultReason()).isEqualTo(InitialAssessmentResult.PASS.getReason());
+//            assertThat(result.getAdjustedIncomeValue()).isEqualTo(TestModelDataBuilder.TEST_ADJUSTED_INCOME);
+//            assertThat(result.getAssessmentStatus().getStatus()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
+//            assertThat(result.getAssessmentSummary().get(0)).isEqualTo(TestModelDataBuilder.getApiAssessmentSectionSummary());
+//        });
+//    }
+//
+//    @Test
+//    public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
+//        setupDoAssessmentStubbing();
+//        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+//        verify(initMeansAssessmentService).getResult(
+//                any(BigDecimal.class), any(AssessmentCriteriaEntity.class), anyString()
+//        );
+//    }
+//
+//    @Test
+//    public void givenFullAssessmentType_whenDoAssessmentIsInvoked_thenFullAssessmentIsPerformed() {
+//        setupDoAssessmentStubbing();
+//        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+//        meansAssessment.setAssessmentType(AssessmentType.FULL);
+//        verify(fullMeansAssessmentService).getResult(
+//                any(BigDecimal.class), any(AssessmentCriteriaEntity.class)
+//        );
+//    }
 }
