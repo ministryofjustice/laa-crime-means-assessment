@@ -8,15 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.ApiCreateAssessmentBuilder;
-import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.ApiUpdateAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatAPIAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.dto.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,116 +29,56 @@ public class MeansAssessmentService {
     @Qualifier("maatAPIOAuth2WebClient")
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
+    private final MaatAPIAssessmentBuilder assessmentBuilder;
+    private final AssessmentCriteriaService assessmentCriteriaService;
     private final FullMeansAssessmentService fullMeansAssessmentService;
     private final InitMeansAssessmentService initMeansAssessmentService;
-    private final AssessmentCriteriaService assessmentCriteriaService;
 
     public ApiCreateMeansAssessmentResponse doAssessment(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentRequestType requestType) {
         AssessmentCriteriaEntity assessmentCriteria =
                 assessmentCriteriaService.getAssessmentCriteria(
                         meansAssessment.getAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
                 );
-        String targetEndpoint;
-        MeansAssessmentDTO assessment;
-        if (meansAssessment.getAssessmentType().equals(AssessmentType.INIT)) {
-            log.info("Create initial means assessment - Start");
-            assessment = doInitAssessment(meansAssessment, assessmentCriteria);
-            log.info("Init means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
-        } else {
-            log.info("Create full means assessment - Start");
-            assessment = doFullAssessment(meansAssessment, assessmentCriteria);
-            log.info("Full means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
-        }
+        BigDecimal summariesTotal = calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        AssessmentService assessmentService =
+                meansAssessment.getAssessmentType().equals(AssessmentType.INIT) ? initMeansAssessmentService : fullMeansAssessmentService;
 
-        MaatApiAssessmentRequest assessmentPayload;
-        if (requestType.equals(AssessmentRequestType.CREATE)) {
-            targetEndpoint = configuration.getFinancialAssessmentEndpoints().getCreateUrl();
-            assessmentPayload = ApiCreateAssessmentBuilder.build(assessment);
-        } else {
-            targetEndpoint = configuration.getFinancialAssessmentEndpoints().getUpdateUrl();
-            assessmentPayload = ApiUpdateAssessmentBuilder.build(assessment);
-        }
+        MeansAssessmentDTO assessment = assessmentService.execute(summariesTotal, meansAssessment, assessmentCriteria);
+
+        assessment.setMeansAssessment(meansAssessment);
+        assessment.setAssessmentCriteria(assessmentCriteria);
+
+        String targetEndpoint = configuration.getFinancialAssessmentEndpoints()
+                .getByRequestType(requestType);
 
         MaatApiAssessmentResponse response =
-                persistAssessment(assessmentPayload, meansAssessment.getLaaTransactionId(), targetEndpoint);
+                persistAssessment(assessmentBuilder.build(assessment, requestType), meansAssessment.getLaaTransactionId(), targetEndpoint);
 
         return new ApiCreateMeansAssessmentResponse()
-                .withAssessmentId(response.getId().toString())
+                .withAssessmentId(response.getId())
                 .withCriteriaId(assessmentCriteria.getId())
                 .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
                 .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())
-                .withTotalAggregatedIncome(assessment.getTotalAggregatedIncome())
-                .withResult(assessment.getInitialAssessmentResult().getResult())
-                .withResultReason(assessment.getInitialAssessmentResult().getReason())
-                .withAdjustedIncomeValue(assessment.getAdjustedIncomeValue())
+                .withTotalAggregatedIncome(response.getInitTotAggregatedIncome())
+                .withResult(response.getInitResult())
+                .withResultReason(response.getInitResultReason())
+                .withAdjustedIncomeValue(response.getInitAdjustedIncomeValue())
                 .withAssessmentStatus(new ApiAssessmentStatus()
-                        .withStatus(assessment.getCurrentStatus().getStatus())
-                        .withDescription(assessment.getCurrentStatus().getDescription())
-                        .withComplete(assessment.getCurrentStatus().equals(CurrentStatus.COMPLETE))
+                        .withStatus(response.getFassInitStatus())
                 )
                 .withAssessmentSummary(assessment.getMeansAssessment().getSectionSummaries());
-
-    }
-
-    public MeansAssessmentDTO doInitAssessment(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
-        BigDecimal annualTotal = calculateSummariesTotal(meansAssessment, assessmentCriteria);
-        BigDecimal adjustedIncomeValue = initMeansAssessmentService.getAdjustedIncome(
-                meansAssessment, assessmentCriteria, annualTotal);
-
-        InitialAssessmentResult result;
-        CurrentStatus status = meansAssessment.getAssessmentStatus();
-        String newWorkReasonCode = meansAssessment.getNewWorkReason().getCode();
-        if (status.equals(CurrentStatus.COMPLETE)) {
-            result = initMeansAssessmentService.getAssessmentResult(adjustedIncomeValue, assessmentCriteria, newWorkReasonCode);
-        } else {
-            result = InitialAssessmentResult.NONE;
-        }
-        return MeansAssessmentDTO
-                .builder()
-                .currentStatus(status)
-                .initialAssessmentResult(result)
-                .meansAssessment(meansAssessment)
-                .assessmentCriteria(assessmentCriteria)
-                .adjustedIncomeValue(adjustedIncomeValue)
-                .totalAggregatedIncome(annualTotal)
-                .build();
-
-    }
-
-    public MeansAssessmentDTO doFullAssessment(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
-        BigDecimal expenditureTotal = calculateSummariesTotal(meansAssessment, assessmentCriteria);
-        BigDecimal adjustedLivingAllowance =
-                fullMeansAssessmentService.getAdjustedLivingAllowance(meansAssessment, assessmentCriteria);
-        BigDecimal totalDisposableIncome = fullMeansAssessmentService.getDisposableIncome(
-                meansAssessment, expenditureTotal, adjustedLivingAllowance
-        );
-        FullAssessmentResult result;
-        CurrentStatus status = meansAssessment.getAssessmentStatus();
-        if (status.equals(CurrentStatus.COMPLETE)) {
-            result = fullMeansAssessmentService.getAssessmentResult(totalDisposableIncome, assessmentCriteria);
-        } else {
-            result = FullAssessmentResult.NONE;
-        }
-        return MeansAssessmentDTO
-                .builder()
-                .currentStatus(status)
-                .fullAssessmentResult(result)
-                .adjustedLivingAllowance(adjustedLivingAllowance)
-                .totalAggregatedExpense(expenditureTotal)
-                .totalAnnualDisposableIncome(totalDisposableIncome)
-                .meansAssessment(meansAssessment)
-                .assessmentCriteria(assessmentCriteria)
-                .build();
     }
 
     protected BigDecimal calculateSummariesTotal(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
         List<ApiAssessmentSectionSummary> sectionSummaries = meansAssessment.getSectionSummaries();
         BigDecimal annualTotal = BigDecimal.ZERO;
         for (ApiAssessmentSectionSummary sectionSummary : sectionSummaries) {
-            BigDecimal partnerTotal = BigDecimal.ZERO;
-            BigDecimal applicantTotal = BigDecimal.ZERO;
+            BigDecimal summaryTotal, applicantTotal, partnerTotal;
+            applicantTotal = partnerTotal = BigDecimal.ZERO;
             for (ApiAssessmentDetail assessmentDetail : sectionSummary.getAssessmentDetails()) {
-                assessmentCriteriaService.checkAssessmentDetail(meansAssessment.getCaseType(), sectionSummary.getSection(), assessmentCriteria, assessmentDetail);
+                assessmentCriteriaService.checkAssessmentDetail(
+                        meansAssessment.getCaseType(), sectionSummary.getSection(), assessmentCriteria, assessmentDetail
+                );
 
                 applicantTotal = applicantTotal.add(
                         getDetailTotal(assessmentDetail, false));
@@ -148,12 +87,12 @@ public class MeansAssessmentService {
                         getDetailTotal(assessmentDetail, true));
 
             }
-            annualTotal = annualTotal.add(
-                    applicantTotal.add(partnerTotal)
-            );
-            sectionSummary.setAnnualTotal(annualTotal);
+            summaryTotal = applicantTotal.add(partnerTotal);
             sectionSummary.setApplicantAnnualTotal(applicantTotal);
+            sectionSummary.setAnnualTotal(summaryTotal);
             sectionSummary.setPartnerAnnualTotal(partnerTotal);
+
+            annualTotal = annualTotal.add(summaryTotal);
         }
         return annualTotal;
     }
