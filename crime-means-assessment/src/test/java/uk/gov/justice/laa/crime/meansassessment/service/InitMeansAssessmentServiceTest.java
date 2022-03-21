@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class InitMeansAssessmentServiceTest {
 
-    private AssessmentCriteriaEntity assessmentCriteria =
+    private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
 
     private final BigDecimal upperThreshold = TestModelDataBuilder.TEST_INITIAL_UPPER_THRESHOLD;
