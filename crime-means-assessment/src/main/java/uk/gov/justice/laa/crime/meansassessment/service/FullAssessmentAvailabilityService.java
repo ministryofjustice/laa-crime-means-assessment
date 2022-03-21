@@ -26,7 +26,7 @@ public class FullAssessmentAvailabilityService {
         if (!Objects.isNull(meansAssessmentRequest.getFullAssessmentDate())) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         } else {
-            switch (InitialAssessmentResult.getFrom(meansAssessmentResponse.getResult())) {
+            switch (InitialAssessmentResult.getFrom(meansAssessmentResponse.getInitResult())) {
                 case FULL: {
                     meansAssessmentResponse.setFullAssessmentAvailable(true);
                     break;
