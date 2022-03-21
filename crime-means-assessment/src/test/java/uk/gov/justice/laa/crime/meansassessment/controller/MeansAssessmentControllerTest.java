@@ -96,7 +96,7 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createMeansAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.createAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
         mvc.perform(post("/api/internal/v1/assessment/means")
                 .header("Authorization", "Bearer " + accessToken)
@@ -115,7 +115,7 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createMeansAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.createAssessment(initialMeansAssessmentRequest))
                 .thenReturn(initialMeansAssessmentResponse);
 
         mvc.perform(post("/api/internal/v1/assessment/means")

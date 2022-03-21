@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
+import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
@@ -37,14 +38,15 @@ public class MeansAssessmentController {
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiCreateMeansAssessmentResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-    public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Means assessment data", content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
+    public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Initial means assessment data", content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) throws ValidationException {
         log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
 
         createAssessmentValidator.validate(meansAssessment);
-        var createMeansAssessmentResponse = meansAssessmentService.createMeansAssessment(meansAssessment);
+        var createMeansAssessmentResponse =
+                meansAssessmentService.createAssessment(meansAssessment);
 
-        log.info("Successfully processed Means Assessment Request for MAAT ID:  {}", meansAssessment.getRepId());
+        log.info("Means Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
         return ResponseEntity.ok(createMeansAssessmentResponse);
     }
 }
