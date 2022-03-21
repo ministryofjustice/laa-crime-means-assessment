@@ -119,6 +119,11 @@
       "type": "string",
       "description": "Other housing note field."
     },
+    "crownCourtOverview": {
+      "type": "object",
+      "description": "Crown court overview details",
+      "$ref": "common/apiCrownCourtOverview.json"
+    },
     "magCourtOutcome": {
       "type": "object",
       "description": "Magistrate Court Outcome",
