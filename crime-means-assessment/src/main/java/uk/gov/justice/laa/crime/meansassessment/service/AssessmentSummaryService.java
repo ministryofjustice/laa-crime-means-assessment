@@ -14,8 +14,9 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.WorkType;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
+import static java.util.Optional.*;
 
 @Slf4j
 @Service
@@ -28,12 +29,13 @@ public class AssessmentSummaryService {
                                                                                 final String laaTransactionId) {
         log.info("Generating assessment summary for means assessment response");
         try {
-            var assesmentsSummary = new ArrayList<ApiAssessmentSummary>();
-            assesmentsSummary.add(getFinancialAssessmentSummary(assessmentResponse));
-            assesmentsSummary.add(getPassportAssessmentSummary(assessmentResponse.getRepId(), laaTransactionId));
-            assesmentsSummary.add(getHardshipReviewsSummary(assessmentResponse.getRepId(), laaTransactionId));
-            assesmentsSummary.add(getIOJAppealSummary(assessmentResponse.getRepId(), laaTransactionId));
-            assessmentResponse.setAssessmentSummary(assesmentsSummary);
+            var assessmentsSummary = new ArrayList<ApiAssessmentSummary>();
+
+            assessmentsSummary.add(getFinancialAssessmentSummary(assessmentResponse));
+            getPassportAssessmentSummary(assessmentResponse.getRepId(), laaTransactionId).ifPresent(assessmentsSummary::add);
+            getHardshipReviewsSummary(assessmentResponse.getRepId(), laaTransactionId).ifPresent(assessmentsSummary::add);
+            getIOJAppealSummary(assessmentResponse.getRepId(), laaTransactionId).ifPresent(assessmentsSummary::add);
+            assessmentResponse.setAssessmentSummary(assessmentsSummary);
         } catch (Exception ex) {
             log.error("Failed to generate assessment summary for means assessment response with assessmentId: {}", assessmentResponse.getAssessmentId(), ex);
         }
@@ -70,34 +72,35 @@ public class AssessmentSummaryService {
         }
     }
 
-    private ApiAssessmentSummary getPassportAssessmentSummary(final Integer repId, final String laaTransactionId) {
+    private Optional<ApiAssessmentSummary> getPassportAssessmentSummary(final Integer repId, final String laaTransactionId) {
         log.info("Generating assessment summary for passport assessment");
         try {
-            ApiAssessmentSummary passportAssessmentSummary = new ApiAssessmentSummary();
             PassportAssessmentDTO passportAssessmentDTO = maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
 
             if (passportAssessmentDTO != null) {
+                ApiAssessmentSummary passportAssessmentSummary = new ApiAssessmentSummary();
                 passportAssessmentSummary.withId(passportAssessmentDTO.getId().toString())
                         .withType(WorkType.Passported)
                         .withAssessmentDate(passportAssessmentDTO.getAssessmentDate())
                         .withStatus(CurrentStatus.getFrom(passportAssessmentDTO.getPastStatus()).getDescription())
                         .withReviewType(passportAssessmentDTO.getRtCode())
                         .withResult(passportAssessmentDTO.getResult());
+                return of(passportAssessmentSummary);
             }
-            return passportAssessmentSummary;
+            return empty();
         } catch (Exception ex) {
             log.error("Error generating passport assessment summary for repId: {}", repId, ex);
             throw ex;
         }
     }
 
-    private ApiAssessmentSummary getHardshipReviewsSummary(final Integer repId, final String laaTransactionId) {
+    private Optional<ApiAssessmentSummary> getHardshipReviewsSummary(final Integer repId, final String laaTransactionId) {
         log.info("Generating assessment summary for hardship reviews");
         try {
-            ApiAssessmentSummary hardshipReviewSummary = new ApiAssessmentSummary();
             HardshipReviewDTO hardshipReviewDTO = maatCourtDataService.getHardshipReviewFromRepId(repId, laaTransactionId);
 
             if (hardshipReviewDTO != null) {
+                ApiAssessmentSummary hardshipReviewSummary = new ApiAssessmentSummary();
                 hardshipReviewSummary.withId(hardshipReviewDTO.getId().toString())
                         .withAssessmentDate(hardshipReviewDTO.getReviewDate())
                         .withStatus(hardshipReviewDTO.getStatus().getDescription())
@@ -108,28 +111,30 @@ public class AssessmentSummaryService {
                         hardshipReviewSummary.setType(WorkType.Hardship_Review_Magistrate);
                     }
                 }, () -> hardshipReviewSummary.setType(WorkType.Hardship_Review_CrownCourt));
+                return of(hardshipReviewSummary);
             }
-            return hardshipReviewSummary;
+            return empty();
         } catch (Exception ex) {
             log.error("Error generating hardship review summary for repId: {}", repId, ex);
             throw ex;
         }
     }
 
-    private ApiAssessmentSummary getIOJAppealSummary(final Integer repId, final String laaTransactionId) {
+    private Optional<ApiAssessmentSummary> getIOJAppealSummary(final Integer repId, final String laaTransactionId) {
         log.info("Generating assessment summary for IOJ Appeal");
         try {
-            ApiAssessmentSummary iOJAppealSummary = new ApiAssessmentSummary();
             IOJAppealDTO iojAppealDTO = maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
 
             if (iojAppealDTO != null) {
+                ApiAssessmentSummary iOJAppealSummary = new ApiAssessmentSummary();
                 iOJAppealSummary.withId(iojAppealDTO.getId().toString())
                         .withAssessmentDate(iojAppealDTO.getAppealSetupDate())
                         .withType(WorkType.IoJ_Appeal)
                         .withResult(iojAppealDTO.getDecisionResult())
                         .withStatus(CurrentStatus.getFrom(iojAppealDTO.getIapsStatus()).getDescription());
+                return of(iOJAppealSummary);
             }
-            return iOJAppealSummary;
+            return empty();
         } catch (Exception ex) {
             log.error("Error generating iojAppeal summary for repId: {}", repId, ex);
             throw ex;
