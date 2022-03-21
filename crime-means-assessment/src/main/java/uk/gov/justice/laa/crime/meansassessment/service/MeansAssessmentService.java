@@ -1,47 +1,50 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatAPIAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MeansAssessmentService {
 
-    @Qualifier("maatAPIOAuth2WebClient")
-    private final WebClient webClient;
     private final MaatApiConfiguration configuration;
+    private final MaatCourtDataService maatCourtDataService;
     private final MaatAPIAssessmentBuilder assessmentBuilder;
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final FullMeansAssessmentService fullMeansAssessmentService;
     private final InitMeansAssessmentService initMeansAssessmentService;
 
     public ApiCreateMeansAssessmentResponse doAssessment(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentRequestType requestType) {
+
+        LocalDateTime assessmentDate;
+        AssessmentService assessmentService;
+        if (AssessmentType.FULL.equals(meansAssessment.getAssessmentType())) {
+            assessmentService = fullMeansAssessmentService;
+            assessmentDate = meansAssessment.getFullAssessmentDate();
+        } else {
+            assessmentService = initMeansAssessmentService;
+            assessmentDate = meansAssessment.getInitialAssessmentDate();
+        }
         AssessmentCriteriaEntity assessmentCriteria =
                 assessmentCriteriaService.getAssessmentCriteria(
-                        meansAssessment.getAssessmentDate(), meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
+                        assessmentDate, meansAssessment.getHasPartner(), meansAssessment.getPartnerContraryInterest()
                 );
         BigDecimal summariesTotal = calculateSummariesTotal(meansAssessment, assessmentCriteria);
-        AssessmentService assessmentService =
-                meansAssessment.getAssessmentType().equals(AssessmentType.INIT) ? initMeansAssessmentService : fullMeansAssessmentService;
+
 
         MeansAssessmentDTO assessment = assessmentService.execute(summariesTotal, meansAssessment, assessmentCriteria);
 
@@ -52,7 +55,9 @@ public class MeansAssessmentService {
                 .getByRequestType(requestType);
 
         MaatApiAssessmentResponse response =
-                persistAssessment(assessmentBuilder.build(assessment, requestType), meansAssessment.getLaaTransactionId(), targetEndpoint);
+                maatCourtDataService.postMeansAssessment(
+                        assessmentBuilder.build(assessment, requestType), meansAssessment.getLaaTransactionId(), targetEndpoint
+                );
 
         return new ApiCreateMeansAssessmentResponse()
                 .withAssessmentId(response.getId())
@@ -60,13 +65,11 @@ public class MeansAssessmentService {
                 .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
                 .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())
                 .withTotalAggregatedIncome(response.getInitTotAggregatedIncome())
-                .withResult(response.getInitResult())
-                .withResultReason(response.getInitResultReason())
+                .withInitResult(response.getInitResult())
+                .withInitResultReason(response.getInitResultReason())
                 .withAdjustedIncomeValue(response.getInitAdjustedIncomeValue())
-                .withAssessmentStatus(new ApiAssessmentStatus()
-                        .withStatus(response.getFassInitStatus())
-                )
-                .withAssessmentSummary(assessment.getMeansAssessment().getSectionSummaries());
+                .withFassInitStatus(CurrentStatus.getFrom(response.getFassInitStatus()))
+                .withAssessmentSectionSummary(assessment.getMeansAssessment().getSectionSummaries());
     }
 
     BigDecimal calculateSummariesTotal(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
@@ -120,23 +123,5 @@ public class MeansAssessmentService {
             }
         }
         return detailTotal;
-    }
-
-    public MaatApiAssessmentResponse persistAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
-        MaatApiAssessmentResponse response = webClient.post()
-                .uri(endpointUrl)
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of(
-                        "Laa-Transaction-Id", laaTransactionId
-                )))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(assessment))
-                .retrieve()
-                .bodyToMono(MaatApiAssessmentResponse.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
-
-        log.info(String.format("Response from Court Data API: %s", response));
-        return response;
     }
 }

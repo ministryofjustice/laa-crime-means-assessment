@@ -6,7 +6,7 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAsses
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 
@@ -22,6 +22,6 @@ public class MeansAssessmentDTO {
     private AssessmentCriteriaEntity assessmentCriteria;
     private ApiCreateMeansAssessmentRequest meansAssessment;
     private BigDecimal totalAnnualDisposableIncome;
-    private InitialAssessmentResult initialAssessmentResult;
+    private InitAssessmentResult initAssessmentResult;
     private FullAssessmentResult fullAssessmentResult;
 }

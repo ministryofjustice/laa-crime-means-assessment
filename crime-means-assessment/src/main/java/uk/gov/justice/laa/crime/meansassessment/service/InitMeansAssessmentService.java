@@ -7,7 +7,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,10 +27,10 @@ public class InitMeansAssessmentService implements AssessmentService {
         return MeansAssessmentDTO
                 .builder()
                 .currentStatus(status)
-                .initialAssessmentResult(
+                .initAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE) ? getResult(
                                 adjustedIncomeValue, assessmentCriteria, meansAssessment.getNewWorkReason().getCode()
-                        ) : InitialAssessmentResult.NONE
+                        ) : InitAssessmentResult.NONE
                 )
                 .adjustedIncomeValue(adjustedIncomeValue)
                 .totalAggregatedIncome(annualTotal).build();
@@ -49,20 +49,20 @@ public class InitMeansAssessmentService implements AssessmentService {
         return BigDecimal.ZERO;
     }
 
-    InitialAssessmentResult getResult(BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, String newWorkReasonCode) {
+    InitAssessmentResult getResult(BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, String newWorkReasonCode) {
         BigDecimal lowerThreshold = assessmentCriteria.getInitialLowerThreshold();
         BigDecimal upperThreshold = assessmentCriteria.getInitialUpperThreshold();
         if (adjustedIncomeValue.compareTo(lowerThreshold) <= 0) {
-            return InitialAssessmentResult.PASS;
+            return InitAssessmentResult.PASS;
         } else if (adjustedIncomeValue.compareTo(upperThreshold) >= 0) {
             // TODO: Comment in PL/SQL suggests this should also apply to crown court cases
             if (newWorkReasonCode.equalsIgnoreCase("HR")) {
-                return InitialAssessmentResult.HARDSHIP;
+                return InitAssessmentResult.HARDSHIP;
             } else {
-                return InitialAssessmentResult.FAIL;
+                return InitAssessmentResult.FAIL;
             }
         } else {
-            return InitialAssessmentResult.FULL;
+            return InitAssessmentResult.FULL;
         }
     }
 }
