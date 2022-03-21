@@ -1,17 +1,13 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.builder.CreateInitialAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.InitialMeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -21,7 +17,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessme
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +29,7 @@ public class InitialMeansAssessmentService {
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
-    private final CourtDataService courtDataService;
+    private final MaatCourtDataService maatCourtDataService;
 
     public ApiCreateMeansAssessmentResponse createInitialAssessment(ApiCreateMeansAssessmentRequest meansAssessment) {
         log.info("Create initial means assessment - Start");
@@ -60,7 +55,7 @@ public class InitialMeansAssessmentService {
 
         ApiCreateAssessment assessment = createInitialAssessmentBuilder.build(
                 new InitialMeansAssessmentDTO(annualTotal, status, adjustedIncomeValue, result, assessmentCriteria, meansAssessment, sectionSummaries));
-        return courtDataService.postMeansAssessment(assessment, meansAssessment.getLaaTransactionId());
+        return maatCourtDataService.postMeansAssessment(assessment, meansAssessment.getLaaTransactionId());
     }
 
     protected BigDecimal getAdjustedIncome(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {

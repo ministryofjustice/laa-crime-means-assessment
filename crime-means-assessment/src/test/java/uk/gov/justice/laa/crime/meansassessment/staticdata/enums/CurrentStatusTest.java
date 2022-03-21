@@ -11,7 +11,7 @@ public class CurrentStatusTest {
         assertEquals(CurrentStatus.getFrom("IN PROGRESS"), CurrentStatus.IN_PROGRESS);
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void valueOfCurrentStatusFromString_nullParamenter_ReturnsNull() {
         assertNull(CurrentStatus.getFrom(null));
     }
