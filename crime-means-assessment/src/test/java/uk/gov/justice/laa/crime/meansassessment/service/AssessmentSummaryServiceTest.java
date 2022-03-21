@@ -14,12 +14,15 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType.ER;
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.WorkType.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,17 +41,17 @@ public class AssessmentSummaryServiceTest {
         meansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(true);
         meansAssessmentResponse.setRepId(1234);
         meansAssessmentResponse.setAssessmentType(AssessmentType.INIT);
-        meansAssessmentResponse.setReviewType(ReviewType.ER);
+        meansAssessmentResponse.setReviewType(ER);
         meansAssessmentResponse.setInitialAssessmentDate(LocalDateTime.of(2021, 12, 20, 10, 0));
+        meansAssessmentResponse.setInitResult("PASS");
     }
 
     @Test
     public void givenMeansAssessmentResponse_WhenGetAssessmentSummaryIsInvoked_ThenAssessmentSummaryShouldBeReturnedWithInitFinAssSummary() {
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
-        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .contains(Initial_Assessment)
-                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
+        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type", "status", "result", "assessmentDate")
+                .containsExactly(tuple(Initial_Assessment, "Complete", "PASS", LocalDateTime.of(2021, 12, 20, 10, 0)));
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -57,11 +60,12 @@ public class AssessmentSummaryServiceTest {
     @Test
     public void givenMeansAssessmentResponse_WhenGetAssessmentSummaryIsInvoked_ThenAssessmentSummaryShouldBeReturnedWithFullFinAssSummary() {
         meansAssessmentResponse.setAssessmentType(AssessmentType.FULL);
+        meansAssessmentResponse.setFassFullStatus(CurrentStatus.IN_PROGRESS);
+
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
-        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .contains(Full_Means_Test)
-                .doesNotContain(Initial_Assessment, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
+        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type", "status", "result", "assessmentDate")
+                .containsExactly(tuple(Full_Means_Test, "Incomplete", null, LocalDateTime.of(2021, 12, 20, 10, 0)));
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -71,12 +75,11 @@ public class AssessmentSummaryServiceTest {
     public void givenMeansAssessmentResponseWithFullAssDate_WhenGetAssessmentSummaryIsInvoked_ThenAssessmentSummaryShouldBeReturnedWithFullFinAssSummary() {
         meansAssessmentResponse.setAssessmentType(AssessmentType.FULL);
         meansAssessmentResponse.setFullAssessmentDate(LocalDateTime.of(2022, 1, 20, 10, 0));
+
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
-        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .contains(Full_Means_Test)
-                .doesNotContain(Initial_Assessment, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
-
+        Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type", "status", "result", "assessmentDate")
+                .containsExactly(tuple(Full_Means_Test, null, null, LocalDateTime.of(2022, 1, 20, 10, 0)));
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -89,8 +92,7 @@ public class AssessmentSummaryServiceTest {
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .contains(Initial_Assessment, Passported)
-                .doesNotContain(Full_Means_Test, Hardship_Review_CrownCourt, Hardship_Review_Magistrate, IoJ_Appeal);
+                .containsExactlyInAnyOrder(Initial_Assessment, Passported);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -103,8 +105,7 @@ public class AssessmentSummaryServiceTest {
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .contains(Initial_Assessment, Hardship_Review_CrownCourt)
-                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_Magistrate, IoJ_Appeal);
+                .containsExactlyInAnyOrder(Initial_Assessment, Hardship_Review_CrownCourt);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -119,8 +120,7 @@ public class AssessmentSummaryServiceTest {
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .contains(Initial_Assessment, Hardship_Review_Magistrate)
-                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_CrownCourt, IoJ_Appeal);
+                .containsExactlyInAnyOrder(Initial_Assessment, Hardship_Review_Magistrate);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
@@ -133,8 +133,7 @@ public class AssessmentSummaryServiceTest {
         assessmentSummaryService.addAssessmentSummaryToMeansResponse(meansAssessmentResponse, null);
 
         Assertions.assertThat(meansAssessmentResponse.getAssessmentSummary()).extracting("type")
-                .contains(Initial_Assessment, IoJ_Appeal)
-                .doesNotContain(Full_Means_Test, Passported, Hardship_Review_CrownCourt, Hardship_Review_Magistrate);
+                .containsExactlyInAnyOrder(Initial_Assessment, IoJ_Appeal);
         verify(maatCourtDataService).getPassportAssessmentFromRepId(1234, null);
         verify(maatCourtDataService).getHardshipReviewFromRepId(1234, null);
         verify(maatCourtDataService).getIOJAppealFromRepId(1234, null);
