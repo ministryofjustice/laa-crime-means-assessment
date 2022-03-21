@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum FullAssessmentResult {
-    NONE,
+    NONE("NONE", "No result"),
     PASS("PASS", "Gross income below the threshold"),
     FAIL("FAIL", "Gross income above the threshold");
 
@@ -19,8 +19,8 @@ public enum FullAssessmentResult {
     private String reason;
 
     public static FullAssessmentResult getFrom(String result) throws IllegalArgumentException {
-        if (StringUtils.isBlank(result)) return null;
-        // TODO: Fix NullPointerException
+        if (StringUtils.isBlank(result)) return NONE;
+
         return Stream.of(FullAssessmentResult.values())
                 .filter(a -> a.result.equals(result))
                 .findFirst()
