@@ -37,14 +37,35 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+            {{- if not (eq (toString .Values.actuator.port) "http") }}
+            - name: actuator
+              containerPort: {{ .Values.actuator.port }}
+              protocol: TCP
+            {{- end }}              
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: {{ .Values.actuator.health.path }}
+            {{- if not (eq (toString .Values.actuator.port) "http") }}
+              port: actuator
+            {{- else }}
               port: http
+            {{- end }}
+            initialDelaySeconds: {{ .Values.actuator.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.actuator.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.actuator.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.actuator.liveness.failureThreshold }}
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: {{ .Values.actuator.health.path }}
+            {{- if not (eq (toString .Values.actuator.port) "http") }}
+              port: actuator
+            {{- else }}
               port: http
+            {{- end }}
+            initialDelaySeconds: {{ .Values.actuator.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.actuator.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.actuator.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.actuator.readiness.failureThreshold }}
           {{ include "laa-crime-means-assessment.env-vars" . | nindent 10 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

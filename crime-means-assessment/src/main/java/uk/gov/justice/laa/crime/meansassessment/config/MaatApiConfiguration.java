@@ -33,6 +33,15 @@ public class MaatApiConfiguration {
     @NotNull
     private FinancialAssessmentEndpoints financialAssessmentEndpoints;
 
+    @NotNull
+    private PassportAssessmentEndpoints passportAssessmentEndpoints;
+
+    @NotNull
+    private HardshipReviewEndpoints hardshipReviewEndpoints;
+
+    @NotNull
+    private IOJAppealEndpoints iojAppealEndpoints;
+
     @Getter
     @AllArgsConstructor
     @Setter
@@ -90,4 +99,35 @@ public class MaatApiConfiguration {
             return (requestType.equals(AssessmentRequestType.CREATE)) ? createUrl : updateUrl;
         }
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PassportAssessmentEndpoints {
+
+        @NotNull
+        private String findUrl;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class HardshipReviewEndpoints {
+
+        @NotNull
+        private String findUrl;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class IOJAppealEndpoints {
+
+        @NotNull
+        private String findUrl;
+    }
+
 }

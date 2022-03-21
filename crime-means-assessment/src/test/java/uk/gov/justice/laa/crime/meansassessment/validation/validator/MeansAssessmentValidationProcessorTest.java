@@ -16,16 +16,16 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator.*;
+import static uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateAssessmentValidatorTest {
+public class MeansAssessmentValidationProcessorTest {
 
     @Mock
     private MeansAssessmentValidationService meansAssessmentValidationService;
 
     @InjectMocks
-    private CreateAssessmentValidator createAssessmentValidator;
+    private MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
     @Test
     public void givenValidRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
@@ -37,7 +37,7 @@ public class CreateAssessmentValidatorTest {
         when(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(any(ApiCreateMeansAssessmentRequest.class))).thenReturn(Boolean.TRUE);
         ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
 
-        Optional<Void> result = createAssessmentValidator.validate(createMeansAssessmentRequest);
+        Optional<Void> result = meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest);
         assertThat(result).isEqualTo(Optional.empty());
     }
 
@@ -50,7 +50,7 @@ public class CreateAssessmentValidatorTest {
 
         ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
-                () -> createAssessmentValidator.validate(createMeansAssessmentRequest));
+                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest));
         assertThat(validationException.getMessage()).isEqualTo(MSG_NEW_WORK_REASON_IS_NOT_VALID);
     }
 
@@ -60,7 +60,7 @@ public class CreateAssessmentValidatorTest {
 
         ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
-                () -> createAssessmentValidator.validate(createMeansAssessmentRequest));
+                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest));
         assertThat(validationException.getMessage()).isEqualTo(MSG_REP_ID_REQUIRED);
     }
 
@@ -74,7 +74,7 @@ public class CreateAssessmentValidatorTest {
 
         ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
-                () -> createAssessmentValidator.validate(createMeansAssessmentRequest));
+                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest));
         assertThat(validationException.getMessage()).isEqualTo(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
     }
 
@@ -86,7 +86,7 @@ public class CreateAssessmentValidatorTest {
 
         ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
-                () -> createAssessmentValidator.validate(createMeansAssessmentRequest));
+                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest));
         assertThat(validationException.getMessage()).isEqualTo(MSG_ROLE_ACTION_IS_NOT_VALID);
     }
 
@@ -101,7 +101,7 @@ public class CreateAssessmentValidatorTest {
 
         ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
-                () -> createAssessmentValidator.validate(createMeansAssessmentRequest));
+                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest));
         assertThat(validationException.getMessage()).isEqualTo(MSG_INCOMPLETE_ASSESSMENT_FOUND);
     }
 }

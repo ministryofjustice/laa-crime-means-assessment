@@ -1,3 +1,6 @@
+server:
+  port : 52314
+
 spring:
   datasource:
     url: jdbc:h2:mem:crime_means_assessment;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
@@ -17,9 +20,19 @@ spring:
     show-sql: true
     generate-ddl: false
 
-  sql:
-    init:
-      platform: h2
+  security:
+    oauth2:
+      client:
+        provider:
+          maatapi:
+            token-uri: http://dummyserver:9999
+        registration:
+          maatapi:
+            client-id: dummy-client
+            client-secret: dummy-secret
+      resourceserver:
+        jwt:
+          issuer-uri: ${means-assessment.security.issuer-uri}
 
 springdoc:
   api-docs:
@@ -30,7 +43,7 @@ swagger-ui:
 
 maatApi:
   oAuthEnabled: false
-  baseUrl: ${MAAT_API_BASE_URL}
+  baseUrl: http://localhost:8090
   validation-endpoints:
     role-action-url: role-action-url
     new-work-reason-url: new-work-reason-url
@@ -40,5 +53,9 @@ maatApi:
     create-url: create-url
     search-url: search-url
     update-url: update-url
+
+means-assessment:
+  security:
+    issuer-uri: http://localhost:${server.port}
 
 version: 0.0.1

@@ -1,9 +1,24 @@
 server:
   port: 8080
 
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+
+management:
+  server:
+    port: 8096
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
 maatApi:
   oAuthEnabled: false
   baseUrl: ${MAAT_API_BASE_URL}
+
   validation-endpoints:
     role-action-url: /authorization/users/{username}/actions/{action}
     new-work-reason-url: /authorization/users/{username}/work-reasons/{nworCode}
@@ -13,10 +28,21 @@ maatApi:
     create-url: /financial-assessments/
     search-url: /financial-assessments/{financialAssessmentId}
     update-url: /financial-assessments/{financialAssessmentId}
+  passport-assessment-endpoints:
+    find-url: /passport-assessments/{repId}
+  hardship-review-endpoints:
+    find-url: /hardship/{repId}
+  ioj-appeal-endpoints:
+    find-url: /ioj-appeal/{repId}
+
+means-assessment:
+  security:
+    issuer-uri: http://localhost:${server.port}
 
 spring:
   datasource:
     url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
+#    url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}?currentSchema=${DATASOURCE_DBNAME}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -37,6 +63,11 @@ spring:
             clientSecret: ${MAAT_API_OAUTH_CLIENT_SECRET}
             authorizationGrantType: client_credentials
 
+      resourceserver:
+        jwt:
+          issuer-uri: ${means-assessment.security.issuer-uri}
+
+
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
@@ -47,7 +78,8 @@ spring:
     hibernate:
       ddl-auto: validate
     properties:
-      hibernate.temp.use_jdbc_metadata_defaults: false
+      hibernate.temp.use_jdbc_metadata_defaults: false   
+
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
@@ -72,5 +104,8 @@ sentry:
     minimum-event-level: info
     enabled: true
   attach-stacktrace: true
+
+
+
 
 version: 0.0.1

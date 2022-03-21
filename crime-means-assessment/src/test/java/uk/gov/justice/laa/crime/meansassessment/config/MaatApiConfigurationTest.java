@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -18,12 +20,20 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @RunWith(SpringRunner.class)
 @EnableConfigurationProperties(value = MaatApiConfiguration.class)
-@ContextConfiguration(classes = MaatApiConfigurationFactory.class, initializers = ConfigDataApplicationContextInitializer.class)
+@ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 public class MaatApiConfigurationTest {
 
     @Autowired
-    @Qualifier("default_configuration")
+    @Qualifier("test_configuration")
     private MaatApiConfiguration configuration;
+
+    @Configuration
+    public static class MaatApiConfigurationFactory {
+        @Bean(name = "test_configuration")
+        public MaatApiConfiguration getDefaultConfiguration() {
+            return new MaatApiConfiguration();
+        }
+    }
 
     @Test
     public void givenUserDefinedPOJO_whenBindingYMLConfigFile_thenAllFieldsAreSet() {

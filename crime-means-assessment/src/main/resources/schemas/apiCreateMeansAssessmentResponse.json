@@ -2,12 +2,16 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "apiCreateInitialMeansAssessmentResponse.json",
   "type": "object",
-  "title": "Initial Means Assessment Response",
-  "description": "The response data of the Initial Means Assessment service",
+  "title": "Means Assessment Response",
+  "description": "The response data of the Means Assessment service",
   "properties": {
     "assessmentId": {
       "type": "integer",
       "description": "Unique Identifier of an Assessment."
+    },
+    "repId": {
+      "type": "integer",
+      "description": "MAAT / Rep Id"
     },
     "criteriaId": {
       "type": "integer",
@@ -50,28 +54,68 @@
       "type": "number",
       "description": "Full Threshold Value from Ref Data"
     },
-    "result": {
-      "type": "string",
-      "description": "Outcome of an Assessment"
+    "assessmentType": {
+      "description": "Type of as Assessment - Initial, full etc.",
+      "type": "object",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType"
     },
-    "resultReason": {
+    "initResult": {
+      "type": "string",
+      "description": "Outcome of initial assessment"
+    },
+    "initResultReason": {
       "type": "string",
       "description": "The reason for the outcome "
     },
-    "assessmentStatus": {
-      "description": "Assessment Status",
-      "$ref": "common/apiAssessmentStatus.json"
+    "initialAssessmentDate": {
+      "type": "string",
+      "description": "Effective Date of initial assessment",
+      "format": "date-time"
     },
-    "assessmentSummary": {
+    "fassInitStatus": {
+      "description": "Assessment Status",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus"
+    },
+    "fullResult": {
+      "type": "string",
+      "description": "Outcome of full assessment"
+    },
+    "fullResultReason": {
+      "type": "string",
+      "description": "The reason for the outcome "
+    },
+    "fullAssessmentDate": {
+      "type": "string",
+      "description": "Effective Date of full assessment",
+      "format": "date-time"
+    },
+    "fassFullStatus": {
+      "description": "Assessment Status",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus"
+    },
+    "assessmentSectionSummary": {
+      "description": "Assessment section summary",
       "type": "array",
       "minItems": 1,
       "items": {
         "$ref": "common/apiAssessmentSectionSummary.json"
       }
     },
+    "assessmentSummary": {
+      "description": "Assessment summary",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common/apiAssessmentSummary.json"
+      }
+    },
     "fullAssessmentAvailable": {
       "type": "boolean",
       "description": "Indicates the availability of Full Means Assessment."
+    },
+    "reviewType": {
+      "description": "Review Type Info",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType"
     }
   },
   "additionalProperties": false,
@@ -89,6 +133,7 @@
     "result",
     "resultReason",
     "assessmentStatus",
-    "fullAssessmentAvailable"
+    "fullAssessmentAvailable",
+    "assessmentSummary"
   ]
 }
