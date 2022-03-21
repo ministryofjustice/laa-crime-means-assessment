@@ -28,7 +28,10 @@ public class MeansAssessmentServiceTest {
     private InitialAssessmentValidator initialAssessmentValidator;
 
     @Mock
-    private CourtDataService courtDataService;
+    private MaatCourtDataService maatCourtDataService;
+
+    @Mock
+    private AssessmentSummaryService assessmentSummaryService;
 
     @Test
     public void testWhenAssessmentTypeIsInit_thenVerifyInitAssessmentIsCalled() throws ValidationException {

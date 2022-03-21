@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.InitialAssessmentValidator;
 
@@ -16,21 +17,23 @@ public class MeansAssessmentService {
     private final InitialMeansAssessmentService initialMeansAssessmentService;
     private final FullMeansAssessmentService fullMeansAssessmentService;
     private final InitialAssessmentValidator initialAssessmentValidator;
+    private final AssessmentSummaryService assessmentSummaryService;
 
     public ApiCreateMeansAssessmentResponse createAssessment(ApiCreateMeansAssessmentRequest apiCreateMeansAssessmentRequest) throws ValidationException {
         log.info("Starting - Create means assessment");
+        ApiCreateMeansAssessmentResponse createMeansAssessmentResponse;
 
         if (apiCreateMeansAssessmentRequest.getAssessmentType() == AssessmentType.INIT) {
-
-          initialAssessmentValidator.validate(apiCreateMeansAssessmentRequest);
-            initialMeansAssessmentService.createInitialAssessment(apiCreateMeansAssessmentRequest);
-
+            initialAssessmentValidator.validate(apiCreateMeansAssessmentRequest);
+            createMeansAssessmentResponse = initialMeansAssessmentService.createInitialAssessment(apiCreateMeansAssessmentRequest);
         } else {
-
-            fullMeansAssessmentService.createFullAssessment(apiCreateMeansAssessmentRequest);
-
+            createMeansAssessmentResponse = fullMeansAssessmentService.createFullAssessment(apiCreateMeansAssessmentRequest);
         }
+
+        //post processing
+        assessmentSummaryService.addAssessmentSummaryToMeansResponse(createMeansAssessmentResponse, apiCreateMeansAssessmentRequest.getLaaTransactionId());
+
         log.info("Finished - Create means assessment");
-        return null;
+        return createMeansAssessmentResponse;
     }
 }
