@@ -51,7 +51,7 @@ public class InitialMeansAssessmentServiceTest {
     private CreateInitialAssessmentBuilder createInitialAssessmentBuilder;
 
     @Mock
-    private CourtDataService courtDataService;
+    private MaatCourtDataService maatCourtDataService;
 
     @Before
     public void setUp() {
@@ -231,10 +231,10 @@ public class InitialMeansAssessmentServiceTest {
         );
         when(createInitialAssessmentBuilder.build(any(InitialMeansAssessmentDTO.class))).thenReturn(new ApiCreateAssessment());
 
-        doReturn(new ApiCreateMeansAssessmentResponse()).when(courtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
+        doReturn(new ApiCreateMeansAssessmentResponse()).when(maatCourtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
 
         meansAssessmentService.createInitialAssessment(TestModelDataBuilder.getCreateMeansAssessmentRequest(true));
-        verify(courtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
+        verify(maatCourtDataService).postMeansAssessment(any(ApiCreateAssessment.class), anyString());
     }
 
     @Test
