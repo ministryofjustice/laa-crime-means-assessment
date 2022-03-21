@@ -69,7 +69,7 @@ public class MeansAssessmentService {
                 .withAssessmentSummary(assessment.getMeansAssessment().getSectionSummaries());
     }
 
-    protected BigDecimal calculateSummariesTotal(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
+    BigDecimal calculateSummariesTotal(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
         List<ApiAssessmentSectionSummary> sectionSummaries = meansAssessment.getSectionSummaries();
         BigDecimal annualTotal = BigDecimal.ZERO;
         for (ApiAssessmentSectionSummary sectionSummary : sectionSummaries) {
@@ -97,7 +97,7 @@ public class MeansAssessmentService {
         return annualTotal;
     }
 
-    protected BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail, boolean usePartner) {
+    BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail, boolean usePartner) {
         BigDecimal detailTotal = BigDecimal.ZERO;
 
         if (usePartner) {
