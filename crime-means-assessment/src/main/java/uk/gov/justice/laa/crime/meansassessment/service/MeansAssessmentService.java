@@ -45,7 +45,6 @@ public class MeansAssessmentService {
                 );
         BigDecimal summariesTotal = calculateSummariesTotal(meansAssessment, assessmentCriteria);
 
-
         MeansAssessmentDTO assessment = assessmentService.execute(summariesTotal, meansAssessment, assessmentCriteria);
 
         assessment.setMeansAssessment(meansAssessment);

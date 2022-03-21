@@ -15,7 +15,10 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,7 +27,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentServiceTest {
@@ -63,7 +67,8 @@ public class MeansAssessmentServiceTest {
     @Before
     public void setup() {
         assessmentCriteria.setId(TestModelDataBuilder.TEST_CRITERIA_ID);
-        financialAssessmentEndpoints.setCreateUrl("");
+        financialAssessmentEndpoints.setCreateUrl("create-url");
+        financialAssessmentEndpoints.setUpdateUrl("update-url");
     }
 
     @AfterEach
@@ -225,6 +230,7 @@ public class MeansAssessmentServiceTest {
     private void setupDoAssessmentStubbing() {
         when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(assessmentCriteria);
+
         when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class))).thenReturn(
                 new MaatApiAssessmentRequest()
         );
@@ -232,15 +238,9 @@ public class MeansAssessmentServiceTest {
                 financialAssessmentEndpoints
         );
 
-        MeansAssessmentDTO mockAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
-
         when(initMeansAssessmentService.execute(
                 any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(mockAssessment);
-
-        when(fullMeansAssessmentService.execute(
-                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(mockAssessment);
+        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         MaatApiAssessmentResponse maatApiAssessmentResponse =
                 new MaatApiAssessmentResponse()
@@ -257,16 +257,13 @@ public class MeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenCreateAssessmentRequest_whenDoAssessmentIsInvoked_thenAssessmentIsPersisted() {
+    public void givenCreateInitAssessmentRequest_whenDoAssessmentIsInvoked_thenAssessmentIsPersisted() {
 
         setupDoAssessmentStubbing();
 
         ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(
                 meansAssessment, AssessmentRequestType.CREATE
         );
-
-        verify(assessmentBuilder).build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class));
-        verify(configuration.getFinancialAssessmentEndpoints()).getByRequestType(any(AssessmentRequestType.class));
 
         SoftAssertions.assertSoftly(softly -> {
             assertThat(result.getAssessmentId()).isEqualTo(TestModelDataBuilder.MEANS_ASSESSMENT_ID);
@@ -286,18 +283,23 @@ public class MeansAssessmentServiceTest {
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
         setupDoAssessmentStubbing();
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
-        verify(initMeansAssessmentService).getResult(
-                any(BigDecimal.class), any(AssessmentCriteriaEntity.class), anyString()
+        verify(initMeansAssessmentService).execute(
+                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class)
         );
     }
 
     @Test
     public void givenFullAssessmentType_whenDoAssessmentIsInvoked_thenFullAssessmentIsPerformed() {
         setupDoAssessmentStubbing();
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+
+        when(fullMeansAssessmentService.execute(
+                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
+
         meansAssessment.setAssessmentType(AssessmentType.FULL);
-        verify(fullMeansAssessmentService).getResult(
-                any(BigDecimal.class), any(AssessmentCriteriaEntity.class)
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+        verify(fullMeansAssessmentService).execute(
+                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class)
         );
     }
 }
