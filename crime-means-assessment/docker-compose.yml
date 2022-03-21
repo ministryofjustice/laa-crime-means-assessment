@@ -6,6 +6,7 @@ services:
       context: .
     ports:
     - "8080:8080"
+    - "8096:8096"
     depends_on:
       - postgres
 

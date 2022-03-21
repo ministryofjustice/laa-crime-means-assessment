@@ -10,22 +10,21 @@ import java.util.stream.Stream;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum InitialAssessmentResult {
+public enum InitAssessmentResult {
 
-    NONE,
+    NONE("NONE","No result"),
     PASS("PASS", "Gross income below the lower threshold"),
     FAIL("FAIL", "Gross income above the upper threshold"),
     HARDSHIP("HARDSHIP APPLICATION", "Hardship application"),
     FULL("FULL", "Gross income in between the upper and lower thresholds");
 
-
     private String result;
     private String reason;
 
-    public static InitialAssessmentResult getFrom(String result) throws IllegalArgumentException {
-        if (StringUtils.isBlank(result)) return null;
+    public static InitAssessmentResult getFrom(String result) throws IllegalArgumentException {
+        if (StringUtils.isBlank(result)) return NONE;
 
-        return Stream.of(InitialAssessmentResult.values())
+        return Stream.of(InitAssessmentResult.values())
                 .filter(a -> a.result.equals(result))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Initial Assessment Result with value: %s does not exist.", result)));

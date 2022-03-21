@@ -13,7 +13,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -56,7 +56,7 @@ public class InitMeansAssessmentServiceTest {
 
         SoftAssertions.assertSoftly(softly -> {
             assertThat(result.getCurrentStatus()).isEqualTo(meansAssessment.getAssessmentStatus());
-            assertThat(result.getInitialAssessmentResult()).isEqualTo(InitialAssessmentResult.FULL);
+            assertThat(result.getInitAssessmentResult()).isEqualTo(InitAssessmentResult.FULL);
             assertThat(result.getAdjustedIncomeValue()).isEqualTo(TestModelDataBuilder.TEST_ADJUSTED_INCOME);
             assertThat(result.getTotalAggregatedIncome()).isEqualTo(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
         });
@@ -70,7 +70,7 @@ public class InitMeansAssessmentServiceTest {
 
         SoftAssertions.assertSoftly(softly -> {
             assertThat(result.getCurrentStatus()).isEqualTo(meansAssessment.getAssessmentStatus());
-            assertThat(result.getInitialAssessmentResult()).isEqualTo(InitialAssessmentResult.NONE);
+            assertThat(result.getInitAssessmentResult()).isEqualTo(InitAssessmentResult.NONE);
             assertThat(result.getAdjustedIncomeValue()).isEqualTo(TestModelDataBuilder.TEST_ADJUSTED_INCOME);
             assertThat(result.getTotalAggregatedIncome()).isEqualTo(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
         });
@@ -79,33 +79,33 @@ public class InitMeansAssessmentServiceTest {
     @Test
     public void givenIncomeBelowLowerThreshold_whenGetAssessmentResultIsInvoked_thenResultIsPass() {
         BigDecimal adjustedIncome = lowerThreshold.subtract(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
+        InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "FMA");
-        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitialAssessmentResult.PASS));
+        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.PASS));
     }
 
     @Test
     public void givenIncomeBetweenThresholds_whenGetAssessmentResultIsInvoked_thenResultIsFull() {
         BigDecimal adjustedIncome = lowerThreshold.add(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
+        InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "FMA");
-        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitialAssessmentResult.FULL));
+        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.FULL));
     }
 
     @Test
     public void givenIncomeAboveUpperThreshold_whenGetAssessmentResultIsInvoked_thenResultIsFail() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
+        InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "FMA");
-        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitialAssessmentResult.FAIL));
+        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.FAIL));
     }
 
     @Test
     public void givenIncomeAboveUpperThresholdAndHardshipApplication_whenGetAssessmentResultIsInvoked_thenResultIsHardship() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
-        InitialAssessmentResult result =
+        InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "HR");
-        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitialAssessmentResult.HARDSHIP));
+        SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.HARDSHIP));
     }
 
     @Test

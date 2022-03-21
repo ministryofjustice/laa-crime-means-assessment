@@ -57,6 +57,9 @@ public class MeansAssessmentServiceTest {
     @Mock
     private MaatAPIAssessmentBuilder assessmentBuilder;
 
+    @Mock
+    private MaatCourtDataService maatCourtDataService;
+
     @Before
     public void setup() {
         assessmentCriteria.setId(TestModelDataBuilder.TEST_CRITERIA_ID);
@@ -219,82 +222,82 @@ public class MeansAssessmentServiceTest {
         assertThat(summariesTotal).isEqualTo(expected);
     }
 
+    private void setupDoAssessmentStubbing() {
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(assessmentCriteria);
+        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class))).thenReturn(
+                new MaatApiAssessmentRequest()
+        );
+        when(configuration.getFinancialAssessmentEndpoints()).thenReturn(
+                financialAssessmentEndpoints
+        );
 
+        MeansAssessmentDTO mockAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
 
+        when(initMeansAssessmentService.execute(
+                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(mockAssessment);
 
-//    private void setupDoAssessmentStubbing() {
-//        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
-//                .thenReturn(assessmentCriteria);
-//        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class))).thenReturn(
-//                new MaatApiAssessmentRequest()
-//        );
-//        when(configuration.getFinancialAssessmentEndpoints()).thenReturn(
-//                financialAssessmentEndpoints
-//        );
-//
-//        MeansAssessmentDTO mockAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
-//        doReturn(mockAssessment).when(meansAssessmentService)
-//                .doInitAssessment(any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class));
-//
-//        doReturn(mockAssessment).when(meansAssessmentService)
-//                .doFullAssessment(any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class));
-//
-//        MaatApiAssessmentResponse maatApiAssessmentResponse =
-//                new MaatApiAssessmentResponse()
-//                        .withId(TestModelDataBuilder.MEANS_ASSESSMENT_ID)
-//                        .withInitTotAggregatedIncome(TestModelDataBuilder.TEST_AGGREGATED_INCOME)
-//                        .withInitResult(InitialAssessmentResult.PASS.getResult())
-//                        .withInitResultReason(InitialAssessmentResult.PASS.getReason())
-//                        .withInitAdjustedIncomeValue(TestModelDataBuilder.TEST_ADJUSTED_INCOME)
-//                        .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
-//
-//        doReturn(maatApiAssessmentResponse).when(meansAssessmentService).persistAssessment(
-//                any(MaatApiAssessmentRequest.class), anyString(), anyString()
-//        );
-//    }
-//
-//    @Test
-//    public void givenCreateAssessmentRequest_whenDoAssessmentIsInvoked_thenAssessmentIsPersisted() {
-//
-//        setupDoAssessmentStubbing();
-//
-//        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(
-//                meansAssessment, AssessmentRequestType.CREATE
-//        );
-//
-//        verify(assessmentBuilder).build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class));
-//        verify(configuration.getFinancialAssessmentEndpoints()).getByRequestType(any(AssessmentRequestType.class));
-//
-//        SoftAssertions.assertSoftly(softly -> {
-//            assertThat(result.getAssessmentId()).isEqualTo(TestModelDataBuilder.MEANS_ASSESSMENT_ID);
-//            assertThat(result.getCriteriaId()).isEqualTo(TestModelDataBuilder.TEST_CRITERIA_ID);
-//            assertThat(result.getLowerThreshold()).isEqualTo(TestModelDataBuilder.TEST_INITIAL_LOWER_THRESHOLD);
-//            assertThat(result.getUpperThreshold()).isEqualTo(TestModelDataBuilder.TEST_INITIAL_UPPER_THRESHOLD);
-//            assertThat(result.getTotalAggregatedIncome()).isEqualTo(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
-//            assertThat(result.getResult()).isEqualTo(InitialAssessmentResult.PASS.getResult());
-//            assertThat(result.getResultReason()).isEqualTo(InitialAssessmentResult.PASS.getReason());
-//            assertThat(result.getAdjustedIncomeValue()).isEqualTo(TestModelDataBuilder.TEST_ADJUSTED_INCOME);
-//            assertThat(result.getAssessmentStatus().getStatus()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
-//            assertThat(result.getAssessmentSummary().get(0)).isEqualTo(TestModelDataBuilder.getApiAssessmentSectionSummary());
-//        });
-//    }
-//
-//    @Test
-//    public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
-//        setupDoAssessmentStubbing();
-//        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
-//        verify(initMeansAssessmentService).getResult(
-//                any(BigDecimal.class), any(AssessmentCriteriaEntity.class), anyString()
-//        );
-//    }
-//
-//    @Test
-//    public void givenFullAssessmentType_whenDoAssessmentIsInvoked_thenFullAssessmentIsPerformed() {
-//        setupDoAssessmentStubbing();
-//        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
-//        meansAssessment.setAssessmentType(AssessmentType.FULL);
-//        verify(fullMeansAssessmentService).getResult(
-//                any(BigDecimal.class), any(AssessmentCriteriaEntity.class)
-//        );
-//    }
+        when(fullMeansAssessmentService.execute(
+                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(mockAssessment);
+
+        MaatApiAssessmentResponse maatApiAssessmentResponse =
+                new MaatApiAssessmentResponse()
+                        .withId(TestModelDataBuilder.MEANS_ASSESSMENT_ID)
+                        .withInitTotAggregatedIncome(TestModelDataBuilder.TEST_AGGREGATED_INCOME)
+                        .withInitResult(InitAssessmentResult.PASS.getResult())
+                        .withInitResultReason(InitAssessmentResult.PASS.getReason())
+                        .withInitAdjustedIncomeValue(TestModelDataBuilder.TEST_ADJUSTED_INCOME)
+                        .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
+
+        when(maatCourtDataService.postMeansAssessment(
+                any(MaatApiAssessmentRequest.class), anyString(), anyString())
+        ).thenReturn(maatApiAssessmentResponse);
+    }
+
+    @Test
+    public void givenCreateAssessmentRequest_whenDoAssessmentIsInvoked_thenAssessmentIsPersisted() {
+
+        setupDoAssessmentStubbing();
+
+        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(
+                meansAssessment, AssessmentRequestType.CREATE
+        );
+
+        verify(assessmentBuilder).build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class));
+        verify(configuration.getFinancialAssessmentEndpoints()).getByRequestType(any(AssessmentRequestType.class));
+
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(result.getAssessmentId()).isEqualTo(TestModelDataBuilder.MEANS_ASSESSMENT_ID);
+            assertThat(result.getCriteriaId()).isEqualTo(TestModelDataBuilder.TEST_CRITERIA_ID);
+            assertThat(result.getLowerThreshold()).isEqualTo(TestModelDataBuilder.TEST_INITIAL_LOWER_THRESHOLD);
+            assertThat(result.getUpperThreshold()).isEqualTo(TestModelDataBuilder.TEST_INITIAL_UPPER_THRESHOLD);
+            assertThat(result.getTotalAggregatedIncome()).isEqualTo(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
+            assertThat(result.getInitResult()).isEqualTo(InitAssessmentResult.PASS.getResult());
+            assertThat(result.getInitResultReason()).isEqualTo(InitAssessmentResult.PASS.getReason());
+            assertThat(result.getAdjustedIncomeValue()).isEqualTo(TestModelDataBuilder.TEST_ADJUSTED_INCOME);
+            assertThat(result.getFassInitStatus().getStatus()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
+            assertThat(result.getAssessmentSectionSummary().get(0)).isEqualTo(TestModelDataBuilder.getApiAssessmentSectionSummary());
+        });
+    }
+
+    @Test
+    public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
+        setupDoAssessmentStubbing();
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+        verify(initMeansAssessmentService).getResult(
+                any(BigDecimal.class), any(AssessmentCriteriaEntity.class), anyString()
+        );
+    }
+
+    @Test
+    public void givenFullAssessmentType_whenDoAssessmentIsInvoked_thenFullAssessmentIsPerformed() {
+        setupDoAssessmentStubbing();
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+        meansAssessment.setAssessmentType(AssessmentType.FULL);
+        verify(fullMeansAssessmentService).getResult(
+                any(BigDecimal.class), any(AssessmentCriteriaEntity.class)
+        );
+    }
 }

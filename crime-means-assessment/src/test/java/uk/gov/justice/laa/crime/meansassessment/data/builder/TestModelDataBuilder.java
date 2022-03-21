@@ -193,8 +193,8 @@ public class TestModelDataBuilder {
                 .withCmuId(isValid ? 91919 : null)
                 .withUserId("test-userid")
                 .withTransactionDateTime(LocalDateTime.of(2021, 12, 16, 10, 0))
-                .withAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
-                .withNewWorkReason(getApiNewWorkReason())
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withNewWorkReason(NewWorkReason.PBI)
                 .withSupplierInfo(getApiSupplierInfo())
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .withHasPartner(true)
@@ -231,7 +231,7 @@ public class TestModelDataBuilder {
                 .totalAnnualDisposableIncome(TEST_DISPOSABLE_INCOME)
                 .totalAggregatedExpense(TEST_AGGREGATED_EXPENDITURE)
                 .adjustedLivingAllowance(TEST_ADJUSTED_LIVING_ALLOWANCE)
-                .initialAssessmentResult(InitialAssessmentResult.FULL)
+                .initAssessmentResult(InitAssessmentResult.FULL)
                 .fullAssessmentResult(FullAssessmentResult.PASS)
                 .build();
     }
@@ -337,11 +337,6 @@ public class TestModelDataBuilder {
         );
     }
 
-    public static ApiNewWorkReason getApiNewWorkReason() {
-        return new ApiNewWorkReason()
-                .withCode("PBI");
-    }
-
     public static ApiSupplierInfo getApiSupplierInfo() {
         return new ApiSupplierInfo()
                 .withAccountNumber("91919")
@@ -365,15 +360,10 @@ public class TestModelDataBuilder {
                 .withAdjustedIncomeValue(BigDecimal.valueOf(12))
                 .withLowerThreshold(BigDecimal.valueOf(12))
                 .withUpperThreshold(BigDecimal.valueOf(13))
-                .withResult("testResult")
-                .withResultReason("testResultReason")
-                .withAssessmentStatus(isValid ? getApiAssessmentStatus() : null)
-                .withAssessmentSummary(getApiAssessmentSummaries(isValid));
-    }
-
-    public static ApiAssessmentStatus getApiAssessmentStatus() {
-        return new ApiAssessmentStatus()
-                .withStatus("testStatus");
+                .withInitResult("testResult")
+                .withInitResultReason("testResultReason")
+                .withFassInitStatus(isValid ? CurrentStatus.COMPLETE : null)
+                .withAssessmentSectionSummary(getApiAssessmentSummaries(isValid));
     }
 
     public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid) {
