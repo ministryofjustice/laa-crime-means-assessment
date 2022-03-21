@@ -27,6 +27,7 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_INITIAL_UPPER_THRESHOLD = BigDecimal.valueOf(22500d);
     public static final BigDecimal TEST_FULL_THRESHOLD = BigDecimal.valueOf(5000d);
 
+    public static final BigDecimal TEST_APPLICANT_ANNUAL_TOTAL = BigDecimal.valueOf(120d);
     public static final BigDecimal TEST_APPLICANT_WEIGHTING_FACTOR = BigDecimal.valueOf(0.1);
     public static final BigDecimal TEST_PARTNER_WEIGHTING_FACTOR = BigDecimal.valueOf(0.3d);
     public static final BigDecimal TEST_TOTAL_CHILD_WEIGHTING = BigDecimal.valueOf(0.2);
@@ -188,12 +189,13 @@ public class TestModelDataBuilder {
         return new ApiCreateMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
-                .withReviewType(getApiReviewType())
+                .withReviewType(ReviewType.NAFI)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
                 .withUserId("test-userid")
                 .withTransactionDateTime(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withFullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withNewWorkReason(NewWorkReason.PBI)
                 .withSupplierInfo(getApiSupplierInfo())
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
@@ -203,13 +205,14 @@ public class TestModelDataBuilder {
                 .withAssessmentStatus(CurrentStatus.COMPLETE)
                 .withChildWeightings(getAssessmentChildWeightings())
                 .withUserSession(getUserSession())
+                .withCrownCourtOverview(new ApiCrownCourtOverview()
+                        .withAvailable(true)
+                        .withCrownCourtSummary(
+                                new ApiCrownCourtSummary()
+                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                        )
+                )
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
-    }
-
-    public static ApiReviewType getApiReviewType() {
-        return new ApiReviewType()
-                .withCode("FAKE_REVIEW_CODE")
-                .withDescription("FAKE_REVIEW_CODE_DESCRIPTION");
     }
 
     public static ApiIncomeEvidenceSummary getApiIncomeEvidenceSummary() {
@@ -238,6 +241,9 @@ public class TestModelDataBuilder {
 
     public static ApiAssessmentSectionSummary getApiAssessmentSectionSummary() {
         return new ApiAssessmentSectionSummary()
+                .withApplicantAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
+                .withAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
+                .withPartnerAnnualTotal(BigDecimal.ZERO)
                 .withSection("INITA")
                 .withAssessmentDetails(
                         new ArrayList<>(
