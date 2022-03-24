@@ -25,7 +25,7 @@ public class AssessmentSummaryService {
 
     private final MaatCourtDataService maatCourtDataService;
 
-    public ApiCreateMeansAssessmentResponse addAssessmentSummaryToMeansResponse(final ApiCreateMeansAssessmentResponse assessmentResponse,
+    public void addAssessmentSummaryToMeansResponse(final ApiCreateMeansAssessmentResponse assessmentResponse,
                                                                                 final String laaTransactionId) {
         log.info("Generating assessment summary for means assessment response");
         try {
@@ -39,7 +39,6 @@ public class AssessmentSummaryService {
         } catch (Exception ex) {
             log.error("Failed to generate assessment summary for means assessment response with assessmentId: {}", assessmentResponse.getAssessmentId(), ex);
         }
-        return assessmentResponse;
     }
 
     private ApiAssessmentSummary getFinancialAssessmentSummary(final ApiCreateMeansAssessmentResponse assessmentResponse) {

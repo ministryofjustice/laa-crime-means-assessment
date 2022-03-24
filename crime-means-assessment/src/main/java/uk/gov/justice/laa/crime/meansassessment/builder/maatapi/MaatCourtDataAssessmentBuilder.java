@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
-public class MaatAPIAssessmentBuilder {
+public class MaatCourtDataAssessmentBuilder {
 
-    public MaatApiAssessmentRequest build(MeansAssessmentDTO assessment, AssessmentRequestType requestType) {
+    public MaatApiAssessmentRequest buildAssessmentRequest(final MeansAssessmentDTO assessment, final AssessmentRequestType requestType) {
 
         CurrentStatus assessmentStatus = assessment.getCurrentStatus();
         ApiCreateMeansAssessmentRequest meansAssessment = assessment.getMeansAssessment();
@@ -71,7 +71,7 @@ public class MaatAPIAssessmentBuilder {
                 .withIncomeUpliftApplyDate(meansAssessment.getIncomeEvidenceSummary().getUpliftAppliedDate());
     }
 
-    public MaatApiUpdateAssessment buildUpdate(MeansAssessmentDTO assessment) {
+    private MaatApiUpdateAssessment buildUpdate(MeansAssessmentDTO assessment) {
         ApiCreateMeansAssessmentRequest meansAssessment = assessment.getMeansAssessment();
         return new MaatApiUpdateAssessment()
                 .withFullAscrId(assessment.getAssessmentCriteria().getId())
