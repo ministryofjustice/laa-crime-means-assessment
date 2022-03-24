@@ -18,12 +18,9 @@ public enum ReviewType {
     private String description;
 
     public static ReviewType getFrom(String code) throws IllegalArgumentException {
-        if (StringUtils.isBlank(code)) return null;
-
         return Stream.of(ReviewType.values())
                 .filter(a -> a.code.equals(code))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Review Type with value: %s does not exist.", code)));
     }
-
 }

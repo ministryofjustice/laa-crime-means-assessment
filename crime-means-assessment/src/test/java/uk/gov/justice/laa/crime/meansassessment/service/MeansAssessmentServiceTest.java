@@ -9,10 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatAPIAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -26,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentServiceTest {
@@ -59,10 +60,13 @@ public class MeansAssessmentServiceTest {
     private FullMeansAssessmentService fullMeansAssessmentService;
 
     @Mock
-    private MaatAPIAssessmentBuilder assessmentBuilder;
+    private MaatCourtDataAssessmentBuilder assessmentBuilder;
 
     @Mock
     private MaatCourtDataService maatCourtDataService;
+
+    @Mock
+    private AssessmentSummaryService assessmentSummaryService;
 
     @Before
     public void setup() {
@@ -231,7 +235,7 @@ public class MeansAssessmentServiceTest {
         when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(assessmentCriteria);
 
-        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class))).thenReturn(
+        when(assessmentBuilder.buildAssessmentRequest(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class))).thenReturn(
                 new MaatApiAssessmentRequest()
         );
         when(configuration.getFinancialAssessmentEndpoints()).thenReturn(
@@ -300,6 +304,20 @@ public class MeansAssessmentServiceTest {
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
         verify(fullMeansAssessmentService).execute(
                 any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class)
+        );
+    }
+
+    @Test
+    public void givenUnexpectedFailure_whenDoAssessmentIsInvoked_thenAssessmentProcessingExceptionIsThrown() {
+
+        doThrow(new RuntimeException()).when(assessmentCriteriaService).getAssessmentCriteria(
+                any(LocalDateTime.class), anyBoolean(), anyBoolean()
+        );
+
+        assertThatThrownBy(
+                () -> meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE)
+        ).isInstanceOf(AssessmentProcessingException.class).hasMessageContaining(
+                "An error occurred whilst processing the assessment request with RepID: " + meansAssessment.getRepId()
         );
     }
 }
