@@ -26,7 +26,7 @@ maatApi:
     outstanding-assessments-url: /financial-assessments/check-outstanding/{repId}
   financial-assessment-endpoints:
     create-url: /financial-assessments/
-    find-url: /financial-assessments/{financialAssessmentId}
+    search-url: /financial-assessments/{financialAssessmentId}
     update-url: /financial-assessments/{financialAssessmentId}
   passport-assessment-endpoints:
     find-url: /passport-assessments/{repId}
