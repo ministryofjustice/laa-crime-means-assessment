@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.config;
 
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,6 +27,9 @@ public class MaatApiConfiguration {
     @NotNull
     private ValidationEndpoints validationEndpoints;
 
+    /**
+     * Defines financial assessment endpoint URLs
+     */
     @NotNull
     private FinancialAssessmentEndpoints financialAssessmentEndpoints;
 
@@ -74,10 +78,10 @@ public class MaatApiConfiguration {
     @NoArgsConstructor
     public static class FinancialAssessmentEndpoints {
         /**
-         * Find assesssment URL
+         * Find assessment URL
          */
         @NotNull
-        private String findUrl;
+        private String searchUrl;
 
         /**
          * Create assessment URL
@@ -91,6 +95,9 @@ public class MaatApiConfiguration {
         @NotNull
         private String updateUrl;
 
+        public String getByRequestType(AssessmentRequestType requestType) {
+            return (requestType.equals(AssessmentRequestType.CREATE)) ? createUrl : updateUrl;
+        }
     }
 
     @Getter

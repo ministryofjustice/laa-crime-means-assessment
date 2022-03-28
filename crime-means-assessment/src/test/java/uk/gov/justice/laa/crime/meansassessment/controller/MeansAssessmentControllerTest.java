@@ -23,16 +23,20 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.validation.validator.CreateAssessmentValidator;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
+import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
-
 
 @RunWith(SpringRunner.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
@@ -60,7 +64,7 @@ public class MeansAssessmentControllerTest {
     private MeansAssessmentService meansAssessmentService;
 
     @MockBean
-    private CreateAssessmentValidator assessmentValidator;
+    private MeansAssessmentValidationProcessor assessmentValidator;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -69,7 +73,7 @@ public class MeansAssessmentControllerTest {
     private JdbcTemplate jdbcTemplate;
 
     @Before
-    public void setup(){
+    public void setup() {
         this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).addFilter(springSecurityFilterChain).build();
     }
 
@@ -96,12 +100,16 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createAssessment(initialMeansAssessmentRequest))
+
+        when(meansAssessmentService.doAssessment(initialMeansAssessmentRequest, AssessmentRequestType.CREATE))
                 .thenReturn(initialMeansAssessmentResponse);
+
+        when(assessmentValidator.validate(any(ApiCreateMeansAssessmentRequest.class))).thenReturn(Optional.empty());
+
         mvc.perform(post("/api/internal/v1/assessment/means")
-                .header("Authorization", "Bearer " + accessToken)
-                .content(initialMeansAssessmentRequestJson)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + accessToken)
+                        .content(initialMeansAssessmentRequestJson)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.assessmentId").value(MEANS_ASSESSMENT_ID));
@@ -115,7 +123,7 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.createAssessment(initialMeansAssessmentRequest))
+        when(meansAssessmentService.doAssessment(initialMeansAssessmentRequest, AssessmentRequestType.CREATE))
                 .thenReturn(initialMeansAssessmentResponse);
 
         mvc.perform(post("/api/internal/v1/assessment/means")

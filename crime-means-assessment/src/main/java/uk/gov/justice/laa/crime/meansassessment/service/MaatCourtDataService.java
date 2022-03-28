@@ -13,8 +13,8 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReview
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateAssessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 
 import java.util.Map;
 
@@ -27,16 +27,16 @@ public class MaatCourtDataService {
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
 
-    public ApiCreateMeansAssessmentResponse postMeansAssessment(ApiCreateAssessment createAssessment, String laaTransactionId) {
-        ApiCreateMeansAssessmentResponse response = webClient.post()
-                .uri(configuration.getFinancialAssessmentEndpoints().getCreateUrl())
+    public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
+        MaatApiAssessmentResponse response = webClient.post()
+                .uri(endpointUrl)
                 .headers(httpHeaders -> httpHeaders.setAll(Map.of(
                         "Laa-Transaction-Id", laaTransactionId
                 )))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(createAssessment))
+                .body(BodyInserters.fromValue(assessment))
                 .retrieve()
-                .bodyToMono(ApiCreateMeansAssessmentResponse.class)
+                .bodyToMono(MaatApiAssessmentResponse.class)
                 .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
                 .block();

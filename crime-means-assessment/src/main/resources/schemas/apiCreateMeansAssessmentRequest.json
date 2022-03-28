@@ -63,7 +63,7 @@
     },
     "reviewType": {
       "description": "Review Type Info",
-      "$ref": "common/apiReviewType.json"
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType"
     },
     "supplierInfo": {
       "description": "The  address details of the supplier",
@@ -118,6 +118,10 @@
     "otherHousingNote": {
       "type": "string",
       "description": "Other housing note field."
+    },
+    "initTotalAggregatedIncome": {
+      "type": "number",
+      "description": "The total aggregated income calculated during the initial assessment"
     },
     "crownCourtOverview": {
       "type": "object",

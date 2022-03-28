@@ -5,7 +5,7 @@
   "description": "Assessment Summary",
   "properties": {
     "id": {
-      "type": "string",
+      "type": "integer",
       "description": "Assessment ID"
     },
     "assessmentDate": {
