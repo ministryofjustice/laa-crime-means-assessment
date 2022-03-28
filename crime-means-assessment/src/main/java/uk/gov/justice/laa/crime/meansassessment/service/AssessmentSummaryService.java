@@ -25,7 +25,7 @@ public class AssessmentSummaryService {
 
     private final MaatCourtDataService maatCourtDataService;
 
-    public ApiCreateMeansAssessmentResponse addAssessmentSummaryToMeansResponse(final ApiCreateMeansAssessmentResponse assessmentResponse,
+    public void addAssessmentSummaryToMeansResponse(final ApiCreateMeansAssessmentResponse assessmentResponse,
                                                                                 final String laaTransactionId) {
         log.info("Generating assessment summary for means assessment response");
         try {
@@ -39,7 +39,6 @@ public class AssessmentSummaryService {
         } catch (Exception ex) {
             log.error("Failed to generate assessment summary for means assessment response with assessmentId: {}", assessmentResponse.getAssessmentId(), ex);
         }
-        return assessmentResponse;
     }
 
     private ApiAssessmentSummary getFinancialAssessmentSummary(final ApiCreateMeansAssessmentResponse assessmentResponse) {
@@ -79,7 +78,7 @@ public class AssessmentSummaryService {
 
             if (passportAssessmentDTO != null) {
                 ApiAssessmentSummary passportAssessmentSummary = new ApiAssessmentSummary();
-                passportAssessmentSummary.withId(passportAssessmentDTO.getId().toString())
+                passportAssessmentSummary.withId(passportAssessmentDTO.getId())
                         .withType(WorkType.Passported)
                         .withAssessmentDate(passportAssessmentDTO.getAssessmentDate())
                         .withStatus(CurrentStatus.getFrom(passportAssessmentDTO.getPastStatus()).getDescription())
@@ -101,7 +100,7 @@ public class AssessmentSummaryService {
 
             if (hardshipReviewDTO != null) {
                 ApiAssessmentSummary hardshipReviewSummary = new ApiAssessmentSummary();
-                hardshipReviewSummary.withId(hardshipReviewDTO.getId().toString())
+                hardshipReviewSummary.withId(hardshipReviewDTO.getId())
                         .withAssessmentDate(hardshipReviewDTO.getReviewDate())
                         .withStatus(hardshipReviewDTO.getStatus().getDescription())
                         .withResult(hardshipReviewDTO.getReviewResult());
@@ -127,7 +126,7 @@ public class AssessmentSummaryService {
 
             if (iojAppealDTO != null) {
                 ApiAssessmentSummary iOJAppealSummary = new ApiAssessmentSummary();
-                iOJAppealSummary.withId(iojAppealDTO.getId().toString())
+                iOJAppealSummary.withId(iojAppealDTO.getId())
                         .withAssessmentDate(iojAppealDTO.getAppealSetupDate())
                         .withType(WorkType.IoJ_Appeal)
                         .withResult(iojAppealDTO.getDecisionResult())
@@ -140,5 +139,4 @@ public class AssessmentSummaryService {
             throw ex;
         }
     }
-
 }

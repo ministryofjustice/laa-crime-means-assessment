@@ -42,13 +42,17 @@ swagger-ui:
   path: /open-api/docs.html
 
 maatApi:
+  oAuthEnabled: false
   baseUrl: http://localhost:8090
-  validation:
-    endpoints:
-      roleActionEndpoint: /authorization/users/{username}/actions/{action}
-      newWorkReasonEndpoint: /authorization/users/{username}/work-reasons/{nworCode}
-      reservationEndpoint: /authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
-      outstandingAssessmentsEndpoint: /financial-assessments/check-outstanding/{repId}
+  validation-endpoints:
+    role-action-url: role-action-url
+    new-work-reason-url: new-work-reason-url
+    reservations-url: reservation-url
+    outstanding-assessments-url: outstanding-assessments-url
+  financial-assessment-endpoints:
+    create-url: create-url
+    search-url: search-url
+    update-url: update-url
 
 means-assessment:
   security:

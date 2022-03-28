@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "apiInitialMeansAssessment.json",
+  "id": "maatApiAssessmentRequest.json",
   "type": "object",
-  "title": "Initial Means Assessment Request",
-  "description": "Data contract between laa-crime-means-assessment service & Maa court data API for the initial means assessment processing",
+  "title": "Financial assessment request",
+  "description": "Data contract between laa-crime-means-assessment service & MAAT court data API for means assessment processing",
   "properties": {
     "laaTransactionId": {
       "type": "string",
@@ -16,6 +16,10 @@
     "initialAscrId": {
       "type": "integer",
       "description": "Initial assessment criteria ID"
+    },
+    "assessmentType": {
+      "type": "string",
+      "description": "The type of assessment"
     },
     "cmuId": {
       "type": "integer",
@@ -48,15 +52,15 @@
     },
     "initNotes": {
       "type": "string",
-      "description": "Notes field."
+      "description": "Init assessment notes"
     },
     "initResult": {
       "type": "string",
-      "description": "Outcome of an Assessment"
+      "description": "Initial assessment result"
     },
     "initResultReason": {
       "type": "string",
-      "description": "The reason for the outcome "
+      "description": "Initial assessment result reason"
     },
     "incomeEvidenceDueDate": {
       "type": "string",
@@ -71,48 +75,35 @@
       "type": "string",
       "description": "Code for the employment status"
     },
-    "usn": {
-      "type": "integer",
-      "description": "Unique Submission Number - EForm Reference"
-    },
-    "rtCode": {
-      "type": "string",
-      "description": "Review Type code"
-    },
-    "nworCode": {
-      "type": "string",
-      "description": "New work reason details"
-    },
-    "userCreated": {
-      "type": "string",
-      "description": "User  ID"
-    },
-    "incomeUpliftRemoveDate": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Income Uplift Removal Due Date"
-    },
-    "incomeUpliftApplyDate": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Income Uplift Apply Due Date"
-    },
     "assessmentDetailsList": {
       "type": "array",
       "minItems": 1,
       "items": {
         "$ref": "common/apiAssessmentDetail.json"
       }
+    },
+    "childWeightingsList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common/apiAssessmentChildWeighting.json"
+      }
     }
   },
   "additionalProperties": false,
   "required": [
     "repId",
-    "laaTransactionId",
     "cmuId",
-    "newWorkReason",
-    "userId",
-    "transactionDateTime",
-    "assessmentDate"
+    "initialAscrId",
+    "assessmentType",
+    "fassInitStatus",
+    "initialAssessmentDate",
+    "initTotAggregatedIncome",
+    "initAdjustedIncomeValue",
+    "initResult",
+    "initResultReason",
+    "initApplicationEmploymentStatus",
+    "assessmentDetailsList",
+    "childWeightingsList"
   ]
 }

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitialAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.util.Objects;
 
@@ -26,7 +26,7 @@ public class FullAssessmentAvailabilityService {
         if (!Objects.isNull(meansAssessmentRequest.getFullAssessmentDate())) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         } else {
-            switch (InitialAssessmentResult.getFrom(meansAssessmentResponse.getInitResult())) {
+            switch (InitAssessmentResult.getFrom(meansAssessmentResponse.getInitResult())) {
                 case FULL: {
                     meansAssessmentResponse.setFullAssessmentAvailable(true);
                     break;
