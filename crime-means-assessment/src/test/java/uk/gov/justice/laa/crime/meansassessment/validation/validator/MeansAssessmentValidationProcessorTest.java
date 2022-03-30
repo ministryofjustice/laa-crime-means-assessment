@@ -30,9 +30,6 @@ public class MeansAssessmentValidationProcessorTest {
     @Mock
     private InitAssessmentValidator initAssessmentValidator;
 
-    @Mock
-    private FullAssessmentValidator fullAssessmentValidator;
-
     @InjectMocks
     private MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
@@ -84,18 +81,6 @@ public class MeansAssessmentValidationProcessorTest {
         assertThatThrownBy(
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest)
         ).isInstanceOf(ValidationException.class).hasMessage(MSG_INCORRECT_REVIEW_TYPE);
-    }
-
-    @Test
-    public void givenFullAssessmentRequest_whenFullAssessmentValidatorFails_thenValidatorThrowsException() {
-        createMeansAssessmentRequest.setAssessmentType(AssessmentType.FULL);
-        when(fullAssessmentValidator.validate(
-                any(ApiCreateMeansAssessmentRequest.class))
-        ).thenReturn(Boolean.FALSE);
-
-        assertThatThrownBy(
-                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest)
-        ).isInstanceOf(ValidationException.class).hasMessage(MSG_NULL_FULL_ASSESSMENT_DATE);
     }
 
     @Test
