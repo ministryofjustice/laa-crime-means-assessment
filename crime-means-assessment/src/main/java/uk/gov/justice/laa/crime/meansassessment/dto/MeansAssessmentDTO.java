@@ -2,7 +2,6 @@ package uk.gov.justice.laa.crime.meansassessment.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
@@ -20,7 +19,7 @@ public class MeansAssessmentDTO {
     private BigDecimal totalAggregatedExpense;
     private BigDecimal adjustedLivingAllowance;
     private AssessmentCriteriaEntity assessmentCriteria;
-    private ApiCreateMeansAssessmentRequest meansAssessment;
+    private MeansAssessmentRequestDTO meansAssessment;
     private BigDecimal totalAnnualDisposableIncome;
     private InitAssessmentResult initAssessmentResult;
     private FullAssessmentResult fullAssessmentResult;

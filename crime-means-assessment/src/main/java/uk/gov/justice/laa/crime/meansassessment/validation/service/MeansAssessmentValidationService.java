@@ -16,9 +16,9 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class MeansAssessmentValidationService {
     private WebClient webClient;
     private final MaatApiConfiguration configuration;
 
-    public boolean validateRoleAction(final ApiCreateMeansAssessmentRequest meansAssessmentRequest, String action) {
+    public boolean validateRoleAction(final MeansAssessmentRequestDTO meansAssessmentRequest, String action) {
         boolean result = false;
         if (StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(action)) {
             HashMap<String, Object> uriVariables = new HashMap<>();
@@ -55,7 +55,7 @@ public class MeansAssessmentValidationService {
         return result;
     }
 
-    public boolean validateNewWorkReason(final ApiCreateMeansAssessmentRequest meansAssessmentRequest) {
+    public boolean validateNewWorkReason(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         boolean result = false;
         if (meansAssessmentRequest.getNewWorkReason() != null && StringUtils.isNotBlank(meansAssessmentRequest.getNewWorkReason().getCode())) {
             HashMap<String, Object> uriVariables = new HashMap<>();
@@ -71,11 +71,11 @@ public class MeansAssessmentValidationService {
         return result;
     }
 
-    public boolean isRepIdPresentForCreateAssessment(final ApiCreateMeansAssessmentRequest meansAssessmentRequest) {
+    public boolean isRepIdPresentForCreateAssessment(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         return (meansAssessmentRequest.getRepId() != null && Integer.signum(meansAssessmentRequest.getRepId()) >= 0);
     }
 
-    public boolean validateOutstandingAssessments(final ApiCreateMeansAssessmentRequest meansAssessmentRequest) {
+    public boolean validateOutstandingAssessments(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         boolean result = false;
         if (meansAssessmentRequest.getRepId() != null) {
             HashMap<String, Object> uriVariables = new HashMap<>();
@@ -90,7 +90,7 @@ public class MeansAssessmentValidationService {
         return result;
     }
 
-    public boolean validateRoleReservation(final ApiCreateMeansAssessmentRequest meansAssessmentRequest) {
+    public boolean validateRoleReservation(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         boolean result = false;
         if (StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(meansAssessmentRequest.getUserSession().getSessionId()) && meansAssessmentRequest.getRepId() != null) {
             HashMap<String, Object> uriVariables = new HashMap<>();
