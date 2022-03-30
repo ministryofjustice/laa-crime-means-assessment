@@ -101,7 +101,7 @@ jobs:
           update-repositories: false
           chart: ./helm_deploy/laa-crime-means-assessment/
           release-name: laa-crime-means-assessment
-          values: ./helm_deploy/laa-crime-means-assessment/dev/values-dev.yaml
+          values: ./helm_deploy/laa-crime-means-assessment/values-dev.yaml
           values-to-override: image.tag=${CIRCLE_SHA1}      
 
 workflows:
