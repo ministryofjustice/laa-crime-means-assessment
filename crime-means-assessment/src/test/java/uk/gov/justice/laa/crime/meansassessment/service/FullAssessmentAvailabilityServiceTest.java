@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome;
@@ -20,14 +20,14 @@ public class FullAssessmentAvailabilityServiceTest {
 
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
-    private ApiCreateMeansAssessmentRequest meansAssessmentRequest;
+    private MeansAssessmentRequestDTO meansAssessmentRequest;
 
     private ApiCreateMeansAssessmentResponse meansAssessmentResponse;
 
     @Before
     public void setup() {
         fullAssessmentAvailabilityService = new FullAssessmentAvailabilityService();
-        meansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        meansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         meansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(true);
         meansAssessmentRequest.setFullAssessmentDate(null);
     }

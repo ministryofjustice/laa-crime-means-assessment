@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
@@ -31,8 +31,8 @@ public class FullMeansAssessmentServiceTest {
     private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
 
-    private final ApiCreateMeansAssessmentRequest meansAssessment =
-            TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+    private final MeansAssessmentRequestDTO meansAssessment =
+            TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
 
     @InjectMocks
     private FullMeansAssessmentService fullMeansAssessmentService;
