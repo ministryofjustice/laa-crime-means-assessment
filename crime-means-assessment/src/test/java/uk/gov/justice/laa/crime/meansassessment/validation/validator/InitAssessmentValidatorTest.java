@@ -3,21 +3,21 @@ package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class InitAssessmentValidatorTest {
 
-    private ApiCreateMeansAssessmentRequest meansAssessment;
+    private MeansAssessmentRequestDTO meansAssessment;
     private final InitAssessmentValidator initAssessmentValidator = new InitAssessmentValidator();
 
     String REFUSED_REP_ORDER_DECISION = "Refused - Ineligible";
 
     @Before
     public void setup() {
-        meansAssessment = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        meansAssessment = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         meansAssessment.setReviewType(null);
     }
 

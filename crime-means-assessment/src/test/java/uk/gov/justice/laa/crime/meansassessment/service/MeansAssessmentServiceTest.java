@@ -13,6 +13,7 @@ import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatCourtDataAss
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
@@ -37,8 +38,8 @@ public class MeansAssessmentServiceTest {
     private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
 
-    private final ApiCreateMeansAssessmentRequest meansAssessment =
-            TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+    private final MeansAssessmentRequestDTO meansAssessment =
+            TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
 
     private final MaatApiConfiguration.FinancialAssessmentEndpoints financialAssessmentEndpoints =
             new MaatApiConfiguration.FinancialAssessmentEndpoints();
@@ -77,9 +78,8 @@ public class MeansAssessmentServiceTest {
 
     @AfterEach
     public void resetMeansAssessment() {
-        meansAssessment
-                .withAssessmentStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS)
-                .withSectionSummaries(TestModelDataBuilder.getApiAssessmentSummaries(true));
+        meansAssessment.setAssessmentStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS);
+        meansAssessment.setSectionSummaries(TestModelDataBuilder.getApiAssessmentSummaries(true));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class MeansAssessmentServiceTest {
                                 )
                         )
                 );
-        meansAssessment.withSectionSummaries(List.of(section));
+        meansAssessment.setSectionSummaries(List.of(section));
         BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(BigDecimal.valueOf(120));
     }
@@ -202,7 +202,7 @@ public class MeansAssessmentServiceTest {
 
     @Test
     public void givenTwoSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        meansAssessment.withSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
+        meansAssessment.setSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
         BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                 BigDecimal.valueOf(
@@ -213,7 +213,7 @@ public class MeansAssessmentServiceTest {
 
     @Test
     public void givenTwoSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        meansAssessment.withSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
+        meansAssessment.setSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
 
         List<ApiAssessmentDetail> section =
                 meansAssessment.getSectionSummaries().get(0).getAssessmentDetails();
@@ -243,7 +243,7 @@ public class MeansAssessmentServiceTest {
         );
 
         when(initMeansAssessmentService.execute(
-                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class))
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         MaatApiAssessmentResponse maatApiAssessmentResponse =
@@ -288,7 +288,7 @@ public class MeansAssessmentServiceTest {
         setupDoAssessmentStubbing();
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
         verify(initMeansAssessmentService).execute(
-                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class)
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
     }
 
@@ -297,13 +297,13 @@ public class MeansAssessmentServiceTest {
         setupDoAssessmentStubbing();
 
         when(fullMeansAssessmentService.execute(
-                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class))
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         meansAssessment.setAssessmentType(AssessmentType.FULL);
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
         verify(fullMeansAssessmentService).execute(
-                any(BigDecimal.class), any(ApiCreateMeansAssessmentRequest.class), any(AssessmentCriteriaEntity.class)
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
     }
 

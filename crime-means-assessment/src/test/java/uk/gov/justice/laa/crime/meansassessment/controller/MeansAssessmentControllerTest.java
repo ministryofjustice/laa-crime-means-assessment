@@ -23,7 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
@@ -96,15 +96,15 @@ public class MeansAssessmentControllerTest {
     public void createInitialAssessment_success() throws Exception {
         //given
         final String accessToken = obtainAccessToken();
-        var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
+        var initialMeansAssessmentRequest = TestModelDataBuilder.getApiInitMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
 
-        when(meansAssessmentService.doAssessment(initialMeansAssessmentRequest, AssessmentRequestType.CREATE))
+        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(initialMeansAssessmentResponse);
 
-        when(assessmentValidator.validate(any(ApiCreateMeansAssessmentRequest.class))).thenReturn(Optional.empty());
+        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class))).thenReturn(Optional.empty());
 
         mvc.perform(post("/api/internal/v1/assessment/means")
                         .header("Authorization", "Bearer " + accessToken)
@@ -119,11 +119,11 @@ public class MeansAssessmentControllerTest {
     public void createInitialAssessment_RequestObjectFailsValidation() throws Exception {
         //given
         final String accessToken = obtainAccessToken();
-        var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(!IS_VALID);
+        var initialMeansAssessmentRequest = TestModelDataBuilder.getApiInitMeansAssessmentRequest(!IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         // and given
         var initialMeansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(IS_VALID);
-        when(meansAssessmentService.doAssessment(initialMeansAssessmentRequest, AssessmentRequestType.CREATE))
+        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(initialMeansAssessmentResponse);
 
         mvc.perform(post("/api/internal/v1/assessment/means")
@@ -138,7 +138,7 @@ public class MeansAssessmentControllerTest {
         final String accessToken = obtainAccessToken();
         mvc.perform(post("/api/internal/v1/assessment/means")
                         .header("Authorization", "Bearer " + accessToken)
-                        .content(new String())
+                        .content("")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }

@@ -3,6 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.data.builder;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
@@ -49,6 +50,9 @@ public class TestModelDataBuilder {
     public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION";
     public static final String TEST_SECTION = "SECTION";
     public static final Integer TEST_SEQ = 10;
+
+    public static final String TEST_EMPLOYMENT_STATUS = "EMPLOY";
+    public static final Integer TEST_USN = 4056595;
 
     public static final Frequency TEST_FREQUENCY = Frequency.MONTHLY;
     public static final CaseType TEST_CASE_TYPE = CaseType.APPEAL_CC;
@@ -184,20 +188,44 @@ public class TestModelDataBuilder {
                 .build();
     }
 
-
-    public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid) {
-        return new ApiCreateMeansAssessmentRequest()
+    public static ApiInitMeansAssessmentRequest getApiInitMeansAssessmentRequest(boolean isValid) {
+        return new ApiInitMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
                 .withReviewType(ReviewType.NAFI)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
                 .withUserId("test-userid")
-                .withTransactionDateTime(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withNewWorkReason(NewWorkReason.PBI)
+                .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
+                .withHasPartner(true)
+                .withPartnerContraryInterest(false)
+                .withCaseType(CaseType.EITHER_WAY)
+                .withAssessmentStatus(CurrentStatus.COMPLETE)
+                .withChildWeightings(getAssessmentChildWeightings())
+                .withUserSession(getUserSession())
+                .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .withUsn(TEST_USN)
+                .withCrownCourtOverview(new ApiCrownCourtOverview()
+                        .withAvailable(true)
+                        .withCrownCourtSummary(
+                                new ApiCrownCourtSummary()
+                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                        )
+                )
+                .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
+    }
+
+    public static ApiFullMeansAssessmentRequest getApiFullMeansAssessmentRequest(boolean isValid) {
+        return new ApiFullMeansAssessmentRequest()
+                .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .withAssessmentType(AssessmentType.INIT)
+                .withRepId(isValid ? 91919 : null)
+                .withCmuId(isValid ? 91919 : null)
+                .withUserId("test-userid")
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withFullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
-                .withNewWorkReason(NewWorkReason.PBI)
-                .withSupplierInfo(getApiSupplierInfo())
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .withHasPartner(true)
                 .withPartnerContraryInterest(false)
@@ -215,6 +243,38 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
+    public static MeansAssessmentRequestDTO getMeansAssessmentRequestDTO(boolean isValid) {
+        return MeansAssessmentRequestDTO.builder()
+                .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .repId(isValid ? 91919 : null)
+                .cmuId(isValid ? 91919 : null)
+                .userId("test-userid")
+                .initialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .assessmentStatus(CurrentStatus.COMPLETE)
+                .sectionSummaries(List.of(getApiAssessmentSectionSummary()))
+                .childWeightings(getAssessmentChildWeightings())
+                .hasPartner(true)
+                .partnerContraryInterest(false)
+                .assessmentType(AssessmentType.INIT)
+                .caseType(CaseType.EITHER_WAY)
+                .userSession(getUserSession())
+                .incomeEvidenceSummary(getApiIncomeEvidenceSummary())
+                .crownCourtOverview(getApiCrownCourtOverview())
+                .reviewType(ReviewType.NAFI)
+                .newWorkReason(NewWorkReason.PBI)
+                .fullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .build();
+    }
+
+    public static ApiCrownCourtOverview getApiCrownCourtOverview() {
+        return new ApiCrownCourtOverview()
+                .withAvailable(true)
+                .withCrownCourtSummary(
+                        new ApiCrownCourtSummary()
+                                .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                );
+    }
+
     public static ApiIncomeEvidenceSummary getApiIncomeEvidenceSummary() {
         return new ApiIncomeEvidenceSummary()
                 .withIncomeEvidenceNotes("FAKE EVIDENCE NOTES")
@@ -225,7 +285,7 @@ public class TestModelDataBuilder {
 
     public static MeansAssessmentDTO getMeansAssessmentDTO() {
         return MeansAssessmentDTO.builder()
-                .meansAssessment(getCreateMeansAssessmentRequest(true))
+                .meansAssessment(getMeansAssessmentRequestDTO(true))
                 .assessmentCriteria(getAssessmentCriteriaEntity())
                 .totalAggregatedIncome(TEST_AGGREGATED_INCOME)
                 .userCreated(TEST_USER)
@@ -341,20 +401,6 @@ public class TestModelDataBuilder {
                         .withUpperAgeRange(4)
                         .withNoOfChildren(2)
         );
-    }
-
-    public static ApiSupplierInfo getApiSupplierInfo() {
-        return new ApiSupplierInfo()
-                .withAccountNumber("91919")
-                .withName("testSupplierName")
-                .withAddress(getApiAddress());
-    }
-
-    public static ApiAddress getApiAddress() {
-        return new ApiAddress()
-                .withAddressId(79387182)
-                .withLine1("210 Kybald Street")
-                .withPostCode("LE7 8OU");
     }
 
     public static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
