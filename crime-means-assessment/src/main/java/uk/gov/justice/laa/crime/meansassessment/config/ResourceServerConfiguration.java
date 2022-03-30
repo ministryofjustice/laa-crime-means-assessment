@@ -28,9 +28,8 @@ public class ResourceServerConfiguration {
     }
 
     @Bean
-    public AccessDeniedHandler bearerTokenAccessDeniedHandler(){
-        BearerTokenAccessDeniedHandler bearerTokenAccessDeniedHandler = new BearerTokenAccessDeniedHandler();
-        return bearerTokenAccessDeniedHandler;
+    public AccessDeniedHandler bearerTokenAccessDeniedHandler() {
+        return new BearerTokenAccessDeniedHandler();
     }
 
     @Bean
@@ -40,20 +39,20 @@ public class ResourceServerConfiguration {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests(auth -> auth
-                    .antMatchers("/oauth2/**").permitAll()
-                    .antMatchers("/open-api/**").permitAll()
-                    .antMatchers("/actuator/**").permitAll()
-                    .antMatchers("/error").permitAll()
-                    .antMatchers(HttpMethod.GET,"/crime-means-assessment/**").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/**").hasAnyAuthority(SCOPE_READ, SCOPE_READ_WRITE)
-                    .antMatchers(HttpMethod.POST, "/api/**").hasAuthority(SCOPE_READ_WRITE)
-                    .antMatchers(HttpMethod.PUT, "/api/**").hasAuthority(SCOPE_READ_WRITE)
-                    .antMatchers(HttpMethod.DELETE, "/api/**").hasAuthority(SCOPE_READ_WRITE)
-                    .antMatchers(HttpMethod.PATCH, "/api/**").hasAuthority(SCOPE_READ_WRITE)
-                    .anyRequest().authenticated())
+                        .antMatchers("/oauth2/**").permitAll()
+                        .antMatchers("/open-api/**").permitAll()
+                        .antMatchers("/actuator/**").permitAll()
+                        .antMatchers("/error").permitAll()
+                        .antMatchers(HttpMethod.GET, "/crime-means-assessment/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/**").hasAnyAuthority(SCOPE_READ, SCOPE_READ_WRITE)
+                        .antMatchers(HttpMethod.POST, "/api/**").hasAuthority(SCOPE_READ_WRITE)
+                        .antMatchers(HttpMethod.PUT, "/api/**").hasAuthority(SCOPE_READ_WRITE)
+                        .antMatchers(HttpMethod.DELETE, "/api/**").hasAuthority(SCOPE_READ_WRITE)
+                        .antMatchers(HttpMethod.PATCH, "/api/**").hasAuthority(SCOPE_READ_WRITE)
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer().accessDeniedHandler(bearerTokenAccessDeniedHandler()).authenticationEntryPoint(bearerTokenAuthenticationEntryPoint())
                 .jwt()
-                ;
+        ;
 
         return http.build();
     }
