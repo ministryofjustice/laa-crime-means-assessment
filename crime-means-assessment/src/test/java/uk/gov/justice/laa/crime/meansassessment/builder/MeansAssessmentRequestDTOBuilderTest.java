@@ -17,11 +17,6 @@ public class MeansAssessmentRequestDTOBuilderTest {
     private final MeansAssessmentRequestDTOBuilder requestDTOBuilder =
             new MeansAssessmentRequestDTOBuilder();
 
-    @Before
-    public void setup() {
-
-    }
-
     @Test
     public void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentRequest meansAssessment =
