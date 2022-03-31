@@ -41,7 +41,9 @@ public class MeansAssessmentRequestDTOBuilder {
             requestDTO.setUsn(initMeansAssessmentRequest.getUsn());
             requestDTO.setReviewType(initMeansAssessmentRequest.getReviewType());
             requestDTO.setNewWorkReason(initMeansAssessmentRequest.getNewWorkReason());
-        } else {
+        }
+
+        if (assessmentRequest instanceof ApiFullMeansAssessmentRequest) {
             ApiFullMeansAssessmentRequest fullMeansAssessmentRequest = (ApiFullMeansAssessmentRequest) assessmentRequest;
             requestDTO.setFullAssessmentDate(fullMeansAssessmentRequest.getFullAssessmentDate());
             requestDTO.setOtherHousingNote(fullMeansAssessmentRequest.getOtherHousingNote());
