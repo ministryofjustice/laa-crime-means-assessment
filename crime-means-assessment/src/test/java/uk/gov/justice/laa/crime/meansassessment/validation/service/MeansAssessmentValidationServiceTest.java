@@ -11,8 +11,8 @@ import reactor.test.StepVerifier;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 
 import java.util.HashMap;
 
@@ -56,27 +56,27 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenRepIdIsNull_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         request.setRepId(null);
         assertFalse(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(request));
     }
 
     @Test
     public void whenRepIdIsNegative_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
-        request.setRepId(-1);
-        assertFalse(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(request));
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        requestDTO.setRepId(-1);
+        assertFalse(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(requestDTO));
     }
 
     @Test
     public void whenRepIdIsValid_thenTrueResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         assertTrue(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(request));
     }
 
     @Test
     public void whenNworCodeIsInvalid_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getNewWorkReasonUrl()), any(HashMap.class)))
@@ -86,7 +86,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateNewWorkReason(request);
+            result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +100,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenNworCodeIsValid_thenTrueResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getNewWorkReasonUrl()), any(HashMap.class)))
@@ -110,7 +110,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateNewWorkReason(request);
+            result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,7 +124,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenRoleActionIsInvalid_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getRoleActionUrl()), any(HashMap.class)))
@@ -134,7 +134,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateRoleAction(request, ACTION_CREATE_ASSESSMENT);
+            result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,7 +148,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenRoleActionIsValid_thenTrueResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getRoleActionUrl()), any(HashMap.class)))
@@ -158,7 +158,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateRoleAction(request, ACTION_CREATE_ASSESSMENT);
+            result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,7 +172,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenRoleReservationIsInvalid_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getReservationsUrl()), any(HashMap.class)))
@@ -182,7 +182,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateRoleReservation(request);
+            result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,7 +196,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenRoleReservationIsValid_thenTrueResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getReservationsUrl()), any(HashMap.class)))
@@ -206,7 +206,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateRoleReservation(request);
+            result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -220,7 +220,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenOutstandingAssessmentsAreFound_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(true);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl()), any(HashMap.class)))
@@ -230,7 +230,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateOutstandingAssessments(request);
+            result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -244,7 +244,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenOutstandingAssessmentsAreNotFound_thenTrueResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl()), any(HashMap.class)))
@@ -254,7 +254,7 @@ public class MeansAssessmentValidationServiceTest {
 
         boolean result;
         try {
-            result = meansAssessmentValidationService.validateOutstandingAssessments(request);
+            result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();

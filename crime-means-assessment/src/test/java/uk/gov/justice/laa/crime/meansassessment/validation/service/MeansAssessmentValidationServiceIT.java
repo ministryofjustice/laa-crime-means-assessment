@@ -14,8 +14,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 
 import java.io.IOException;
 
@@ -60,10 +60,10 @@ public class MeansAssessmentValidationServiceIT {
 
     @Test
     public void whenNworCodeIsNull_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
-        request.setNewWorkReason(null);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        requestDTO.setNewWorkReason(null);
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(request);
+            boolean result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,13 +74,13 @@ public class MeansAssessmentValidationServiceIT {
 
     @Test
     public void whenNworCodeIsInvalid_thenFalseResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
 
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
                 .addHeader("Content-Type", "application/json"));
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(request);
+            boolean result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,12 +90,12 @@ public class MeansAssessmentValidationServiceIT {
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + request.getUserId() + "/work-reasons/" + request.getNewWorkReason().getCode(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/work-reasons/" + requestDTO.getNewWorkReason().getCode(), recordedRequest.getPath());
     }
 
     @Test
     public void whenNworCodeIsValid_thenTrueResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
 
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
@@ -116,11 +116,11 @@ public class MeansAssessmentValidationServiceIT {
 
     @Test
     public void whenRoleActionIsNull_thenFalseResultIsReturned() {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
-        request.setUserId(null);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        requestDTO.setUserId(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(request, ACTION_CREATE_ASSESSMENT);
+            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,13 +131,13 @@ public class MeansAssessmentValidationServiceIT {
 
     @Test
     public void whenRoleActionIsInvalid_thenFalseResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
 
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
                 .addHeader("Content-Type", "application/json"));
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(request, ACTION_CREATE_ASSESSMENT);
+            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,18 +147,18 @@ public class MeansAssessmentValidationServiceIT {
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + request.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
     }
 
     @Test
     public void whenRoleActionIsValid_thenTrueResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
 
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
                 .addHeader("Content-Type", "application/json"));
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(request, ACTION_CREATE_ASSESSMENT);
+            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,16 +168,16 @@ public class MeansAssessmentValidationServiceIT {
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + request.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
     }
 
     @Test
     public void whenRoleReservationIsNull_thenFalseResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
-        request.setRepId(null);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        requestDTO.setRepId(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(request);
+            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -188,13 +188,13 @@ public class MeansAssessmentValidationServiceIT {
 
     @Test
     public void whenRoleReservationIsInvalid_thenFalseResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
 
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
                 .addHeader("Content-Type", "application/json"));
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(request);
+            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,18 +204,18 @@ public class MeansAssessmentValidationServiceIT {
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + request.getUserId() + "/reservations/" + request.getRepId() + "/sessions/" + request.getUserSession().getSessionId(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
     }
 
     @Test
     public void whenRoleReservationIsValid_thenTrueResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
 
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
                 .addHeader("Content-Type", "application/json"));
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(request);
+            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -225,17 +225,17 @@ public class MeansAssessmentValidationServiceIT {
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + request.getUserId() + "/reservations/" + request.getRepId() + "/sessions/" + request.getUserSession().getSessionId(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
     }
 
 
     @Test
     public void whenOutstandingAssessmentRepIdIsNull_thenFalseResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
-        request.setRepId(null);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        requestDTO.setRepId(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(request);
+            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -246,13 +246,13 @@ public class MeansAssessmentValidationServiceIT {
 
     @Test
     public void whenOutstandingAssessmentsAreFound_thenFalseResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
 
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(true);
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
                 .addHeader("Content-Type", "application/json"));
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(request);
+            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -262,18 +262,18 @@ public class MeansAssessmentValidationServiceIT {
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/financial-assessments/check-outstanding/" + request.getRepId(), recordedRequest.getPath());
+        assertEquals("/financial-assessments/check-outstanding/" + requestDTO.getRepId(), recordedRequest.getPath());
     }
 
     @Test
     public void whenOutstandingAssessmentsAreNotFound_thenTrueResultIsReturned() throws Exception {
-        ApiCreateMeansAssessmentRequest request = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
 
         mockBackEnd.enqueue(new MockResponse().setBody(OBJECT_MAPPER.writeValueAsString(response))
                 .addHeader("Content-Type", "application/json"));
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(request);
+            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -283,6 +283,6 @@ public class MeansAssessmentValidationServiceIT {
 
         RecordedRequest recordedRequest = mockBackEnd.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/financial-assessments/check-outstanding/" + request.getRepId(), recordedRequest.getPath());
+        assertEquals("/financial-assessments/check-outstanding/" + requestDTO.getRepId(), recordedRequest.getPath());
     }
 }

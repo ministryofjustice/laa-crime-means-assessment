@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
@@ -19,26 +19,26 @@ public class InitMeansAssessmentService implements AssessmentService {
 
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
-    public MeansAssessmentDTO execute(BigDecimal annualTotal, ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
+    public MeansAssessmentDTO execute(BigDecimal annualTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create initial means assessment - Start");
-        BigDecimal adjustedIncomeValue = getAdjustedIncome(meansAssessment, assessmentCriteria, annualTotal);
-        CurrentStatus status = meansAssessment.getAssessmentStatus();
-        log.info("Init means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
+        BigDecimal adjustedIncomeValue = getAdjustedIncome(requestDTO, assessmentCriteria, annualTotal);
+        CurrentStatus status = requestDTO.getAssessmentStatus();
+        log.info("Init means assessment calculation complete for Rep ID: {}", requestDTO.getRepId());
         return MeansAssessmentDTO
                 .builder()
                 .currentStatus(status)
                 .initAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE) ? getResult(
-                                adjustedIncomeValue, assessmentCriteria, meansAssessment.getNewWorkReason().getCode()
+                                adjustedIncomeValue, assessmentCriteria, requestDTO.getNewWorkReason().getCode()
                         ) : InitAssessmentResult.NONE
                 )
                 .adjustedIncomeValue(adjustedIncomeValue)
                 .totalAggregatedIncome(annualTotal).build();
     }
 
-    BigDecimal getAdjustedIncome(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
+    BigDecimal getAdjustedIncome(MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
         BigDecimal totalChildWeighting =
-                childWeightingService.getTotalChildWeighting(meansAssessment.getChildWeightings(), assessmentCriteria);
+                childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria);
         if (BigDecimal.ZERO.compareTo(annualTotal) <= 0) {
             return annualTotal
                     .divide(assessmentCriteria.getApplicantWeightingFactor()
