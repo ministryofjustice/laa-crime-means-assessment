@@ -16,7 +16,7 @@ import java.time.Duration;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class RetryableWebClientService {
+public abstract class RetryableWebClientService {
 
     @Autowired
     private RetryConfiguration retryConfiguration;
@@ -27,8 +27,9 @@ public class RetryableWebClientService {
                         HttpStatus::is5xxServerError,
                             error -> Mono.error(
                                     new HttpServerErrorException(
-                                            HttpStatus.valueOf(error.rawStatusCode()),
-                                            baseErrorMessage + " Server Error.")
+                                            error.statusCode(),
+                                            baseErrorMessage + " Server Error."
+                                    )
                             )
                 )
                 .bodyToMono(responseClass)
