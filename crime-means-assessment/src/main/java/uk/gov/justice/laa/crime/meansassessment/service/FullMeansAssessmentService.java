@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiFullMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
@@ -18,12 +20,12 @@ public class FullMeansAssessmentService implements AssessmentService {
 
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
-    public MeansAssessmentDTO execute(BigDecimal expenditureTotal, ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
+    public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create full means assessment - Start");
-        BigDecimal adjustedLivingAllowance = getAdjustedLivingAllowance(meansAssessment, assessmentCriteria);
-        BigDecimal totalDisposableIncome = getDisposableIncome(meansAssessment, expenditureTotal, adjustedLivingAllowance);
-        CurrentStatus status = meansAssessment.getAssessmentStatus();
-        log.info("Full means assessment calculation complete for Rep ID: {}", meansAssessment.getRepId());
+        BigDecimal adjustedLivingAllowance = getAdjustedLivingAllowance(requestDTO, assessmentCriteria);
+        BigDecimal totalDisposableIncome = getDisposableIncome(requestDTO, expenditureTotal, adjustedLivingAllowance);
+        CurrentStatus status = requestDTO.getAssessmentStatus();
+        log.info("Full means assessment calculation complete for Rep ID: {}", requestDTO.getRepId());
         return MeansAssessmentDTO
                 .builder()
                 .currentStatus(status)
@@ -37,17 +39,18 @@ public class FullMeansAssessmentService implements AssessmentService {
                 .totalAnnualDisposableIncome(totalDisposableIncome).build();
     }
 
-    BigDecimal getDisposableIncome(ApiCreateMeansAssessmentRequest meansAssessment, BigDecimal expenditureTotal, BigDecimal adjustedLivingAllowance) {
-        return meansAssessment.getInitTotalAggregatedIncome().subtract(
-                expenditureTotal.add(
-                        adjustedLivingAllowance
-                )
-        );
+    BigDecimal getDisposableIncome(MeansAssessmentRequestDTO requestDTO, BigDecimal expenditureTotal, BigDecimal adjustedLivingAllowance) {
+        return requestDTO.getInitTotalAggregatedIncome()
+                .subtract(
+                        expenditureTotal.add(
+                                adjustedLivingAllowance
+                        )
+                );
     }
 
-    BigDecimal getAdjustedLivingAllowance(ApiCreateMeansAssessmentRequest meansAssessment, AssessmentCriteriaEntity assessmentCriteria) {
+    BigDecimal getAdjustedLivingAllowance(MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         BigDecimal totalChildWeighting =
-                childWeightingService.getTotalChildWeighting(meansAssessment.getChildWeightings(), assessmentCriteria);
+                childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria);
 
         return assessmentCriteria.getLivingAllowance().multiply(
                 assessmentCriteria.getApplicantWeightingFactor().add(

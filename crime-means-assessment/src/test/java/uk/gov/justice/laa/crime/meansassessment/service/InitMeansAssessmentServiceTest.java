@@ -10,7 +10,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
@@ -19,8 +19,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,8 +32,8 @@ public class InitMeansAssessmentServiceTest {
     private final BigDecimal upperThreshold = TestModelDataBuilder.TEST_INITIAL_UPPER_THRESHOLD;
     private final BigDecimal lowerThreshold = TestModelDataBuilder.TEST_INITIAL_LOWER_THRESHOLD;
 
-    private final ApiCreateMeansAssessmentRequest meansAssessment =
-            TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+    private final MeansAssessmentRequestDTO meansAssessment =
+            TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
 
     @Spy
     @InjectMocks
@@ -124,7 +124,7 @@ public class InitMeansAssessmentServiceTest {
         ).thenReturn(totalChildWeighting);
 
         assertThat(initMeansAssessmentService.getAdjustedIncome(
-                TestModelDataBuilder.getCreateMeansAssessmentRequest(true), assessmentCriteria, annualTotal)
+                TestModelDataBuilder.getMeansAssessmentRequestDTO(true), assessmentCriteria, annualTotal)
         ).isEqualTo(expected);
     }
 
@@ -135,7 +135,7 @@ public class InitMeansAssessmentServiceTest {
                 anyList(), any(AssessmentCriteriaEntity.class))
         ).thenReturn(BigDecimal.ZERO);
         assertThat(initMeansAssessmentService.getAdjustedIncome(
-                TestModelDataBuilder.getCreateMeansAssessmentRequest(true), assessmentCriteria, annualTotal)
+                TestModelDataBuilder.getMeansAssessmentRequestDTO(true), assessmentCriteria, annualTotal)
         ).isEqualTo(BigDecimal.ZERO);
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.data.builder;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
@@ -50,6 +51,10 @@ public class TestModelDataBuilder {
     public static final String TEST_SECTION = "SECTION";
     public static final Integer TEST_SEQ = 10;
 
+    public static final String TEST_EMPLOYMENT_STATUS = "EMPLOY";
+    public static final Integer TEST_USN = 4056595;
+    public static final String TEST_NOTE = "TEST_NOTE";
+
     public static final Frequency TEST_FREQUENCY = Frequency.MONTHLY;
     public static final CaseType TEST_CASE_TYPE = CaseType.APPEAL_CC;
 
@@ -67,6 +72,7 @@ public class TestModelDataBuilder {
     public static final LocalDateTime TEST_INCOME_EVIDENCE_DUE_DATE =
             LocalDateTime.of(2020, 10, 5, 0, 0, 0);
 
+    public static final String TEST_USERNAME = "MOCK-USERNAME";
 
     public static final BigDecimal TEST_DISPOSABLE_INCOME = BigDecimal.valueOf(4000d);
     public static final BigDecimal TEST_ADJUSTED_LIVING_ALLOWANCE = BigDecimal.valueOf(6000d);
@@ -184,23 +190,80 @@ public class TestModelDataBuilder {
                 .build();
     }
 
+    public static ApiMeansAssessmentRequest getApiMeansAssessmentRequst(boolean isValid) {
+        return new ApiMeansAssessmentRequest()
+                .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .withAssessmentType(AssessmentType.INIT)
+                .withRepId(isValid ? 91919 : null)
+                .withCmuId(isValid ? 91919 : null)
+                .withUserId(TEST_USERNAME)
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
+                .withOtherBenefitNote(TEST_NOTE)
+                .withOtherIncomeNote(TEST_NOTE)
+                .withInitAssessmentNotes(TEST_NOTE)
+                .withHasPartner(true)
+                .withPartnerContraryInterest(false)
+                .withCaseType(CaseType.EITHER_WAY)
+                .withAssessmentStatus(CurrentStatus.COMPLETE)
+                .withChildWeightings(getAssessmentChildWeightings())
+                .withUserSession(getUserSession())
+                .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .withCrownCourtOverview(new ApiCrownCourtOverview()
+                        .withAvailable(true)
+                        .withCrownCourtSummary(
+                                new ApiCrownCourtSummary()
+                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                        )
+                )
+                .withMagCourtOutcome(MagCourtOutcome.COMMITTED)
+                .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
+    }
 
-    public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid) {
-        return new ApiCreateMeansAssessmentRequest()
+    public static ApiInitMeansAssessmentRequest getApiInitMeansAssessmentRequest(boolean isValid) {
+        return new ApiInitMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
                 .withReviewType(ReviewType.NAFI)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withUserId("test-userid")
-                .withTransactionDateTime(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withUserId(TEST_USERNAME)
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
-                .withFullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withNewWorkReason(NewWorkReason.PBI)
-                .withSupplierInfo(getApiSupplierInfo())
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .withHasPartner(true)
                 .withPartnerContraryInterest(false)
+                .withCaseType(CaseType.EITHER_WAY)
+                .withAssessmentStatus(CurrentStatus.COMPLETE)
+                .withChildWeightings(getAssessmentChildWeightings())
+                .withUserSession(getUserSession())
+                .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .withUsn(TEST_USN)
+                .withCrownCourtOverview(new ApiCrownCourtOverview()
+                        .withAvailable(true)
+                        .withCrownCourtSummary(
+                                new ApiCrownCourtSummary()
+                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                        )
+                )
+                .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
+    }
+
+    public static ApiFullMeansAssessmentRequest getApiFullMeansAssessmentRequest(boolean isValid) {
+        return new ApiFullMeansAssessmentRequest()
+                .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .withAssessmentType(AssessmentType.INIT)
+                .withRepId(isValid ? 91919 : null)
+                .withCmuId(isValid ? 91919 : null)
+                .withUserId(TEST_USERNAME)
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withFullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
+                .withHasPartner(true)
+                .withPartnerContraryInterest(false)
+                .withOtherHousingNote(TEST_NOTE)
+                .withInitTotalAggregatedIncome(TEST_AGGREGATED_INCOME)
+                .withFullAssessmentNotes(TEST_NOTE)
                 .withCaseType(CaseType.EITHER_WAY)
                 .withAssessmentStatus(CurrentStatus.COMPLETE)
                 .withChildWeightings(getAssessmentChildWeightings())
@@ -215,9 +278,41 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
+    public static MeansAssessmentRequestDTO getMeansAssessmentRequestDTO(boolean isValid) {
+        return MeansAssessmentRequestDTO.builder()
+                .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .repId(isValid ? 91919 : null)
+                .cmuId(isValid ? 91919 : null)
+                .userId(TEST_USERNAME)
+                .initialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .assessmentStatus(CurrentStatus.COMPLETE)
+                .sectionSummaries(List.of(getApiAssessmentSectionSummary()))
+                .childWeightings(getAssessmentChildWeightings())
+                .hasPartner(true)
+                .partnerContraryInterest(false)
+                .assessmentType(AssessmentType.INIT)
+                .caseType(CaseType.EITHER_WAY)
+                .userSession(getUserSession())
+                .incomeEvidenceSummary(getApiIncomeEvidenceSummary())
+                .crownCourtOverview(getApiCrownCourtOverview())
+                .reviewType(ReviewType.NAFI)
+                .newWorkReason(NewWorkReason.PBI)
+                .fullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .build();
+    }
+
+    public static ApiCrownCourtOverview getApiCrownCourtOverview() {
+        return new ApiCrownCourtOverview()
+                .withAvailable(true)
+                .withCrownCourtSummary(
+                        new ApiCrownCourtSummary()
+                                .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                );
+    }
+
     public static ApiIncomeEvidenceSummary getApiIncomeEvidenceSummary() {
         return new ApiIncomeEvidenceSummary()
-                .withIncomeEvidenceNotes("FAKE EVIDENCE NOTES")
+                .withIncomeEvidenceNotes(TEST_NOTE)
                 .withEvidenceDueDate(TEST_INCOME_EVIDENCE_DUE_DATE)
                 .withUpliftAppliedDate(TEST_INCOME_UPLIFT_APPLY_DATE)
                 .withUpliftRemovedDate(TEST_INCOME_UPLIFT_REMOVE_DATE);
@@ -225,7 +320,7 @@ public class TestModelDataBuilder {
 
     public static MeansAssessmentDTO getMeansAssessmentDTO() {
         return MeansAssessmentDTO.builder()
-                .meansAssessment(getCreateMeansAssessmentRequest(true))
+                .meansAssessment(getMeansAssessmentRequestDTO(true))
                 .assessmentCriteria(getAssessmentCriteriaEntity())
                 .totalAggregatedIncome(TEST_AGGREGATED_INCOME)
                 .userCreated(TEST_USER)
@@ -341,20 +436,6 @@ public class TestModelDataBuilder {
                         .withUpperAgeRange(4)
                         .withNoOfChildren(2)
         );
-    }
-
-    public static ApiSupplierInfo getApiSupplierInfo() {
-        return new ApiSupplierInfo()
-                .withAccountNumber("91919")
-                .withName("testSupplierName")
-                .withAddress(getApiAddress());
-    }
-
-    public static ApiAddress getApiAddress() {
-        return new ApiAddress()
-                .withAddressId(79387182)
-                .withLine1("210 Kybald Street")
-                .withPostCode("LE7 8OU");
     }
 
     public static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
