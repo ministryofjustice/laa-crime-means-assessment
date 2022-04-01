@@ -13,4 +13,7 @@ public class RetryConfiguration {
 
     @NotNull
     private Integer minBackOffPeriod;
+
+    @NotNull
+    private Double jitterValue;
 }
