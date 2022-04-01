@@ -8,9 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
 
 import java.util.Optional;
@@ -30,42 +29,39 @@ public class MeansAssessmentValidationProcessorTest {
     @Mock
     private InitAssessmentValidator initAssessmentValidator;
 
-    @Mock
-    private FullAssessmentValidator fullAssessmentValidator;
-
     @InjectMocks
     private MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
-    ApiCreateMeansAssessmentRequest createMeansAssessmentRequest;
+    MeansAssessmentRequestDTO createMeansAssessmentRequest;
 
     @Before
     public void setup() {
 
         when(meansAssessmentValidationService.validateOutstandingAssessments(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
         when(meansAssessmentValidationService.validateNewWorkReason(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
         when(meansAssessmentValidationService.validateRoleAction(
-                any(ApiCreateMeansAssessmentRequest.class), any(String.class))
+                any(MeansAssessmentRequestDTO.class), any(String.class))
         ).thenReturn(Boolean.TRUE);
 
         when(meansAssessmentValidationService.validateRoleReservation(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
         when(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
         when(initAssessmentValidator.validate(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
-        createMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(true);
+        createMeansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
     }
 
     @Test
@@ -78,7 +74,7 @@ public class MeansAssessmentValidationProcessorTest {
     @Test
     public void givenInitAssessmentRequest_whenInitAssessmentValidatorFails_thenValidatorThrowsException() {
         when(initAssessmentValidator.validate(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 
         assertThatThrownBy(
@@ -87,22 +83,10 @@ public class MeansAssessmentValidationProcessorTest {
     }
 
     @Test
-    public void givenFullAssessmentRequest_whenFullAssessmentValidatorFails_thenValidatorThrowsException() {
-        createMeansAssessmentRequest.setAssessmentType(AssessmentType.FULL);
-        when(fullAssessmentValidator.validate(
-                any(ApiCreateMeansAssessmentRequest.class))
-        ).thenReturn(Boolean.FALSE);
-
-        assertThatThrownBy(
-                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest)
-        ).isInstanceOf(ValidationException.class).hasMessage(MSG_NULL_FULL_ASSESSMENT_DATE);
-    }
-
-    @Test
     public void givenValidRequest_whenNworValidationFails_thenValidatorThrowsException() {
 
         when(meansAssessmentValidationService.validateNewWorkReason(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
@@ -114,7 +98,7 @@ public class MeansAssessmentValidationProcessorTest {
     public void givenValidRequest_whenRepIdValidationFails_thenValidatorThrowsException() {
 
         when(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
@@ -126,7 +110,7 @@ public class MeansAssessmentValidationProcessorTest {
     public void givenValidRequest_whenRoleReservationValidationFails_thenValidatorThrowsException() {
 
         when(meansAssessmentValidationService.validateRoleReservation(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
@@ -138,7 +122,7 @@ public class MeansAssessmentValidationProcessorTest {
     public void givenValidRequest_whenRoleActionValidationFails_thenValidatorThrowsException() {
 
         when(meansAssessmentValidationService.validateRoleAction(
-                any(ApiCreateMeansAssessmentRequest.class), any(String.class))
+                any(MeansAssessmentRequestDTO.class), any(String.class))
         ).thenReturn(Boolean.FALSE);
 
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
@@ -150,7 +134,7 @@ public class MeansAssessmentValidationProcessorTest {
     public void givenValidRequest_whenOutstandingAssessmentsValidationFails_thenValidatorThrowsException() {
 
         when(meansAssessmentValidationService.validateOutstandingAssessments(
-                any(ApiCreateMeansAssessmentRequest.class))
+                any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
