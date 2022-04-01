@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -95,11 +96,7 @@ public class MaatApiOAuth2Client {
                 .baseUrl(config.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .filter(ExchangeFilterFunctions.statusError(
-                        HttpStatus::isError, r -> new APIClientException(
-                                String.format("Received error %s due to %s", r.statusCode().value(), r.statusCode().getReasonPhrase()))
-                        )
-                );
+                .filter(errorResponse());
         if (config.isOAuthEnabled()) {
             client.filter(oauth2Client);
         }
@@ -126,6 +123,21 @@ public class MaatApiOAuth2Client {
             log.info("Response status: {}", clientResponse.statusCode());
             return Mono.just(clientResponse);
         });
+    }
+
+    private ExchangeFilterFunction errorResponse() {
+        return ExchangeFilterFunctions.statusError(
+                HttpStatus::isError, r -> {
+                    String errorMessage =
+                            String.format("Received error %s due to %s", r.statusCode().value(), r.statusCode().getReasonPhrase());
+                    if (r.statusCode().is5xxServerError()) {
+                        return new HttpServerErrorException(
+                                r.statusCode(),
+                                errorMessage
+                        );
+                    }
+                    return new APIClientException(errorMessage);
+                });
     }
 
 }
