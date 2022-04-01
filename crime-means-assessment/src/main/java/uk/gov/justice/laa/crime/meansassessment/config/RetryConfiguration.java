@@ -1,13 +1,11 @@
 package uk.gov.justice.laa.crime.meansassessment.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
+@Data
 @ConfigurationProperties(prefix = "retry-config")
 public class RetryConfiguration {
     @NotNull
