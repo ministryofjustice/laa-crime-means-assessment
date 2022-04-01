@@ -18,20 +18,10 @@ import java.time.Duration;
 @AllArgsConstructor
 public abstract class RetryableWebClientService {
 
-    @Autowired
     private RetryConfiguration retryConfiguration;
 
     public <T> T callWithRetry(Class<T> responseClass, WebClient.ResponseSpec baseResponseSpec, String baseErrorMessage) {
         return baseResponseSpec
-                .onStatus(
-                        HttpStatus::is5xxServerError,
-                            error -> Mono.error(
-                                    new HttpServerErrorException(
-                                            error.statusCode(),
-                                            baseErrorMessage + " Server Error."
-                                    )
-                            )
-                )
                 .bodyToMono(responseClass)
                 .retryWhen(
                         Retry.backoff(
