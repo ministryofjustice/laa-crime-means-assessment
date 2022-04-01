@@ -1,91 +1,90 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import io.sentry.Sentry;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
-public class MaatCourtDataService {
+public class MaatCourtDataService extends RetryableWebClientService {
 
     @Qualifier("maatAPIOAuth2WebClient")
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
+    private final String baseErrorMessage = "Call to Court Data API failed";
+
+    @Autowired
+    public MaatCourtDataService(RetryConfiguration retryConfiguration, WebClient webClient, MaatApiConfiguration configuration) {
+        super(retryConfiguration);
+        this.webClient = webClient;
+        this.configuration = configuration;
+    }
 
     public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
-        MaatApiAssessmentResponse response =
+
+        WebClient.ResponseSpec baseResponseSpec =
                 buildPostResponseSpec(
                         endpointUrl,
                         Map.of("Laa-Transaction-Id", laaTransactionId),
                         assessment
-                )
-                .bodyToMono(MaatApiAssessmentResponse.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+                );
+
+        MaatApiAssessmentResponse response = callWithRetry(MaatApiAssessmentResponse.class, baseResponseSpec, baseErrorMessage);
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
     public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
-        PassportAssessmentDTO response =
+        WebClient.ResponseSpec baseResponseSpec =
                 buildGetResponseSpec(
-                        configuration.getPassportAssessmentEndpoints().getFindUrl(),
-                        Map.of("Laa-Transaction-Id", laaTransactionId),
-                        repId
-                )
-                .bodyToMono(PassportAssessmentDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+                    configuration.getPassportAssessmentEndpoints().getFindUrl(),
+                    Map.of("Laa-Transaction-Id", laaTransactionId),
+                    repId
+                );
+
+        PassportAssessmentDTO response = callWithRetry(PassportAssessmentDTO.class, baseResponseSpec, baseErrorMessage);
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
     public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
-        HardshipReviewDTO response =
+        WebClient.ResponseSpec baseResponseSpec =
                 buildGetResponseSpec(
                     configuration.getHardshipReviewEndpoints().getFindUrl(),
                     Map.of("Laa-Transaction-Id", laaTransactionId),
                     repId
-                )
-                .bodyToMono(HardshipReviewDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+                );
+
+        HardshipReviewDTO response = callWithRetry(HardshipReviewDTO.class, baseResponseSpec, baseErrorMessage);
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
     public IOJAppealDTO getIOJAppealFromRepId(Integer repId, String laaTransactionId) {
-        IOJAppealDTO response =
+        WebClient.ResponseSpec baseResponseSpec =
                 buildGetResponseSpec(
-                        configuration.getIojAppealEndpoints().getFindUrl(),
-                        Map.of("Laa-Transaction-Id", laaTransactionId),
-                        repId
-                )
-                .bodyToMono(IOJAppealDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+                    configuration.getIojAppealEndpoints().getFindUrl(),
+                    Map.of("Laa-Transaction-Id", laaTransactionId),
+                    repId
+                );
+
+        IOJAppealDTO response = callWithRetry(IOJAppealDTO.class, baseResponseSpec, baseErrorMessage);
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
