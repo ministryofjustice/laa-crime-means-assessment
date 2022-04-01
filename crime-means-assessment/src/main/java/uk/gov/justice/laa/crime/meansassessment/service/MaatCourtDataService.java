@@ -90,4 +90,23 @@ public class MaatCourtDataService {
         return response;
     }
 
+    private WebClient.ResponseSpec buildGetResponseSpec(String url, Map<String, String> headers, Object... urlVariables) {
+        return webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder.path(url)
+                        .build(urlVariables))
+                .headers(httpHeaders -> httpHeaders.setAll(headers))
+                .retrieve();
+    }
+
+    private <T> WebClient.ResponseSpec buildPostResponseSpec(String url, Map<String, String> headers, T postBody) {
+        return webClient
+                .post()
+                .uri(url)
+                .headers(httpHeaders -> httpHeaders.setAll(headers))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(postBody))
+                .retrieve();
+    }
+
 }
