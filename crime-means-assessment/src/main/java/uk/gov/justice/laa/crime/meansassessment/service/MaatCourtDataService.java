@@ -12,7 +12,6 @@ import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 
@@ -37,7 +36,6 @@ public class MaatCourtDataService {
                 .body(BodyInserters.fromValue(assessment))
                 .retrieve()
                 .bodyToMono(MaatApiAssessmentResponse.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
                 .block();
 
@@ -52,7 +50,6 @@ public class MaatCourtDataService {
                 .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
                 .retrieve()
                 .bodyToMono(PassportAssessmentDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
                 .block();
 
@@ -67,7 +64,6 @@ public class MaatCourtDataService {
                 .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
                 .retrieve()
                 .bodyToMono(HardshipReviewDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
                 .block();
 
@@ -82,7 +78,6 @@ public class MaatCourtDataService {
                 .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
                 .retrieve()
                 .bodyToMono(IOJAppealDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
                 .block();
 

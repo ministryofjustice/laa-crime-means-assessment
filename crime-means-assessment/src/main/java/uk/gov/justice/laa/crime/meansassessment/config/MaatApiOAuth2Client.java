@@ -18,7 +18,10 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
+
+import java.time.Duration;
 
 /**
  * <code>MaatApiOAuth2Client.java</code>
@@ -27,11 +30,13 @@ import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 @Slf4j
 public class MaatApiOAuth2Client {
 
-    private final MaatApiConfiguration config;
     private static final String REGISTERED_ID = "maatapi";
+    private final MaatApiConfiguration config;
+    private final RetryConfiguration retryConfiguration;
 
-    public MaatApiOAuth2Client(MaatApiConfiguration config) {
+    public MaatApiOAuth2Client(MaatApiConfiguration config, RetryConfiguration retryConfiguration) {
         this.config = config;
+        this.retryConfiguration = retryConfiguration;
     }
 
     /**
@@ -96,6 +101,7 @@ public class MaatApiOAuth2Client {
                 .baseUrl(config.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .filter(retryFilter())
                 .filter(errorResponse());
         if (config.isOAuthEnabled()) {
             client.filter(oauth2Client);
@@ -140,4 +146,29 @@ public class MaatApiOAuth2Client {
                 });
     }
 
+    private ExchangeFilterFunction retryFilter() {
+        return (request, next) ->
+                next.exchange(request)
+                        .retryWhen(
+                                Retry.backoff(
+                                                retryConfiguration.getMaxRetries(),
+                                                Duration.ofSeconds(
+                                                        retryConfiguration.getMinBackOffPeriod()
+                                                )
+                                        )
+                                        .jitter(retryConfiguration.getJitterValue())
+                                        .filter(
+                                                throwable -> throwable instanceof HttpServerErrorException
+                                        ).onRetryExhaustedThrow(
+                                                (retryBackoffSpec, retrySignal) ->
+                                                        new APIClientException(
+                                                                String.format(
+                                                                        "Call to Court Data API failed. Retries exhausted: %d/%d.",
+                                                                        retryConfiguration.getMaxRetries(),
+                                                                        retryConfiguration.getMaxRetries()
+                                                                ), retrySignal.failure()
+                                                        )
+                                        )
+                        );
+    }
 }
