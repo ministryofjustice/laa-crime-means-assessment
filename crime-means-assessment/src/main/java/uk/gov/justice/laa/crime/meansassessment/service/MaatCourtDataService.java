@@ -28,12 +28,14 @@ public class MaatCourtDataService {
     private final MaatApiConfiguration configuration;
 
     public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
-        MaatApiAssessmentResponse response =
-                buildPostResponseSpec(
-                        endpointUrl,
-                        Map.of("Laa-Transaction-Id", laaTransactionId),
-                        assessment
-                )
+        MaatApiAssessmentResponse response = webClient.post()
+                .uri(endpointUrl)
+                .headers(httpHeaders -> httpHeaders.setAll(Map.of(
+                        "Laa-Transaction-Id", laaTransactionId
+                )))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(assessment))
+                .retrieve()
                 .bodyToMono(MaatApiAssessmentResponse.class)
                 .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
@@ -44,12 +46,11 @@ public class MaatCourtDataService {
     }
 
     public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
-        PassportAssessmentDTO response =
-                buildGetResponseSpec(
-                        configuration.getPassportAssessmentEndpoints().getFindUrl(),
-                        Map.of("Laa-Transaction-Id", laaTransactionId),
-                        repId
-                )
+        PassportAssessmentDTO response = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(configuration.getPassportAssessmentEndpoints().getFindUrl())
+                        .build(repId))
+                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
+                .retrieve()
                 .bodyToMono(PassportAssessmentDTO.class)
                 .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
@@ -60,12 +61,11 @@ public class MaatCourtDataService {
     }
 
     public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
-        HardshipReviewDTO response =
-                buildGetResponseSpec(
-                    configuration.getHardshipReviewEndpoints().getFindUrl(),
-                    Map.of("Laa-Transaction-Id", laaTransactionId),
-                    repId
-                )
+        HardshipReviewDTO response = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(configuration.getHardshipReviewEndpoints().getFindUrl())
+                        .build(repId))
+                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
+                .retrieve()
                 .bodyToMono(HardshipReviewDTO.class)
                 .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
@@ -76,12 +76,11 @@ public class MaatCourtDataService {
     }
 
     public IOJAppealDTO getIOJAppealFromRepId(Integer repId, String laaTransactionId) {
-        IOJAppealDTO response =
-                buildGetResponseSpec(
-                        configuration.getIojAppealEndpoints().getFindUrl(),
-                        Map.of("Laa-Transaction-Id", laaTransactionId),
-                        repId
-                )
+        IOJAppealDTO response = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(configuration.getIojAppealEndpoints().getFindUrl())
+                        .build(repId))
+                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
+                .retrieve()
                 .bodyToMono(IOJAppealDTO.class)
                 .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
                 .doOnError(Sentry::captureException)
