@@ -39,8 +39,4 @@ public class RetryConfigurationTest {
             assertEquals(0.5, retryConfiguration.getJitterValue());
         });
     }
-
-
-
-
 }
