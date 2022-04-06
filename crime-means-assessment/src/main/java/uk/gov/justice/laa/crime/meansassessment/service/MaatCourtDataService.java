@@ -103,8 +103,6 @@ public class MaatCourtDataService {
     }
 
     private Throwable handleError(Throwable error) {
-        Sentry.captureException(error);
-
         if (error instanceof APIClientException) {
             return error;
         }
