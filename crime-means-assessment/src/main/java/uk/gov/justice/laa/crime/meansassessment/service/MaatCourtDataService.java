@@ -17,7 +17,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 
 import java.util.Map;
-import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class MaatCourtDataService {
     private final MaatApiConfiguration configuration;
 
     public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
-        MaatApiAssessmentResponse response = performPostRequest(
+        MaatApiAssessmentResponse response = getApiResponseViaPOST(
                 assessment,
                 MaatApiAssessmentResponse.class,
                 endpointUrl,
@@ -41,7 +40,7 @@ public class MaatCourtDataService {
     }
 
     public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
-        PassportAssessmentDTO response = performGetRequest(
+        PassportAssessmentDTO response = getApiResponseViaGET(
                 PassportAssessmentDTO.class,
                 configuration.getPassportAssessmentEndpoints().getFindUrl(),
                 Map.of("Laa-Transaction-Id", laaTransactionId),
@@ -53,7 +52,7 @@ public class MaatCourtDataService {
     }
 
     public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
-        HardshipReviewDTO response = performGetRequest(
+        HardshipReviewDTO response = getApiResponseViaGET(
                 HardshipReviewDTO.class,
                 configuration.getHardshipReviewEndpoints().getFindUrl(),
                 Map.of("Laa-Transaction-Id", laaTransactionId),
@@ -65,7 +64,7 @@ public class MaatCourtDataService {
     }
 
     public IOJAppealDTO getIOJAppealFromRepId(Integer repId, String laaTransactionId) {
-        IOJAppealDTO response = performGetRequest(
+        IOJAppealDTO response = getApiResponseViaGET(
                 IOJAppealDTO.class,
                 configuration.getIojAppealEndpoints().getFindUrl(),
                 Map.of("Laa-Transaction-Id", laaTransactionId),
@@ -76,7 +75,7 @@ public class MaatCourtDataService {
         return response;
     }
 
-    private <T> T performGetRequest(Class<T> responseClass, String url, Map<String, String> headers, Object... urlVariables) {
+    private <T> T getApiResponseViaGET(Class<T> responseClass, String url, Map<String, String> headers, Object... urlVariables) {
         return webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder.path(url)
@@ -84,14 +83,12 @@ public class MaatCourtDataService {
                 .headers(httpHeaders -> httpHeaders.setAll(headers))
                 .retrieve()
                 .bodyToMono(responseClass)
-                .onErrorMap(Predicate.not(APIClientException.class::isInstance), throwable ->
-                        new APIClientException("Call to Court Data API failed, invalid response.", throwable)
-                )
+                .onErrorMap(this::handleError)
                 .doOnError(Sentry::captureException)
                 .block();
     }
 
-    private <T, V> V performPostRequest(T postBody, Class<V> responseClass, String url, Map<String, String> headers) {
+    private <T, R> R getApiResponseViaPOST(T postBody, Class<R> responseClass, String url, Map<String, String> headers) {
         return webClient
                 .post()
                 .uri(url)
@@ -100,10 +97,17 @@ public class MaatCourtDataService {
                 .body(BodyInserters.fromValue(postBody))
                 .retrieve()
                 .bodyToMono(responseClass)
-                .onErrorMap(Predicate.not(APIClientException.class::isInstance), throwable ->
-                        new APIClientException("Call to Court Data API failed, invalid response.", throwable)
-                )
+                .onErrorMap(this::handleError)
                 .doOnError(Sentry::captureException)
                 .block();
+    }
+
+    private Throwable handleError(Throwable error) {
+        Sentry.captureException(error);
+
+        if (error instanceof APIClientException) {
+            return error;
+        }
+        return new APIClientException("Call to Court Data API failed, invalid response.", error);
     }
 }
