@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MaatCourtDataServiceIT {
+public class MaatCourtDataServiceIntegrationTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static MockWebServer mockMaatCourtDataApi;
