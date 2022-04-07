@@ -28,66 +28,84 @@ public class MaatCourtDataService {
     private final MaatApiConfiguration configuration;
 
     public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
-        MaatApiAssessmentResponse response = webClient.post()
-                .uri(endpointUrl)
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of(
-                        "Laa-Transaction-Id", laaTransactionId
-                )))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(assessment))
-                .retrieve()
-                .bodyToMono(MaatApiAssessmentResponse.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+        MaatApiAssessmentResponse response = getApiResponseViaPOST(
+                assessment,
+                MaatApiAssessmentResponse.class,
+                endpointUrl,
+                Map.of("Laa-Transaction-Id", laaTransactionId)
+        );
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
     public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
-        PassportAssessmentDTO response = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(configuration.getPassportAssessmentEndpoints().getFindUrl())
-                        .build(repId))
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
-                .retrieve()
-                .bodyToMono(PassportAssessmentDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+        PassportAssessmentDTO response = getApiResponseViaGET(
+                PassportAssessmentDTO.class,
+                configuration.getPassportAssessmentEndpoints().getFindUrl(),
+                Map.of("Laa-Transaction-Id", laaTransactionId),
+                repId
+        );
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
     public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
-        HardshipReviewDTO response = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(configuration.getHardshipReviewEndpoints().getFindUrl())
-                        .build(repId))
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
-                .retrieve()
-                .bodyToMono(HardshipReviewDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+        HardshipReviewDTO response = getApiResponseViaGET(
+                HardshipReviewDTO.class,
+                configuration.getHardshipReviewEndpoints().getFindUrl(),
+                Map.of("Laa-Transaction-Id", laaTransactionId),
+                repId
+        );
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
     public IOJAppealDTO getIOJAppealFromRepId(Integer repId, String laaTransactionId) {
-        IOJAppealDTO response = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(configuration.getIojAppealEndpoints().getFindUrl())
-                        .build(repId))
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
-                .retrieve()
-                .bodyToMono(IOJAppealDTO.class)
-                .onErrorMap(throwable -> new APIClientException("Call to Court Data API failed, invalid response."))
-                .doOnError(Sentry::captureException)
-                .block();
+        IOJAppealDTO response = getApiResponseViaGET(
+                IOJAppealDTO.class,
+                configuration.getIojAppealEndpoints().getFindUrl(),
+                Map.of("Laa-Transaction-Id", laaTransactionId),
+                repId
+        );
 
         log.info(String.format("Response from Court Data API: %s", response));
         return response;
     }
 
+    private <T> T getApiResponseViaGET(Class<T> responseClass, String url, Map<String, String> headers, Object... urlVariables) {
+        return webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder.path(url)
+                        .build(urlVariables))
+                .headers(httpHeaders -> httpHeaders.setAll(headers))
+                .retrieve()
+                .bodyToMono(responseClass)
+                .onErrorMap(this::handleError)
+                .doOnError(Sentry::captureException)
+                .block();
+    }
+
+    private <T, R> R getApiResponseViaPOST(T postBody, Class<R> responseClass, String url, Map<String, String> headers) {
+        return webClient
+                .post()
+                .uri(url)
+                .headers(httpHeaders -> httpHeaders.setAll(headers))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(postBody))
+                .retrieve()
+                .bodyToMono(responseClass)
+                .onErrorMap(this::handleError)
+                .doOnError(Sentry::captureException)
+                .block();
+    }
+
+    private Throwable handleError(Throwable error) {
+        if (error instanceof APIClientException) {
+            return error;
+        }
+        return new APIClientException("Call to Court Data API failed, invalid response.", error);
+    }
 }

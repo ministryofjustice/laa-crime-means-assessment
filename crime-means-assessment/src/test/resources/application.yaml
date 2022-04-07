@@ -59,3 +59,8 @@ means-assessment:
     issuer-uri: http://localhost:${server.port}
 
 version: 0.0.1
+
+retry-config:
+  max-retries: 2
+  min-back-off-period: 3
+  jitter-value: 0.5
