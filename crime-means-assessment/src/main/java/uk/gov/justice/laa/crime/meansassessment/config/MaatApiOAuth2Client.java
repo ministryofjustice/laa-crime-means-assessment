@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
@@ -140,6 +141,11 @@ public class MaatApiOAuth2Client {
                         return new HttpServerErrorException(
                                 r.statusCode(),
                                 errorMessage
+                        );
+                    }
+                    if (r.statusCode().equals(HttpStatus.NOT_FOUND)) {
+                        return WebClientResponseException.create(
+                                r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null
                         );
                     }
                     return new APIClientException(errorMessage);
