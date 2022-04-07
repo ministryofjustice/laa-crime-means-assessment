@@ -47,48 +47,28 @@ public class MeansAssessmentService {
                 assessmentService = initMeansAssessmentService;
                 assessmentDate = requestDTO.getInitialAssessmentDate();
             }
-            log.info("Retrieving assessment criteria for date: {}", assessmentDate);
-            AssessmentCriteriaEntity assessmentCriteria =
-                    assessmentCriteriaService.getAssessmentCriteria(
-                            assessmentDate, requestDTO.getHasPartner(), requestDTO.getPartnerContraryInterest()
-                    );
+            AssessmentCriteriaEntity assessmentCriteria = assessmentCriteriaService.getAssessmentCriteria(
+                    assessmentDate, requestDTO.getHasPartner(), requestDTO.getPartnerContraryInterest());
+
             BigDecimal summariesTotal = calculateSummariesTotal(requestDTO, assessmentCriteria);
 
-            MeansAssessmentDTO completedAssessment =
-                    assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
-
+            MeansAssessmentDTO completedAssessment = assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
-            String targetEndpoint = configuration.getFinancialAssessmentEndpoints()
-                    .getByRequestType(requestType);
-
+            MaatApiAssessmentResponse maatApiAssessmentResponse = maatCourtDataService.postMeansAssessment(
+                    assessmentBuilder.buildAssessmentRequest(completedAssessment, requestType),
+                    requestDTO.getLaaTransactionId(), requestType);
             log.info("Posting completed means assessment to Court Data API");
-            MaatApiAssessmentResponse response =
-                    maatCourtDataService.postMeansAssessment(
-                            assessmentBuilder.buildAssessmentRequest(completedAssessment, requestType),
-                            requestDTO.getLaaTransactionId(), targetEndpoint
-                    );
 
-            ApiCreateMeansAssessmentResponse assessmentResponse =
-                    new ApiCreateMeansAssessmentResponse()
-                            .withAssessmentId(response.getId())
-                            .withCriteriaId(assessmentCriteria.getId())
-                            .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
-                            .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())
-                            .withTotalAggregatedIncome(response.getInitTotAggregatedIncome())
-                            .withInitResult(response.getInitResult())
-                            .withInitResultReason(response.getInitResultReason())
-                            .withAdjustedIncomeValue(response.getInitAdjustedIncomeValue())
-                            .withFassInitStatus(CurrentStatus.getFrom(response.getFassInitStatus()))
-                            .withAssessmentSectionSummary(completedAssessment.getMeansAssessment().getSectionSummaries());
+            ApiCreateMeansAssessmentResponse assessmentResponse = buildApiCreateMeansAssessmentResponse(
+                    maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
 
             fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
-            assessmentSummaryService.addAssessmentSummaryToMeansResponse(
-                    assessmentResponse, requestDTO.getLaaTransactionId());
+            assessmentSummaryService.addAssessmentSummaryToMeansResponse(assessmentResponse, requestDTO.getLaaTransactionId());
+            maatCourtDataService.createFinancialAssessmentHistory(assessmentResponse.getAssessmentId(), assessmentResponse.getFullAssessmentAvailable(), requestDTO.getLaaTransactionId());
 
             return assessmentResponse;
-
         } catch (RuntimeException exception) {
             throw new AssessmentProcessingException(
                     String.format("An error occurred whilst processing the assessment request with RepID: %d",
@@ -147,5 +127,21 @@ public class MeansAssessmentService {
             }
         }
         return detailTotal;
+    }
+
+    private ApiCreateMeansAssessmentResponse buildApiCreateMeansAssessmentResponse(final MaatApiAssessmentResponse maatApiAssessmentResponse,
+                                                                                   final AssessmentCriteriaEntity assessmentCriteria,
+                                                                                   final MeansAssessmentDTO completedAssessment) {
+        return new ApiCreateMeansAssessmentResponse()
+                .withAssessmentId(maatApiAssessmentResponse.getId())
+                .withCriteriaId(assessmentCriteria.getId())
+                .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
+                .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())
+                .withTotalAggregatedIncome(maatApiAssessmentResponse.getInitTotAggregatedIncome())
+                .withInitResult(maatApiAssessmentResponse.getInitResult())
+                .withInitResultReason(maatApiAssessmentResponse.getInitResultReason())
+                .withAdjustedIncomeValue(maatApiAssessmentResponse.getInitAdjustedIncomeValue())
+                .withFassInitStatus(CurrentStatus.getFrom(maatApiAssessmentResponse.getFassInitStatus()))
+                .withAssessmentSectionSummary(completedAssessment.getMeansAssessment().getSectionSummaries());
     }
 }

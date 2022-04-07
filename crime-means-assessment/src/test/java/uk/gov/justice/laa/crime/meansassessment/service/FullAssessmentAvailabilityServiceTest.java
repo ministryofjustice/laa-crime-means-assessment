@@ -35,7 +35,7 @@ public class FullAssessmentAvailabilityServiceTest {
     @Test
     public void givenMeansAssessmentRequestAndResponse_WhenFullAssessmentDateIsNotNull_ThenFullAssessmentAvailableIsTrue() {
         meansAssessmentResponse.setInitResult("");
-        meansAssessmentRequest.setFullAssessmentDate(LocalDateTime.of(2021, 12, 20, 10, 0));
+        meansAssessmentResponse.setFullAssessmentDate(LocalDateTime.of(2021, 12, 20, 10, 0));
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
