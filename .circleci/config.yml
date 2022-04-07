@@ -24,7 +24,8 @@ jobs:
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
 
     steps:
-      - checkout
+      - checkout:
+          path: ~/laa-crime-means-assessment
 
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
