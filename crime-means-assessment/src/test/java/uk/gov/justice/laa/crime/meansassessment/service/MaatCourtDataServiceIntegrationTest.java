@@ -24,9 +24,9 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 
 import java.io.IOException;
 
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpResponseStatus.SERVICE_UNAVAILABLE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MaatCourtDataServiceIntegrationTest {
@@ -118,6 +118,13 @@ public class MaatCourtDataServiceIntegrationTest {
     }
 
     @Test
+    public void whenPostMeansAssessmentAPICallReturnsNotFoundResponse_thenMethodReturnsNull() {
+        setupMockNotFoundResponse();
+        MaatApiAssessmentResponse apiResponse = runPostMeansAssessment();
+        assertNull(apiResponse);
+    }
+
+    @Test
     public void whenGetPassportAssessmentFromRepIdAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
         String mockResponse = setupMockApiResponses(new PassportAssessmentDTO(), 0);
         PassportAssessmentDTO apiResponse =
@@ -128,7 +135,11 @@ public class MaatCourtDataServiceIntegrationTest {
     @Test
     public void whenGetPassportAssessmentFromRepIdAPICalled_thenInvalidResponseErrorsAreHandledCorrectly() {
         setupMockInvalidResponse();
-        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId));
+        APIClientException error = assertThrows(
+                APIClientException.class,
+                () ->
+                        maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId)
+        );
         validateInvalidResponseError(error);
     }
 
@@ -141,6 +152,13 @@ public class MaatCourtDataServiceIntegrationTest {
     }
 
     @Test
+    public void whenGetPassportAssessmentFromRepIdAPICallReturnsNotFoundResponse_thenMethodReturnsNull() {
+        setupMockNotFoundResponse();
+        PassportAssessmentDTO apiResponse = maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
+        assertNull(apiResponse);
+    }
+
+    @Test
     public void whenGetPassportAssessmentFromRepIdAPICallFails_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
         setupMockApiResponses(new PassportAssessmentDTO(), maxRetries + 1);
         APIClientException error = assertThrows(
@@ -148,6 +166,14 @@ public class MaatCourtDataServiceIntegrationTest {
                 () -> maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId)
         );
         validateRetryErrorResponse(error);
+    }
+
+    @Test
+    public void whenGetPassportAssessmentFromRepIdAPICallRetursNotFoundResponse_thenMethodReturnsNull() {
+        setupMockNotFoundResponse();
+        PassportAssessmentDTO apiResponse =
+                maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
+        assertNull(apiResponse);
     }
 
     @Test
@@ -184,6 +210,14 @@ public class MaatCourtDataServiceIntegrationTest {
     }
 
     @Test
+    public void whenGetHardshipReviewFromRepIdAPICallReturnsNotFoundResponse_thenMethodReturnsNull() {
+        setupMockNotFoundResponse();
+        HardshipReviewDTO apiResponse =
+                maatCourtDataService.getHardshipReviewFromRepId(repId, laaTransactionId);
+        assertNull(apiResponse);
+    }
+
+    @Test
     public void whenGetIOJAppealFromRepIdAPIAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
         String mockResponse = setupMockApiResponses(new IOJAppealDTO(), maxRetries - 1);
         IOJAppealDTO apiResponse =
@@ -216,6 +250,14 @@ public class MaatCourtDataServiceIntegrationTest {
         validateRetryErrorResponse(error);
     }
 
+    @Test
+    public void whenGetIOJAppealFromRepIdAPICallReturnsNotFoundResponse_thenMethodReturnsNull() {
+        setupMockNotFoundResponse();
+        IOJAppealDTO apiResponse =
+                maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
+        assertNull(apiResponse);
+    }
+
     private <T> String setupMockApiResponses(T responseObject, Integer attemptsBeforeSuccess) throws JsonProcessingException {
         String expectedResponse = OBJECT_MAPPER.writeValueAsString(responseObject);
         for (int i = 0; i < attemptsBeforeSuccess; i++) {
@@ -234,6 +276,11 @@ public class MaatCourtDataServiceIntegrationTest {
                 .setBody("Invalid response.")
                 .addHeader("Content-Type", "application/json")
         );
+    }
+
+    private void setupMockNotFoundResponse() {
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(NOT_FOUND.code()));
     }
 
     private void validateInvalidResponseError(APIClientException error) {
