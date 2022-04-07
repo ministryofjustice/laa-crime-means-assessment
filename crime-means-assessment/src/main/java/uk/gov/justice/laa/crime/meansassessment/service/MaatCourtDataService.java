@@ -16,6 +16,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssess
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
 import java.util.Map;
 
