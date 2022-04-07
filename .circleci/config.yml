@@ -190,7 +190,7 @@ workflows:
       - hold_install_on_dev:
           type: approval
           requires:
-          - build-test-package
+          - build-and-push-app
       - install_on_dev:
           requires:
           - hold_install_on_dev         
