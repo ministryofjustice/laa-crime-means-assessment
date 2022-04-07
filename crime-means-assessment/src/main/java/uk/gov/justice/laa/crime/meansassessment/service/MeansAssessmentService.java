@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatCourtDataAssessmentBuilder;
-import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
@@ -27,7 +26,6 @@ import java.util.List;
 public class MeansAssessmentService {
 
     private final MaatCourtDataService maatCourtDataService;
-    private final MaatApiConfiguration configuration;
     private final FullMeansAssessmentService fullMeansAssessmentService;
     private final AssessmentSummaryService assessmentSummaryService;
     private final AssessmentCriteriaService assessmentCriteriaService;
@@ -76,7 +74,7 @@ public class MeansAssessmentService {
         }
     }
 
-    BigDecimal calculateSummariesTotal(MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
+    BigDecimal calculateSummariesTotal(final MeansAssessmentRequestDTO requestDTO, final AssessmentCriteriaEntity assessmentCriteria) {
         List<ApiAssessmentSectionSummary> sectionSummaries = requestDTO.getSectionSummaries();
         BigDecimal annualTotal = BigDecimal.ZERO;
         for (ApiAssessmentSectionSummary sectionSummary : sectionSummaries) {
@@ -104,7 +102,7 @@ public class MeansAssessmentService {
         return annualTotal;
     }
 
-    BigDecimal getDetailTotal(ApiAssessmentDetail assessmentDetail, boolean usePartner) {
+    BigDecimal getDetailTotal(final ApiAssessmentDetail assessmentDetail, final boolean usePartner) {
         BigDecimal detailTotal = BigDecimal.ZERO;
 
         if (usePartner) {
