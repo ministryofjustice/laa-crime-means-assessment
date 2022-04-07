@@ -44,9 +44,6 @@ public class MeansAssessmentServiceTest {
     private final MaatApiConfiguration.FinancialAssessmentEndpoints financialAssessmentEndpoints =
             new MaatApiConfiguration.FinancialAssessmentEndpoints();
 
-    @Mock
-    private MaatApiConfiguration configuration;
-
     @Spy
     @InjectMocks
     private MeansAssessmentService meansAssessmentService;
