@@ -105,7 +105,10 @@ sentry:
     enabled: true
   attach-stacktrace: true
 
-
+retry-config:
+  max-retries: 3
+  min-back-off-period: 5
+  jitter-value: 0.75
 
 
 version: 0.0.1
