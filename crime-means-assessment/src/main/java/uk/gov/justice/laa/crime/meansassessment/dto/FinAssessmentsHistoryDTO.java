@@ -15,6 +15,7 @@ public class FinAssessmentsHistoryDTO {
     private Integer cmuId;
     private Integer initialAscrId;
     private Integer fullAscrId;
+    private LocalDateTime timeStamp;
     private LocalDateTime dateCreated;
     private Integer assessmentId;
     private BigDecimal adjustedLivingAllowance;
@@ -27,7 +28,7 @@ public class FinAssessmentsHistoryDTO {
     private String fassFullStatus;
     private BigDecimal adjustedIncomeValue;
     private String initApplicationEmploymentStatus;
-    private Boolean hasPartner;
+    private Boolean initAppPartner;
     private String initAssessmentNotes;
     private String otherBenefitNote;
     private String otherIncomeNote;
