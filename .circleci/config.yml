@@ -53,6 +53,12 @@ jobs:
   build-and-push-app:
     executor: aws-ecr/default
     steps:
+      - run:
+          command: ./gradlew assemble
+
+      - store_artifacts:
+          path: crime-means-assessment/build/libs
+
       - aws-ecr/build-and-push-image:
           repo: laa-crime-means-assessment/crime-means-assessment
           tag: "${CIRCLE_SHA1}"
@@ -172,17 +178,15 @@ workflows:
 
   build-deploy-branch:
     jobs:
-      - branch-build-approval:
+      - branch_build_approval:
           type: approval
           filters:
             branches:
               ignore:
                 - main
       - test:
-        filters:
-          branches:
-            ignore:
-              - main
+          requires:
+            - branch_build_approval
 
       - build-and-push-app:
           requires:
