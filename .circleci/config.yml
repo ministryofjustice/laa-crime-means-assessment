@@ -52,6 +52,9 @@ jobs:
 
   build-and-push-app:
     executor: aws-ecr/default
+
+    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
+
     steps:
       - run:
           command: ./gradlew assemble
