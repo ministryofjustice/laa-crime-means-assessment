@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
@@ -108,4 +109,19 @@ public class MaatCourtDataService {
         }
         return new APIClientException("Call to Court Data API failed, invalid response.", error);
     }
+    public Mono<Void> createFinancialAssessmentHistory(final Integer finAssessmentId,
+                                                       final Boolean fullAssessmentAvailable,
+                                                       final String laaTransactionId) {
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder.path(configuration.getFinancialAssessmentEndpoints().getCreateHistoryUrl())
+                        .build(finAssessmentId, fullAssessmentAvailable))
+                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .onErrorMap(throwable -> new APIClientException("Error calling Court Data API. Failed to create financial " +
+                        "assessment history for financialAssessmentId: " + finAssessmentId))
+                .doOnError(Sentry::captureException);
+    }
+
 }
