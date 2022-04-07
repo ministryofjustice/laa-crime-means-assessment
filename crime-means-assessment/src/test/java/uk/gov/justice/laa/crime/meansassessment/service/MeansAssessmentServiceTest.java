@@ -69,6 +69,9 @@ public class MeansAssessmentServiceTest {
     @Mock
     private AssessmentSummaryService assessmentSummaryService;
 
+    @Mock
+    private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
+
     @Before
     public void setup() {
         assessmentCriteria.setId(TestModelDataBuilder.TEST_CRITERIA_ID);
@@ -238,9 +241,6 @@ public class MeansAssessmentServiceTest {
         when(assessmentBuilder.buildAssessmentRequest(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class))).thenReturn(
                 new MaatApiAssessmentRequest()
         );
-        when(configuration.getFinancialAssessmentEndpoints()).thenReturn(
-                financialAssessmentEndpoints
-        );
 
         when(initMeansAssessmentService.execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
@@ -256,7 +256,7 @@ public class MeansAssessmentServiceTest {
                         .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
 
         when(maatCourtDataService.postMeansAssessment(
-                any(MaatApiAssessmentRequest.class), anyString(), anyString())
+                any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
     }
 
@@ -281,15 +281,21 @@ public class MeansAssessmentServiceTest {
             assertThat(result.getFassInitStatus().getStatus()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
             assertThat(result.getAssessmentSectionSummary().get(0)).isEqualTo(TestModelDataBuilder.getApiAssessmentSectionSummary());
         });
+
+        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
+        verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
+        verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
     }
 
     @Test
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
         setupDoAssessmentStubbing();
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
-        verify(initMeansAssessmentService).execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
-        );
+        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+
+        verify(initMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
+        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
+        verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
+        verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
     }
 
     @Test
@@ -301,10 +307,12 @@ public class MeansAssessmentServiceTest {
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         meansAssessment.setAssessmentType(AssessmentType.FULL);
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
-        verify(fullMeansAssessmentService).execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
-        );
+        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+
+        verify(fullMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
+        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
+        verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
+        verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
     }
 
     @Test
