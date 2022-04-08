@@ -29,11 +29,11 @@ public class MaatCourtDataService {
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
 
-    public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, String endpointUrl) {
+    public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, AssessmentRequestType requestType) {
         MaatApiAssessmentResponse response = getApiResponseViaPOST(
                 assessment,
                 MaatApiAssessmentResponse.class,
-                endpointUrl,
+                configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType),
                 Map.of("Laa-Transaction-Id", laaTransactionId)
         );
 
@@ -110,6 +110,7 @@ public class MaatCourtDataService {
         }
         return new APIClientException("Call to Court Data API failed, invalid response.", error);
     }
+
     public Mono<Void> createFinancialAssessmentHistory(final Integer finAssessmentId,
                                                        final Boolean fullAssessmentAvailable,
                                                        final String laaTransactionId) {
