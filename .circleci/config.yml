@@ -90,6 +90,7 @@ jobs:
           tag: "${CIRCLE_SHA1}"
           attach-workspace: true
           workspace-root: crime-means-assessment
+          path: crime-means-assessment
           extra-build-args: |
             --build-arg COMMIT_ID=${CIRCLE_SHA1} \
             --build-arg BUILD_TAG=${CIRCLE_SHA1} \
