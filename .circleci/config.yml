@@ -89,7 +89,7 @@ jobs:
           repo: laa-crime-means-assessment/crime-means-assessment
           tag: "${CIRCLE_SHA1}"
           attach-workspace: true
-          path: crime-means-assessment
+          workspace-root: crime-means-assessment
           extra-build-args: |
             --build-arg COMMIT_ID=${CIRCLE_SHA1} \
             --build-arg BUILD_TAG=${CIRCLE_SHA1} \
