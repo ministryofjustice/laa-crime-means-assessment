@@ -190,7 +190,7 @@ workflows:
       - hold_install_on_dev:
           type: approval
           requires:
-          - aws-ecr/build-and-push-image-app
+          - aws-ecr/build-and-push-image
 
       - install_on_dev:
           requires:
