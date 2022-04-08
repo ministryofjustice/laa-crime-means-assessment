@@ -16,99 +16,71 @@ commands:
       - run: echo "${GIT_CRYPT_KEY}" | base64 -d > git-crypt.key
       - run: git-crypt unlock git-crypt.key
 
-
 jobs:
   build:
-
     environment:
       # Configure the JVM and Gradle to avoid OOM errors
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
-
     docker:
       - image: cimg/openjdk:11.0.13
-
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
-
     steps:
       - checkout:
           path: ~/laa-crime-means-assessment
-
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-
       - restore_cache:
           key: v1-gradle-cache-{{ checksum "build.gradle" }}
-
       - run:
           name: Install Dependencies
           command: ./gradlew build -x test
-
       - save_cache:
           paths:
             - ~/.gradle/wrapper
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-
       - save_cache:
           paths:
             - ~/.gradle/caches
           key: v1-gradle-cache-{{ checksum "build.gradle" }}
-
       - persist_to_workspace:
           root: .
           paths:
             - build
 
-
   test:
-
     environment:
-      # Configure the JVM and Gradle to avoid OOM errors
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
-
     docker:
       - image: cimg/openjdk:11.0.13
-
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
-
     steps:
       - checkout:
           path: ~/laa-crime-means-assessment
-
       - attach_workspace:
           at: .
-
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-
       - restore_cache:
           key: v1-gradle-cache-{{ checksum "build.gradle" }}
-
       - run:
           name: Run tests
           command: ./gradlew test
-
       - run:
           name: Generate code coverage report
           command: ./gradlew jacocoTestReport
-
       - store_test_results:
           path: build/test-results/test
-
       - store_artifacts:
           path: build/test-results/test
-
       - store_artifacts:
           path: build/reports/jacoco/test/html
-
       - run:
           name: Assemble JAR
           command: ./gradlew assemble
-
       - store_artifacts:
           path: build/libs
-
 
   push-app:
     executor: aws-ecr/default
@@ -117,72 +89,12 @@ jobs:
           repo: laa-crime-means-assessment/crime-means-assessment
           tag: "${CIRCLE_SHA1}"
           attach-workspace: true
+          path: crime-means-assessment
           extra-build-args: |
             --build-arg COMMIT_ID=${CIRCLE_SHA1} \
             --build-arg BUILD_TAG=${CIRCLE_SHA1} \
             --build-arg APP_BRANCH=${CIRCLE_BRANCH} \
             --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) \
-
-
-  build-test-package:
-    environment:
-      _JAVA_OPTIONS: "-Xmx3g"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-    docker:
-      - image: cimg/openjdk:11.0.13
-    steps:
-      - checkout_and_decrypt
-      - run:
-          name: Set up docker
-          command: |
-            if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
-              echo "export docker='sudo docker'" >> $BASH_ENV
-            else
-              echo "export docker='docker'" >> $BASH_ENV
-            fi      
-      - aws-cli/setup
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - restore_cache:
-          key: v1-gradle-wrapper-{{ checksum "crime-means-assessment/gradle/wrapper/gradle-wrapper.properties" }}
-      - restore_cache:
-          key: v1-gradle-cache-{{ checksum "crime-means-assessment/build.gradle" }}
-      - run:
-          command: |
-            cd crime-means-assessment
-            ./gradlew test
-      - save_cache:
-          paths:
-            - ~/.gradle/wrapper
-          key: v1-gradle-wrapper-{{ checksum "crime-means-assessment/gradle/wrapper/gradle-wrapper.properties" }}
-      - save_cache:
-          paths:
-            - ~/.gradle/caches
-          key: v1-gradle-cache-{{ checksum "crime-means-assessment/build.gradle" }}
-      - store_test_results:
-          path: crime-means-assessment/build/test-results/test
-      - store_artifacts:
-          path: crime-means-assessment/build/test-results/test
-          when: always
-      - run:
-          command: |
-            cd crime-means-assessment          
-            ./gradlew assemble
-      - store_artifacts:
-          path: crime-means-assessment/build/libs
-      - run:
-          name: Build application Docker image
-          command: |
-            cd crime-means-assessment          
-            $docker build -t laa-crime-means-assessment . --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) --build-arg COMMIT_ID=${CIRCLE_SHA1} --build-arg BUILD_TAG=${CIRCLE_SHA1} --build-arg APP_BRANCH=${CIRCLE_BRANCH}
-      - deploy:
-          name: Push application Docker image
-          command: |
-            aws ecr get-login-password | $docker login --username AWS --password-stdin ${AWS_ECR_ACCOUNT_URL}
-            $docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
-            $docker tag laa-crime-means-assessment "${ECR_ENDPOINT}:latest"
-            $docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
-            $docker push "${ECR_ENDPOINT}:latest"            
 
 
   install_on_dev:
@@ -209,7 +121,33 @@ jobs:
           chart: ./helm_deploy/laa-crime-means-assessment/
           release-name: laa-crime-means-assessment
           values: ./helm_deploy/laa-crime-means-assessment/values-dev.yaml
-          values-to-override: image.tag=${CIRCLE_SHA1}      
+          values-to-override: image.tag=${CIRCLE_SHA1}
+
+  install_on_test:
+    executor: aws-eks/python
+    steps:
+      - checkout_and_decrypt
+      - kubernetes/install-kubeconfig:
+          kubeconfig: ENCODED_KUBECONFIG_DEV
+      - kubernetes/install-kubectl
+      - helm/install-helm-client:
+          version: 'v3.2.4'
+      - run:
+          name: Authenticate with cluster
+          command: |
+            echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
+            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt
+            kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_DEV}
+            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}
+            kubectl config use-context ${K8S_CLUSTER_NAME}
+            kubectl --namespace=${K8S_NAMESPACE} get pods
+      - helm/upgrade-helm-chart:
+          namespace: laa-crime-means-assessment-test
+          update-repositories: false
+          chart: ./helm_deploy/laa-crime-means-assessment/
+          release-name: laa-crime-means-assessment
+          values: ./helm_deploy/laa-crime-means-assessment/values-test.yaml
+          values-to-override: image.tag=${CIRCLE_SHA1}
 
 workflows:
   version: 2
@@ -255,6 +193,16 @@ workflows:
           type: approval
           requires:
           - push-app
+
       - install_on_dev:
           requires:
-          - hold_install_on_dev         
+          - hold_install_on_dev
+
+      - hold_install_on_test:
+          type: approval
+          requires:
+            - install_on_dev
+
+      - install_on_test:
+          requires:
+            - hold_install_on_test
