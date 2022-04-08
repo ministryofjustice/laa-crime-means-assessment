@@ -79,6 +79,12 @@ jobs:
       - attach_workspace:
           at: .
 
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+
+      - restore_cache:
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+
       - run:
           name: Run tests
           command: ./gradlew test
@@ -106,14 +112,11 @@ jobs:
 
   push-app:
     executor: aws-ecr/default
-
     steps:
-      - attach_workspace:
-          at: .
-
       - aws-ecr/build-and-push-image:
           repo: laa-crime-means-assessment/crime-means-assessment
           tag: "${CIRCLE_SHA1}"
+          attach-workspace: true
           extra-build-args: |
             --build-arg COMMIT_ID=${CIRCLE_SHA1} \
             --build-arg BUILD_TAG=${CIRCLE_SHA1} \
