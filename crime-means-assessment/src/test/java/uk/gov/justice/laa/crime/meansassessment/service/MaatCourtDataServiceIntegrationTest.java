@@ -21,6 +21,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssess
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
 import java.io.IOException;
 
@@ -67,7 +68,8 @@ public class MaatCourtDataServiceIntegrationTest {
         MaatApiConfiguration.FinancialAssessmentEndpoints financialAssessmentEndpoints = new MaatApiConfiguration.FinancialAssessmentEndpoints(
                 "/financial-assessments/{financialAssessmentId}",
                 "/financial-assessments/",
-                "/financial-assessments/{financialAssessmentId}"
+                "/financial-assessments/{financialAssessmentId}",
+                "/financial-assessments/history/{financialAssessmentId}/fullAvailable/{fullAvailable}"
         );
 
         configuration.setPassportAssessmentEndpoints(passportEndpoints);
@@ -259,7 +261,7 @@ public class MaatCourtDataServiceIntegrationTest {
         return maatCourtDataService.postMeansAssessment(
                 new MaatApiAssessmentRequest(),
                 laaTransactionId,
-                configuration.getFinancialAssessmentEndpoints().getCreateUrl()
+                AssessmentRequestType.CREATE
         );
     }
 }
