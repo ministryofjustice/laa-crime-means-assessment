@@ -117,11 +117,11 @@ jobs:
             echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
             kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt
             kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_DEV}
-            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}
+            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_DEV_NAMESPACE}
             kubectl config use-context ${K8S_CLUSTER_NAME}
-            kubectl --namespace=${K8S_NAMESPACE} get pods
+            kubectl --namespace=${K8S_DEV_NAMESPACE} get pods
       - helm/upgrade-helm-chart:
-          namespace: laa-crime-means-assessment-dev
+          namespace: ${K8S_DEV_NAMESPACE}
           update-repositories: false
           chart: ./helm_deploy/laa-crime-means-assessment/
           release-name: laa-crime-means-assessment
@@ -142,11 +142,11 @@ jobs:
             echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
             kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt
             kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_TEST}
-            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}
+            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_TEST_NAMESPACE}
             kubectl config use-context ${K8S_CLUSTER_NAME}
-            kubectl --namespace=${K8S_NAMESPACE} get pods
+            kubectl --namespace=${K8S_TEST_NAMESPACE} get pods
       - helm/upgrade-helm-chart:
-          namespace: laa-crime-means-assessment-test
+          namespace: ${K8S_TEST_NAMESPACE}
           update-repositories: false
           chart: ./helm_deploy/laa-crime-means-assessment/
           release-name: laa-crime-means-assessment
