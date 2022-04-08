@@ -186,10 +186,6 @@ workflows:
           requires:
             - test
 
-      - push_app:
-          requires:
-            - test
-
       - hold_install_on_dev:
           type: approval
           requires:
