@@ -29,7 +29,8 @@ public class AssessmentCriteriaService {
     private final AssessmentCriteriaDetailFrequencyRepository assessmentCriteriaDetailFrequencyRepository;
     private final CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
 
-    protected AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
+     AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
+         log.info("Retrieving assessment criteria for date: {}", assessmentDate);
         AssessmentCriteriaEntity assessmentCriteriaForDate = assessmentCriteriaRepository.findAssessmentCriteriaForDate(assessmentDate);
         if (assessmentCriteriaForDate != null) {
             // If there is no partner or there is a partner with contrary interest, set partnerWeightingFactor to null
@@ -43,7 +44,7 @@ public class AssessmentCriteriaService {
         }
     }
 
-    protected void checkCriteriaDetailFrequency(AssessmentCriteriaDetailEntity criteriaDetail, Frequency frequency) {
+     void checkCriteriaDetailFrequency(AssessmentCriteriaDetailEntity criteriaDetail, Frequency frequency) {
         Optional<AssessmentCriteriaDetailFrequencyEntity> detailFrequency =
                 assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(criteriaDetail, frequency);
         if (detailFrequency.isEmpty()) {
@@ -51,7 +52,7 @@ public class AssessmentCriteriaService {
         }
     }
 
-    protected void checkAssessmentDetail(CaseType caseType, String section, AssessmentCriteriaEntity assessmentCriteria, ApiAssessmentDetail detail) {
+     void checkAssessmentDetail(CaseType caseType, String section, AssessmentCriteriaEntity assessmentCriteria, ApiAssessmentDetail detail) {
         AssessmentCriteriaDetailEntity criteriaDetail =
                 assessmentCriteria.getAssessmentCriteriaDetails().stream().filter(
                         d -> d.getSection().equals(section) && d.getId().equals(detail.getCriteriaDetailId())

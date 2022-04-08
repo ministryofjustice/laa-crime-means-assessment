@@ -95,6 +95,9 @@ public class MaatApiConfiguration {
         @NotNull
         private String updateUrl;
 
+        @NotNull
+        private String createHistoryUrl;
+
         public String getByRequestType(AssessmentRequestType requestType) {
             return (requestType.equals(AssessmentRequestType.CREATE)) ? createUrl : updateUrl;
         }

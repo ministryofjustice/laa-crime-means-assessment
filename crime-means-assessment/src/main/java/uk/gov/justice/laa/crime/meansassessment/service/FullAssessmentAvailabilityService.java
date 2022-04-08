@@ -23,7 +23,7 @@ public class FullAssessmentAvailabilityService {
 
         meansAssessmentResponse.setFullAssessmentAvailable(false);
 
-        if (!Objects.isNull(requestDTO.getFullAssessmentDate())) {
+        if (!Objects.isNull(meansAssessmentResponse.getFullAssessmentDate())) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         } else {
             switch (InitAssessmentResult.getFrom(meansAssessmentResponse.getInitResult())) {
