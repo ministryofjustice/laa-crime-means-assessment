@@ -50,7 +50,6 @@ jobs:
             - build
 
   test:
-    parallelism: 2
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
@@ -80,11 +79,7 @@ jobs:
           path: build/reports/jacoco/test/html
       - run:
           name: Assemble JAR
-          command: |
-            # Skip this for other nodes
-            if [ "$CIRCLE_NODE_INDEX" == 0 ]; then
-              ./gradlew assemble
-            fi
+          command: ./gradlew assemble
       - store_artifacts:
           path: build/libs
 
@@ -115,7 +110,7 @@ jobs:
           name: Authenticate with cluster
           command: |
             echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt
+            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
             kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_DEV}
             kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_DEV_NAMESPACE}
             kubectl config use-context ${K8S_CLUSTER_NAME}
@@ -140,7 +135,7 @@ jobs:
           name: Authenticate with cluster
           command: |
             echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt
+            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
             kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_TEST}
             kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_TEST_NAMESPACE}
             kubectl config use-context ${K8S_CLUSTER_NAME}
