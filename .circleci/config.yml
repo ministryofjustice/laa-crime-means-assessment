@@ -248,7 +248,7 @@ workflows:
       - hold_install_on_dev:
           type: approval
           requires:
-          - build-and-push-app
+          - push-app
       - install_on_dev:
           requires:
           - hold_install_on_dev         
