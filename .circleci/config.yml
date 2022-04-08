@@ -150,25 +150,6 @@ jobs:
           values-to-override: image.tag=${CIRCLE_SHA1}
 
 workflows:
-  version: 2
-  test-build-deploy-main:
-    jobs:
-      - build-test-package:
-          filters:
-            branches:
-              only:
-                - main
-      - hold_install_on_dev:
-          type: approval
-          requires:
-            - build-test-package
-          filters:
-            branches:
-              only:
-                - main          
-      - install_on_dev:
-          requires:
-            - hold_install_on_dev
 
   build-deploy-branch:
     jobs:
