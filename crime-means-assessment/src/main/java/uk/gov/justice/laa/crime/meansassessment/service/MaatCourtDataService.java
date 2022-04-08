@@ -122,7 +122,7 @@ public class MaatCourtDataService {
                 .retrieve()
                 .bodyToMono(Void.class)
                 .onErrorMap(throwable -> new APIClientException("Error calling Court Data API. Failed to create financial " +
-                        "assessment history for financialAssessmentId: " + finAssessmentId))
+                        "assessment history for financialAssessmentId: " + finAssessmentId, throwable))
                 .doOnError(Sentry::captureException);
     }
 
