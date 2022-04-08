@@ -30,11 +30,13 @@ public class RestControllerAdviser {
 
     @ExceptionHandler(APIClientException.class)
     public ResponseEntity<ErrorDTO> handleApiClientError(APIClientException ex) {
+        log.error("APIClientException: ", ex);
         return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorDTO> handleValidationError(ValidationException ex) {
+        log.error("ValidationException: ", ex);
         return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
