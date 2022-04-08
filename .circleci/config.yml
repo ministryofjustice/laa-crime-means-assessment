@@ -70,8 +70,11 @@ jobs:
     docker:
       - image: cimg/openjdk:11.0.13
 
+    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
+
     steps:
-      - checkout
+      - checkout:
+          path: ~/laa-crime-means-assessment
 
       - attach_workspace:
           at: .
