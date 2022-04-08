@@ -103,21 +103,6 @@ jobs:
       - store_artifacts:
           path: build/libs
 
-  push_app:
-    executor: aws-ecr/default
-    steps:
-      - aws-ecr/build-and-push-image:
-          repo: laa-crime-apps-team/laa-crime-means-assessment-dev-ecr
-          tag: "${CIRCLE_SHA1}"
-          attach-workspace: true
-          workspace-root: crime-means-assessment
-          path: crime-means-assessment
-          extra-build-args: |
-            --build-arg COMMIT_ID=${CIRCLE_SHA1} \
-            --build-arg BUILD_TAG=${CIRCLE_SHA1} \
-            --build-arg APP_BRANCH=${CIRCLE_BRANCH} \
-            --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) \
-
   install_on_dev:
     executor: aws-eks/python
     steps:
@@ -186,6 +171,20 @@ workflows:
       - test:
           requires:
             - build
+
+      - aws-ecr/build-and-push-image:
+          repo: laa-crime-apps-team/laa-crime-means-assessment-dev-ecr
+          tag: "${CIRCLE_SHA1}"
+          attach-workspace: true
+          workspace-root: crime-means-assessment
+          path: crime-means-assessment
+          extra-build-args: |
+            --build-arg COMMIT_ID=${CIRCLE_SHA1} \
+            --build-arg BUILD_TAG=${CIRCLE_SHA1} \
+            --build-arg APP_BRANCH=${CIRCLE_BRANCH} \
+            --build-arg BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%z) \
+          requires:
+            - test
 
       - push_app:
           requires:
