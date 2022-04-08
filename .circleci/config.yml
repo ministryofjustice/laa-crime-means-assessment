@@ -130,7 +130,8 @@ jobs:
           values-to-override: image.tag=${CIRCLE_SHA1}
 
   install_on_test:
-    executor: aws-eks/python
+    docker:
+      - image: cimg/python:3.10.4
     steps:
       - checkout_and_decrypt
       - kubernetes/install-kubeconfig:
