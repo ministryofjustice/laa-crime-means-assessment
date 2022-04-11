@@ -144,9 +144,7 @@ public class MaatApiOAuth2Client {
                         );
                     }
                     if (r.statusCode().equals(HttpStatus.NOT_FOUND)) {
-                        return WebClientResponseException.create(
-                                r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null
-                        );
+                        return WebClientResponseException.create(r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null);
                     }
                     return new APIClientException(errorMessage);
                 });
