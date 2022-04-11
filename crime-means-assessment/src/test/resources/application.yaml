@@ -44,17 +44,17 @@ swagger-ui:
 maatApi:
   oAuthEnabled: false
   baseUrl: http://localhost:8090
-  assessments-endpoint-prefix: /api/internal/v1/assessments
+  assessments-domain: /api/internal/v1/assessments
 
   validation-endpoints:
-    role-action-url: ${maatApi.assessments-endpoint-prefix}/role-action-url
-    new-work-reason-url: ${maatApi.assessments-endpoint-prefix}/new-work-reason-url
-    reservations-url: ${maatApi.assessments-endpoint-prefix}/reservation-url
-    outstanding-assessments-url: ${maatApi.assessments-endpoint-prefix}/outstanding-assessments-url
+    role-action-url: ${maatApi.assessments-domain}/role-action-url
+    new-work-reason-url: ${maatApi.assessments-domain}/new-work-reason-url
+    reservations-url: ${maatApi.assessments-domain}/reservation-url
+    outstanding-assessments-url: ${maatApi.assessments-domain}/outstanding-assessments-url
   financial-assessment-endpoints:
-    create-url: ${maatApi.assessments-endpoint-prefix}/create-url
-    search-url: ${maatApi.assessments-endpoint-prefix}/search-url
-    update-url: ${maatApi.assessments-endpoint-prefix}/update-url
+    create-url: ${maatApi.assessments-domain}/create-url
+    search-url: ${maatApi.assessments-domain}/search-url
+    update-url: ${maatApi.assessments-domain}/update-url
 
 means-assessment:
   security:
