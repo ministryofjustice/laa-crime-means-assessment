@@ -4,7 +4,7 @@
   "type": "object",
   "description": "Assessment details",
   "properties": {
-    "weightingId": {
+    "childWeightingId": {
       "type": "integer",
       "description": "Weighting ID"
     },

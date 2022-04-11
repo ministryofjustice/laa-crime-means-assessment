@@ -42,7 +42,7 @@ public class AssessmentSummaryService {
     }
 
     private ApiAssessmentSummary getFinancialAssessmentSummary(final ApiCreateMeansAssessmentResponse assessmentResponse) {
-        log.info("Generating assessment summary for financial assessment");
+        log.info("Generating assessment summary for financial assessment for repId: {}", assessmentResponse.getRepId());
         try {
             ApiAssessmentSummary finAssessmentSummary = new ApiAssessmentSummary();
             finAssessmentSummary.withId(assessmentResponse.getAssessmentId())
@@ -64,6 +64,7 @@ public class AssessmentSummaryService {
             } else {
                 finAssessmentSummary.setAssessmentDate(assessmentResponse.getInitialAssessmentDate());
             }
+            log.info("Returning finAssessmentSummary for : {}", finAssessmentSummary);
             return finAssessmentSummary;
         } catch (Exception ex) {
             log.error("Error generating financial assessment summary for repId: {}", assessmentResponse.getRepId(), ex);
@@ -72,7 +73,7 @@ public class AssessmentSummaryService {
     }
 
     private Optional<ApiAssessmentSummary> getPassportAssessmentSummary(final Integer repId, final String laaTransactionId) {
-        log.info("Generating assessment summary for passport assessment");
+        log.info("Generating assessment summary for passport assessment for repId: {}", repId);
         try {
             PassportAssessmentDTO passportAssessmentDTO = maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
 
@@ -94,7 +95,7 @@ public class AssessmentSummaryService {
     }
 
     private Optional<ApiAssessmentSummary> getHardshipReviewsSummary(final Integer repId, final String laaTransactionId) {
-        log.info("Generating assessment summary for hardship reviews");
+        log.info("Generating assessment summary for hardship reviews for repId: {}", repId);
         try {
             HardshipReviewDTO hardshipReviewDTO = maatCourtDataService.getHardshipReviewFromRepId(repId, laaTransactionId);
 
@@ -120,7 +121,7 @@ public class AssessmentSummaryService {
     }
 
     private Optional<ApiAssessmentSummary> getIOJAppealSummary(final Integer repId, final String laaTransactionId) {
-        log.info("Generating assessment summary for IOJ Appeal");
+        log.info("Generating assessment summary for IOJ Appeal for repId: {}", repId);
         try {
             IOJAppealDTO iojAppealDTO = maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
 
