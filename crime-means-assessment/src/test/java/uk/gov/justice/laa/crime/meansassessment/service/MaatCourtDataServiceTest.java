@@ -17,6 +17,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssess
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,6 +37,8 @@ public class MaatCourtDataServiceTest {
     private ExchangeFunction shortCircuitExchangeFunction;
     @Mock
     private MaatApiConfiguration maatApiConfiguration;
+    @Mock
+    private MaatApiConfiguration.FinancialAssessmentEndpoints financialAssessmentEndpoints;
     @Mock
     private MaatApiConfiguration.PassportAssessmentEndpoints passportAssessmentEndpoints;
     @Mock
@@ -60,7 +63,9 @@ public class MaatCourtDataServiceTest {
         when(hardshipReviewEndpoints.getFindUrl()).thenReturn(hardshipUrl);
         String iojUrl = "ioj-url";
         when(iojAppealEndpoints.getFindUrl()).thenReturn(iojUrl);
+        when(financialAssessmentEndpoints.getByRequestType(AssessmentRequestType.CREATE)).thenReturn("post-assessment-url");
 
+        when(maatApiConfiguration.getFinancialAssessmentEndpoints()).thenReturn(financialAssessmentEndpoints);
         when(maatApiConfiguration.getPassportAssessmentEndpoints()).thenReturn(passportAssessmentEndpoints);
         when(maatApiConfiguration.getHardshipReviewEndpoints()).thenReturn(hardshipReviewEndpoints);
         when(maatApiConfiguration.getIojAppealEndpoints()).thenReturn(iojAppealEndpoints);
@@ -71,7 +76,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenAnInvalidResponse_whenPostMeansAssessmentIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
         setupInvalidResponseTest();
-        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, postAssessmentUrl));
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, AssessmentRequestType.CREATE));
         validateInvalidResponseError(error);
     }
 
@@ -81,7 +86,7 @@ public class MaatCourtDataServiceTest {
         MaatApiAssessmentResponse expectedResponse = new MaatApiAssessmentResponse();
         expectedResponse.setId(testId);
         setupValidResponseTest(expectedResponse);
-        MaatApiAssessmentResponse actualResponse = maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, postAssessmentUrl);
+        MaatApiAssessmentResponse actualResponse = maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, AssessmentRequestType.CREATE);
         assertEquals(expectedResponse.getId(), actualResponse.getId());
     }
 
