@@ -23,6 +23,14 @@ public class MaatApiConfigurationTest {
     @Qualifier("test_configuration")
     private MaatApiConfiguration configuration;
 
+    @Configuration
+    public static class MaatApiConfigurationFactory {
+        @Bean(name = "test_configuration")
+        public MaatApiConfiguration getDefaultConfiguration() {
+            return new MaatApiConfiguration();
+        }
+    }
+
     @Test
     public void givenUserDefinedPOJO_whenBindingYMLConfigFile_thenAllFieldsAreSet() {
         assertThat(buildUrl("search-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getSearchUrl());
@@ -45,13 +53,5 @@ public class MaatApiConfigurationTest {
     private String buildUrl(String url) {
         String assessmentsEndpointBase = "/api/internal/v1/assessments";
         return String.format("%s/%s", assessmentsEndpointBase, url);
-    }
-
-    @Configuration
-    public static class MaatApiConfigurationFactory {
-        @Bean(name = "test_configuration")
-        public MaatApiConfiguration getDefaultConfiguration() {
-            return new MaatApiConfiguration();
-        }
     }
 }
