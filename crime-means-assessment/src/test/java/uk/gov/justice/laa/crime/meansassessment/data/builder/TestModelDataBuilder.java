@@ -423,14 +423,14 @@ public class TestModelDataBuilder {
     public static List<ApiAssessmentChildWeighting> getAssessmentChildWeightings() {
         return List.of(
                 new ApiAssessmentChildWeighting()
-                        .withWeightingId(37)
+                        .withChildWeightingId(37)
                         .withWeightingFactor(BigDecimal.valueOf(0.15))
                         .withLowerAgeRange(0)
                         .withUpperAgeRange(1)
                         .withNoOfChildren(1)
                 ,
                 new ApiAssessmentChildWeighting()
-                        .withWeightingId(38)
+                        .withChildWeightingId(38)
                         .withWeightingFactor(BigDecimal.valueOf(0.3))
                         .withLowerAgeRange(2)
                         .withUpperAgeRange(4)
