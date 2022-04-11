@@ -100,7 +100,6 @@ public class MaatCourtDataService {
                 .body(BodyInserters.fromValue(postBody))
                 .retrieve()
                 .bodyToMono(responseClass)
-                .onErrorResume(WebClientResponseException.NotFound.class, notFound -> Mono.empty())
                 .onErrorMap(this::handleError)
                 .doOnError(Sentry::captureException)
                 .block();
