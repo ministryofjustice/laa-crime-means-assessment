@@ -26,7 +26,7 @@ public class AssessmentSummaryService {
     private final MaatCourtDataService maatCourtDataService;
 
     public void addAssessmentSummaryToMeansResponse(final ApiCreateMeansAssessmentResponse assessmentResponse,
-                                                                                final String laaTransactionId) {
+                                                    final String laaTransactionId) {
         log.info("Generating assessment summary for means assessment response");
         try {
             var assessmentsSummary = new ArrayList<ApiAssessmentSummary>();

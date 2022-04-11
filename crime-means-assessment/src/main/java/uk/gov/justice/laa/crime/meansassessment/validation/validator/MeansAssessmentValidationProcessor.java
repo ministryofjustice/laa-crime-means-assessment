@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
@@ -13,6 +14,7 @@ import static uk.gov.justice.laa.crime.meansassessment.common.Constants.ACTION_C
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MeansAssessmentValidationProcessor {
 
     private final InitAssessmentValidator initAssessmentValidator;
@@ -28,7 +30,7 @@ public class MeansAssessmentValidationProcessor {
             "Eligibility Review, Miscalculation Review or New Application Following Ineligibility.";
 
     public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO) {
-
+        log.info("Validating means assessment request : {}", requestDTO);
         if (!meansAssessmentValidationService.isRepIdPresentForCreateAssessment(requestDTO)) {
             throw new ValidationException(MSG_REP_ID_REQUIRED);
         } else if (!meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT)) {

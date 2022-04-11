@@ -20,10 +20,11 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiInitMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
 import javax.validation.Valid;
+
+import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType.CREATE;
 
 @RestController
 @RequestMapping("api/internal/v1/assessment/means")
@@ -44,13 +45,10 @@ public class MeansAssessmentController {
     public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Initial means assessment data", content = @Content(mediaType = "application/json",
             schema = @Schema(implementation = ApiInitMeansAssessmentRequest.class))) @Valid @RequestBody ApiInitMeansAssessmentRequest meansAssessment) {
 
-        MeansAssessmentRequestDTO requestDTO =
-                meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
-
-        log.info("Create INIT Assessment Request Received for MAAT ID:  {}", requestDTO.getRepId());
+        log.info("Create INIT Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
+        MeansAssessmentRequestDTO requestDTO = meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
         meansAssessmentValidationProcessor.validate(requestDTO);
-        var createMeansAssessmentResponse =
-                meansAssessmentService.doAssessment(requestDTO, AssessmentRequestType.CREATE);
+        var createMeansAssessmentResponse = meansAssessmentService.doAssessment(requestDTO, CREATE);
         log.info("Create INIT Assessment Request completed for MAAT ID: {}", requestDTO.getRepId());
         return ResponseEntity.ok(createMeansAssessmentResponse);
     }
