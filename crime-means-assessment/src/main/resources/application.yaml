@@ -18,24 +18,24 @@ management:
 maatApi:
   oAuthEnabled: false
   baseUrl: ${MAAT_API_BASE_URL}
-  assessments-endpoint-prefix: /api/internal/v1/assessments
+  assessments-domain: /api/internal/v1/assessments
 
   validation-endpoints:
-    role-action-url: ${maatApi.assessments-endpoint-prefix}/authorization/users/{username}/actions/{action}
-    new-work-reason-url: ${maatApi.assessments-endpoint-prefix}/authorization/users/{username}/work-reasons/{nworCode}
-    reservations-url: ${maatApi.assessments-endpoint-prefix}/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
-    outstanding-assessments-url: ${maatApi.assessments-endpoint-prefix}/financial-assessments/check-outstanding/{repId}
+    role-action-url: ${maatApi.assessments-domain}/authorization/users/{username}/actions/{action}
+    new-work-reason-url: ${maatApi.assessments-domain}/authorization/users/{username}/work-reasons/{nworCode}
+    reservations-url: ${maatApi.assessments-domain}/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
+    outstanding-assessments-url: ${maatApi.assessments-domain}/financial-assessments/check-outstanding/{repId}
   financial-assessment-endpoints:
-    create-url: ${maatApi.assessments-endpoint-prefix}/financial-assessments/
-    search-url: ${maatApi.assessments-endpoint-prefix}/financial-assessments/{financialAssessmentId}
-    update-url: ${maatApi.assessments-endpoint-prefix}/financial-assessments/{financialAssessmentId}
-    create-history-url: ${maatApi.assessments-endpoint-prefix}/financial-assessments/history/{financialAssessmentId}/fullAvailable/{fullAvailable}
+    create-url: ${maatApi.assessments-domain}/financial-assessments/
+    search-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
+    update-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
+    create-history-url: ${maatApi.assessments-domain}/financial-assessments/history/{financialAssessmentId}/fullAvailable/{fullAvailable}
   passport-assessment-endpoints:
-    find-url: ${maatApi.assessments-endpoint-prefix}/passport-assessments/repId/{repId}
+    find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
   hardship-review-endpoints:
-    find-url: ${maatApi.assessments-endpoint-prefix}/hardship/repId/{repId}
+    find-url: ${maatApi.assessments-domain}/hardship/repId/{repId}
   ioj-appeal-endpoints:
-    find-url: ${maatApi.assessments-endpoint-prefix}/ioj-appeal/repId/{repId}
+    find-url: ${maatApi.assessments-domain}/ioj-appeal/repId/{repId}
 
 means-assessment:
   security:
