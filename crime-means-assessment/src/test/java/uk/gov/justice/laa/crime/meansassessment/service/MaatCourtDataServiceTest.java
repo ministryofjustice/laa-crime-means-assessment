@@ -53,13 +53,7 @@ public class MaatCourtDataServiceTest {
                 .filter(
                         ExchangeFilterFunctions.statusError(
                                 HttpStatus::is4xxClientError, r ->
-                                        WebClientResponseException.create(
-                                                r.rawStatusCode(),
-                                                r.statusCode().getReasonPhrase(),
-                                                null,
-                                                null,
-                                                null
-                                        )
+                                        WebClientResponseException.create(r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null)
                         )
                 )
                 .exchangeFunction(shortCircuitExchangeFunction)
@@ -80,18 +74,9 @@ public class MaatCourtDataServiceTest {
     }
 
     @Test
-    public void givenANotFoundException_whenPostMeansAssessmentIsInvoked_thenTheMethodShouldReturnNull() {
-        setupNotFoundTest();
-        assertNull(maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, postAssessmentUrl));
-    }
-
-    @Test
     public void givenAnInvalidResponse_whenPostMeansAssessmentIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
         setupInvalidResponseTest();
-        APIClientException error = assertThrows(
-                APIClientException.class,
-                () -> maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, postAssessmentUrl)
-        );
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, postAssessmentUrl));
         validateInvalidResponseError(error);
     }
 
@@ -101,8 +86,7 @@ public class MaatCourtDataServiceTest {
         MaatApiAssessmentResponse expectedResponse = new MaatApiAssessmentResponse();
         expectedResponse.setId(testId);
         setupValidResponseTest(expectedResponse);
-        MaatApiAssessmentResponse actualResponse =
-                maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, postAssessmentUrl);
+        MaatApiAssessmentResponse actualResponse = maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, postAssessmentUrl);
         assertEquals(expectedResponse.getId(), actualResponse.getId());
     }
 
@@ -115,10 +99,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenAnInvalidResponse_whenGetPassportAssessmentFromRepIdIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
         setupInvalidResponseTest();
-        APIClientException error = assertThrows(
-                APIClientException.class,
-                () -> maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId)
-        );
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId));
         validateInvalidResponseError(error);
     }
 
@@ -141,10 +122,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenAnInvalidResponse_whenGetHardshipReviewFromRepIdIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
         setupInvalidResponseTest();
-        APIClientException error = assertThrows(
-                APIClientException.class,
-                () -> maatCourtDataService.getHardshipReviewFromRepId(repId, laaTransactionId)
-        );
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.getHardshipReviewFromRepId(repId, laaTransactionId));
         validateInvalidResponseError(error);
     }
 
@@ -167,10 +145,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenAnInvalidResponse_whenGetIOJAppealFromRepIdIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
         setupInvalidResponseTest();
-        APIClientException error = assertThrows(
-                APIClientException.class,
-                () -> maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId)
-        );
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId));
         validateInvalidResponseError(error);
     }
 
@@ -187,41 +162,29 @@ public class MaatCourtDataServiceTest {
 
     private void setupNotFoundTest() {
         when(shortCircuitExchangeFunction.exchange(any()))
-                .thenReturn(
-                        Mono.just(
-                                ClientResponse
-                                        .create(HttpStatus.NOT_FOUND)
-                                        .body("Error")
-                                        .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                        .build()
-                        )
-                );
+                .thenReturn(Mono.just(ClientResponse
+                        .create(HttpStatus.NOT_FOUND)
+                        .body("Error")
+                        .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .build()));
     }
 
     private void setupInvalidResponseTest() {
         when(shortCircuitExchangeFunction.exchange(any()))
-                .thenReturn(
-                        Mono.just(
-                                ClientResponse
-                                        .create(HttpStatus.OK)
-                                        .body("Invalid response")
-                                        .build()
-                        )
-                );
+                .thenReturn(Mono.just(ClientResponse
+                        .create(HttpStatus.OK)
+                        .body("Invalid response")
+                        .build()));
     }
 
     private <T> void setupValidResponseTest(T returnBody) throws JsonProcessingException {
         String body = OBJECT_MAPPER.writeValueAsString(returnBody);
         when(shortCircuitExchangeFunction.exchange(any()))
-                .thenReturn(
-                        Mono.just(
-                                ClientResponse
-                                        .create(HttpStatus.OK)
-                                        .body(body)
-                                        .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                                        .build()
-                        )
-                );
+                .thenReturn(Mono.just(ClientResponse
+                        .create(HttpStatus.OK)
+                        .body(body)
+                        .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .build()));
     }
 
     private void validateInvalidResponseError(APIClientException error) {
