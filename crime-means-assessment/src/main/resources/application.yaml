@@ -28,12 +28,13 @@ maatApi:
     create-url: /financial-assessments/
     search-url: /financial-assessments/{financialAssessmentId}
     update-url: /financial-assessments/{financialAssessmentId}
+    create-history-url: /financial-assessments/history/{financialAssessmentId}/fullAvailable/{fullAvailable}
   passport-assessment-endpoints:
-    find-url: /passport-assessments/{repId}
+    find-url: /passport-assessments/repId/{repId}
   hardship-review-endpoints:
-    find-url: /hardship/{repId}
+    find-url: /hardship/repId/{repId}
   ioj-appeal-endpoints:
-    find-url: /ioj-appeal/{repId}
+    find-url: /ioj-appeal/repId/{repId}
 
 means-assessment:
   security:
