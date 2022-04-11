@@ -50,12 +50,7 @@ public class MaatCourtDataServiceTest {
         WebClient testWebClient = WebClient
                 .builder()
                 .baseUrl("http://localhost:1234")
-                .filter(
-                        ExchangeFilterFunctions.statusError(
-                                HttpStatus::is4xxClientError, r ->
-                                        WebClientResponseException.create(r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null)
-                        )
-                )
+                .filter(ExchangeFilterFunctions.statusError(HttpStatus::is4xxClientError, r -> WebClientResponseException.create(r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null)))
                 .exchangeFunction(shortCircuitExchangeFunction)
                 .build();
 
@@ -161,30 +156,16 @@ public class MaatCourtDataServiceTest {
 
 
     private void setupNotFoundTest() {
-        when(shortCircuitExchangeFunction.exchange(any()))
-                .thenReturn(Mono.just(ClientResponse
-                        .create(HttpStatus.NOT_FOUND)
-                        .body("Error")
-                        .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .build()));
+        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).body("Error").header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
     }
 
     private void setupInvalidResponseTest() {
-        when(shortCircuitExchangeFunction.exchange(any()))
-                .thenReturn(Mono.just(ClientResponse
-                        .create(HttpStatus.OK)
-                        .body("Invalid response")
-                        .build()));
+        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.OK).body("Invalid response").build()));
     }
 
     private <T> void setupValidResponseTest(T returnBody) throws JsonProcessingException {
         String body = OBJECT_MAPPER.writeValueAsString(returnBody);
-        when(shortCircuitExchangeFunction.exchange(any()))
-                .thenReturn(Mono.just(ClientResponse
-                        .create(HttpStatus.OK)
-                        .body(body)
-                        .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .build()));
+        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.OK).body(body).header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
     }
 
     private void validateInvalidResponseError(APIClientException error) {
