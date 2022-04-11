@@ -43,7 +43,7 @@ public class MaatApiConfigurationTest {
     }
 
     private String buildUrl(String url) {
-        String assessmentsEndpointBase = "api/internal/v1/assessments";
+        String assessmentsEndpointBase = "/api/internal/v1/assessments";
         return String.format("%s/%s", assessmentsEndpointBase, url);
     }
 
