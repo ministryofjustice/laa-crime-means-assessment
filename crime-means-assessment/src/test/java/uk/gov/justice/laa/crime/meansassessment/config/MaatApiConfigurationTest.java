@@ -1,18 +1,14 @@
 package uk.gov.justice.laa.crime.meansassessment.config;
 
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
@@ -27,30 +23,35 @@ public class MaatApiConfigurationTest {
     @Qualifier("test_configuration")
     private MaatApiConfiguration configuration;
 
+    @Test
+    public void givenUserDefinedPOJO_whenBindingYMLConfigFile_thenAllFieldsAreSet() {
+        assertThat(buildUrl("search-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getSearchUrl());
+        assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getCreateUrl());
+        assertThat(buildUrl("update-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getUpdateUrl());
+
+        assertThat(false).isEqualTo(configuration.isOAuthEnabled());
+
+        assertThat(buildUrl("role-action-url")).isEqualTo(configuration.getValidationEndpoints().getRoleActionUrl());
+        assertThat(buildUrl("new-work-reason-url")).isEqualTo(configuration.getValidationEndpoints().getNewWorkReasonUrl());
+        assertThat(buildUrl("reservation-url")).isEqualTo(configuration.getValidationEndpoints().getReservationsUrl());
+        assertThat(buildUrl("outstanding-assessments-url")).isEqualTo(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl());
+    }
+
+    @Test
+    public void givenDefinedFinancialAssessmentEndpoints_whenGetByRequestTypeIsInvoked_thenCorrectEndpointIsReturned() {
+        assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getByRequestType(AssessmentRequestType.CREATE));
+    }
+
+    private String buildUrl(String url) {
+        String assessmentsEndpointBase = "api/internal/v1/assessments";
+        return String.format("%s/%s", assessmentsEndpointBase, url);
+    }
+
     @Configuration
     public static class MaatApiConfigurationFactory {
         @Bean(name = "test_configuration")
         public MaatApiConfiguration getDefaultConfiguration() {
             return new MaatApiConfiguration();
         }
-    }
-
-    @Test
-    public void givenUserDefinedPOJO_whenBindingYMLConfigFile_thenAllFieldsAreSet() {
-        assertThat("search-url").isEqualTo(configuration.getFinancialAssessmentEndpoints().getSearchUrl());
-        assertThat("create-url").isEqualTo(configuration.getFinancialAssessmentEndpoints().getCreateUrl());
-        assertThat("update-url").isEqualTo(configuration.getFinancialAssessmentEndpoints().getUpdateUrl());
-
-        assertThat(false).isEqualTo(configuration.isOAuthEnabled());
-
-        assertThat("role-action-url").isEqualTo(configuration.getValidationEndpoints().getRoleActionUrl());
-        assertThat("new-work-reason-url").isEqualTo(configuration.getValidationEndpoints().getNewWorkReasonUrl());
-        assertThat("reservation-url").isEqualTo(configuration.getValidationEndpoints().getReservationsUrl());
-        assertThat("outstanding-assessments-url").isEqualTo(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl());
-    }
-
-    @Test
-    public void givenDefinedFinancialAssessmentEndpoints_whenGetByRequestTypeIsInvoked_thenCorrectEndpointIsReturned() {
-        assertThat("create-url").isEqualTo(configuration.getFinancialAssessmentEndpoints().getByRequestType(AssessmentRequestType.CREATE));
     }
 }
