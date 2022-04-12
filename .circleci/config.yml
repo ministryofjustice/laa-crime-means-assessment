@@ -153,10 +153,7 @@ workflows:
     jobs:
       - branch_build_approval:
           type: approval
-          filters:
-            branches:
-              ignore:
-                - main
+
       - build:
           requires:
             - branch_build_approval
