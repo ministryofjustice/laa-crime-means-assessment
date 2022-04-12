@@ -72,7 +72,7 @@ public class MaatCourtDataAssessmentBuilder {
     private MaatApiCreateAssessment buildCreate(MeansAssessmentRequestDTO requestDTO) {
         return new MaatApiCreateAssessment()
                 .withUsn(requestDTO.getUsn())
-                .withRtCode(ofNullable(requestDTO.getReviewType()).map(ReviewType::getCode).orElse(null))
+                .withRtCode(requestDTO.getReviewType().getCode())
                 .withNworCode(requestDTO.getNewWorkReason().getCode())
                 .withUserCreated(requestDTO.getUserId())
                 .withIncomeUpliftRemoveDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
