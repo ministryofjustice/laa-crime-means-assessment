@@ -39,6 +39,13 @@ spec:
                 name: {{ $fullName }}
                 port:
                   number: {{ $svcPort }}
+          - path: {{ .Values.actuator.health.path }}
+            pathType: "Exact"
+            backend:
+              service:
+                name: { { $fullName } }
+                port:
+                  number: { { .Values.actuator.port } }
           {{- end }}
     {{- end }}
   {{- end }}
