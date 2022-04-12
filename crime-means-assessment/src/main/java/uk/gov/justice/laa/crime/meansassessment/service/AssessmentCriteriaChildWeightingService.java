@@ -16,8 +16,7 @@ import java.util.Set;
 public class AssessmentCriteriaChildWeightingService {
 
     protected BigDecimal getTotalChildWeighting(List<ApiAssessmentChildWeighting> childWeightings, AssessmentCriteriaEntity assessmentCriteria) {
-        Set<AssessmentCriteriaChildWeightingEntity> criteriaChildWeightings =
-                assessmentCriteria.getAssessmentCriteriaChildWeightings();
+        Set<AssessmentCriteriaChildWeightingEntity> criteriaChildWeightings = assessmentCriteria.getAssessmentCriteriaChildWeightings();
 
         if (criteriaChildWeightings.size() != childWeightings.size()) {
             throw new ValidationException(String.format("Child weightings missing for criteria: %d", assessmentCriteria.getId()));
@@ -27,9 +26,9 @@ public class AssessmentCriteriaChildWeightingService {
 
         for (ApiAssessmentChildWeighting weighting : childWeightings) {
             AssessmentCriteriaChildWeightingEntity childWeighting = criteriaChildWeightings.stream().filter(
-                    cw -> cw.getId().equals(weighting.getWeightingId())
+                    cw -> cw.getId().equals(weighting.getChildWeightingId())
             ).findFirst().orElseThrow(
-                    () -> new ValidationException(String.format("Invalid child weighting id: %s", weighting.getWeightingId()))
+                    () -> new ValidationException(String.format("Invalid child weighting id: %s", weighting.getChildWeightingId()))
             );
 
             totalChildWeighting = totalChildWeighting.add(
