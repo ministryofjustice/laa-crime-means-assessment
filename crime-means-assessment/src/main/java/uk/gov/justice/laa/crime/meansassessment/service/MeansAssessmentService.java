@@ -132,6 +132,7 @@ public class MeansAssessmentService {
                                                                                    final MeansAssessmentDTO completedAssessment) {
         return new ApiCreateMeansAssessmentResponse()
                 .withAssessmentId(maatApiAssessmentResponse.getId())
+                .withRepId(maatApiAssessmentResponse.getRepId())
                 .withCriteriaId(assessmentCriteria.getId())
                 .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
                 .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())

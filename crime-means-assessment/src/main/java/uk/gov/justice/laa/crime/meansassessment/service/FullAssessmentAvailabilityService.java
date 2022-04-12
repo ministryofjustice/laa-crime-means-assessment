@@ -18,7 +18,7 @@ public class FullAssessmentAvailabilityService {
     public void processFullAssessmentAvailable(final MeansAssessmentRequestDTO requestDTO,
                                                final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
 
-        log.info("Start full assessment available check for create means assessment request {} and response {}",
+        log.debug("Start full assessment available check for create means assessment request {} and response {}",
                 requestDTO, meansAssessmentResponse);
 
         meansAssessmentResponse.setFullAssessmentAvailable(false);
