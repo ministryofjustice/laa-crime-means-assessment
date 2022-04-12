@@ -22,9 +22,8 @@ public class HardshipReviewDTO {
     private String reviewResult;
     private BigDecimal disposableIncome;
     private BigDecimal disposableIncomeAfterHardship;
-    private NewWorkReason newWorkReason;
+    private String newWorkReason;
     private SolicitorCosts solicitorCosts;
     private HardshipReviewStatus status;
     private String courtType;
-
 }
