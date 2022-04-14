@@ -44,7 +44,7 @@ swagger-ui:
 maatApi:
   oAuthEnabled: false
   baseUrl: http://localhost:8090
-  assessments-domain: /api/internal/v1/assessments
+  assessments-domain: /api/internal/v1/assessment
 
   validation-endpoints:
     role-action-url: ${maatApi.assessments-domain}/role-action-url
