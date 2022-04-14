@@ -18,7 +18,7 @@ management:
 maatApi:
   oAuthEnabled: false
   baseUrl: ${MAAT_API_BASE_URL}
-  assessments-domain: /api/internal/v1/assessments
+  assessments-domain: /api/internal/v1/assessment
 
   validation-endpoints:
     role-action-url: ${maatApi.assessments-domain}/authorization/users/{username}/actions/{action}
