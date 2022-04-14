@@ -51,6 +51,6 @@ public class MaatApiConfigurationTest {
     }
 
     private String buildUrl(String url) {
-        return String.format("/api/internal/v1/assessments/%s", url);
+        return String.format("/api/internal/v1/assessment/%s", url);
     }
 }
