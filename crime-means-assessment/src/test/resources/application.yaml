@@ -1,5 +1,5 @@
 server:
-  port : 52314
+  port: 52314
 
 spring:
   datasource:
@@ -44,15 +44,17 @@ swagger-ui:
 maatApi:
   oAuthEnabled: false
   baseUrl: http://localhost:8090
+  assessments-domain: /api/internal/v1/assessments
+
   validation-endpoints:
-    role-action-url: role-action-url
-    new-work-reason-url: new-work-reason-url
-    reservations-url: reservation-url
-    outstanding-assessments-url: outstanding-assessments-url
+    role-action-url: ${maatApi.assessments-domain}/role-action-url
+    new-work-reason-url: ${maatApi.assessments-domain}/new-work-reason-url
+    reservations-url: ${maatApi.assessments-domain}/reservation-url
+    outstanding-assessments-url: ${maatApi.assessments-domain}/outstanding-assessments-url
   financial-assessment-endpoints:
-    create-url: create-url
-    search-url: search-url
-    update-url: update-url
+    create-url: ${maatApi.assessments-domain}/create-url
+    search-url: ${maatApi.assessments-domain}/search-url
+    update-url: ${maatApi.assessments-domain}/update-url
 
 means-assessment:
   security:
