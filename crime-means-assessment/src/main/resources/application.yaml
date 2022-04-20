@@ -39,7 +39,7 @@ maatApi:
 
 means-assessment:
   security:
-    issuer-uri: http://localhost:${server.port}
+    issuer-uri: https://laa-crime-means-assessment-dev.apps.live.cloud-platform.service.justice.gov.uk:${server.port}
 
 spring:
   datasource:
