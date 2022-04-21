@@ -26,13 +26,14 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.UUID;
 
 @Configuration(proxyBeanMethods = false)
 @Order(2)
 public class AuthorizationServerConfiguration {
     @Value("${means-assessment.security.issuer-uri}")
     private String issuerUri;
+
+    private static final String KEY_ID = "c097657e-4111-4e88-a8d5-d70c9c27ba53c097657e-4111-4e88-a8d5-d70c9c27ba53";
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -71,7 +72,6 @@ public class AuthorizationServerConfiguration {
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         return new RSAKey.Builder(publicKey)
                 .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
                 .build();
     }
 
