@@ -26,7 +26,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.UUID;
 
 @Configuration(proxyBeanMethods = false)
 @Order(2)
@@ -43,8 +42,7 @@ public class AuthorizationServerConfiguration {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
-        JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
-        return registeredClientRepository;
+        return new JdbcRegisteredClientRepository(jdbcTemplate);
     }
 
 
@@ -71,7 +69,6 @@ public class AuthorizationServerConfiguration {
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         return new RSAKey.Builder(publicKey)
                 .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
                 .build();
     }
 
