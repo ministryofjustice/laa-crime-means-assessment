@@ -33,8 +33,6 @@ public class AuthorizationServerConfiguration {
     @Value("${means-assessment.security.issuer-uri}")
     private String issuerUri;
 
-    private static final String KEY_ID = "c097657e-4111-4e88-a8d5-d70c9c27ba53c097657e-4111-4e88-a8d5-d70c9c27ba53";
-
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -44,8 +42,7 @@ public class AuthorizationServerConfiguration {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
-        JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
-        return registeredClientRepository;
+        return new JdbcRegisteredClientRepository(jdbcTemplate);
     }
 
 
