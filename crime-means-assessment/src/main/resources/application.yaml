@@ -16,7 +16,7 @@ management:
         include: health,info,metrics,prometheus
 
 maatApi:
-  oAuthEnabled: false
+  oAuthEnabled: true
   baseUrl: ${MAAT_API_BASE_URL}
   assessments-domain: /api/internal/v1/assessment
 
@@ -58,12 +58,12 @@ spring:
       client:
         provider:
           maatapi:
-            tokenUri: ${MAAT_API_OAUTH_URL}
+            token-uri: ${MAAT_API_OAUTH_URL}
         registration:
           maatapi:
-            clientId: ${MAAT_API_OAUTH_CLIENT_ID}
-            clientSecret: ${MAAT_API_OAUTH_CLIENT_SECRET}
-            authorizationGrantType: client_credentials
+            client-id: ${MAAT_API_OAUTH_CLIENT_ID}
+            client-secret: ${MAAT_API_OAUTH_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
 
       resourceserver:
         jwt:
