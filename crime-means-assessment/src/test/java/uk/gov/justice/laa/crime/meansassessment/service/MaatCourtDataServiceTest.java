@@ -68,7 +68,6 @@ public class MaatCourtDataServiceTest {
         when(maatApiConfiguration.getPassportAssessmentEndpoints()).thenReturn(passportAssessmentEndpoints);
         when(maatApiConfiguration.getHardshipReviewEndpoints()).thenReturn(hardshipReviewEndpoints);
         when(maatApiConfiguration.getIojAppealEndpoints()).thenReturn(iojAppealEndpoints);
-        when(maatApiConfiguration.getPostProcessingUrl()).thenReturn("post-processing-url/{repId}");
 
         maatCourtDataService = new MaatCourtDataService(testWebClient, maatApiConfiguration);
     }
