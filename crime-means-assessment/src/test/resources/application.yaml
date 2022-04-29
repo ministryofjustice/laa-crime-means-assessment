@@ -30,6 +30,7 @@ spring:
           maatapi:
             client-id: dummy-client
             client-secret: dummy-secret
+            authorization-grant-type: client_credentials
       resourceserver:
         jwt:
           issuer-uri: ${means-assessment.security.issuer-uri}
