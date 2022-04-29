@@ -20,6 +20,8 @@ maatApi:
   baseUrl: ${MAAT_API_BASE_URL}
   assessments-domain: /api/internal/v1/assessment
 
+  post-processing-url: ${maatApi.assessments-domain}/post-processing/{repId}
+
   validation-endpoints:
     role-action-url: ${maatApi.assessments-domain}/authorization/users/{username}/actions/{action}
     new-work-reason-url: ${maatApi.assessments-domain}/authorization/users/{username}/work-reasons/{nworCode}
