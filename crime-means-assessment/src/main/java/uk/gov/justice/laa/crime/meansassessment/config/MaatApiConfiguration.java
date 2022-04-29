@@ -22,6 +22,12 @@ public class MaatApiConfiguration {
     private boolean oAuthEnabled;
 
     /**
+     * Defines the url for assessment post processing.
+     */
+    @NotNull
+    private String postProcessingUrl;
+
+    /**
      * Defines validation endpoint URLs
      */
     @NotNull

@@ -45,6 +45,7 @@ maatApi:
   oAuthEnabled: false
   baseUrl: http://localhost:8090
   assessments-domain: /api/internal/v1/assessment
+  post-processing-url: ${maatApi.assessments-domain}/post-processing/{repId}
 
   validation-endpoints:
     role-action-url: ${maatApi.assessments-domain}/role-action-url
