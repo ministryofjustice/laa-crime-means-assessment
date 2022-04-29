@@ -12,7 +12,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.system.OutputCaptureRule;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
@@ -50,7 +51,10 @@ public class MaatCourtDataServiceIntegrationTest {
     private MaatApiConfiguration configuration;
 
     @Mock
-    private OAuth2AuthorizedClientManager authClientManager;
+    private ClientRegistrationRepository clientRegistrationRepository;
+
+    @Mock
+    private OAuth2AuthorizedClientRepository authorizedClients;
 
     @Before
     public void initialize() throws IOException {
@@ -88,7 +92,7 @@ public class MaatCourtDataServiceIntegrationTest {
         retryConfiguration.setMinBackOffPeriod(1);
         retryConfiguration.setJitterValue(0.5);
 
-        WebClient maatWebClient = buildWebClient(configuration, retryConfiguration, authClientManager);
+        WebClient maatWebClient = buildWebClient(configuration, retryConfiguration, clientRegistrationRepository, authorizedClients);
         maatCourtDataService = new MaatCourtDataService(maatWebClient, configuration);
     }
 
@@ -312,11 +316,12 @@ public class MaatCourtDataServiceIntegrationTest {
     private WebClient buildWebClient(
             MaatApiConfiguration maatConfig,
             RetryConfiguration retryConfiguration,
-            OAuth2AuthorizedClientManager authClientManager
+            ClientRegistrationRepository clientRegistrations,
+            OAuth2AuthorizedClientRepository authorizedClients
     ) {
         MaatApiOAuth2Client client = new MaatApiOAuth2Client(maatConfig, retryConfiguration);
 
-        return client.webClient(authClientManager);
+        return client.webClient(clientRegistrations, authorizedClients);
     }
 
     private MaatApiAssessmentResponse runPostMeansAssessment() {
