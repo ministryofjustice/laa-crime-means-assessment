@@ -116,15 +116,36 @@ public class MaatCourtDataService {
     public Mono<Void> createFinancialAssessmentHistory(final Integer finAssessmentId,
                                                        final Boolean fullAssessmentAvailable,
                                                        final String laaTransactionId) {
+        String errorMessage = "Error calling Court Data API. Failed to create financial " +
+                "assessment history for financialAssessmentId: " + finAssessmentId;
+        return getApiResponseViaPOSTAsync(
+                Void.class,
+                Map.of("Laa-Transaction-Id", laaTransactionId),
+                errorMessage,
+                configuration.getFinancialAssessmentEndpoints().getCreateHistoryUrl(),
+                finAssessmentId, fullAssessmentAvailable);
+    }
+
+    public Mono<Void> performAssessmentPostProcessing(final Integer repId, final String laaTransactionId) {
+        String errorMessage =
+                String.format("Error calling Court Data API. Failed to perform means assessment post processing for RepID '%s'", repId);
+
+        return getApiResponseViaPOSTAsync(
+                Void.class,
+                Map.of("Laa-Transaction-Id", laaTransactionId),
+                errorMessage,
+                configuration.getPostProcessingUrl(),
+                repId);
+    }
+
+    private <T> Mono<T> getApiResponseViaPOSTAsync(Class<T> responseClass, Map<String, String> headers, String errorMessage, String url, Object... urlVariables) {
         return webClient.post()
-                .uri(uriBuilder -> uriBuilder.path(configuration.getFinancialAssessmentEndpoints().getCreateHistoryUrl())
-                        .build(finAssessmentId, fullAssessmentAvailable))
-                .headers(httpHeaders -> httpHeaders.setAll(Map.of("Laa-Transaction-Id", laaTransactionId)))
+                .uri(uriBuilder -> uriBuilder.path(url).build(urlVariables))
+                .headers(httpHeaders -> httpHeaders.setAll(headers))
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(Void.class)
-                .onErrorMap(throwable -> new APIClientException("Error calling Court Data API. Failed to create financial " +
-                        "assessment history for financialAssessmentId: " + finAssessmentId, throwable))
+                .bodyToMono(responseClass)
+                .onErrorMap(throwable -> new APIClientException(errorMessage, throwable))
                 .doOnError(Sentry::captureException);
     }
 
