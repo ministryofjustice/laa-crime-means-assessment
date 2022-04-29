@@ -128,14 +128,12 @@ public class MaatCourtDataService {
 
     public Mono<Void> performAssessmentPostProcessing(final Integer repId, final String laaTransactionId) {
         String errorMessage =
-                String.format("Error calling Court Data API. Failed to perform means assessment post processing for RepID '%s'", repId);
+                String.format("An error occurred whilst performing assessment post-processing for RepID: %d", repId);
 
-        return getApiResponseViaPOSTAsync(
-                Void.class,
-                Map.of("Laa-Transaction-Id", laaTransactionId),
-                errorMessage,
-                configuration.getPostProcessingUrl(),
-                repId);
+        Map<String, String> headers = Map.of("Laa-Transaction-Id", laaTransactionId);
+        return getApiResponseViaPOSTAsync(Void.class, headers, errorMessage, configuration.getPostProcessingUrl(), repId)
+                .doOnSuccess(response -> log.info(String.format("Assessment post-processing successful for RepID: %d", repId)))
+                .doOnError(error -> log.error(errorMessage, error));
     }
 
     private <T> Mono<T> getApiResponseViaPOSTAsync(Class<T> responseClass, Map<String, String> headers, String errorMessage, String url, Object... urlVariables) {

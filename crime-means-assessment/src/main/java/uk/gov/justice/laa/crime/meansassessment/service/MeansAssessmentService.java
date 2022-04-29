@@ -66,6 +66,9 @@ public class MeansAssessmentService {
             assessmentSummaryService.addAssessmentSummaryToMeansResponse(assessmentResponse, requestDTO.getLaaTransactionId());
             maatCourtDataService.createFinancialAssessmentHistory(assessmentResponse.getAssessmentId(), assessmentResponse.getFullAssessmentAvailable(), requestDTO.getLaaTransactionId());
 
+            log.info("Sending assessment post processing request for MAAT ID: {}", requestDTO.getRepId());
+            maatCourtDataService.performAssessmentPostProcessing(requestDTO.getRepId(), requestDTO.getLaaTransactionId());
+
             return assessmentResponse;
         } catch (RuntimeException exception) {
             throw new AssessmentProcessingException(
