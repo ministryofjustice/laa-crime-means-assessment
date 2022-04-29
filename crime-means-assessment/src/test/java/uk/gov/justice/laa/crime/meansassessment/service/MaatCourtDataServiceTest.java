@@ -159,24 +159,6 @@ public class MaatCourtDataServiceTest {
         assertEquals(expectedResponse.getId(), actualResponse.getId());
     }
 
-    @Test
-    public void givenAnErrorResponse_whenPerformAssessmentPostProcessingIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
-        Integer repId = 12345;
-        String errorMessage = String.format("Error calling Court Data API. Failed to perform means assessment post processing for RepID '%s'", repId);
-        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
-        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId).block());
-        assertEquals(errorMessage, error.getMessage());
-    }
-
-    @Test
-    public void givenAnValidResponse_whenPerformAssessmentPostProcessingIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
-        Integer repId = 12345;
-        String errorMessage = String.format("Error calling Court Data API. Failed to perform means assessment post processing for RepID '%s'", repId);
-        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
-        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId).block());
-        assertEquals(errorMessage, error.getMessage());
-    }
-
     private void setupNotFoundTest() {
         when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).body("Error").header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
     }
