@@ -29,7 +29,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class MaatCourtDataServiceTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private final String postAssessmentUrl = "post-assessment-url";
     private final Integer repId = 1234;
     private final String laaTransactionId = "laaTransactionId";
 
@@ -69,6 +68,7 @@ public class MaatCourtDataServiceTest {
         when(maatApiConfiguration.getPassportAssessmentEndpoints()).thenReturn(passportAssessmentEndpoints);
         when(maatApiConfiguration.getHardshipReviewEndpoints()).thenReturn(hardshipReviewEndpoints);
         when(maatApiConfiguration.getIojAppealEndpoints()).thenReturn(iojAppealEndpoints);
+        when(maatApiConfiguration.getPostProcessingUrl()).thenReturn("post-processing-url/{repId}");
 
         maatCourtDataService = new MaatCourtDataService(testWebClient, maatApiConfiguration);
     }
@@ -159,6 +159,23 @@ public class MaatCourtDataServiceTest {
         assertEquals(expectedResponse.getId(), actualResponse.getId());
     }
 
+    @Test
+    public void givenAnErrorResponse_whenPerformAssessmentPostProcessingIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
+        Integer repId = 12345;
+        String errorMessage = String.format("Error calling Court Data API. Failed to perform means assessment post processing for RepID '%s'", repId);
+        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId).block());
+        assertEquals(errorMessage, error.getMessage());
+    }
+
+    @Test
+    public void givenAnValidResponse_whenPerformAssessmentPostProcessingIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
+        Integer repId = 12345;
+        String errorMessage = String.format("Error calling Court Data API. Failed to perform means assessment post processing for RepID '%s'", repId);
+        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId).block());
+        assertEquals(errorMessage, error.getMessage());
+    }
 
     private void setupNotFoundTest() {
         when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).body("Error").header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
