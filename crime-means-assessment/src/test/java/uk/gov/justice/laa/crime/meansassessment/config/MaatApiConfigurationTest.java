@@ -50,6 +50,11 @@ public class MaatApiConfigurationTest {
         assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getByRequestType(AssessmentRequestType.CREATE));
     }
 
+    @Test
+    public void givenDefinedPostProcessingUrl_whenGetPostProcessingUrl_thenCorrectEndpointIsReturned() {
+        assertThat(buildUrl("post-processing/{repId}")).isEqualTo(configuration.getPostProcessingUrl());
+    }
+
     private String buildUrl(String url) {
         return String.format("/api/internal/v1/assessment/%s", url);
     }
