@@ -35,6 +35,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: ./gradlew build -x test
+      - run:
+          name: Run SonarQube
+          command: ./gradlew sonarqube -Dsonar.projectKey=crime-means-assessment -Dsonar.host.url=https://sonarqube.ssvs.legalservices.gov.uk -Dsonar.login=c279cbfa1da2b4575e4db2d1c2d72707d2263826
       - save_cache:
           paths:
             - ~/.gradle/wrapper
