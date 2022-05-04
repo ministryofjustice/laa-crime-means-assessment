@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiFullMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;

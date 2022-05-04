@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface AssessmentCriteriaRepository extends CrudRepository<AssessmentCriteriaEntity, Integer> {
