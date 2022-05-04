@@ -27,38 +27,47 @@ public class FullAssessmentAvailabilityService {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         } else {
             switch (InitAssessmentResult.getFrom(meansAssessmentResponse.getInitResult())) {
-                case FULL: {
+                case NONE:
+                case PASS:
+                    break;
+                case FULL:
                     meansAssessmentResponse.setFullAssessmentAvailable(true);
                     break;
-                }
-                case FAIL: {
+                case FAIL:
                     processFullAssessmentAvailableOnResultFail(requestDTO, meansAssessmentResponse);
                     break;
-                }
-                case HARDSHIP: {
-                    if (requestDTO.getNewWorkReason() == HR) {
-                        meansAssessmentResponse.setFullAssessmentAvailable(true);
-                    }
-                }
+                case HARDSHIP:
+                    checkNewWorkReason(requestDTO, meansAssessmentResponse);
             }
         }
         log.info("fullAssessmentAvailable set to {}", meansAssessmentResponse.getFullAssessmentAvailable());
     }
 
+    private void checkNewWorkReason(MeansAssessmentRequestDTO requestDTO, ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
+        if (requestDTO.getNewWorkReason() == HR) {
+            meansAssessmentResponse.setFullAssessmentAvailable(true);
+        }
+    }
+
+
     private void processFullAssessmentAvailableOnResultFail(final MeansAssessmentRequestDTO requestDTO,
                                                             final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
         switch (requestDTO.getCaseType()) {
+            case COMMITTAL:
+            case SUMMARY_ONLY:
             case INDICTABLE:
             case CC_ALREADY:
-            case APPEAL_CC: {
+            case APPEAL_CC:
                 meansAssessmentResponse.setFullAssessmentAvailable(true);
                 break;
-            }
-            case EITHER_WAY: {
-                if (requestDTO.getMagCourtOutcome() == COMMITTED_FOR_TRIAL) {
-                    meansAssessmentResponse.setFullAssessmentAvailable(true);
-                }
-            }
+            case EITHER_WAY:
+                checkMagCourtOutcome(requestDTO, meansAssessmentResponse);
+        }
+    }
+
+    private void checkMagCourtOutcome(MeansAssessmentRequestDTO requestDTO, ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
+        if (requestDTO.getMagCourtOutcome() == COMMITTED_FOR_TRIAL) {
+            meansAssessmentResponse.setFullAssessmentAvailable(true);
         }
     }
 }
