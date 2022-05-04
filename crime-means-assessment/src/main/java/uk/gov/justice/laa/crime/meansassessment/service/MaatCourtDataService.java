@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import uk.gov.justice.laa.crime.meansassessment.common.Constants;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
@@ -29,16 +30,17 @@ public class MaatCourtDataService {
     @Qualifier("maatAPIOAuth2WebClient")
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
+    public static final String RESPONSE_STRING = "Response from Court Data API: %s";
 
     public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, AssessmentRequestType requestType) {
         MaatApiAssessmentResponse response = getApiResponseViaPOST(
                 assessment,
                 MaatApiAssessmentResponse.class,
                 configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType),
-                Map.of("Laa-Transaction-Id", laaTransactionId)
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId)
         );
 
-        log.info(String.format("Response from Court Data API: %s", response));
+        log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -46,11 +48,11 @@ public class MaatCourtDataService {
         PassportAssessmentDTO response = getApiResponseViaGET(
                 PassportAssessmentDTO.class,
                 configuration.getPassportAssessmentEndpoints().getFindUrl(),
-                Map.of("Laa-Transaction-Id", laaTransactionId),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 repId
         );
 
-        log.info(String.format("Response from Court Data API: %s", response));
+        log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -58,11 +60,11 @@ public class MaatCourtDataService {
         HardshipReviewDTO response = getApiResponseViaGET(
                 HardshipReviewDTO.class,
                 configuration.getHardshipReviewEndpoints().getFindUrl(),
-                Map.of("Laa-Transaction-Id", laaTransactionId),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 repId
         );
 
-        log.info(String.format("Response from Court Data API: %s", response));
+        log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -70,11 +72,11 @@ public class MaatCourtDataService {
         IOJAppealDTO response = getApiResponseViaGET(
                 IOJAppealDTO.class,
                 configuration.getIojAppealEndpoints().getFindUrl(),
-                Map.of("Laa-Transaction-Id", laaTransactionId),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 repId
         );
 
-        log.info(String.format("Response from Court Data API: %s", response));
+        log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -120,7 +122,7 @@ public class MaatCourtDataService {
                 "assessment history for financialAssessmentId: " + finAssessmentId;
         return getApiResponseViaPOSTAsync(
                 Void.class,
-                Map.of("Laa-Transaction-Id", laaTransactionId),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 errorMessage,
                 configuration.getFinancialAssessmentEndpoints().getCreateHistoryUrl(),
                 finAssessmentId, fullAssessmentAvailable);
@@ -130,7 +132,7 @@ public class MaatCourtDataService {
         String errorMessage =
                 String.format("An error occurred whilst performing assessment post-processing for RepID: %d", repId);
 
-        Map<String, String> headers = Map.of("Laa-Transaction-Id", laaTransactionId);
+        Map<String, String> headers = Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId);
         return getApiResponseViaPOSTAsync(Void.class, headers, errorMessage, configuration.getPostProcessingUrl(), repId)
                 .doOnSuccess(response -> log.info(String.format("Assessment post-processing successfully submitted for RepID: %d", repId)))
                 .doOnError(error -> log.error(errorMessage, error));
