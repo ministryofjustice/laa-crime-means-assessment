@@ -13,7 +13,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
 import java.util.stream.Collectors;
 

@@ -8,7 +8,7 @@ public class CurrentStatusTest {
 
     @Test
     public void valueOfCurrentStatusFromString_success() {
-        assertEquals(CurrentStatus.getFrom("IN PROGRESS"), CurrentStatus.IN_PROGRESS);
+        assertEquals(CurrentStatus.IN_PROGRESS, CurrentStatus.getFrom("IN PROGRESS"));
     }
 
     @Test(expected=IllegalArgumentException.class)

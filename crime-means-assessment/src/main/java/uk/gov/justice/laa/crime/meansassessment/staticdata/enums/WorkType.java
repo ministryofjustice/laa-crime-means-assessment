@@ -7,12 +7,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum WorkType {
 
-    Initial_Assessment("Initial Assessment"),
-    Full_Means_Test("Full Means Test"),
-    Passported("Passported"),
-    Hardship_Review_Magistrate("Hardship Review - Magistrate"),
-    Hardship_Review_CrownCourt("Hardship Review - Crown Court"),
-    IoJ_Appeal("IoJ Appeal");
+    INITIAL_ASSESSMENT("Initial Assessment"),
+    FULL_MEANS_TEST("Full Means Test"),
+    PASSPORTED("Passported"),
+    HARDSHIP_REVIEW_MAGISTRATE("Hardship Review - Magistrate"),
+    HARDSHIP_REVIEW_CROWN_COURT("Hardship Review - Crown Court"),
+    IOJ_APPEAL("IoJ Appeal");
 
     private String description;
 }
