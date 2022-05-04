@@ -26,7 +26,7 @@ public enum AssessmentType {
         return type;
     }
 
-    public static AssessmentType getFrom(String type) throws IllegalArgumentException {
+    public static AssessmentType getFrom(String type)  {
         if (StringUtils.isBlank(type)) return null;
 
         return Stream.of(AssessmentType.values())

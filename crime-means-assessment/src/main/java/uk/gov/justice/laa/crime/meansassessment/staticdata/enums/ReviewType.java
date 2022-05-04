@@ -2,7 +2,6 @@ package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.stream.Stream;
 
@@ -17,7 +16,7 @@ public enum ReviewType {
     private String code;
     private String description;
 
-    public static ReviewType getFrom(String code) throws IllegalArgumentException {
+    public static ReviewType getFrom(String code) {
         return Stream.of(ReviewType.values())
                 .filter(a -> a.code.equals(code))
                 .findFirst()

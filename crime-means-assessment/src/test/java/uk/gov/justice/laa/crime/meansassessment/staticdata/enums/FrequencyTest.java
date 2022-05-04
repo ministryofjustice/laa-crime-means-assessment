@@ -9,7 +9,7 @@ public class FrequencyTest {
 
     @Test
     public void valueOfFrequencyFromString_success() {
-        assertEquals(Frequency.getFrom("2WEEKLY"), Frequency.TWO_WEEKLY);
+        assertEquals(Frequency.TWO_WEEKLY, Frequency.getFrom("2WEEKLY"));
     }
 
     @Test
