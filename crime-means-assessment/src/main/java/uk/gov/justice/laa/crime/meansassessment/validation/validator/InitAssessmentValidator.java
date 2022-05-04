@@ -12,12 +12,12 @@ public class InitAssessmentValidator {
 
     public boolean validate(MeansAssessmentRequestDTO requestDTO) {
         boolean isValid = true;
-        String REFUSED_REP_ORDER_DECISION = "Refused - Ineligible";
+        String refusedRepOrderDecision = "Refused - Ineligible";
         if ((requestDTO.getReviewType() == null)
                 && (requestDTO.getCrownCourtOverview() != null
                 && requestDTO.getCrownCourtOverview().getCrownCourtSummary() != null
                 && requestDTO.getCrownCourtOverview().getCrownCourtSummary().getRepOrderDecision() != null
-                && REFUSED_REP_ORDER_DECISION.equalsIgnoreCase(requestDTO.getCrownCourtOverview().getCrownCourtSummary().getRepOrderDecision()))) {
+                && refusedRepOrderDecision.equalsIgnoreCase(requestDTO.getCrownCourtOverview().getCrownCourtSummary().getRepOrderDecision()))) {
 
             isValid = false;
         }
