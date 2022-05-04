@@ -24,20 +24,20 @@ public enum CaseType {
 
     @NotNull
     @JsonPropertyDescription("Specifies the case type")
-    private String caseType;
+    private String caseTypeString;
     private String description;
     private Boolean mcooOutcomeRequired;
 
     @JsonValue
     public String getCaseType() {
-        return caseType;
+        return caseTypeString;
     }
 
-    public static CaseType getFrom(String caseType) throws IllegalArgumentException{
+    public static CaseType getFrom(String caseType) {
         if (StringUtils.isBlank(caseType)) return null;
 
         return Stream.of(CaseType.values())
-                .filter(f -> f.caseType.equals(caseType))
+                .filter(f -> f.caseTypeString.equals(caseType))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("CaseType with value: %s does not exist.", caseType)));
     }

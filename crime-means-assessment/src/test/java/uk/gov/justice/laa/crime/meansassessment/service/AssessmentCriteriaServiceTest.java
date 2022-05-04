@@ -73,7 +73,7 @@ public class AssessmentCriteriaServiceTest {
         AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
         // then expected Assessment Criteria are returned
         assertEquals(assessmentCriteriaEntity, result);
-        assertEquals(result.getPartnerWeightingFactor(), BigDecimal.ZERO);
+        assertEquals(BigDecimal.ZERO, result.getPartnerWeightingFactor());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class AssessmentCriteriaServiceTest {
         AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
         // then expected Assessment Criteria are returned
         assertEquals(assessmentCriteriaEntity, result);
-        assertEquals(result.getPartnerWeightingFactor(), BigDecimal.ZERO);
+        assertEquals(BigDecimal.ZERO, result.getPartnerWeightingFactor());
     }
 
     @Test(expected = AssessmentCriteriaNotFoundException.class)

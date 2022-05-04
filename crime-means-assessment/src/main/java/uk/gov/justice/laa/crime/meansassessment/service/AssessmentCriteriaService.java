@@ -77,13 +77,12 @@ public class AssessmentCriteriaService {
                         criteriaDetail, caseType
                 ).orElse(null);
 
-        if (criteriaDetailValue != null) {
-            if (!criteriaDetailValue.getApplicantValue().equals(detail.getApplicantAmount()) ||
+            if (criteriaDetailValue != null && (!criteriaDetailValue.getApplicantValue().equals(detail.getApplicantAmount()) ||
                     !criteriaDetailValue.getApplicantFrequency().getCode().equals(detail.getApplicantFrequency().getCode()) ||
                     !criteriaDetailValue.getPartnerValue().equals(detail.getPartnerAmount()) ||
-                    !criteriaDetailValue.getPartnerFrequency().getCode().equals(detail.getPartnerFrequency().getCode())) {
+                    !criteriaDetailValue.getPartnerFrequency().getCode().equals(detail.getPartnerFrequency().getCode())) ) {
                 throw new ValidationException("Incorrect amount entered for: " + criteriaDetail.getDescription());
             }
-        }
+
     }
 }
