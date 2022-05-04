@@ -18,7 +18,7 @@ public enum FullAssessmentResult {
     private String result;
     private String reason;
 
-    public static FullAssessmentResult getFrom(String result) throws IllegalArgumentException {
+    public static FullAssessmentResult getFrom(String result) {
         if (StringUtils.isBlank(result)) return NONE;
 
         return Stream.of(FullAssessmentResult.values())

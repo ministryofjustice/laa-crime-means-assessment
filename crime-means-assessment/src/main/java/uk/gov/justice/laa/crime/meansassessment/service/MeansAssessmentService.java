@@ -78,7 +78,10 @@ public class MeansAssessmentService {
         List<ApiAssessmentSectionSummary> sectionSummaries = requestDTO.getSectionSummaries();
         BigDecimal annualTotal = BigDecimal.ZERO;
         for (ApiAssessmentSectionSummary sectionSummary : sectionSummaries) {
-            BigDecimal summaryTotal, applicantTotal, partnerTotal;
+            BigDecimal summaryTotal;
+            BigDecimal applicantTotal;
+            BigDecimal partnerTotal;
+
             applicantTotal = partnerTotal = BigDecimal.ZERO;
             for (ApiAssessmentDetail assessmentDetail : sectionSummary.getAssessmentDetails()) {
                 assessmentCriteriaService.checkAssessmentDetail(

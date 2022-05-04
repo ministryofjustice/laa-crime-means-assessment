@@ -21,7 +21,7 @@ public enum InitAssessmentResult {
     private String result;
     private String reason;
 
-    public static InitAssessmentResult getFrom(String result) throws IllegalArgumentException {
+    public static InitAssessmentResult getFrom(String result) {
         if (StringUtils.isBlank(result)) return NONE;
 
         return Stream.of(InitAssessmentResult.values())
