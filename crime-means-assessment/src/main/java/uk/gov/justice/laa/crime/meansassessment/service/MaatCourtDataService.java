@@ -132,7 +132,7 @@ public class MaatCourtDataService {
 
         Map<String, String> headers = Map.of("Laa-Transaction-Id", laaTransactionId);
         return getApiResponseViaPOSTAsync(Void.class, headers, errorMessage, configuration.getPostProcessingUrl(), repId)
-                .doOnSuccess(response -> log.info(String.format("Assessment post-processing successful for RepID: %d", repId)))
+                .doOnSuccess(response -> log.info(String.format("Assessment post-processing successfully submitted for RepID: %d", repId)))
                 .doOnError(error -> log.error(errorMessage, error));
     }
 
