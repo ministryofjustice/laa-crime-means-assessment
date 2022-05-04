@@ -55,7 +55,7 @@ public class InitMeansAssessmentService implements AssessmentService {
         if (adjustedIncomeValue.compareTo(lowerThreshold) <= 0) {
             return InitAssessmentResult.PASS;
         } else if (adjustedIncomeValue.compareTo(upperThreshold) >= 0) {
-            // TODO: Comment in PL/SQL suggests this should also apply to crown court cases
+            // Comment in PL/SQL suggests this should also apply to crown court cases
             if (newWorkReasonCode.equalsIgnoreCase("HR")) {
                 return InitAssessmentResult.HARDSHIP;
             } else {

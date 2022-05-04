@@ -31,7 +31,7 @@ public enum Frequency {
         return code;
     }
 
-    public static Frequency getFrom(String code) throws IllegalArgumentException {
+    public static Frequency getFrom(String code) {
         if (StringUtils.isBlank(code)) return null;
 
         return Stream.of(Frequency.values())

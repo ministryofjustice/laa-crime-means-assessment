@@ -26,7 +26,7 @@ public enum CurrentStatus {
     private String status;
     private String description;
 
-    public static CurrentStatus getFrom(String status) throws IllegalArgumentException {
+    public static CurrentStatus getFrom(String status)  {
         if (StringUtils.isBlank(status))
             throw new IllegalArgumentException(String.format("Status with value: %s does not exist.", status));
 
