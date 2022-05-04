@@ -333,6 +333,6 @@ public class MaatCourtDataServiceIntegrationTest {
     }
 
     private String getPostProcessingSuccessMessage() {
-        return String.format("Assessment post-processing successful for RepID: %d", repId);
+        return String.format("Assessment post-processing successfully submitted for RepID: %d", repId);
     }
 }
