@@ -49,12 +49,12 @@ public class AssessmentSummaryService {
                     .withReviewType(ofNullable(assessmentResponse.getReviewType()).map(ReviewType::getCode).orElse(null));
 
             if (assessmentResponse.getAssessmentType() == AssessmentType.INIT) {
-                finAssessmentSummary.setType(WorkType.Initial_Assessment);
+                finAssessmentSummary.setType(WorkType.INITIAL_ASSESSMENT);
                 finAssessmentSummary.setStatus(ofNullable(assessmentResponse.getFassInitStatus()).map(CurrentStatus::getDescription)
                         .orElse(null));
                 finAssessmentSummary.setResult(assessmentResponse.getInitResult());
             } else {
-                finAssessmentSummary.setType(WorkType.Full_Means_Test);
+                finAssessmentSummary.setType(WorkType.FULL_MEANS_TEST);
                 finAssessmentSummary.setStatus(ofNullable(assessmentResponse.getFassFullStatus()).map(CurrentStatus::getDescription)
                         .orElse(null));
                 finAssessmentSummary.setResult(assessmentResponse.getFullResult());
@@ -80,7 +80,7 @@ public class AssessmentSummaryService {
             if (passportAssessmentDTO != null) {
                 ApiAssessmentSummary passportAssessmentSummary = new ApiAssessmentSummary();
                 passportAssessmentSummary.withId(passportAssessmentDTO.getId())
-                        .withType(WorkType.Passported)
+                        .withType(WorkType.PASSPORTED)
                         .withAssessmentDate(passportAssessmentDTO.getAssessmentDate())
                         .withStatus(CurrentStatus.getFrom(passportAssessmentDTO.getPastStatus()).getDescription())
                         .withReviewType(passportAssessmentDTO.getRtCode())
@@ -108,9 +108,9 @@ public class AssessmentSummaryService {
 
                 ofNullable(hardshipReviewDTO.getCourtType()).ifPresentOrElse(courtType -> {
                     if (courtType.equals("MAGISTRATE")) {
-                        hardshipReviewSummary.setType(WorkType.Hardship_Review_Magistrate);
+                        hardshipReviewSummary.setType(WorkType.HARDSHIP_REVIEW_MAGISTRATE);
                     }
-                }, () -> hardshipReviewSummary.setType(WorkType.Hardship_Review_CrownCourt));
+                }, () -> hardshipReviewSummary.setType(WorkType.HARDSHIP_REVIEW_CROWN_COURT));
                 return of(hardshipReviewSummary);
             }
             return empty();
@@ -129,7 +129,7 @@ public class AssessmentSummaryService {
                 ApiAssessmentSummary iOJAppealSummary = new ApiAssessmentSummary();
                 iOJAppealSummary.withId(iojAppealDTO.getId())
                         .withAssessmentDate(iojAppealDTO.getAppealSetupDate())
-                        .withType(WorkType.IoJ_Appeal)
+                        .withType(WorkType.IOJ_APPEAL)
                         .withResult(iojAppealDTO.getDecisionResult())
                         .withStatus(CurrentStatus.getFrom(iojAppealDTO.getIapsStatus()).getDescription());
                 return of(iOJAppealSummary);
