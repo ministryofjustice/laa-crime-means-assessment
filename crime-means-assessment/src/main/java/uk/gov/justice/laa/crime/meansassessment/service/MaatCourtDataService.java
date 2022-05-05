@@ -130,7 +130,7 @@ public class MaatCourtDataService {
 
     public Mono<Void> performAssessmentPostProcessing(final Integer repId, final String laaTransactionId) {
         String errorMessage =
-                String.format("An error occurred whilst performing assessment post-processing for RepID: %d", repId);
+                String.format("An error occurred whilst submitting assessment post-processing request for RepID: %d", repId);
 
         Map<String, String> headers = Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId);
         return getApiResponseViaPOSTAsync(Void.class, headers, errorMessage, configuration.getPostProcessingUrl(), repId)
