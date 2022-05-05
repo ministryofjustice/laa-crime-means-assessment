@@ -270,7 +270,7 @@ public class MaatCourtDataServiceIntegrationTest {
 
     @Test
     public void whenPerformAssessmentPostProcessingCallFails_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
-        String errorMessage = String.format("An error occurred whilst performing assessment post-processing for RepID: %d", repId);
+        String errorMessage = String.format("An error occurred whilst submitting assessment post-processing request for RepID: %d", repId);
 
         setupMockApiResponses(Void.class, maxRetries + 1);
         StepVerifier
