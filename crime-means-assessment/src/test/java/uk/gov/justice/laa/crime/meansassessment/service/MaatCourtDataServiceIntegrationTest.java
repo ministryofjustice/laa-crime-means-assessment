@@ -6,13 +6,16 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.test.StepVerifier;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiOAuth2Client;
 import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
@@ -41,6 +44,9 @@ public class MaatCourtDataServiceIntegrationTest {
 
     private MaatCourtDataService maatCourtDataService;
 
+    @Rule
+    public OutputCaptureRule output = new OutputCaptureRule();
+
     @Mock
     private MaatApiConfiguration configuration;
 
@@ -58,7 +64,7 @@ public class MaatCourtDataServiceIntegrationTest {
         configuration = new MaatApiConfiguration();
         configuration.setBaseUrl(baseUrl);
         configuration.setOAuthEnabled(false);
-
+        configuration.setPostProcessingUrl("/post-processing/{repId}");
 
         MaatApiConfiguration.PassportAssessmentEndpoints passportEndpoints = new MaatApiConfiguration.PassportAssessmentEndpoints(
                 "/passport-assessments/{repId}"
@@ -164,13 +170,6 @@ public class MaatCourtDataServiceIntegrationTest {
     }
 
     @Test
-    public void whenGetPassportAssessmentFromRepIdAPICallRetursNotFoundResponse_thenMethodReturnsNull() {
-        setupMockNotFoundResponse();
-        PassportAssessmentDTO apiResponse = maatCourtDataService.getPassportAssessmentFromRepId(repId, laaTransactionId);
-        assertNull(apiResponse);
-    }
-
-    @Test
     public void whenGetHardshipReviewFromRepIdAPIAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
         String mockResponse = setupMockApiResponses(new HardshipReviewDTO(), 0);
         HardshipReviewDTO apiResponse =
@@ -249,6 +248,38 @@ public class MaatCourtDataServiceIntegrationTest {
         assertNull(apiResponse);
     }
 
+    @Test
+    public void whenPerformAssessmentPostProcessingAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
+        setupMockApiResponses(Void.class, 0);
+        StepVerifier
+                .create(maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId))
+                .expectComplete()
+                .verify();
+        assertTrue(output.getOut().contains(getPostProcessingSuccessMessage()));
+    }
+
+    @Test
+    public void whenPerformAssessmentPostProcessingAPICallFails_thenTheCallIsRetriedAndSucceeds() throws JsonProcessingException {
+        setupMockApiResponses(Void.class, maxRetries - 1);
+        StepVerifier
+                .create(maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId))
+                .expectComplete()
+                .verify();
+        assertTrue(output.getOut().contains(getPostProcessingSuccessMessage()));
+    }
+
+    @Test
+    public void whenPerformAssessmentPostProcessingCallFails_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
+        String errorMessage = String.format("An error occurred whilst submitting assessment post-processing request for RepID: %d", repId);
+
+        setupMockApiResponses(Void.class, maxRetries + 1);
+        StepVerifier
+                .create(maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId))
+                .expectErrorMessage(errorMessage)
+                .verify();
+        assertTrue(output.getOut().contains(errorMessage));
+    }
+
     private <T> String setupMockApiResponses(T responseObject, Integer attemptsBeforeSuccess) throws JsonProcessingException {
         String expectedResponse = OBJECT_MAPPER.writeValueAsString(responseObject);
         for (int i = 0; i < attemptsBeforeSuccess; i++) {
@@ -299,5 +330,9 @@ public class MaatCourtDataServiceIntegrationTest {
                 laaTransactionId,
                 AssessmentRequestType.CREATE
         );
+    }
+
+    private String getPostProcessingSuccessMessage() {
+        return String.format("Assessment post-processing successfully submitted for RepID: %d", repId);
     }
 }
