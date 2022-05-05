@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
@@ -30,6 +31,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -255,6 +257,12 @@ public class MeansAssessmentServiceTest {
         when(maatCourtDataService.postMeansAssessment(
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
+
+        given(maatCourtDataService.createFinancialAssessmentHistory(anyInt(), any(), anyString()))
+                .willReturn(Mono.empty());
+
+        given(maatCourtDataService.performAssessmentPostProcessing(anyInt(), anyString()))
+                .willReturn(Mono.empty());
     }
 
     @Test
@@ -282,6 +290,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
+        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
     }
 
     @Test
@@ -293,6 +302,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
+        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
     }
 
     @Test
@@ -310,6 +320,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
+        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
     }
 
     @Test

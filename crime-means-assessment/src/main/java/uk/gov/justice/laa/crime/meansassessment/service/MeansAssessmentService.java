@@ -64,10 +64,10 @@ public class MeansAssessmentService {
 
             fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
             assessmentSummaryService.addAssessmentSummaryToMeansResponse(assessmentResponse, requestDTO.getLaaTransactionId());
-            maatCourtDataService.createFinancialAssessmentHistory(assessmentResponse.getAssessmentId(), assessmentResponse.getFullAssessmentAvailable(), requestDTO.getLaaTransactionId());
+            maatCourtDataService.createFinancialAssessmentHistory(assessmentResponse.getAssessmentId(), assessmentResponse.getFullAssessmentAvailable(), requestDTO.getLaaTransactionId()).subscribe();
 
             log.info("Sending assessment post processing request for MAAT ID: {}", requestDTO.getRepId());
-            maatCourtDataService.performAssessmentPostProcessing(requestDTO.getRepId(), requestDTO.getLaaTransactionId());
+            maatCourtDataService.performAssessmentPostProcessing(requestDTO.getRepId(), requestDTO.getLaaTransactionId()).subscribe();
 
             return assessmentResponse;
         } catch (RuntimeException exception) {
