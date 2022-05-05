@@ -29,7 +29,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class MaatCourtDataServiceTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private final String postAssessmentUrl = "post-assessment-url";
     private final Integer repId = 1234;
     private final String laaTransactionId = "laaTransactionId";
 
@@ -158,7 +157,6 @@ public class MaatCourtDataServiceTest {
         IOJAppealDTO actualResponse = maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
         assertEquals(expectedResponse.getId(), actualResponse.getId());
     }
-
 
     private void setupNotFoundTest() {
         when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).body("Error").header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
