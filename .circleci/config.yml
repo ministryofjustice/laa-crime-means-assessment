@@ -175,115 +175,14 @@ jobs:
           environment: prod
           token: ${CIRCLE_CI_TOKEN_PROD}
 
-  install_on_dev:
-    docker:
-      - image: cimg/python:3.10.4
-    steps:
-      - checkout_and_decrypt
-      - kubernetes/install-kubectl
-      - helm/install-helm-client:
-          version: 'v3.8.1'
-      - run:
-          name: Authenticate with cluster
-          command: |
-            echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
-            kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_DEV}
-            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_DEV_NAMESPACE}
-            kubectl config use-context ${K8S_CLUSTER_NAME}
-            kubectl --namespace=${K8S_DEV_NAMESPACE} get pods
-      - helm/upgrade-helm-chart:
-          namespace: ${K8S_DEV_NAMESPACE}
-          update-repositories: false
-          chart: ./helm_deploy/laa-crime-means-assessment/
-          release-name: laa-crime-means-assessment
-          values: ./helm_deploy/laa-crime-means-assessment/values-dev.yaml
-          values-to-override: image.tag=${CIRCLE_SHA1}
-
-  install_on_test:
-    docker:
-      - image: cimg/python:3.10.4
-    steps:
-      - checkout_and_decrypt
-      - kubernetes/install-kubectl
-      - helm/install-helm-client:
-          version: 'v3.8.1'
-      - run:
-          name: Authenticate with cluster
-          command: |
-            echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
-            kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_TEST}
-            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_TEST_NAMESPACE}
-            kubectl config use-context ${K8S_CLUSTER_NAME}
-            kubectl --namespace=${K8S_TEST_NAMESPACE} get pods
-      - helm/upgrade-helm-chart:
-          namespace: ${K8S_TEST_NAMESPACE}
-          update-repositories: false
-          chart: ./helm_deploy/laa-crime-means-assessment/
-          release-name: laa-crime-means-assessment
-          values: ./helm_deploy/laa-crime-means-assessment/values-test.yaml
-          values-to-override: image.tag=${CIRCLE_SHA1}
-
-  install_on_uat:
-    docker:
-      - image: cimg/python:3.10.4
-    steps:
-      - checkout_and_decrypt
-      - kubernetes/install-kubectl
-      - helm/install-helm-client:
-          version: 'v3.8.1'
-      - run:
-          name: Authenticate with cluster
-          command: |
-            echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
-            kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_UAT}
-            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_UAT_NAMESPACE}
-            kubectl config use-context ${K8S_CLUSTER_NAME}
-            kubectl --namespace=${K8S_UAT_NAMESPACE} get pods
-      - helm/upgrade-helm-chart:
-          namespace: ${K8S_UAT_NAMESPACE}
-          update-repositories: false
-          chart: ./helm_deploy/laa-crime-means-assessment/
-          release-name: laa-crime-means-assessment
-          values: ./helm_deploy/laa-crime-means-assessment/values-uat.yaml
-          values-to-override: image.tag=${CIRCLE_SHA1}
-
-  install_on_staging:
-    docker:
-      - image: cimg/python:3.10.4
-    steps:
-      - checkout_and_decrypt
-      - kubernetes/install-kubectl
-      - helm/install-helm-client:
-          version: 'v3.8.1'
-      - run:
-          name: Authenticate with cluster
-          command: |
-            echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
-            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
-            kubectl config set-credentials circleci --token=${CIRCLE_CI_TOKEN_STAGING}
-            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_STAGING_NAMESPACE}
-            kubectl config use-context ${K8S_CLUSTER_NAME}
-            kubectl --namespace=${K8S_STAGING_NAMESPACE} get pods
-      - helm/upgrade-helm-chart:
-          namespace: ${K8S_STAGING_NAMESPACE}
-          update-repositories: false
-          chart: ./helm_deploy/laa-crime-means-assessment/
-          release-name: laa-crime-means-assessment
-          values: ./helm_deploy/laa-crime-means-assessment/values-staging.yaml
-          values-to-override: image.tag=${CIRCLE_SHA1}
-
+# ------------------
+# WORKFLOWS
+# ------------------
 workflows:
   build-deploy-branch:
     jobs:
-      - branch_build_approval:
-          type: approval
+      - build
 
-      - build:
-          requires:
-            - branch_build_approval
       - test_and_assemble:
           requires:
             - build
@@ -327,3 +226,16 @@ workflows:
       - deploy-staging:
           requires:
             - hold_install_on_staging
+
+      - hold_install_on_prod:
+          type: approval
+          requires:
+            - build_and_push_image
+          filters:
+            branches:
+              only:
+                - main
+
+      - deploy-prod:
+          requires:
+            - hold_install_on_prod
