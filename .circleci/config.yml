@@ -48,7 +48,7 @@ commands:
             kubectl config use-context ${K8S_CLUSTER_NAME}
             kubectl --namespace=laa-crime-means-assessment-<< parameters.environment >> get pods
       - helm/upgrade-helm-chart:
-          namespace: laa-crime-means-assessment-<< parameters.environment
+          namespace: laa-crime-means-assessment-<< parameters.environment >>
           update-repositories: false
           chart: ./helm_deploy/laa-crime-means-assessment/
           release-name: laa-crime-means-assessment
