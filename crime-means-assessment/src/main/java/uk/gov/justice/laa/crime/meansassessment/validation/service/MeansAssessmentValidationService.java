@@ -4,21 +4,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -34,7 +28,8 @@ import static uk.gov.justice.laa.crime.meansassessment.common.Constants.*;
 @RequiredArgsConstructor
 public class MeansAssessmentValidationService {
 
-    private WebClient webClient;
+    @Qualifier("maatAPIOAuth2WebClient")
+    private final WebClient webClient;
     private final MaatApiConfiguration configuration;
 
     public boolean validateRoleAction(final MeansAssessmentRequestDTO meansAssessmentRequest, String action) {
@@ -118,20 +113,4 @@ public class MeansAssessmentValidationService {
         }
         return Optional.ofNullable(responseBody);
     }
-
-
-    @PostConstruct
-    public void initializeWebClient() {
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(configuration.getBaseUrl());
-        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
-        webClient = WebClient
-                .builder()
-                .uriBuilderFactory(factory)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-//                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer "+clientToken)
-                .filter(ExchangeFilterFunctions.statusError(HttpStatus::isError, r -> new APIClientException(String.format("Received error %s due to %s", r.statusCode().value(), r.statusCode().getReasonPhrase()))))
-                .build();
-    }
-
 }
