@@ -55,6 +55,11 @@ public class MeansAssessmentValidationServiceTest {
     }
 
     @Test
+    public void whenGetWebClientIsCalled_thenTheClientIsReturned() {
+        assertEquals(webClient, meansAssessmentValidationService.getWebClient());
+    }
+
+    @Test
     public void whenRepIdIsNull_thenFalseResultIsReturned() {
         MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         request.setRepId(null);
