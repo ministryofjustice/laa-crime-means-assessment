@@ -181,7 +181,22 @@ jobs:
 workflows:
   build-deploy-branch:
     jobs:
-      - build
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch >>]
+          steps:
+            - build
+
+      - branch_build_approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - main
+
+      - build:
+          requires:
+            - branch_build_approval
 
       - test_and_assemble:
           requires:
