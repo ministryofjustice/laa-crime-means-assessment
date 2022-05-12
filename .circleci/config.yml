@@ -233,9 +233,9 @@ workflows:
           requires:
             - build_and_push_image
 
-    - deploy-prod:
-        requires:
-          - hold_install_on_prod
+      - deploy-prod:
+          requires:
+            - hold_install_on_prod
 
   build-deploy-branch:
     jobs:
