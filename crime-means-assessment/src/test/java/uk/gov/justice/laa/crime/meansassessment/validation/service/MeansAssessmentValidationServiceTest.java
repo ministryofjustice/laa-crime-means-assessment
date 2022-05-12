@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -31,11 +30,11 @@ public class MeansAssessmentValidationServiceTest {
     private MaatApiConfiguration configuration;
     private MeansAssessmentValidationService meansAssessmentValidationService;
 
-    private WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
-    private WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
-    private WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
-    private WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
-    private WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+    private final WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
+    private final WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
+    private final WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
+    private final WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
+    private final WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
 
 
     @Before
@@ -50,8 +49,12 @@ public class MeansAssessmentValidationServiceTest {
                 "/financial-assessments/check-outstanding/{repId}"
         );
         configuration.setValidationEndpoints(validationEndpoints);
-        meansAssessmentValidationService = new MeansAssessmentValidationService(configuration);
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "webClient", webClient);
+        meansAssessmentValidationService = new MeansAssessmentValidationService(webClient, configuration);
+    }
+
+    @Test
+    public void whenGetWebClientIsCalled_thenTheClientIsReturned() {
+        assertEquals(webClient, meansAssessmentValidationService.getWebClient());
     }
 
     @Test
