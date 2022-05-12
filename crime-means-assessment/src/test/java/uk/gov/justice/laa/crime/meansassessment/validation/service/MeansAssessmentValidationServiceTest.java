@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -51,7 +50,6 @@ public class MeansAssessmentValidationServiceTest {
         );
         configuration.setValidationEndpoints(validationEndpoints);
         meansAssessmentValidationService = new MeansAssessmentValidationService(webClient, configuration);
-        ReflectionTestUtils.setField(meansAssessmentValidationService, "webClient", webClient);
     }
 
     @Test
