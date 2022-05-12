@@ -181,21 +181,70 @@ jobs:
 workflows:
   version: 2
 
-  build-master-branch:
-        when:
-          equal: [ LASB-977, << pipeline.git.branch >> ]
-        jobs:
-          - build
+  build-deploy-master:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - main
+
+      - test_and_assemble:
+          requires:
+            - build
+
+      - build_and_push_image:
+          requires:
+            - test_and_assemble
+
+      - deploy-dev:
+          requires:
+            - hold_install_on_dev
+
+      - hold_install_on_test:
+          type: approval
+          requires:
+            - build_and_push_image
+
+      - deploy-test:
+          requires:
+            - hold_install_on_test
+
+      - hold_install_on_uat:
+          type: approval
+          requires:
+            - build_and_push_image
+
+      - deploy-uat:
+          requires:
+            - hold_install_on_uat
+
+      - hold_install_on_staging:
+          type: approval
+          requires:
+            - build_and_push_image
+
+      - deploy-staging:
+          requires:
+            - hold_install_on_staging
+
+      - hold_install_on_prod:
+          type: approval
+          requires:
+            - build_and_push_image
+
+    - deploy-prod:
+        requires:
+          - hold_install_on_prod
 
   build-deploy-branch:
     jobs:
-
       - branch_build_approval:
           type: approval
           filters:
             branches:
               ignore:
-                - LASB-977
+                - master
 
       - build:
           requires:
@@ -244,16 +293,3 @@ workflows:
       - deploy-staging:
           requires:
             - hold_install_on_staging
-
-      - hold_install_on_prod:
-          type: approval
-          requires:
-            - build_and_push_image
-          filters:
-            branches:
-              only:
-                - main
-
-      - deploy-prod:
-          requires:
-            - hold_install_on_prod
