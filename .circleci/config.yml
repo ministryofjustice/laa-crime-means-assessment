@@ -197,7 +197,9 @@ workflows:
           requires:
             - test_and_assemble
 
-      - deploy-dev
+      - deploy-dev:
+          requires:
+            - build_and_push_image
 
       - hold_install_on_test:
           type: approval
