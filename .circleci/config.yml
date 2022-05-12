@@ -57,6 +57,16 @@ commands:
 # JOBS
 # ------------------
 jobs:
+
+  build_main_branch:
+    executor: cloud-platform-executor
+    steps:
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - build
+
   build:
     environment:
       # Configure the JVM and Gradle to avoid OOM errors
@@ -179,6 +189,7 @@ jobs:
 # WORKFLOWS
 # ------------------
 workflows:
+  version: 2
   build-deploy-branch:
     jobs:
       - build_main_branch:
