@@ -214,7 +214,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy_dev:
+      - deploy-dev:
           requires:
             - hold_install_on_dev
 
@@ -223,7 +223,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy_test:
+      - deploy-test:
           requires:
             - hold_install_on_test
 
@@ -232,7 +232,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy_uat:
+      - deploy-uat:
           requires:
             - hold_install_on_uat
 
@@ -241,7 +241,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy_staging:
+      - deploy-staging:
           requires:
             - hold_install_on_staging
 
@@ -254,6 +254,6 @@ workflows:
               only:
                 - main
 
-      - deploy_prod:
+      - deploy-prod:
           requires:
             - hold_install_on_prod
