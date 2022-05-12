@@ -183,7 +183,7 @@ workflows:
 
   build-master-branch:
         when:
-          equal: [ main, << pipeline.git.branch >> ]
+          equal: [ LASB-977, << pipeline.git.branch >> ]
         jobs:
           - build
 
