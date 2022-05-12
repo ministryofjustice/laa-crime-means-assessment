@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -100,12 +101,16 @@ public class MeansAssessmentValidationService {
     }
 
     private <R> Optional<R> getApiResponseViaGET(final String endpoint, final Map<String, Object> uriVariables, final Class<R> responseClass) {
-        R responseBody = webClient
+        Mono<R> response;
+        response = webClient
                 .get()
                 .uri(endpoint, uriVariables)
                 .retrieve()
-                .bodyToMono(responseClass)
-                .block();
+                .bodyToMono(responseClass);
+        R responseBody = response.block();
+        if (responseClass.equals(Void.class)) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(responseBody);
     }
 }
