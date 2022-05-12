@@ -195,7 +195,7 @@ workflows:
           filters:
             branches:
               ignore:
-                - main
+                - LASB-977
 
       - build:
           requires:
