@@ -192,13 +192,7 @@ workflows:
   version: 2
   build-deploy-branch:
     jobs:
-      - build_main_branch:
-          steps:
-            - when:
-                condition:
-                  equal: [ main, << pipeline.git.branch >>]
-                steps:
-                  - build
+      - build_main_branch
 
       - branch_build_approval:
           type: approval
