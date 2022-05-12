@@ -181,11 +181,13 @@ jobs:
 workflows:
   build-deploy-branch:
     jobs:
-      - when:
-          condition:
-            equal: [ main, << pipeline.git.branch >>]
+      - build_main_branch:
           steps:
-            - build
+            - when:
+                condition:
+                  equal: [ main, << pipeline.git.branch >>]
+                steps:
+                  - build
 
       - branch_build_approval:
           type: approval
@@ -211,7 +213,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy-dev:
+      - deploy_dev:
           requires:
             - hold_install_on_dev
 
@@ -220,7 +222,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy-test:
+      - deploy_test:
           requires:
             - hold_install_on_test
 
@@ -229,7 +231,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy-uat:
+      - deploy_uat:
           requires:
             - hold_install_on_uat
 
@@ -238,7 +240,7 @@ workflows:
           requires:
             - build_and_push_image
 
-      - deploy-staging:
+      - deploy_staging:
           requires:
             - hold_install_on_staging
 
@@ -251,6 +253,6 @@ workflows:
               only:
                 - main
 
-      - deploy-prod:
+      - deploy_prod:
           requires:
             - hold_install_on_prod
