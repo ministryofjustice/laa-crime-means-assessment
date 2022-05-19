@@ -69,7 +69,9 @@ jobs:
     steps:
       - checkout:
           path: ~/laa-crime-means-assessment
-      - snyk/scan
+      - snyk/scan:
+          fail-on-issues: false
+          severity-threshold: high
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
