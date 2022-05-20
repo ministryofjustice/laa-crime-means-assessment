@@ -69,9 +69,6 @@ jobs:
     steps:
       - checkout:
           path: ~/laa-crime-means-assessment
-      - snyk/scan:
-          fail-on-issues: false
-          severity-threshold: high
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
@@ -94,6 +91,18 @@ jobs:
           root: .
           paths:
             - build
+
+  app-scan:
+    docker:
+      - image: cimg/openjdk:11.0.13
+    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
+    steps:
+      - checkout:
+          path: ~/laa-crime-means-assessment
+      - snyk/scan:
+          fail-on-issues: false
+          severity-threshold: high
+          token-variable: SNYK_TOKEN
 
   test_and_assemble:
     environment:
@@ -254,9 +263,13 @@ workflows:
           requires:
             - branch_build_approval
 
-      - test_and_assemble:
+      - app-scan:
           requires:
             - build
+
+      - test_and_assemble:
+          requires:
+            - app-scan
 
       - build_and_push_image:
           requires:
