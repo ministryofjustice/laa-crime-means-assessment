@@ -100,6 +100,8 @@ jobs:
       - checkout:
           path: ~/laa-crime-means-assessment
       - snyk/scan:
+          project: '${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}'
+          organization: 'legal-aid-agency'
           fail-on-issues: false
           severity-threshold: high
           token-variable: SNYK_TOKEN
