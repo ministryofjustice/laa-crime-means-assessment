@@ -103,10 +103,6 @@ sentry:
   release: 0.0.1
   servername: aws-eks-container
   send-default-pii: true
-  logging:
-    minimum-breadcrumb-level: info
-    minimum-event-level: info
-    enabled: true
   attach-stacktrace: true
 
 retry-config:
