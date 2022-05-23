@@ -161,14 +161,14 @@
       "type": "string",
       "description": "Review Type code"
     },
-    "assessmentDetailsList": {
+    "assessmentDetails": {
       "type": "array",
       "minItems": 1,
       "items": {
         "$ref": "common/apiAssessmentDetail.json"
       }
     },
-    "childWeightingsList": {
+    "childWeightings": {
       "type": "array",
       "minItems": 1,
       "items": {
