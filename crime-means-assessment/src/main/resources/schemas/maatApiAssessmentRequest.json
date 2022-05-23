@@ -75,14 +75,14 @@
       "type": "string",
       "description": "Code for the employment status"
     },
-    "assessmentDetailsList": {
+    "assessmentDetails": {
       "type": "array",
       "minItems": 1,
       "items": {
         "$ref": "common/apiAssessmentDetail.json"
       }
     },
-    "childWeightingsList": {
+    "childWeightings": {
       "type": "array",
       "minItems": 1,
       "items": {
@@ -103,7 +103,7 @@
     "initResult",
     "initResultReason",
     "initApplicationEmploymentStatus",
-    "assessmentDetailsList",
-    "childWeightingsList"
+    "assessmentDetails",
+    "childWeightings"
   ]
 }
