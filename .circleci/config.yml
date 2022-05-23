@@ -92,7 +92,7 @@ jobs:
           paths:
             - build
 
-  scan-app:
+  scan_app:
     docker:
       - image: cimg/openjdk:11.0.13
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
@@ -142,7 +142,7 @@ jobs:
       - store_artifacts:
           path: build/libs
 
-  build-and-scan-image:
+  build_and_scan_image:
     docker:
       - image: cimg/openjdk:11.0.13
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
@@ -289,21 +289,21 @@ workflows:
           requires:
             - branch_build_approval
 
-      - scan-app:
+      - scan_app:
           requires:
             - build
 
       - test_and_assemble:
           requires:
-            - scan-app
+            - scan_app
 
-      - build-and-scan-image:
+      - build_and_scan_image:
           requires:
             - test_and_assemble
 
       - build_and_push_image:
           requires:
-            - build-and-scan-image
+            - build_and_scan_image
 
       - hold_install_on_dev:
           type: approval
