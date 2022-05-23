@@ -57,12 +57,12 @@ public class MaatCourtDataAssessmentBuilder {
                 .withIncomeEvidenceNotes(ofNullable(requestDTO.getIncomeEvidenceSummary())
                         .map(ApiIncomeEvidenceSummary::getIncomeEvidenceNotes).orElse(null))
                 .withInitApplicationEmploymentStatus(requestDTO.getEmploymentStatus())
-                .withAssessmentDetailsList(
+                .withAssessmentDetails(
                         requestDTO.getSectionSummaries().stream()
                                 .flatMap(section -> section.getAssessmentDetails().stream())
                                 .collect(Collectors.toList())
                 )
-                .withChildWeightingsList(
+                .withChildWeightings(
                         requestDTO.getChildWeightings()
                 );
 
