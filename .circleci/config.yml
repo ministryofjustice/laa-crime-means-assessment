@@ -4,6 +4,14 @@ orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
   kubernetes: circleci/kubernetes@1.3.0
   helm: circleci/helm@1.2.0
+  snyk: snyk/snyk@1.1.2
+
+_snyk_options: &snyk_options
+  project: "${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}"
+  organization: "legal-aid-agency"
+  severity-threshold: "high"
+  fail-on-issues: false
+  token-variable: SNYK_TOKEN
 
 # ------------------
 # EXECUTORS
@@ -91,6 +99,18 @@ jobs:
           paths:
             - build
 
+  scan_app:
+    docker:
+      - image: cimg/openjdk:11.0.13
+    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
+    steps:
+      - checkout:
+          path: ~/laa-crime-means-assessment
+      - attach_workspace:
+          at: .
+      - snyk/scan:
+          <<: *snyk_options
+
   test_and_assemble:
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
@@ -124,6 +144,24 @@ jobs:
           command: ./gradlew assemble
       - store_artifacts:
           path: build/libs
+
+  build_and_scan_image:
+    docker:
+      - image: cimg/openjdk:11.0.13
+    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
+    steps:
+      - checkout:
+          path: ~/laa-crime-means-assessment
+      - attach_workspace:
+          at: .
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - aws-ecr/build-image:
+          repo: laa-crime-apps-team/laa-crime-means-assessment-dev-ecr
+          tag: "${CIRCLE_SHA1}"
+      - snyk/scan:
+          docker-image-name: "$AWS_ECR_ACCOUNT_URL/laa-crime-apps-team/laa-crime-means-assessment-dev-ecr:${CIRCLE_SHA1}"
+          <<: *snyk_options
 
   build_and_push_image:
     executor: aws-ecr/default
@@ -250,13 +288,21 @@ workflows:
           requires:
             - branch_build_approval
 
-      - test_and_assemble:
+      - scan_app:
           requires:
             - build
 
-      - build_and_push_image:
+      - test_and_assemble:
+          requires:
+            - scan_app
+
+      - build_and_scan_image:
           requires:
             - test_and_assemble
+
+      - build_and_push_image:
+          requires:
+            - build_and_scan_image
 
       - hold_install_on_dev:
           type: approval
