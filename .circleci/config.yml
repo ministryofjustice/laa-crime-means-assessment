@@ -6,6 +6,13 @@ orbs:
   helm: circleci/helm@1.2.0
   snyk: snyk/snyk@1.1.2
 
+_snyk_options: &snyk_options
+  project: "${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}"
+  organization: "legal-aid-agency"
+  severity-threshold: "high"
+  fail-on-issues: false
+  token-variable: SNYK_TOKEN
+
 # ------------------
 # EXECUTORS
 # ------------------
@@ -102,11 +109,7 @@ jobs:
       - attach_workspace:
           at: .
       - snyk/scan:
-          project: "${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}"
-          organization: "legal-aid-agency"
-          fail-on-issues: false
-          severity-threshold: high
-          token-variable: SNYK_TOKEN
+          <<: *snyk_options
 
   test_and_assemble:
     environment:
@@ -158,11 +161,7 @@ jobs:
           tag: "${CIRCLE_SHA1}"
       - snyk/scan:
           docker-image-name: "$AWS_ECR_ACCOUNT_URL/laa-crime-apps-team/laa-crime-means-assessment-dev-ecr:${CIRCLE_SHA1}"
-          fail-on-issues: false
-          project: "${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}"
-          organization: "legal-aid-agency"
-          severity-threshold: high
-          token-variable: SNYK_TOKEN
+          <<: *snyk_options
 
   build_and_push_image:
     executor: aws-ecr/default
