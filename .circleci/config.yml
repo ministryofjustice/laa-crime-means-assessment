@@ -227,13 +227,21 @@ workflows:
               only:
                 - main
 
-      - test_and_assemble:
+      - scan_app:
           requires:
             - build
 
-      - build_and_push_image:
+      - test_and_assemble:
+          requires:
+            - scan_app
+
+      - build_and_scan_image:
           requires:
             - test_and_assemble
+
+      - build_and_push_image:
+          requires:
+            - build_and_scan_image
 
       - deploy-dev:
           requires:
