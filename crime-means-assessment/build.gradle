@@ -166,7 +166,7 @@ jacocoTestReport {
 }
 
 pitest {
-    targetClasses = ['uk.gov.justice.laa.crime.meansassessment.*']
+    targetClasses = ['uk.gov.justice.laa.crime.meansassessment.service.*','uk.gov.justice.laa.crime.meansassessment.controller.*','uk.gov.justice.laa.crime.meansassessment.validation.*']
     excludedClasses = ['uk.gov.justice.laa.crime.meansassessment.dto.*', 'uk.gov.justice.laa.crime.meansassessment.mapper.*', 'uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication']
     threads = 5
     outputFormats = ['XML', 'HTML']
