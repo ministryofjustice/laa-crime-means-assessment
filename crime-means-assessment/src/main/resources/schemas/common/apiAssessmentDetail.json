@@ -19,13 +19,13 @@
     "applicantFrequency": {
       "type": "object",
       "description": "The Frequency of Applicant",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency"
+      "existingJavaType": "java.util.Optional<uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency>"
 
     },
     "partnerFrequency": {
       "type": "object",
       "description": "The Frequency of the Partner",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency"
+      "existingJavaType": "java.util.Optional<uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency>"
     },
     "description": {
       "type": "string",
