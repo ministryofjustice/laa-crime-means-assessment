@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,7 +102,7 @@ public class AssessmentCriteriaServiceTest {
         // given Assessment Criteria is populated and no results are returned
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(null);
         // when Assessment Criteria with invalid date are requested
-        AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.minusYears(100), true, true);
+        assessmentCriteriaService.getAssessmentCriteria(TestModelDataBuilder.TEST_DATE_FROM.minusYears(100), true, true);
     }
 
     @Test
@@ -156,6 +155,7 @@ public class AssessmentCriteriaServiceTest {
     public void givenApplicantFrequency_whenCheckAssessmentDetailIsInvoked_thenValidateApplicantFrequency() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails().get(0);
+        detail.setPartnerFrequency(Optional.empty());
         doNothing().when(assessmentCriteriaService).checkCriteriaDetailFrequency(any(AssessmentCriteriaDetailEntity.class), any(Frequency.class));
         assessmentCriteriaService.checkAssessmentDetail(CaseType.EITHER_WAY, section, assessmentCriteriaEntity, detail);
         verify(assessmentCriteriaService).checkCriteriaDetailFrequency(any(AssessmentCriteriaDetailEntity.class), any(Frequency.class));
@@ -166,7 +166,7 @@ public class AssessmentCriteriaServiceTest {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails(true).get(0);
 
-        detail.setApplicantFrequency(null);
+        detail.setApplicantFrequency(Optional.empty());
 
         doNothing().when(assessmentCriteriaService).checkCriteriaDetailFrequency(any(AssessmentCriteriaDetailEntity.class), any(Frequency.class));
         assessmentCriteriaService.checkAssessmentDetail(CaseType.EITHER_WAY, section, assessmentCriteriaEntity, detail);
@@ -225,17 +225,17 @@ public class AssessmentCriteriaServiceTest {
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
             detail.setApplicantAmount(TestModelDataBuilder.TEST_APPLICANT_VALUE);
 
-            detail.setApplicantFrequency(Frequency.FOUR_WEEKLY);
+            detail.setApplicantFrequency(Optional.of(Frequency.FOUR_WEEKLY));
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
-            detail.setApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY);
+            detail.setApplicantFrequency(Optional.of(TestModelDataBuilder.TEST_FREQUENCY));
 
             detail.setPartnerAmount(BigDecimal.ZERO);
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
             detail.setPartnerAmount(TestModelDataBuilder.TEST_PARTNER_VALUE);
 
-            detail.setPartnerFrequency(Frequency.FOUR_WEEKLY);
+            detail.setPartnerFrequency(Optional.of(Frequency.FOUR_WEEKLY));
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
-            detail.setPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY);
+            detail.setPartnerFrequency(Optional.of(TestModelDataBuilder.TEST_FREQUENCY));
         });
     }
 }

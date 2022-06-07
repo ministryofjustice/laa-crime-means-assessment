@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -120,7 +121,7 @@ public class MeansAssessmentServiceTest {
     public void givenValidAmountAndFrequencyAndUsePartnerIsFalse_whenGetDetailTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentDetail detail = new ApiAssessmentDetail()
                 .withApplicantAmount(BigDecimal.TEN)
-                .withApplicantFrequency(Frequency.MONTHLY);
+                .withApplicantFrequency(Optional.of(Frequency.MONTHLY));
         BigDecimal total = meansAssessmentService.getDetailTotal(detail, false);
         assertThat(total).isEqualTo(BigDecimal.valueOf(120));
     }
@@ -129,7 +130,7 @@ public class MeansAssessmentServiceTest {
     public void givenValidAmountAndFrequencyAndUsePartnerIsTrue_whenGetDetailTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentDetail detail = new ApiAssessmentDetail()
                 .withPartnerAmount(BigDecimal.TEN)
-                .withPartnerFrequency(Frequency.MONTHLY);
+                .withPartnerFrequency(Optional.of(Frequency.MONTHLY));
         BigDecimal total = meansAssessmentService.getDetailTotal(detail, true);
         assertThat(total).isEqualTo(BigDecimal.valueOf(120));
     }
@@ -150,7 +151,7 @@ public class MeansAssessmentServiceTest {
         section.getAssessmentDetails().add(
                 new ApiAssessmentDetail()
                         .withApplicantAmount(BigDecimal.TEN)
-                        .withApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY)
+                        .withApplicantFrequency(Optional.of(TestModelDataBuilder.TEST_FREQUENCY))
         );
 
         BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
@@ -171,7 +172,7 @@ public class MeansAssessmentServiceTest {
                         new ArrayList<>(
                                 List.of(new ApiAssessmentDetail()
                                         .withPartnerAmount(BigDecimal.TEN)
-                                        .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY)
+                                        .withPartnerFrequency(Optional.of(TestModelDataBuilder.TEST_FREQUENCY))
                                 )
                         )
                 );
@@ -186,9 +187,9 @@ public class MeansAssessmentServiceTest {
         section.getAssessmentDetails().add(
                 new ApiAssessmentDetail()
                         .withApplicantAmount(BigDecimal.TEN)
-                        .withApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY)
+                        .withApplicantFrequency(Optional.of(TestModelDataBuilder.TEST_FREQUENCY))
                         .withPartnerAmount(BigDecimal.TEN)
-                        .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY)
+                        .withPartnerFrequency(Optional.of(TestModelDataBuilder.TEST_FREQUENCY))
         );
 
         BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
@@ -219,7 +220,7 @@ public class MeansAssessmentServiceTest {
 
         List<ApiAssessmentDetail> section =
                 meansAssessment.getSectionSummaries().get(0).getAssessmentDetails();
-        section.get(0).setPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY);
+        section.get(0).setPartnerFrequency(Optional.of(TestModelDataBuilder.TEST_FREQUENCY));
         section.get(0).setPartnerAmount(TestModelDataBuilder.TEST_APPLICANT_VALUE);
 
         BigDecimal summariesTotal =

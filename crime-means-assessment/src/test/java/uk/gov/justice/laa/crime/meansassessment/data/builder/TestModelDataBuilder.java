@@ -11,10 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -83,7 +80,6 @@ public class TestModelDataBuilder {
     //create means assessment
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final int MEANS_ASSESSMENT_ID = 1000;
-    private static final String TEST_SESSION_ID = "TEST_SESSION_ID";
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -346,7 +342,7 @@ public class TestModelDataBuilder {
                                         new ApiAssessmentDetail()
                                                 .withCriteriaDetailId(132)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                                .withApplicantFrequency(Optional.of(TEST_FREQUENCY))
                                 )
                         )
                 );
@@ -362,7 +358,7 @@ public class TestModelDataBuilder {
                                         new ApiAssessmentDetail()
                                                 .withCriteriaDetailId(142)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                                .withApplicantFrequency(Optional.of(TEST_FREQUENCY))
                                 )
                         )
                 )
@@ -378,7 +374,7 @@ public class TestModelDataBuilder {
                                         new ApiAssessmentDetail()
                                                 .withCriteriaDetailId(132)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                                .withApplicantFrequency(Optional.of(TEST_FREQUENCY))
                                         ,
                                         new ApiAssessmentDetail()
                                                 .withCriteriaDetailId(133)
@@ -388,7 +384,7 @@ public class TestModelDataBuilder {
                                                 .withCriteriaDetailId(134)
                                                 .withApplicantAmount(BigDecimal.ZERO)
                                                 .withPartnerAmount(TEST_PARTNER_VALUE)
-                                                .withPartnerFrequency(TEST_FREQUENCY)
+                                                .withPartnerFrequency(Optional.of(TEST_FREQUENCY))
                                 )
                         )
                 ,
@@ -399,15 +395,15 @@ public class TestModelDataBuilder {
                                         List.of(new ApiAssessmentDetail()
                                                 .withCriteriaDetailId(135)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                                .withApplicantFrequency(Optional.of(TEST_FREQUENCY))
                                                 .withPartnerAmount(TEST_PARTNER_VALUE)
-                                                .withPartnerFrequency(TEST_FREQUENCY)),
+                                                .withPartnerFrequency(Optional.of(TEST_FREQUENCY))),
 
                                         IntStream.range(136, 146).boxed().collect(Collectors.toList())
                                                 .stream().map(num -> new ApiAssessmentDetail()
                                                         .withCriteriaDetailId(num)
                                                         .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                        .withApplicantFrequency(TEST_FREQUENCY)
+                                                        .withApplicantFrequency(Optional.of(TEST_FREQUENCY))
                                                 ).collect(Collectors.toList())
                                 ).flatMap(Collection::stream).collect(Collectors.toList())
                         )
@@ -473,12 +469,12 @@ public class TestModelDataBuilder {
         var assessmentDetail = new ApiAssessmentDetail()
                 .withCriteriaDetailId(TEST_DETAIL_ID)
                 .withApplicantAmount(TEST_APPLICANT_VALUE)
-                .withApplicantFrequency(TEST_FREQUENCY);
+                .withApplicantFrequency(Optional.of(TEST_FREQUENCY));
 
         if (withPartner) {
             assessmentDetail
                     .withPartnerAmount(TEST_PARTNER_VALUE)
-                    .withPartnerFrequency(TEST_FREQUENCY);
+                    .withPartnerFrequency(Optional.of(TEST_FREQUENCY));
         }
         return List.of(assessmentDetail);
     }

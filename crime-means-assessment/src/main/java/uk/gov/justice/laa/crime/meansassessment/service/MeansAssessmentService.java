@@ -15,10 +15,12 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -114,20 +116,20 @@ public class MeansAssessmentService {
         if (usePartner) {
             BigDecimal partnerAmount = assessmentDetail.getPartnerAmount();
             if (partnerAmount != null && !BigDecimal.ZERO.equals(partnerAmount)) {
-                detailTotal = detailTotal.add(
-                        partnerAmount.multiply(
-                                BigDecimal.valueOf(assessmentDetail.getPartnerFrequency().getWeighting())
-                        )
-                );
+                Integer partnerWeighting = Optional.ofNullable(assessmentDetail.getPartnerFrequency())
+                        .orElse(Optional.empty()).map(Frequency::getWeighting).orElse(null);
+                if (partnerWeighting != null) {
+                    detailTotal = detailTotal.add(partnerAmount.multiply(BigDecimal.valueOf(partnerWeighting)));
+                }
             }
         } else {
             BigDecimal applicationAmount = assessmentDetail.getApplicantAmount();
             if (applicationAmount != null && !BigDecimal.ZERO.equals(applicationAmount)) {
-                detailTotal = detailTotal.add(
-                        applicationAmount.multiply(
-                                BigDecimal.valueOf(assessmentDetail.getApplicantFrequency().getWeighting())
-                        )
-                );
+                Integer applicantWeighting = Optional.ofNullable(assessmentDetail.getApplicantFrequency())
+                        .orElse(Optional.empty()).map(Frequency::getWeighting).orElse(null);
+                if (applicantWeighting != null) {
+                    detailTotal = detailTotal.add(applicationAmount.multiply(BigDecimal.valueOf(applicantWeighting)));
+                }
             }
         }
         return detailTotal;
