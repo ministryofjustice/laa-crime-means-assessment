@@ -161,3 +161,6 @@ been set and are documented inside that section.:
 - targetPackage: what package the POJOs should belong to
 - includeJsr303Annotations: JSR-303/349 annotations (for schema rules like minimum, maximum, etc)
 - dateTimeType: What type to use instead of string
+
+## Snyk vulnerability scan
+[Snyk CircleCI config documentation](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/4009328641/Integrate+Snyk+Vulnerability+Scanning+with+CircleCI+Pipeline)
