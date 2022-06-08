@@ -15,6 +15,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -114,20 +115,18 @@ public class MeansAssessmentService {
         if (usePartner) {
             BigDecimal partnerAmount = assessmentDetail.getPartnerAmount();
             if (partnerAmount != null && !BigDecimal.ZERO.equals(partnerAmount)) {
-                detailTotal = detailTotal.add(
-                        partnerAmount.multiply(
-                                BigDecimal.valueOf(assessmentDetail.getPartnerFrequency().getWeighting())
-                        )
-                );
+                Frequency partnerFrequency = assessmentDetail.getPartnerFrequency();
+                if (partnerFrequency != null) {
+                    detailTotal = detailTotal.add(partnerAmount.multiply(BigDecimal.valueOf(partnerFrequency.getWeighting())));
+                }
             }
         } else {
             BigDecimal applicationAmount = assessmentDetail.getApplicantAmount();
             if (applicationAmount != null && !BigDecimal.ZERO.equals(applicationAmount)) {
-                detailTotal = detailTotal.add(
-                        applicationAmount.multiply(
-                                BigDecimal.valueOf(assessmentDetail.getApplicantFrequency().getWeighting())
-                        )
-                );
+                Frequency applicantFrequency = assessmentDetail.getApplicantFrequency();
+                if (applicantFrequency != null) {
+                    detailTotal = detailTotal.add(applicationAmount.multiply(BigDecimal.valueOf(applicantFrequency.getWeighting())));
+                }
             }
         }
         return detailTotal;
