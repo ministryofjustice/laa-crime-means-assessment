@@ -167,15 +167,19 @@ public class MaatCourtDataServiceTest {
 
     @Test
     public void givenAnErrorResponse_whenCreateFinancialAssessmentHistoryIsInvoked_thenTheErrorIsMappedCorrectly() {
-        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.INTERNAL_SERVER_ERROR).build()));
+        when(shortCircuitExchangeFunction.exchange(any()))
+                .thenReturn(Mono.just(ClientResponse.create(HttpStatus.INTERNAL_SERVER_ERROR).build()));
 
-        APIClientException error = assertThrows(APIClientException.class,
-                () -> maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId).block());
+        try {
+            maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId).block();
+            fail("An invalid response should produce an error.");
+        } catch (APIClientException error) {
+            assertEquals(
+                    String.format("Error calling Court Data API. Failed to create financial assessment history for financialAssessmentId: %d", repId),
+                    error.getMessage());
+        }
 
         verify(shortCircuitExchangeFunction, times(1)).exchange(any());
-        assertEquals(
-                String.format("Error calling Court Data API. Failed to create financial assessment history for financialAssessmentId: %d", repId),
-                error.getMessage());
     }
 
     private void setupNotFoundTest() {
