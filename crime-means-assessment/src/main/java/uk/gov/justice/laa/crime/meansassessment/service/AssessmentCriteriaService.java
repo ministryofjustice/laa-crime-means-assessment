@@ -78,9 +78,11 @@ public class AssessmentCriteriaService {
                 ).orElse(null);
 
             if (criteriaDetailValue != null && (!criteriaDetailValue.getApplicantValue().equals(detail.getApplicantAmount()) ||
-                    !criteriaDetailValue.getApplicantFrequency().getCode().equals(detail.getApplicantFrequency().getCode()) ||
+                    !criteriaDetailValue.getApplicantFrequency().getCode().equals(
+                            Optional.ofNullable(applicantFrequency).map(Frequency::getCode).orElse(null)) ||
                     !criteriaDetailValue.getPartnerValue().equals(detail.getPartnerAmount()) ||
-                    !criteriaDetailValue.getPartnerFrequency().getCode().equals(detail.getPartnerFrequency().getCode())) ) {
+                    !criteriaDetailValue.getPartnerFrequency().getCode().equals(
+                            Optional.ofNullable(partnerFrequency).map(Frequency::getCode).orElse(null)))) {
                 throw new ValidationException("Incorrect amount entered for: " + criteriaDetail.getDescription());
             }
 
