@@ -163,4 +163,4 @@ been set and are documented inside that section.:
 - dateTimeType: What type to use instead of string
 
 ## Snyk vulnerability scan
-[Snyk CircleCI config documentation](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/4009328641/Integrate+Snyk+Vulnerability+Scanning+with+CircleCI+Pipeline)
+[Snyk CircleCI config](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/4009328641/Integrate+Snyk+Vulnerability+Scanning+with+CircleCI+Pipeline)
