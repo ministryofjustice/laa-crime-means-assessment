@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM openjdk:11.0.15-jre-slim-buster
 RUN mkdir -p /opt/laa-crime-means-assessment/
 WORKDIR /opt/laa-crime-means-assessment/
 COPY ./build/libs/crime-means-assessment.jar /opt/laa-crime-means-assessment/app.jar
