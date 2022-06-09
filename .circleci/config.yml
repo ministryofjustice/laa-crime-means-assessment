@@ -11,7 +11,7 @@ _snyk_options: &snyk_options
   organization: "legal-aid-agency"
   severity-threshold: "high"
   fail-on-issues: false
-  monitor-on-build: false
+#  monitor-on-build: false
   token-variable: SNYK_TOKEN
 
 # ------------------
