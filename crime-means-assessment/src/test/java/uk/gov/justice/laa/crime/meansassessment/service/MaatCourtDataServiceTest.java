@@ -21,7 +21,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentReque
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -156,6 +156,28 @@ public class MaatCourtDataServiceTest {
         setupValidResponseTest(expectedResponse);
         IOJAppealDTO actualResponse = maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
         assertEquals(expectedResponse.getId(), actualResponse.getId());
+    }
+
+    @Test
+    public void givenAValidResponse_whenCreateFinancialAssessmentHistoryIsInvoked_thenNoErrorsOccur() {
+        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.OK).build()));
+        maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId).block();
+        verify(shortCircuitExchangeFunction, times(1)).exchange(any());
+    }
+
+    @Test
+    public void givenAnErrorResponse_whenCreateFinancialAssessmentHistoryIsInvoked_thenTheErrorIsMappedCorrectly() {
+        when(shortCircuitExchangeFunction.exchange(any()))
+                .thenReturn(Mono.just(ClientResponse.create(HttpStatus.INTERNAL_SERVER_ERROR).build()));
+
+        Mono<Void> createFinancialAssessmentHistoryMono =
+                maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId);
+        APIClientException error = assertThrows(APIClientException.class, () -> createFinancialAssessmentHistoryMono.block());
+
+        verify(shortCircuitExchangeFunction, times(1)).exchange(any());
+        assertEquals(
+                String.format("Error calling Court Data API. Failed to create financial assessment history for financialAssessmentId: %d", repId),
+                error.getMessage());
     }
 
     private void setupNotFoundTest() {
