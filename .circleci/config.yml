@@ -11,7 +11,9 @@ _snyk_options: &snyk_options
   organization: "legal-aid-agency"
   severity-threshold: "high"
   fail-on-issues: false
+  monitor-on-build: false
   token-variable: SNYK_TOKEN
+  additional-arguments: --policy-path=.snyk
 
 # ------------------
 # EXECUTORS
@@ -285,16 +287,11 @@ workflows:
 
   build-deploy-branch:
     jobs:
-      - branch_build_approval:
-          type: approval
+      - build:
           filters:
             branches:
               ignore:
                 - main
-
-      - build:
-          requires:
-            - branch_build_approval
 
       - scan_app:
           requires:
