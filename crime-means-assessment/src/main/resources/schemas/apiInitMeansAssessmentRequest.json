@@ -24,7 +24,6 @@
   "additionalProperties": false,
   "required": [
     "usn",
-    "newWorkReason",
-    "reviewType"
+    "newWorkReason"
   ]
 }
