@@ -7,6 +7,7 @@ import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatCourtDataAss
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
+import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
@@ -33,6 +34,7 @@ public class MeansAssessmentService {
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
     private final InitMeansAssessmentService initMeansAssessmentService;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
+    private final PostProcessingMsgPublisherService postProcessingMsgPublisherService;
 
     public ApiCreateMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -67,8 +69,8 @@ public class MeansAssessmentService {
             assessmentSummaryService.addAssessmentSummaryToMeansResponse(assessmentResponse, requestDTO.getLaaTransactionId());
             maatCourtDataService.createFinancialAssessmentHistory(assessmentResponse.getAssessmentId(), assessmentResponse.getFullAssessmentAvailable(), requestDTO.getLaaTransactionId()).subscribe();
 
-            log.info("Sending assessment post processing request for MAAT ID: {}", requestDTO.getRepId());
-            maatCourtDataService.performAssessmentPostProcessing(requestDTO.getRepId(), requestDTO.getLaaTransactionId()).subscribe();
+            doPostProcessing(requestDTO);
+
 
             return assessmentResponse;
         } catch (RuntimeException exception) {
@@ -76,6 +78,16 @@ public class MeansAssessmentService {
                     String.format("An error occurred whilst processing the assessment request with RepID: %d",
                             requestDTO.getRepId()), exception);
         }
+    }
+
+    private void doPostProcessing(MeansAssessmentRequestDTO requestDTO) {
+        log.info("Sending assessment post processing request for MAAT ID: {}", requestDTO.getRepId());
+        PostProcessing postprocessingRequest = PostProcessing
+                .builder()
+                .repId(requestDTO.getRepId())
+                .laaTransactionId(requestDTO.getLaaTransactionId())
+                .build();
+        postProcessingMsgPublisherService.publishMessage(postprocessingRequest);
     }
 
     BigDecimal calculateSummariesTotal(final MeansAssessmentRequestDTO requestDTO, final AssessmentCriteriaEntity assessmentCriteria) {
