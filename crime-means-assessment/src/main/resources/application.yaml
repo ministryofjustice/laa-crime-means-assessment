@@ -110,5 +110,15 @@ retry-config:
   min-back-off-period: 5
   jitter-value: 0.75
 
+aws:
+  sqs:
+   accesskey: ${AWS_ACCESS_KEY}
+   secretkey: ${AWS_SECRET_KEY}
+   region: ${AWS_REGION}
+  queue:
+   post-processing-queue: ${POST_PROCESSING_QUEUE}
+
+
+
 
 version: 0.0.1
