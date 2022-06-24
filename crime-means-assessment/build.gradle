@@ -99,7 +99,7 @@ dependencies {
 
     implementation group: 'io.sentry', name: 'sentry-spring-boot-starter'
     implementation group: 'io.sentry', name: 'sentry-logback'
-    implementation group: 'io.sentryamazonSQSVersion', name: 'sentry-logback'
+
 
     // DB Dependencies
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresqlVersion
