@@ -71,6 +71,9 @@ public class MeansAssessmentServiceTest {
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
+    @Mock
+    private PostProcessingMsgPublisherService postProcessingMsgPublisherService;
+
     @Before
     public void setup() {
         assessmentCriteria.setId(TestModelDataBuilder.TEST_CRITERIA_ID);
@@ -261,8 +264,6 @@ public class MeansAssessmentServiceTest {
         given(maatCourtDataService.createFinancialAssessmentHistory(anyInt(), any(), anyString()))
                 .willReturn(Mono.empty());
 
-        given(maatCourtDataService.performAssessmentPostProcessing(anyInt(), anyString()))
-                .willReturn(Mono.empty());
     }
 
     @Test
@@ -290,7 +291,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
-        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
+
     }
 
     @Test
@@ -302,7 +303,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
-        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
+
     }
 
     @Test
@@ -320,7 +321,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
-        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
+
     }
 
     @Test

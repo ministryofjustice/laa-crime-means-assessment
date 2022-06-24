@@ -21,7 +21,6 @@ public class AmazonSQSConfig {
                 .withCredentials(new AWSStaticCredentialsProvider(
                         new BasicAWSCredentials(sqsProperties.getAccesskey(), sqsProperties.getSecretkey())))
                 .withRegion(Regions.fromName(sqsProperties.getRegion()))
-                .withCredentials()
                 .build();
     }
 }
