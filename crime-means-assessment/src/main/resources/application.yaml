@@ -112,11 +112,11 @@ retry-config:
 
 aws:
   sqs:
-   accesskey: ${AWS_ACCESS_KEY}
-   secretkey: ${AWS_SECRET_KEY}
-   region: ${AWS_REGION}
+    accesskey: ${AWS_ACCESS_KEY}
+    secretkey: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION}
   queue:
-   post-processing-queue: ${POST_PROCESSING_QUEUE}
+    post-processing-queue: ${POST_PROCESSING_QUEUE}
 
 
 
