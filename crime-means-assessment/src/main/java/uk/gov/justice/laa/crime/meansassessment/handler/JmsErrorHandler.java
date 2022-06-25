@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ErrorHandler;
 
 /**
- * A <code>SQSErrorHandler</code> handles all failures on JMS listener
+ * A <code>SQSErrorHandler</code> handles all failures on JMS
  * and logs message.
  */
 @Slf4j
