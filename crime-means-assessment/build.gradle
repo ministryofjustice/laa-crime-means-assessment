@@ -184,7 +184,7 @@ tasks['sonarqube'].dependsOn test
 
 sonarqube {
     properties {
-        property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java, **/**StoredProcedureRepository.java"
+        property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
         property "sonar.projectKey", "ministryofjustice_laa-crime-means-assessment"
