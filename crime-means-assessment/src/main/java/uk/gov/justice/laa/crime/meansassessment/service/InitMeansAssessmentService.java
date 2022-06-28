@@ -30,7 +30,7 @@ public class InitMeansAssessmentService implements AssessmentService {
                 .initAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE) ? getResult(
                                 adjustedIncomeValue, assessmentCriteria, requestDTO.getNewWorkReason().getCode()
-                        ) : InitAssessmentResult.NONE
+                        ) : null
                 )
                 .adjustedIncomeValue(adjustedIncomeValue)
                 .totalAggregatedIncome(annualTotal).build();

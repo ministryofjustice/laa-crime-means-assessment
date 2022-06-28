@@ -72,7 +72,7 @@ public class FullMeansAssessmentServiceTest {
 
         SoftAssertions.assertSoftly(softly -> {
             assertThat(result.getCurrentStatus()).isEqualTo(meansAssessment.getAssessmentStatus());
-            assertThat(result.getFullAssessmentResult()).isEqualTo(FullAssessmentResult.NONE);
+            assertThat(result.getFullAssessmentResult()).isNull();
             assertThat(result.getTotalAggregatedExpense()).isEqualByComparingTo(TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE);
             assertThat(result.getTotalAnnualDisposableIncome()).isEqualByComparingTo(TestModelDataBuilder.TEST_DISPOSABLE_INCOME);
             assertThat(result.getAdjustedLivingAllowance()).isEqualByComparingTo(TestModelDataBuilder.TEST_ADJUSTED_LIVING_ALLOWANCE);
