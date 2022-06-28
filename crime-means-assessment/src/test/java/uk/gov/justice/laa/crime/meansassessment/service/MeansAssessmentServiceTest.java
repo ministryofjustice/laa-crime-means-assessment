@@ -16,6 +16,7 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
+import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentServiceTest {
@@ -70,6 +72,9 @@ public class MeansAssessmentServiceTest {
 
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
+
+    @Mock
+    private PostProcessingMsgPublisherService postProcessingMsgPublisherService;
 
     @Before
     public void setup() {
@@ -261,8 +266,6 @@ public class MeansAssessmentServiceTest {
         given(maatCourtDataService.createFinancialAssessmentHistory(anyInt(), any(), anyString()))
                 .willReturn(Mono.empty());
 
-        given(maatCourtDataService.performAssessmentPostProcessing(anyInt(), anyString()))
-                .willReturn(Mono.empty());
     }
 
     @Test
@@ -290,7 +293,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
-        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
+
     }
 
     @Test
@@ -302,7 +305,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
-        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
+
     }
 
     @Test
@@ -320,7 +323,7 @@ public class MeansAssessmentServiceTest {
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
         verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
-        verify(maatCourtDataService).performAssessmentPostProcessing(anyInt(), anyString());
+
     }
 
     @Test
@@ -335,5 +338,21 @@ public class MeansAssessmentServiceTest {
         ).isInstanceOf(AssessmentProcessingException.class).hasMessageContaining(
                 "An error occurred whilst processing the assessment request with RepID: " + meansAssessment.getRepId()
         );
+    }
+
+    @Test
+    public void givenPostProcessingDataIsAvailable_whenMsgPublisherIsInvoked_thenMessageIsPublished() {
+        //given
+        setupDoAssessmentStubbing();
+        PostProcessing postProcessing = PostProcessing
+                .builder()
+                .repId(meansAssessment.getRepId())
+                .laaTransactionId(meansAssessment.getLaaTransactionId())
+                .build();
+        //when
+        meansAssessmentService.doAssessment(meansAssessment,AssessmentRequestType.CREATE);
+
+        //then
+        verify(postProcessingMsgPublisherService,times(1)).publishMessage(postProcessing);
     }
 }

@@ -169,7 +169,7 @@ jobs:
     executor: aws-ecr/default
     steps:
       - aws-ecr/build-and-push-image:
-          repo: laa-crime-apps-team/laa-crime-means-assessment-dev-ecr
+          repo: crime-apps/laa-crime-means-assessment-dev-ecr
           tag: "${CIRCLE_SHA1}"
           attach-workspace: true
           workspace-root: crime-means-assessment

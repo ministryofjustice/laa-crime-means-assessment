@@ -33,7 +33,8 @@ def versions = [
         reactorTestVersion                 : '3.4.11',
         okhttpVersion                      : '4.9.3',
         mockwebserverVersion               : '4.9.3',
-        springauthserverVersion            : '0.2.2'
+        springauthserverVersion            : '0.2.2',
+        amazonSQSVersion                   : '1.0.8'
 ]
 
 dependencyManagement {
@@ -83,17 +84,22 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-cas'
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-authorization-server', version: versions.springauthserverVersion
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springdocVersion
+    implementation group: 'org.springframework', name: 'spring-jms'
 
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: versions.springConfigurationProcessorVersion
 
     implementation group: 'io.projectreactor.netty', name: 'reactor-netty'
 
     // AWS
+
+    implementation group: 'com.amazonaws', name: 'amazon-sqs-java-messaging-lib', version: versions.amazonSQSVersion
+
     implementation group: 'org.mapstruct', name: 'mapstruct'
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor'
 
     implementation group: 'io.sentry', name: 'sentry-spring-boot-starter'
     implementation group: 'io.sentry', name: 'sentry-logback'
+
 
     // DB Dependencies
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresqlVersion
@@ -178,7 +184,7 @@ tasks['sonarqube'].dependsOn test
 
 sonarqube {
     properties {
-        property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java, **/**StoredProcedureRepository.java"
+        property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
         property "sonar.projectKey", "ministryofjustice_laa-crime-means-assessment"
