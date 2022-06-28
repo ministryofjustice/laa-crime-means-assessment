@@ -159,10 +159,10 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - aws-ecr/build-image:
-          repo: laa-crime-apps-team/laa-crime-means-assessment-dev-ecr
+          repo: crime-apps/laa-crime-means-assessment-dev-ecr
           tag: "${CIRCLE_SHA1}"
       - snyk/scan:
-          docker-image-name: "$AWS_ECR_ACCOUNT_URL/laa-crime-apps-team/laa-crime-means-assessment-dev-ecr:${CIRCLE_SHA1}"
+          docker-image-name: "$AWS_ECR_ACCOUNT_URL/crime-apps/laa-crime-means-assessment-dev-ecr:${CIRCLE_SHA1}"
           <<: *snyk_options
 
   build_and_push_image:
