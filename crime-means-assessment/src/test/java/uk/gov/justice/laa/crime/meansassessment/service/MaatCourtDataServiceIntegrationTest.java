@@ -237,37 +237,6 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
         assertNull(apiResponse);
     }
 
-    @Test
-    public void whenPerformAssessmentPostProcessingAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
-        setupMockApiResponses(Void.class, 0);
-        StepVerifier
-                .create(maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId))
-                .expectComplete()
-                .verify();
-        assertTrue(output.getOut().contains(getPostProcessingSuccessMessage()));
-    }
-
-    @Test
-    public void whenPerformAssessmentPostProcessingAPICallFails_thenTheCallIsRetriedAndSucceeds() throws JsonProcessingException {
-        setupMockApiResponses(Void.class, maxRetries - 1);
-        StepVerifier
-                .create(maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId))
-                .expectComplete()
-                .verify();
-        assertTrue(output.getOut().contains(getPostProcessingSuccessMessage()));
-    }
-
-    @Test
-    public void whenPerformAssessmentPostProcessingCallFails_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
-        String errorMessage = String.format("An error occurred whilst submitting assessment post-processing request for RepID: %d", repId);
-
-        setupMockApiResponses(Void.class, maxRetries + 1);
-        StepVerifier
-                .create(maatCourtDataService.performAssessmentPostProcessing(repId, laaTransactionId))
-                .expectErrorMessage(errorMessage)
-                .verify();
-        assertTrue(output.getOut().contains(errorMessage));
-    }
 
     @Test
     public void whenCreateFinancialAssessmentHistoryAPICalled_thenTheCallIsRetriedAndSucceeds() throws JsonProcessingException {
