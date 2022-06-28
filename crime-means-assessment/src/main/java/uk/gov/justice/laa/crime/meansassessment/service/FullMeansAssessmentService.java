@@ -30,7 +30,7 @@ public class FullMeansAssessmentService implements AssessmentService {
                 .fullAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE) ? getResult(
                                 totalDisposableIncome, assessmentCriteria
-                        ) : FullAssessmentResult.NONE
+                        ) : null
                 )
                 .adjustedLivingAllowance(adjustedLivingAllowance)
                 .totalAggregatedExpense(expenditureTotal)
