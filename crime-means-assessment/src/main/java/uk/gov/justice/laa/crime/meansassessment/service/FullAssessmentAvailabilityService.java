@@ -26,18 +26,20 @@ public class FullAssessmentAvailabilityService {
         if (!Objects.isNull(meansAssessmentResponse.getFullAssessmentDate())) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         } else {
-            switch (InitAssessmentResult.getFrom(meansAssessmentResponse.getInitResult())) {
-                case NONE:
-                case PASS:
-                    break;
-                case FULL:
-                    meansAssessmentResponse.setFullAssessmentAvailable(true);
-                    break;
-                case FAIL:
-                    processFullAssessmentAvailableOnResultFail(requestDTO, meansAssessmentResponse);
-                    break;
-                case HARDSHIP:
-                    checkNewWorkReason(requestDTO, meansAssessmentResponse);
+            InitAssessmentResult initAssessmentResult = InitAssessmentResult.getFrom(meansAssessmentResponse.getInitResult());
+            if (initAssessmentResult != null) {
+                switch (initAssessmentResult) {
+                    case PASS:
+                        break;
+                    case FULL:
+                        meansAssessmentResponse.setFullAssessmentAvailable(true);
+                        break;
+                    case FAIL:
+                        processFullAssessmentAvailableOnResultFail(requestDTO, meansAssessmentResponse);
+                        break;
+                    case HARDSHIP:
+                        checkNewWorkReason(requestDTO, meansAssessmentResponse);
+                }
             }
         }
         log.info("fullAssessmentAvailable set to {}", meansAssessmentResponse.getFullAssessmentAvailable());
@@ -53,7 +55,7 @@ public class FullAssessmentAvailabilityService {
     private void processFullAssessmentAvailableOnResultFail(final MeansAssessmentRequestDTO requestDTO,
                                                             final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
         switch (requestDTO.getCaseType()) {
-            case COMMITTAL:
+            case COMMITAL:
             case SUMMARY_ONLY:
             case INDICTABLE:
             case CC_ALREADY:
