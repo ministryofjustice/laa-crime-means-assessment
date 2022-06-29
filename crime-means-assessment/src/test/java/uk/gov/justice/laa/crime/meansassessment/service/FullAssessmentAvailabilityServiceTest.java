@@ -132,8 +132,8 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsNone_ThenFullAssessmentAvailableIsFalse() {
-        meansAssessmentResponse.setInitResult("NONE");
+    public void givenMeansAssessmentRequestAndResponse_WhenResultIsNull_ThenFullAssessmentAvailableIsFalse() {
+        meansAssessmentResponse.setInitResult(null);
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
