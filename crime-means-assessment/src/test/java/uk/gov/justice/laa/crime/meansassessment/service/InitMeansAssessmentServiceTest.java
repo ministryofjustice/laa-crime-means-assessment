@@ -70,7 +70,7 @@ public class InitMeansAssessmentServiceTest {
 
         SoftAssertions.assertSoftly(softly -> {
             assertThat(result.getCurrentStatus()).isEqualTo(meansAssessment.getAssessmentStatus());
-            assertThat(result.getInitAssessmentResult()).isEqualTo(InitAssessmentResult.NONE);
+            assertThat(result.getInitAssessmentResult()).isNull();
             assertThat(result.getAdjustedIncomeValue()).isEqualTo(TestModelDataBuilder.TEST_ADJUSTED_INCOME);
             assertThat(result.getTotalAggregatedIncome()).isEqualTo(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
         });

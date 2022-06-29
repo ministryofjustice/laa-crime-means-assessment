@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public enum InitAssessmentResult {
 
-    NONE("NONE","No result"),
     PASS("PASS", "Gross income below the lower threshold"),
     FAIL("FAIL", "Gross income above the upper threshold"),
     HARDSHIP("HARDSHIP APPLICATION", "Hardship application"),
@@ -22,7 +21,7 @@ public enum InitAssessmentResult {
     private String reason;
 
     public static InitAssessmentResult getFrom(String result) {
-        if (StringUtils.isBlank(result)) return NONE;
+        if (StringUtils.isBlank(result)) return null;
 
         return Stream.of(InitAssessmentResult.values())
                 .filter(a -> a.result.equals(result))
