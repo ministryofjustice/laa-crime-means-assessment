@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum FullAssessmentResult {
-    NONE("NONE", "No result"),
     PASS("PASS", "Gross income below the threshold"),
     FAIL("FAIL", "Gross income above the threshold");
 
@@ -19,7 +18,7 @@ public enum FullAssessmentResult {
     private String reason;
 
     public static FullAssessmentResult getFrom(String result) {
-        if (StringUtils.isBlank(result)) return NONE;
+        if (StringUtils.isBlank(result)) return null;
 
         return Stream.of(FullAssessmentResult.values())
                 .filter(a -> a.result.equals(result))
