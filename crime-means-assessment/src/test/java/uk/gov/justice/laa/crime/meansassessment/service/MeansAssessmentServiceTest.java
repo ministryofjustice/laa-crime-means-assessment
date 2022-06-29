@@ -17,6 +17,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
+import uk.gov.justice.laa.crime.meansassessment.model.UserSession;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -348,6 +349,11 @@ public class MeansAssessmentServiceTest {
                 .builder()
                 .repId(meansAssessment.getRepId())
                 .laaTransactionId(meansAssessment.getLaaTransactionId())
+                .user(UserSession
+                        .builder()
+                        .id(meansAssessment.getUserSession().getSessionId())
+                        .username(meansAssessment.getUserSession().getUserName())
+                        .build())
                 .build();
         //when
         meansAssessmentService.doAssessment(meansAssessment,AssessmentRequestType.CREATE);
