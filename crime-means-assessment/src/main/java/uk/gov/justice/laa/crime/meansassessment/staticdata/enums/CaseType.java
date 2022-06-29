@@ -19,14 +19,14 @@ public enum CaseType {
     SUMMARY_ONLY("SUMMARY ONLY", "Summary-only", Boolean.TRUE),
     CC_ALREADY("CC ALREADY","Trial already in Crown Court", Boolean.TRUE),
     APPEAL_CC("APPEAL CC","Appeal to Crown Court", Boolean.FALSE),
-    COMMITTAL("COMMITTAL","Committal for Sentence", Boolean.TRUE),
+    COMMITAL("COMMITAL","Committal for Sentence", Boolean.TRUE),
     EITHER_WAY("EITHER WAY","Either-Way", Boolean.FALSE);
 
     @NotNull
     @JsonPropertyDescription("Specifies the case type")
-    private String caseTypeString;
-    private String description;
-    private Boolean mcooOutcomeRequired;
+    private final String caseTypeString;
+    private final String description;
+    private final Boolean mcooOutcomeRequired;
 
     @JsonValue
     public String getCaseType() {
