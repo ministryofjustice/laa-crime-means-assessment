@@ -8,10 +8,8 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.UserSession;
+import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -82,10 +80,16 @@ public class MeansAssessmentService {
 
     private void doPostProcessing(MeansAssessmentRequestDTO requestDTO) {
         log.info("Sending assessment post processing request for MAAT ID: {}", requestDTO.getRepId());
+        ApiUserSession userSession = requestDTO.getUserSession();
         PostProcessing postprocessingRequest = PostProcessing
                 .builder()
                 .repId(requestDTO.getRepId())
                 .laaTransactionId(requestDTO.getLaaTransactionId())
+                .user(UserSession
+                        .builder()
+                        .username(userSession.getUserName())
+                        .id(userSession.getSessionId())
+                        .build())
                 .build();
         postProcessingMsgPublisherService.publishMessage(postprocessingRequest);
     }
