@@ -24,9 +24,6 @@ public class PostProcessingMsgPublisherService {
         String message = gson.toJson(messageBody, PostProcessing.class);
         defaultJmsTemplate.convertAndSend(postProcessingQueue, message);
 
-
         log.info("Post processing request is published MAAT ID: {}", messageBody.getRepId());
-
-
     }
 }
