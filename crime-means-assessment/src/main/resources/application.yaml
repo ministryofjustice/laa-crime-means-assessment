@@ -71,7 +71,6 @@ spring:
         jwt:
           issuer-uri: ${means-assessment.security.issuer-uri}
 
-
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
@@ -83,7 +82,6 @@ spring:
       ddl-auto: validate
     properties:
       hibernate.temp.use_jdbc_metadata_defaults: false
-
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
@@ -117,8 +115,5 @@ aws:
     region: ${AWS_REGION}
   queue:
     post-processing-queue: ${POST_PROCESSING_QUEUE}
-
-
-
 
 version: 0.0.1
