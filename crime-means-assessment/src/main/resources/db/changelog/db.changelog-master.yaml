@@ -35,3 +35,7 @@ databaseChangeLog:
       file: db/changelog/changeset/17-spring-security-oauth2-tables-create.sql
   - include:
       file: db/changelog/changeset/18-spring-security-client-credentials-insert.sql
+  - include:
+      file: db/changelog/changeset/19-case-type-ass-detail-values-table-data-update.sql
+
+
