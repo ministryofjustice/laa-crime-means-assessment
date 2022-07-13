@@ -74,8 +74,7 @@ public class MeansAssessmentServiceTest {
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
-    @Mock
-    private PostProcessingMsgPublisherService postProcessingMsgPublisherService;
+
 
     @Before
     public void setup() {
@@ -359,6 +358,6 @@ public class MeansAssessmentServiceTest {
         meansAssessmentService.doAssessment(meansAssessment,AssessmentRequestType.CREATE);
 
         //then
-        verify(postProcessingMsgPublisherService,times(1)).publishMessage(postProcessing);
+        verify(maatCourtDataService,times(1)).performAssessmentPostProcessing(postProcessing);
     }
 }
