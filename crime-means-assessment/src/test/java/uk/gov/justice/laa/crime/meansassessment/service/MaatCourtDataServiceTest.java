@@ -65,7 +65,6 @@ public class MaatCourtDataServiceTest {
         when(iojAppealEndpoints.getFindUrl()).thenReturn(iojUrl);
         when(financialAssessmentEndpoints.getByRequestType(AssessmentRequestType.CREATE)).thenReturn("post-assessment-url");
 
-        String postProcessingUrl = " post-processing-url";
 
         when(maatApiConfiguration.getFinancialAssessmentEndpoints()).thenReturn(financialAssessmentEndpoints);
         when(maatApiConfiguration.getPassportAssessmentEndpoints()).thenReturn(passportAssessmentEndpoints);
