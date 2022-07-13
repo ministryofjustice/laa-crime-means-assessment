@@ -15,6 +15,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReview
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
+import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -63,6 +64,8 @@ public class MaatCourtDataServiceTest {
         String iojUrl = "ioj-url";
         when(iojAppealEndpoints.getFindUrl()).thenReturn(iojUrl);
         when(financialAssessmentEndpoints.getByRequestType(AssessmentRequestType.CREATE)).thenReturn("post-assessment-url");
+
+        String postProcessingUrl = " post-processing-url";
 
         when(maatApiConfiguration.getFinancialAssessmentEndpoints()).thenReturn(financialAssessmentEndpoints);
         when(maatApiConfiguration.getPassportAssessmentEndpoints()).thenReturn(passportAssessmentEndpoints);
@@ -178,6 +181,17 @@ public class MaatCourtDataServiceTest {
         assertEquals(
                 String.format("Error calling Court Data API. Failed to create financial assessment history for financialAssessmentId: %d", repId),
                 error.getMessage());
+    }
+
+
+    @Test
+    public void givenAValidResponse_whenPerformAssessmentPostProcessingInvoked_thenTheCorrectResponseShouldBeReturned() throws JsonProcessingException {
+
+        PostProcessing postProcessing = PostProcessing.builder().repId(1223).laaTransactionId("adaskd").build();
+        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.OK).build()));
+
+        maatCourtDataService.performAssessmentPostProcessing(postProcessing);
+        verify(shortCircuitExchangeFunction, times(1)).exchange(any());
     }
 
     private void setupNotFoundTest() {
