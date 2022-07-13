@@ -20,7 +20,7 @@ maatApi:
   baseUrl: ${MAAT_API_BASE_URL}
   assessments-domain: /api/internal/v1/assessment
 
-  post-processing-url: ${maatApi.assessments-domain}/post-processing/{repId}
+  post-processing-url: ${maatApi.assessments-domain}/post-processing
 
   validation-endpoints:
     role-action-url: ${maatApi.assessments-domain}/authorization/users/{username}/actions/{action}
@@ -71,6 +71,7 @@ spring:
         jwt:
           issuer-uri: ${means-assessment.security.issuer-uri}
 
+
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
@@ -82,6 +83,7 @@ spring:
       ddl-auto: validate
     properties:
       hibernate.temp.use_jdbc_metadata_defaults: false
+
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
@@ -115,5 +117,8 @@ aws:
     region: ${AWS_REGION}
   queue:
     post-processing-queue: ${POST_PROCESSING_QUEUE}
+
+
+
 
 version: 0.0.1
