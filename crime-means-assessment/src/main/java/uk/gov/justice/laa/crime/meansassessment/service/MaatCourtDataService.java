@@ -16,6 +16,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReview
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
+import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -27,10 +28,10 @@ import java.util.Map;
 @Slf4j
 public class MaatCourtDataService {
 
+    public static final String RESPONSE_STRING = "Response from Court Data API: %s";
     @Qualifier("maatAPIOAuth2WebClient")
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
-    public static final String RESPONSE_STRING = "Response from Court Data API: %s";
 
     public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, AssessmentRequestType requestType) {
         MaatApiAssessmentResponse response = getApiResponseViaPOST(
@@ -138,6 +139,19 @@ public class MaatCourtDataService {
                 .bodyToMono(responseClass)
                 .onErrorMap(throwable -> new APIClientException(errorMessage, throwable))
                 .doOnError(Sentry::captureException);
+    }
+
+    public void performAssessmentPostProcessing(PostProcessing postProcessing) {
+
+
+        Map<String, String> headers = Map.of(Constants.LAA_TRANSACTION_ID, postProcessing.getLaaTransactionId());
+        getApiResponseViaPOST(
+                postProcessing,
+                Void.class,
+                configuration.getPostProcessingUrl(),
+                headers);
+
+        log.info(String.format("Post processing is completed for : %s", postProcessing.getRepId()));
     }
 
 }
