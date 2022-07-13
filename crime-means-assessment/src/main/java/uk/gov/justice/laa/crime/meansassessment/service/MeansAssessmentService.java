@@ -32,7 +32,7 @@ public class MeansAssessmentService {
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
     private final InitMeansAssessmentService initMeansAssessmentService;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
-    private final PostProcessingMsgPublisherService postProcessingMsgPublisherService;
+
 
     public ApiCreateMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -91,7 +91,7 @@ public class MeansAssessmentService {
                         .id(userSession.getSessionId())
                         .build())
                 .build();
-        postProcessingMsgPublisherService.publishMessage(postprocessingRequest);
+        maatCourtDataService.performAssessmentPostProcessing(postprocessingRequest);
     }
 
     BigDecimal calculateSummariesTotal(final MeansAssessmentRequestDTO requestDTO, final AssessmentCriteriaEntity assessmentCriteria) {
