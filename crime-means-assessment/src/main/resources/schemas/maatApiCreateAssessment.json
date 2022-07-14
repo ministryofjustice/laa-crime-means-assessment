@@ -39,7 +39,6 @@
   "required": [
     "nworCode",
     "userCreated",
-    "usn",
     "rtCode"
   ]
 }
