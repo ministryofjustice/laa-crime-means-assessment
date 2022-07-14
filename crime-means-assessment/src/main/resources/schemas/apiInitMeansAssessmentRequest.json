@@ -22,7 +22,5 @@
     "$ref": "apiMeansAssessmentRequest.json"
   },
   "additionalProperties": false,
-  "required": [
-    "newWorkReason"
-  ]
+  "required": ["newWorkReason"]
 }
