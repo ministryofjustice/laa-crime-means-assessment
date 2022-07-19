@@ -57,6 +57,8 @@ public class FullAssessmentAvailabilityService {
         switch (requestDTO.getCaseType()) {
             case COMMITAL:
             case SUMMARY_ONLY:
+                meansAssessmentResponse.setFullAssessmentAvailable(false);
+                break;
             case INDICTABLE:
             case CC_ALREADY:
             case APPEAL_CC:
