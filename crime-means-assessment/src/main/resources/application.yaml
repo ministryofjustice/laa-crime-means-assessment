@@ -113,7 +113,6 @@ aws:
     accesskey: ${AWS_ACCESS_KEY}
     secretkey: ${AWS_SECRET_KEY}
     region: ${AWS_REGION}
-  queue:
-    post-processing-queue: ${POST_PROCESSING_QUEUE}
+ 
 
 version: 0.0.1
