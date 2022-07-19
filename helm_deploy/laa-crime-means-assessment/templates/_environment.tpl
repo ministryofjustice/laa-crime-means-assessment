@@ -38,14 +38,4 @@ env:
       secretKeyRef:
         name: rds-postgresql-instance-output
         key: database_password
-  - name: AWS_ACCESS_KEY
-    valueFrom:
-      secretKeyRef:
-        name: cma-messaging-queues-output
-        key: access_key_id
-  - name: AWS_SECRET_KEY
-    valueFrom:
-      secretKeyRef:
-        name: cma-messaging-queues-output
-        key: secret_access_key
 {{- end -}}
