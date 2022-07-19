@@ -113,6 +113,5 @@ aws:
     accesskey: ${AWS_ACCESS_KEY}
     secretkey: ${AWS_SECRET_KEY}
     region: ${AWS_REGION}
- 
 
 version: 0.0.1
