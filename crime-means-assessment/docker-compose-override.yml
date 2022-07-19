@@ -1,0 +1,27 @@
+version: "3.2"
+
+services:
+  app:
+    environment:
+      - DATASOURCE_HOST_PORT=postgres:5432
+      - DATASOURCE_DBNAME=crime_means_assessment
+      - DATASOURCE_USERNAME=postgres
+      - DATASOURCE_PASSWORD=postgres
+      - SENTRY_ENV=development
+      - MAAT_API_OAUTH_URL=maat-api-authentication-url
+      - MAAT_API_OAUTH_CLIENT_ID=maat-api-client-id
+      - MAAT_API_OAUTH_CLIENT_SECRET=maat-api-client-secret
+      - MAAT_API_BASE_URL=http://localhost:8090
+      - AWS_ACCESS_KEY=AKIA27HJSWAHEI4S6EV2
+      - AWS_SECRET_KEY=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
+      - AWS_REGION=eu-west-2
+
+    ports:
+      - "8081:8081"
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8081 -jar app.jar
+
+  postgres:
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=crime_means_assessment
