@@ -48,9 +48,4 @@ env:
       secretKeyRef:
         name: cma-messaging-queues-output
         key: secret_access_key
-  - name: POST_PROCESSING_QUEUE
-    valueFrom:
-      secretKeyRef:
-        name: cma-messaging-queues-output
-        key: sqs_name_means_assessment_post_processing
 {{- end -}}
