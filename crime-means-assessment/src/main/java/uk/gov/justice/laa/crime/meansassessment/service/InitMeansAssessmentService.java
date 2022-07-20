@@ -38,13 +38,14 @@ public class InitMeansAssessmentService implements AssessmentService {
 
     BigDecimal getAdjustedIncome(MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
         BigDecimal totalChildWeighting =
-                childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria);
+                setStandardScale(childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria));
+
         if (BigDecimal.ZERO.compareTo(annualTotal) <= 0) {
-            return annualTotal
-                    .divide(assessmentCriteria.getApplicantWeightingFactor()
-                                    .add(assessmentCriteria.getPartnerWeightingFactor())
+            return setStandardScale(annualTotal)
+                    .divide(setStandardScale(assessmentCriteria.getApplicantWeightingFactor())
+                                    .add(setStandardScale(assessmentCriteria.getPartnerWeightingFactor()))
                                     .add(totalChildWeighting),
-                            RoundingMode.UP);
+                            RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;
     }
@@ -64,5 +65,9 @@ public class InitMeansAssessmentService implements AssessmentService {
         } else {
             return InitAssessmentResult.FULL;
         }
+    }
+
+    private BigDecimal setStandardScale(BigDecimal valueToScale) {
+        return valueToScale.setScale(2, RoundingMode.HALF_UP);
     }
 }
