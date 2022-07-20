@@ -117,7 +117,7 @@ public class InitMeansAssessmentServiceTest {
                         TestModelDataBuilder.TEST_PARTNER_WEIGHTING_FACTOR
                 ).add(totalChildWeighting);
 
-        BigDecimal expected = annualTotal.divide(combinedWeightingFactor, RoundingMode.UP);
+        BigDecimal expected = annualTotal.divide(combinedWeightingFactor, RoundingMode.HALF_UP);
 
         when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))
@@ -125,6 +125,30 @@ public class InitMeansAssessmentServiceTest {
 
         assertThat(initMeansAssessmentService.getAdjustedIncome(
                 TestModelDataBuilder.getMeansAssessmentRequestDTO(true), assessmentCriteria, annualTotal)
+        ).isEqualTo(expected);
+    }
+
+    @Test
+    public void givenPositiveAnnualTotalRequiringRounding_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
+        BigDecimal annualTotal = BigDecimal.valueOf(36613.02);
+        BigDecimal totalChildWeighting = BigDecimal.valueOf(0);
+        BigDecimal applicantWeightingFactor = BigDecimal.valueOf(1.00);
+        BigDecimal partnerWeightingFactor = BigDecimal.valueOf(0.64);
+
+        BigDecimal expected = BigDecimal.valueOf(22325.01);
+
+        AssessmentCriteriaEntity testAssessmentCriteria =
+                AssessmentCriteriaEntity.builder()
+                        .applicantWeightingFactor(applicantWeightingFactor)
+                        .partnerWeightingFactor(partnerWeightingFactor)
+                        .build();
+
+        when(childWeightingService.getTotalChildWeighting(
+                anyList(), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(totalChildWeighting);
+
+        assertThat(initMeansAssessmentService.getAdjustedIncome(
+                TestModelDataBuilder.getMeansAssessmentRequestDTO(true), testAssessmentCriteria, annualTotal)
         ).isEqualTo(expected);
     }
 
