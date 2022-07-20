@@ -40,7 +40,7 @@ public class InitMeansAssessmentService implements AssessmentService {
         BigDecimal totalChildWeighting =
                 childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria);
         if (BigDecimal.ZERO.compareTo(annualTotal) <= 0) {
-            return annualTotal
+            return annualTotal.setScale(2, RoundingMode.HALF_UP)
                     .divide(assessmentCriteria.getApplicantWeightingFactor()
                                     .add(assessmentCriteria.getPartnerWeightingFactor())
                                     .add(totalChildWeighting),
