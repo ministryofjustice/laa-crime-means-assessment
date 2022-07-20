@@ -44,7 +44,7 @@ public class InitMeansAssessmentService implements AssessmentService {
                     .divide(assessmentCriteria.getApplicantWeightingFactor()
                                     .add(assessmentCriteria.getPartnerWeightingFactor())
                                     .add(totalChildWeighting),
-                            RoundingMode.UP);
+                            RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;
     }
