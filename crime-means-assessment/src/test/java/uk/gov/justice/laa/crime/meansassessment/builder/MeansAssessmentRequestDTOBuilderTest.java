@@ -1,9 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Before;
 import org.junit.Test;
-import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiFullMeansAssessmentRequest;

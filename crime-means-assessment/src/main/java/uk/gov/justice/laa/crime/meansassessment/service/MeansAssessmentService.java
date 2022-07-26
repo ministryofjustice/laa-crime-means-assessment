@@ -3,7 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.meansassessment.builder.maatapi.MaatCourtDataAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
@@ -56,12 +56,13 @@ public class MeansAssessmentService {
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
             MaatApiAssessmentResponse maatApiAssessmentResponse = maatCourtDataService.postMeansAssessment(
-                    assessmentBuilder.buildAssessmentRequest(completedAssessment, requestType),
-                    requestDTO.getLaaTransactionId(), requestType);
+                    assessmentBuilder.buildAssessmentRequest(completedAssessment, requestType), requestDTO.getLaaTransactionId(), requestType
+            );
             log.info("Posting completed means assessment to Court Data API");
 
             ApiCreateMeansAssessmentResponse assessmentResponse = buildApiCreateMeansAssessmentResponse(
-                    maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
+                    maatApiAssessmentResponse, assessmentCriteria, completedAssessment
+            );
 
             fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
             assessmentSummaryService.addAssessmentSummaryToMeansResponse(assessmentResponse, requestDTO.getLaaTransactionId());
@@ -69,9 +70,8 @@ public class MeansAssessmentService {
 
             doPostProcessing(requestDTO);
 
-
             return assessmentResponse;
-        } catch (RuntimeException exception) {
+        } catch (Exception exception) {
             throw new AssessmentProcessingException(
                     String.format("An error occurred whilst processing the assessment request with RepID: %d",
                             requestDTO.getRepId()), exception);
