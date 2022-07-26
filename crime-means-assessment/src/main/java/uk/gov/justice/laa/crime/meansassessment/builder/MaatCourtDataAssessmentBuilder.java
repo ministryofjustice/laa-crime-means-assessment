@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.builder.maatapi;
+package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
