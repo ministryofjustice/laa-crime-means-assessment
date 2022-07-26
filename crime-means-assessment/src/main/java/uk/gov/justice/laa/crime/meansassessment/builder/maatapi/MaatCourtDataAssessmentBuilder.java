@@ -10,9 +10,7 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiCreateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.util.stream.Collectors;
 
@@ -50,8 +48,10 @@ public class MaatCourtDataAssessmentBuilder {
                 .withInitOtherIncomeNote(requestDTO.getOtherIncomeNote())
                 .withInitTotAggregatedIncome(assessment.getTotalAggregatedIncome())
                 .withInitAdjustedIncomeValue(assessment.getAdjustedIncomeValue())
-                .withInitResult(assessment.getInitAssessmentResult().getResult())
-                .withInitResultReason(assessment.getInitAssessmentResult().getReason())
+                .withInitResult(ofNullable(assessment.getInitAssessmentResult())
+                        .map(InitAssessmentResult::getResult).orElse(null))
+                .withInitResultReason(ofNullable(assessment.getInitAssessmentResult())
+                        .map(InitAssessmentResult::getReason).orElse(null))
                 .withIncomeEvidenceDueDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
                         .map(ApiIncomeEvidenceSummary::getEvidenceDueDate).orElse(null))
                 .withIncomeEvidenceNotes(ofNullable(requestDTO.getIncomeEvidenceSummary())
@@ -85,8 +85,10 @@ public class MaatCourtDataAssessmentBuilder {
         return new MaatApiUpdateAssessment()
                 .withFullAscrId(assessment.getAssessmentCriteria().getId())
                 .withFullAssessmentDate(meansAssessment.getFullAssessmentDate())
-                .withFullResult(assessment.getFullAssessmentResult().getResult())
-                .withFullResultReason(assessment.getFullAssessmentResult().getReason())
+                .withFullResult(ofNullable(assessment.getFullAssessmentResult())
+                        .map(FullAssessmentResult::getResult).orElse(null))
+                .withFullResultReason(ofNullable(assessment.getFullAssessmentResult())
+                        .map(FullAssessmentResult::getReason).orElse(null))
                 .withFullAssessmentNotes(meansAssessment.getFullAssessmentNotes())
                 .withFullAdjustedLivingAllowance(assessment.getAdjustedLivingAllowance())
                 .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
