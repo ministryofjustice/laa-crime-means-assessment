@@ -10,6 +10,7 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiCreateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.util.stream.Collectors;
@@ -71,7 +72,8 @@ public class MaatCourtDataAssessmentBuilder {
     private MaatApiCreateAssessment buildCreate(MeansAssessmentRequestDTO requestDTO) {
         return new MaatApiCreateAssessment()
                 .withUsn(requestDTO.getUsn())
-                .withRtCode(requestDTO.getReviewType().getCode())
+                .withRtCode(ofNullable(requestDTO.getReviewType())
+                        .map(ReviewType::getCode).orElse(null))
                 .withNworCode(requestDTO.getNewWorkReason().getCode())
                 .withUserCreated(requestDTO.getUserId())
                 .withIncomeUpliftRemoveDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
