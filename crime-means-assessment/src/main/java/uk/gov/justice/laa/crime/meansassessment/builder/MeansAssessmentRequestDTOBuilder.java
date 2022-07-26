@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.builder.maatapi;
+package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
