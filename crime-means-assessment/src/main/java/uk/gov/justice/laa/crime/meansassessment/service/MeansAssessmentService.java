@@ -56,12 +56,13 @@ public class MeansAssessmentService {
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
             MaatApiAssessmentResponse maatApiAssessmentResponse = maatCourtDataService.postMeansAssessment(
-                    assessmentBuilder.buildAssessmentRequest(completedAssessment, requestType),
-                    requestDTO.getLaaTransactionId(), requestType);
+                    assessmentBuilder.buildAssessmentRequest(completedAssessment, requestType), requestDTO.getLaaTransactionId(), requestType
+            );
             log.info("Posting completed means assessment to Court Data API");
 
             ApiCreateMeansAssessmentResponse assessmentResponse = buildApiCreateMeansAssessmentResponse(
-                    maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
+                    maatApiAssessmentResponse, assessmentCriteria, completedAssessment
+            );
 
             fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
             assessmentSummaryService.addAssessmentSummaryToMeansResponse(assessmentResponse, requestDTO.getLaaTransactionId());
@@ -69,9 +70,8 @@ public class MeansAssessmentService {
 
             doPostProcessing(requestDTO);
 
-
             return assessmentResponse;
-        } catch (RuntimeException exception) {
+        } catch (Exception exception) {
             throw new AssessmentProcessingException(
                     String.format("An error occurred whilst processing the assessment request with RepID: %d",
                             requestDTO.getRepId()), exception);
