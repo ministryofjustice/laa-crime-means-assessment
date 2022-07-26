@@ -35,7 +35,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentServiceTest {
@@ -73,7 +72,6 @@ public class MeansAssessmentServiceTest {
 
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
-
 
 
     @Before
@@ -355,9 +353,9 @@ public class MeansAssessmentServiceTest {
                         .build())
                 .build();
         //when
-        meansAssessmentService.doAssessment(meansAssessment,AssessmentRequestType.CREATE);
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         //then
-        verify(maatCourtDataService,times(1)).performAssessmentPostProcessing(postProcessing);
+        verify(maatCourtDataService, times(1)).performAssessmentPostProcessing(postProcessing);
     }
 }
