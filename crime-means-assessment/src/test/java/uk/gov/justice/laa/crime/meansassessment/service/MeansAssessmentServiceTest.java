@@ -9,15 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
-import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
-import uk.gov.justice.laa.crime.meansassessment.model.UserSession;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -32,8 +29,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -261,9 +258,6 @@ public class MeansAssessmentServiceTest {
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
-        given(maatCourtDataService.createFinancialAssessmentHistory(anyInt(), any(), anyString()))
-                .willReturn(Mono.empty());
-
     }
 
     @Test
@@ -289,8 +283,6 @@ public class MeansAssessmentServiceTest {
         });
 
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
-        verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
-        verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
 
     }
 
@@ -301,8 +293,6 @@ public class MeansAssessmentServiceTest {
 
         verify(initMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
-        verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
-        verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
 
     }
 
@@ -319,8 +309,7 @@ public class MeansAssessmentServiceTest {
 
         verify(fullMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
-        verify(assessmentSummaryService).addAssessmentSummaryToMeansResponse(eq(result), anyString());
-        verify(maatCourtDataService).createFinancialAssessmentHistory(eq(result.getAssessmentId()), eq(result.getFullAssessmentAvailable()), anyString());
+
 
     }
 
@@ -338,24 +327,5 @@ public class MeansAssessmentServiceTest {
         );
     }
 
-    @Test
-    public void givenPostProcessingDataIsAvailable_whenMsgPublisherIsInvoked_thenMessageIsPublished() {
-        //given
-        setupDoAssessmentStubbing();
-        PostProcessing postProcessing = PostProcessing
-                .builder()
-                .repId(meansAssessment.getRepId())
-                .laaTransactionId(meansAssessment.getLaaTransactionId())
-                .user(UserSession
-                        .builder()
-                        .id(meansAssessment.getUserSession().getSessionId())
-                        .username(meansAssessment.getUserSession().getUserName())
-                        .build())
-                .build();
-        //when
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
-        //then
-        verify(maatCourtDataService, times(1)).performAssessmentPostProcessing(postProcessing);
-    }
 }
