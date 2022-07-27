@@ -16,7 +16,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReview
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
-import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -141,17 +140,6 @@ public class MaatCourtDataService {
                 .doOnError(Sentry::captureException);
     }
 
-    public void performAssessmentPostProcessing(PostProcessing postProcessing) {
 
-
-        Map<String, String> headers = Map.of(Constants.LAA_TRANSACTION_ID, postProcessing.getLaaTransactionId());
-        getApiResponseViaPOST(
-                postProcessing,
-                Void.class,
-                configuration.getPostProcessingUrl(),
-                headers);
-
-        log.info(String.format("Post processing is completed for : %s", postProcessing.getRepId()));
-    }
 
 }

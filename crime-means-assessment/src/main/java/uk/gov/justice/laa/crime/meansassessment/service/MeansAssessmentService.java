@@ -7,8 +7,6 @@ import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentB
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
-import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
-import uk.gov.justice.laa.crime.meansassessment.model.UserSession;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -27,7 +25,6 @@ public class MeansAssessmentService {
 
     private final MaatCourtDataService maatCourtDataService;
     private final FullMeansAssessmentService fullMeansAssessmentService;
-    private final AssessmentSummaryService assessmentSummaryService;
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
     private final InitMeansAssessmentService initMeansAssessmentService;
@@ -65,10 +62,6 @@ public class MeansAssessmentService {
             );
 
             fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
-            assessmentSummaryService.addAssessmentSummaryToMeansResponse(assessmentResponse, requestDTO.getLaaTransactionId());
-            maatCourtDataService.createFinancialAssessmentHistory(assessmentResponse.getAssessmentId(), assessmentResponse.getFullAssessmentAvailable(), requestDTO.getLaaTransactionId()).subscribe();
-
-            doPostProcessing(requestDTO);
 
             return assessmentResponse;
         } catch (Exception exception) {
@@ -78,21 +71,6 @@ public class MeansAssessmentService {
         }
     }
 
-    private void doPostProcessing(MeansAssessmentRequestDTO requestDTO) {
-        log.info("Sending assessment post processing request for MAAT ID: {}", requestDTO.getRepId());
-        ApiUserSession userSession = requestDTO.getUserSession();
-        PostProcessing postprocessingRequest = PostProcessing
-                .builder()
-                .repId(requestDTO.getRepId())
-                .laaTransactionId(requestDTO.getLaaTransactionId())
-                .user(UserSession
-                        .builder()
-                        .username(userSession.getUserName())
-                        .id(userSession.getSessionId())
-                        .build())
-                .build();
-        maatCourtDataService.performAssessmentPostProcessing(postprocessingRequest);
-    }
 
     BigDecimal calculateSummariesTotal(final MeansAssessmentRequestDTO requestDTO, final AssessmentCriteriaEntity assessmentCriteria) {
         List<ApiAssessmentSectionSummary> sectionSummaries = requestDTO.getSectionSummaries();

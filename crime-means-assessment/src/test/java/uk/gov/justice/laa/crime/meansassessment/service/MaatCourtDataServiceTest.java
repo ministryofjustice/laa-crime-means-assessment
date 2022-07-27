@@ -15,7 +15,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReview
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
-import uk.gov.justice.laa.crime.meansassessment.model.PostProcessing;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -174,7 +173,7 @@ public class MaatCourtDataServiceTest {
 
         Mono<Void> createFinancialAssessmentHistoryMono =
                 maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId);
-        APIClientException error = assertThrows(APIClientException.class, () -> createFinancialAssessmentHistoryMono.block());
+        APIClientException error = assertThrows(APIClientException.class, createFinancialAssessmentHistoryMono::block);
 
         verify(shortCircuitExchangeFunction, times(1)).exchange(any());
         assertEquals(
@@ -183,15 +182,6 @@ public class MaatCourtDataServiceTest {
     }
 
 
-    @Test
-    public void givenAValidResponse_whenPerformAssessmentPostProcessingInvoked_thenTheCorrectResponseShouldBeReturned() throws JsonProcessingException {
-
-        PostProcessing postProcessing = PostProcessing.builder().repId(1223).laaTransactionId("adaskd").build();
-        when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.OK).build()));
-
-        maatCourtDataService.performAssessmentPostProcessing(postProcessing);
-        verify(shortCircuitExchangeFunction, times(1)).exchange(any());
-    }
 
     private void setupNotFoundTest() {
         when(shortCircuitExchangeFunction.exchange(any())).thenReturn(Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).body("Error").header(CONTENT_TYPE, APPLICATION_JSON_VALUE).build()));
