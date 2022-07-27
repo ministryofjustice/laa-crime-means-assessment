@@ -64,8 +64,7 @@ public class MeansAssessmentServiceTest {
     @Mock
     private MaatCourtDataService maatCourtDataService;
 
-    @Mock
-    private AssessmentSummaryService assessmentSummaryService;
+
 
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
