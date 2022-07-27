@@ -115,31 +115,6 @@ public class MaatCourtDataService {
         return new APIClientException("Call to Court Data API failed, invalid response.", error);
     }
 
-    public Mono<Void> createFinancialAssessmentHistory(final Integer finAssessmentId,
-                                                       final Boolean fullAssessmentAvailable,
-                                                       final String laaTransactionId) {
-        String errorMessage = "Error calling Court Data API. Failed to create financial " +
-                "assessment history for financialAssessmentId: " + finAssessmentId;
-        return getApiResponseViaPOSTAsync(
-                Void.class,
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
-                errorMessage,
-                configuration.getFinancialAssessmentEndpoints().getCreateHistoryUrl(),
-                finAssessmentId, fullAssessmentAvailable);
-    }
-
-
-    private <T> Mono<T> getApiResponseViaPOSTAsync(Class<T> responseClass, Map<String, String> headers, String errorMessage, String url, Object... urlVariables) {
-        return webClient.post()
-                .uri(uriBuilder -> uriBuilder.path(url).build(urlVariables))
-                .headers(httpHeaders -> httpHeaders.setAll(headers))
-                .contentType(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(responseClass)
-                .onErrorMap(throwable -> new APIClientException(errorMessage, throwable))
-                .doOnError(Sentry::captureException);
-    }
-
 
 
 }

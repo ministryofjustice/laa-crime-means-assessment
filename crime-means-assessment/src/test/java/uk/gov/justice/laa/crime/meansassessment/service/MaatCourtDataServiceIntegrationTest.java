@@ -237,39 +237,6 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
         assertNull(apiResponse);
     }
 
-
-    @Test
-    public void whenCreateFinancialAssessmentHistoryAPICalled_thenTheCallIsRetriedAndSucceeds() throws JsonProcessingException {
-        setupMockApiResponses(Void.class, maxRetries - 1);
-        StepVerifier
-                .create(maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId))
-                .expectComplete()
-                .verify();
-        assertTrue(output.getOut().contains("Response status: 200 OK"));
-    }
-
-    @Test
-    public void whenCreateFinancialAssessmentHistoryAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
-        setupMockApiResponses(Void.class, 0);
-        StepVerifier
-                .create(maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId))
-                .expectComplete()
-                .verify();
-        assertTrue(output.getOut().contains("Response status: 200 OK"));
-    }
-
-    @Test
-    public void whenCreateFinancialAssessmentHistoryAPICalled_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
-        String errorMessage =
-                String.format("Error calling Court Data API. Failed to create financial assessment history for financialAssessmentId: %d", repId);
-        setupMockApiResponses(Void.class, maxRetries + 1);
-        StepVerifier
-                .create(maatCourtDataService.createFinancialAssessmentHistory(repId, true, laaTransactionId))
-                .expectErrorMessage(errorMessage)
-                .verify();
-    }
-
-
     private MaatApiAssessmentResponse runPostMeansAssessment() {
         return maatCourtDataService.postMeansAssessment(
                 new MaatApiAssessmentRequest(),
