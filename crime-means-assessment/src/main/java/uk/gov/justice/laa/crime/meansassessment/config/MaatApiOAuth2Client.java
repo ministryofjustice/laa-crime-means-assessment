@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
@@ -15,6 +16,8 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 import reactor.util.retry.Retry;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 
@@ -27,9 +30,9 @@ import java.time.Duration;
 @Slf4j
 public class MaatApiOAuth2Client {
 
-    private static final String REGISTERED_ID = "maatapi";
     private final MaatApiConfiguration config;
     private final RetryConfiguration retryConfiguration;
+    private static final String REGISTERED_ID = "maatapi";
 
     public MaatApiOAuth2Client(MaatApiConfiguration config, RetryConfiguration retryConfiguration) {
         this.config = config;
@@ -42,15 +45,28 @@ public class MaatApiOAuth2Client {
                 new ServletOAuth2AuthorizedClientExchangeFilterFunction(
                         clientRegistrations, authorizedClients
                 );
+
+        ConnectionProvider provider =
+                ConnectionProvider.builder("custom")
+                        .maxConnections(500)
+                        .maxIdleTime(Duration.ofSeconds(20))
+                        .maxLifeTime(Duration.ofSeconds(60))
+                        .pendingAcquireTimeout(Duration.ofSeconds(60))
+                        .evictInBackground(Duration.ofSeconds(120))
+                        .build();
+
         oauth.setDefaultClientRegistrationId(REGISTERED_ID);
         WebClient.Builder client = WebClient.builder()
-                .filter(loggingRequest())
-                .filter(loggingResponse())
                 .baseUrl(config.getBaseUrl())
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .filter(retryFilter())
-                .filter(errorResponse());
+                .filter(loggingRequest())
+                .filter(errorResponse())
+                .filter(loggingResponse())
+                .clientConnector(new ReactorClientHttpConnector(
+                        HttpClient.create(provider))
+                )
+                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         if (config.isOAuthEnabled()) {
             client.filter(oauth);
