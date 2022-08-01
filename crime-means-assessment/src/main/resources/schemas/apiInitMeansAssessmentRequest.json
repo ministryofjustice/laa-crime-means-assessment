@@ -22,9 +22,5 @@
     "$ref": "apiMeansAssessmentRequest.json"
   },
   "additionalProperties": false,
-  "required": [
-    "usn",
-    "newWorkReason",
-    "reviewType"
-  ]
+  "required": ["usn", "newWorkReason", "reviewType"]
 }

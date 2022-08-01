@@ -36,10 +36,5 @@
     "$ref": "maatApiAssessmentRequest.json"
   },
   "additionalProperties": false,
-  "required": [
-    "nworCode",
-    "userCreated",
-    "usn",
-    "rtCode"
-  ]
+  "required": ["nworCode", "userCreated", "usn", "rtCode"]
 }

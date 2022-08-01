@@ -34,7 +34,7 @@ commands:
 
   deploy-to:
     description: >
-        Deploy image to the specified environment
+      Deploy image to the specified environment
     parameters:
       environment:
         description: Destination environment
