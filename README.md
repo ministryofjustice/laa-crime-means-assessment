@@ -1,12 +1,16 @@
-## laa-crime-means-assessment
+## Laa Crime Means Assessment
 
-This is a Java based Spring Boot Application which will be hosted on AWS Environment. The application is being deployed on to the AWS ECS container service. This is a Facade application to the existing LAA legacy Applications MAAT/MLRA.
+This is a Java based Spring Boot Application which will be hosted on AWS Environment (Cloud Platform). The application is being deployed on to the AWS ECS container service. This is a Facade application to the existing LAA legacy Applications MAAT/MLRA.
 
-[High level design] (https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/3673751570/Means+Assessment+-+High+level+Design+Approach)
+[High level design](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/3673751570/Means+Assessment+-+High+level+Design+Approach)
 
 ## Developer setup
 
-TBD
+1. Go through with this [Java Developer On-boarding Check List](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3738468667/Java+Developer+Onboarding+Check+List/) and complete all tasks.
+2. Request a team member to be added to the repository.
+3. Create a GPG (more detail further down on the page) key and create a PR. Someone from the team will approve the PR.
+4. This is a document to outline the general guideline [Developer Guidelines](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3896049821/Developer+Guidelines).
+5. This project have its own dedicated Jira Scrum board, and you can access [from here](https://dsdmoj.atlassian.net/jira/software/projects/LCAM/boards/881) and [project backlog](https://dsdmoj.atlassian.net/jira/software/projects/LCAM/boards/881/backlog)
 
 ### Pre-requisites
 
@@ -44,7 +48,8 @@ Once this has been merged you can decrypt your local copy of the repository by r
 
 ### DB Configuration
 
-TBD
+For database changes, we are using [liquibase]() and all the sql scripts stored in the directory (resources/db/changelog/).
+This project does not direct access to any of the database (togdata or mla) and all the database calls should be made through the [MAAT-API](https://github.com/ministryofjustice/laa-maat-court-data-api) project.
 
 ### Application Set up
 
@@ -91,7 +96,7 @@ The terraform scripts for the SQS can be found on https://github.com/ministryof
 
 ### Deployment
 
-TBD
+We have configured a CircleCI code pipelines. You can [log in](https://app.circleci.com/pipelines/github/ministryofjustice/laa-crime-means-assessment) from here to access the pipeline.
 
 ### Open API
 
@@ -141,8 +146,9 @@ We want to make sure that the Mutation Coverage for new classes are covered prop
 ### Further reading
 
 - [Diagrams for LAA and the common platform](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/1513128006/Diagrams)
-
 - [New Starter Guild](https://dsdmoj.atlassian.net/wiki/spaces/LAA/pages/1391460702/New+Hire+Check+List)
+- [Cloud Platform user guide](https://user-guide.cloud-platform.service.justice.gov.uk/#application-logging)
+- [Modernisation Platform Team Information](https://user-guide.modernisation-platform.service.justice.gov.uk/#modernisation-platform-team-information)
 
 ## JSON Schema to POJO
 
@@ -163,7 +169,3 @@ been set and are documented inside that section.:
 - targetPackage: what package the POJOs should belong to
 - includeJsr303Annotations: JSR-303/349 annotations (for schema rules like minimum, maximum, etc)
 - dateTimeType: What type to use instead of string
-
-## Snyk vulnerability scan
-
-[Integrate Snyk with CircleCI Pipeline](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/4009328641/Integrate+Snyk+Vulnerability+Scanning+with+CircleCI+Pipeline)
