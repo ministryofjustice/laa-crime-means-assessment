@@ -220,8 +220,8 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
-    public static ApiInitMeansAssessmentRequest getApiInitMeansAssessmentRequest(boolean isValid) {
-        return new ApiInitMeansAssessmentRequest()
+    public static ApiCreateMeansAssessmentRequest getApiInitMeansAssessmentRequest(boolean isValid) {
+        return new ApiCreateMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
                 .withReviewType(ReviewType.NAFI)
@@ -249,8 +249,8 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
-    public static ApiFullMeansAssessmentRequest getApiFullMeansAssessmentRequest(boolean isValid) {
-        return new ApiFullMeansAssessmentRequest()
+    public static ApiUpdateMeansAssessmentRequest getApiFullMeansAssessmentRequest(boolean isValid) {
+        return new ApiUpdateMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
                 .withRepId(isValid ? 91919 : null)
@@ -438,8 +438,8 @@ public class TestModelDataBuilder {
         );
     }
 
-    public static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
-        return new ApiCreateMeansAssessmentResponse()
+    public static ApiMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
+        return new ApiMeansAssessmentResponse()
                 .withAssessmentId(MEANS_ASSESSMENT_ID)
                 .withCriteriaId(isValid ? 41 : null)
                 .withTotalAggregatedIncome(BigDecimal.valueOf(10))

@@ -4,9 +4,9 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiFullMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiInitMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -48,7 +48,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
 
     @Test
     public void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
-        ApiInitMeansAssessmentRequest initMeansAssessment =
+        ApiCreateMeansAssessmentRequest initMeansAssessment =
                 TestModelDataBuilder.getApiInitMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(initMeansAssessment);
@@ -62,7 +62,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
 
     @Test
     public void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
-        ApiFullMeansAssessmentRequest fullMeansAssessment =
+        ApiUpdateMeansAssessmentRequest fullMeansAssessment =
                 TestModelDataBuilder.getApiFullMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(fullMeansAssessment);
