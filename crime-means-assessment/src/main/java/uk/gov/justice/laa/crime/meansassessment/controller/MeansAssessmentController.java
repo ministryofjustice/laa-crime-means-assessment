@@ -38,11 +38,28 @@ public class MeansAssessmentController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "This endpoint creates an initial means assessment")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiMeansAssessmentResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-    @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-    public ResponseEntity<ApiMeansAssessmentResponse> createAssessment(@Parameter(description = "Init means assessment data", content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
+    @ApiResponse(responseCode = "200",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "400",
+            description = "Bad Request.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorDTO.class)
+            )
+    )
+    @ApiResponse(responseCode = "500",
+            description = "Server Error.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorDTO.class)
+            )
+    )
+    public ResponseEntity<ApiMeansAssessmentResponse> createAssessment(@Parameter(description = "Init means assessment data",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class)
+            )
+    ) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
 
         log.info("Create Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
         MeansAssessmentRequestDTO requestDTO = meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
@@ -54,11 +71,28 @@ public class MeansAssessmentController {
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "This endpoint updates an initial means assessment or converts it to a full one")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiMeansAssessmentResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-    @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-    public ResponseEntity<ApiMeansAssessmentResponse> updateAssessment(@Parameter(description = "Init/Full means assessment data", content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = ApiUpdateMeansAssessmentRequest.class))) @Valid @RequestBody ApiUpdateMeansAssessmentRequest meansAssessment) {
+    @ApiResponse(responseCode = "200",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
+            )
+    )
+    @ApiResponse(responseCode = "400",
+            description = "Bad Request.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorDTO.class)
+            )
+    )
+    @ApiResponse(responseCode = "500",
+            description = "Server Error.",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ErrorDTO.class)
+            )
+    )
+    public ResponseEntity<ApiMeansAssessmentResponse> updateAssessment(@Parameter(description = "Init/Full means assessment data",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ApiUpdateMeansAssessmentRequest.class)
+            )
+    ) @Valid @RequestBody ApiUpdateMeansAssessmentRequest meansAssessment) {
 
         log.info("Update Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
         MeansAssessmentRequestDTO requestDTO = meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
