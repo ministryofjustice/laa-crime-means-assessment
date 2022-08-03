@@ -5,6 +5,10 @@
   "title": "Initial Means Assessment Request",
   "description": "Data contract for full means assessment requests",
   "properties": {
+    "financialAssessmentId": {
+      "type": "number",
+      "description": "The ID of the financial assessment being updated"
+    },
     "fullAssessmentDate": {
       "type": "string",
       "description": "Effective Date of full assessment",

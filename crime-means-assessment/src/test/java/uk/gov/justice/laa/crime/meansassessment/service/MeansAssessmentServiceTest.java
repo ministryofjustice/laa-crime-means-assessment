@@ -264,7 +264,7 @@ public class MeansAssessmentServiceTest {
 
         setupDoAssessmentStubbing();
 
-        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(
+        ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(
                 meansAssessment, AssessmentRequestType.CREATE
         );
 
@@ -288,7 +288,7 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
         setupDoAssessmentStubbing();
-        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+        ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
@@ -304,7 +304,7 @@ public class MeansAssessmentServiceTest {
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         meansAssessment.setAssessmentType(AssessmentType.FULL);
-        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+        ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
 
         verify(fullMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
