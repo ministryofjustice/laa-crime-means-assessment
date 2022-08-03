@@ -7,7 +7,11 @@ import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentB
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -24,25 +28,22 @@ import java.util.List;
 public class MeansAssessmentService {
 
     private final MaatCourtDataService maatCourtDataService;
-    private final FullMeansAssessmentService fullMeansAssessmentService;
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
-    private final InitMeansAssessmentService initMeansAssessmentService;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
-
+    private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
         try {
-            LocalDateTime assessmentDate;
-            AssessmentService assessmentService;
-            if (AssessmentType.FULL.equals(requestDTO.getAssessmentType())) {
-                assessmentService = fullMeansAssessmentService;
-                assessmentDate = requestDTO.getFullAssessmentDate();
-            } else {
-                assessmentService = initMeansAssessmentService;
-                assessmentDate = requestDTO.getInitialAssessmentDate();
-            }
+            AssessmentType assessmentType = requestDTO.getAssessmentType();
+            LocalDateTime assessmentDate =
+                    (AssessmentType.FULL.equals(assessmentType)) ? requestDTO.getFullAssessmentDate()
+                            : requestDTO.getInitialAssessmentDate();
+
+            AssessmentService assessmentService =
+                    meansAssessmentServiceFactory.getService(assessmentType);
+
             AssessmentCriteriaEntity assessmentCriteria = assessmentCriteriaService.getAssessmentCriteria(
                     assessmentDate, requestDTO.getHasPartner(), requestDTO.getPartnerContraryInterest());
 
@@ -68,7 +69,8 @@ public class MeansAssessmentService {
         } catch (Exception exception) {
             throw new AssessmentProcessingException(
                     String.format("An error occurred whilst processing the assessment request with RepID: %d",
-                            requestDTO.getRepId()), exception);
+                            requestDTO.getRepId()), exception
+            );
         }
     }
 
