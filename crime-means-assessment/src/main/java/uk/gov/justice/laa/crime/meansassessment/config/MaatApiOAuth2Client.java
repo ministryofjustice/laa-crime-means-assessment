@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.config;
 
+import io.netty.handler.timeout.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +12,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
@@ -63,7 +61,10 @@ public class MaatApiOAuth2Client {
                 .filter(errorResponse())
                 .filter(loggingResponse())
                 .clientConnector(new ReactorClientHttpConnector(
-                        HttpClient.create(provider))
+                                HttpClient.create(provider)
+                                        .compress(true)
+                                        .responseTimeout(Duration.ofSeconds(30))
+                        )
                 )
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -120,7 +121,9 @@ public class MaatApiOAuth2Client {
                                         )
                                         .jitter(retryConfiguration.getJitterValue())
                                         .filter(
-                                                throwable -> throwable instanceof HttpServerErrorException
+                                                throwable ->
+                                                        throwable instanceof HttpServerErrorException ||
+                                                                (throwable instanceof WebClientRequestException && throwable.getCause() instanceof TimeoutException)
                                         ).onRetryExhaustedThrow(
                                                 (retryBackoffSpec, retrySignal) ->
                                                         new APIClientException(
@@ -130,6 +133,12 @@ public class MaatApiOAuth2Client {
                                                                         retryConfiguration.getMaxRetries()
                                                                 ), retrySignal.failure()
                                                         )
+                                        ).doBeforeRetry(
+                                                doBeforeRetry -> log.warn(
+                                                        String.format("Call to Court Data API failed, retrying: %d/%d",
+                                                                doBeforeRetry.totalRetries(), retryConfiguration.getMaxRetries()
+                                                        )
+                                                )
                                         )
                         );
     }
