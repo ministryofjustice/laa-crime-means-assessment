@@ -31,7 +31,7 @@ public class MeansAssessmentService {
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
 
-    public ApiCreateMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
+    public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
         try {
             LocalDateTime assessmentDate;
@@ -48,7 +48,8 @@ public class MeansAssessmentService {
 
             BigDecimal summariesTotal = calculateSummariesTotal(requestDTO, assessmentCriteria);
 
-            MeansAssessmentDTO completedAssessment = assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
+            MeansAssessmentDTO completedAssessment =
+                    assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
@@ -57,7 +58,7 @@ public class MeansAssessmentService {
             );
             log.info("Posting completed means assessment to Court Data API");
 
-            ApiCreateMeansAssessmentResponse assessmentResponse = buildApiCreateMeansAssessmentResponse(
+            ApiMeansAssessmentResponse assessmentResponse = buildApiCreateMeansAssessmentResponse(
                     maatApiAssessmentResponse, assessmentCriteria, completedAssessment
             );
 
@@ -126,10 +127,10 @@ public class MeansAssessmentService {
         return detailTotal;
     }
 
-    private ApiCreateMeansAssessmentResponse buildApiCreateMeansAssessmentResponse(final MaatApiAssessmentResponse maatApiAssessmentResponse,
-                                                                                   final AssessmentCriteriaEntity assessmentCriteria,
-                                                                                   final MeansAssessmentDTO completedAssessment) {
-        return new ApiCreateMeansAssessmentResponse()
+    private ApiMeansAssessmentResponse buildApiCreateMeansAssessmentResponse(final MaatApiAssessmentResponse maatApiAssessmentResponse,
+                                                                             final AssessmentCriteriaEntity assessmentCriteria,
+                                                                             final MeansAssessmentDTO completedAssessment) {
+        return new ApiMeansAssessmentResponse()
                 .withAssessmentId(maatApiAssessmentResponse.getId())
                 .withRepId(maatApiAssessmentResponse.getRepId())
                 .withCriteriaId(assessmentCriteria.getId())

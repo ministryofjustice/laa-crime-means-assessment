@@ -10,27 +10,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiInitMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
 import javax.validation.Valid;
 
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType.CREATE;
+import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType.UPDATE;
 
 @RestController
 @RequestMapping("api/internal/v1/assessment/means")
 @Slf4j
 @RequiredArgsConstructor
-@Tag(name = "Means Assessment", description = "Rest APIs for Means Assessment.")
+@Tag(name = "Means Assessment", description = "Rest API for Means Assessment.")
 public class MeansAssessmentController {
 
     private final MeansAssessmentService meansAssessmentService;
@@ -38,18 +37,34 @@ public class MeansAssessmentController {
     private final MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = " This API creates an initial means assessment.")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiCreateMeansAssessmentResponse.class)))
+    @Operation(description = "This endpoint creates an initial means assessment")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiMeansAssessmentResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
     @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
-    public ResponseEntity<ApiCreateMeansAssessmentResponse> createAssessment(@Parameter(description = "Initial means assessment data", content = @Content(mediaType = "application/json",
-            schema = @Schema(implementation = ApiInitMeansAssessmentRequest.class))) @Valid @RequestBody ApiInitMeansAssessmentRequest meansAssessment) {
+    public ResponseEntity<ApiMeansAssessmentResponse> createAssessment(@Parameter(description = "Init means assessment data", content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class))) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
 
-        log.info("Create INIT Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
+        log.info("Create Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
         MeansAssessmentRequestDTO requestDTO = meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
         meansAssessmentValidationProcessor.validate(requestDTO);
-        var createMeansAssessmentResponse = meansAssessmentService.doAssessment(requestDTO, CREATE);
-        log.info("Create INIT Assessment Request completed for MAAT ID: {}", requestDTO.getRepId());
-        return ResponseEntity.ok(createMeansAssessmentResponse);
+        var MeansAssessmentResponse = meansAssessmentService.doAssessment(requestDTO, CREATE);
+        log.info("Create Assessment Request completed for MAAT ID: {}", requestDTO.getRepId());
+        return ResponseEntity.ok(MeansAssessmentResponse);
+    }
+
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "This endpoint updates an initial means assessment or converts it to a full one")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiMeansAssessmentResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
+    @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
+    public ResponseEntity<ApiMeansAssessmentResponse> updateAssessment(@Parameter(description = "Init/Full means assessment data", content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = ApiUpdateMeansAssessmentRequest.class))) @Valid @RequestBody ApiUpdateMeansAssessmentRequest meansAssessment) {
+
+        log.info("Update Assessment Request Received for MAAT ID:  {}", meansAssessment.getRepId());
+        MeansAssessmentRequestDTO requestDTO = meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
+        meansAssessmentValidationProcessor.validate(requestDTO);
+        var meansAssessmentResponse = meansAssessmentService.doAssessment(requestDTO, UPDATE);
+        log.info("Update Assessment Request completed for MAAT ID: {}", requestDTO.getRepId());
+        return ResponseEntity.ok(meansAssessmentResponse);
     }
 }
