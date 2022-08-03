@@ -15,6 +15,7 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
+import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -59,11 +60,13 @@ public class MeansAssessmentServiceTest {
     private FullMeansAssessmentService fullMeansAssessmentService;
 
     @Mock
+    MeansAssessmentServiceFactory meansAssessmentServiceFactory;
+
+    @Mock
     private MaatCourtDataAssessmentBuilder assessmentBuilder;
 
     @Mock
     private MaatCourtDataService maatCourtDataService;
-
 
 
     @Mock
@@ -232,7 +235,7 @@ public class MeansAssessmentServiceTest {
         assertThat(summariesTotal).isEqualTo(expected);
     }
 
-    private void setupDoAssessmentStubbing() {
+    private void setupDoAssessmentStubbing(AssessmentType assessmentType) {
         when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(assessmentCriteria);
 
@@ -240,7 +243,16 @@ public class MeansAssessmentServiceTest {
                 new MaatApiAssessmentRequest()
         );
 
+        when(meansAssessmentServiceFactory.getService(any(AssessmentType.class)))
+                .thenAnswer(invocation ->
+                        AssessmentType.INIT.equals(assessmentType) ? initMeansAssessmentService : fullMeansAssessmentService
+                );
+
         when(initMeansAssessmentService.execute(
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
+
+        when(fullMeansAssessmentService.execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
@@ -262,7 +274,7 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenCreateInitAssessmentRequest_whenDoAssessmentIsInvoked_thenAssessmentIsPersisted() {
 
-        setupDoAssessmentStubbing();
+        setupDoAssessmentStubbing(AssessmentType.INIT);
 
         ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(
                 meansAssessment, AssessmentRequestType.CREATE
@@ -287,29 +299,23 @@ public class MeansAssessmentServiceTest {
 
     @Test
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
-        setupDoAssessmentStubbing();
+        setupDoAssessmentStubbing(AssessmentType.INIT);
+
         ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
-
     }
 
     @Test
     public void givenFullAssessmentType_whenDoAssessmentIsInvoked_thenFullAssessmentIsPerformed() {
-        setupDoAssessmentStubbing();
-
-        when(fullMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
+        setupDoAssessmentStubbing(AssessmentType.FULL);
 
         meansAssessment.setAssessmentType(AssessmentType.FULL);
         ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
 
         verify(fullMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
-
-
     }
 
     @Test
