@@ -24,7 +24,6 @@ import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.mock.MockServicesConfig;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
@@ -41,7 +40,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 
 @RunWith(SpringRunner.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
-@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class, MockServicesConfig.class}, webEnvironment = DEFINED_PORT)
+@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class}, webEnvironment = DEFINED_PORT)
 public class MeansAssessmentControllerTest {
 
 
