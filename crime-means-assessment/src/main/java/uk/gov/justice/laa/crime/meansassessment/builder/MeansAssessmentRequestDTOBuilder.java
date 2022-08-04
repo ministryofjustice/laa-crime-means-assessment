@@ -15,7 +15,6 @@ public class MeansAssessmentRequestDTOBuilder {
                 .laaTransactionId(assessmentRequest.getLaaTransactionId())
                 .repId(assessmentRequest.getRepId())
                 .cmuId(assessmentRequest.getCmuId())
-                .userId(assessmentRequest.getUserId())
                 .initialAssessmentDate(assessmentRequest.getInitialAssessmentDate())
                 .otherBenefitNote(assessmentRequest.getOtherBenefitNote())
                 .otherIncomeNote(assessmentRequest.getOtherIncomeNote())
