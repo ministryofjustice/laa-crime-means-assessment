@@ -32,11 +32,15 @@ public class MeansAssessmentValidationService {
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
 
+    private String getUserIdFromRequest(MeansAssessmentRequestDTO meansAssessmentRequest) {
+        return meansAssessmentRequest.getUserSession().getUserName();
+    }
+
     public boolean validateRoleAction(final MeansAssessmentRequestDTO meansAssessmentRequest, String action) {
         boolean result = false;
-        if (StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(action)) {
+        if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest)) && StringUtils.isNotBlank(action)) {
             HashMap<String, Object> uriVariables = new HashMap<>();
-            uriVariables.put(URIVAR_USERNAME, meansAssessmentRequest.getUserId());
+            uriVariables.put(URIVAR_USERNAME, getUserIdFromRequest(meansAssessmentRequest));
             uriVariables.put(URIVAR_ACTION, action);
             Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(
                     configuration.getValidationEndpoints().getRoleActionUrl(), uriVariables, AuthorizationResponseDTO.class
@@ -52,7 +56,7 @@ public class MeansAssessmentValidationService {
         boolean result = false;
         if (meansAssessmentRequest.getNewWorkReason() != null && StringUtils.isNotBlank(meansAssessmentRequest.getNewWorkReason().getCode())) {
             HashMap<String, Object> uriVariables = new HashMap<>();
-            uriVariables.put(URIVAR_USERNAME, meansAssessmentRequest.getUserId());
+            uriVariables.put(URIVAR_USERNAME, getUserIdFromRequest(meansAssessmentRequest));
             uriVariables.put(URIVAR_NWOR_CODE, meansAssessmentRequest.getNewWorkReason().getCode());
             Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(
                     configuration.getValidationEndpoints().getNewWorkReasonUrl(), uriVariables, AuthorizationResponseDTO.class
@@ -85,9 +89,12 @@ public class MeansAssessmentValidationService {
 
     public boolean validateRoleReservation(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         boolean result = false;
-        if (StringUtils.isNotBlank(meansAssessmentRequest.getUserId()) && StringUtils.isNotBlank(meansAssessmentRequest.getUserSession().getSessionId()) && meansAssessmentRequest.getRepId() != null) {
+        if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest))
+                && StringUtils.isNotBlank(meansAssessmentRequest.getUserSession().getSessionId())
+                && meansAssessmentRequest.getRepId() != null) {
+
             HashMap<String, Object> uriVariables = new HashMap<>();
-            uriVariables.put(URIVAR_USERNAME, meansAssessmentRequest.getUserId());
+            uriVariables.put(URIVAR_USERNAME, getUserIdFromRequest(meansAssessmentRequest));
             uriVariables.put(URIVAR_RESERVATION_ID, meansAssessmentRequest.getRepId());
             uriVariables.put(URIVAR_SESSION_ID, meansAssessmentRequest.getUserSession().getSessionId());
             Optional<AuthorizationResponseDTO> apiResponse = getApiResponseViaGET(

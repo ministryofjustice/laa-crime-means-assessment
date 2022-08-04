@@ -4,33 +4,9 @@
   "type": "object",
   "description": "Crown Court Overview",
   "properties": {
-    "ccRepId": {
-      "type": "number",
-      "title": "crown court rep Id"
-    },
-    "repType": {
-      "type": "string",
-      "title": "crown court rep type"
-    },
-    "repOrderDate": {
-      "type": "string",
-      "title": "crown court rep order date"
-    },
-    "sentenceOrderDate": {
-      "type": "string",
-      "title": "sentence order date"
-    },
-    "withdrawalDate": {
-      "type": "string",
-      "title": "Crown Court withdrawal date"
-    },
     "repOrderDecision": {
       "type": "string",
-      "title": " rep order decision"
-    },
-    "inPrisoned": {
-      "type": "boolean",
-      "description": "If in prison"
+      "title": "Rep Order decision"
     }
   },
   "additionalProperties": false,

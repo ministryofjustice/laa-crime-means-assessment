@@ -17,10 +17,6 @@
       "type": "integer",
       "description": "Case Management Unit Id"
     },
-    "userId": {
-      "type": "string",
-      "description": "User ID"
-    },
     "initialAssessmentDate": {
       "type": "string",
       "description": "Effective Date of initial assessment",
@@ -105,7 +101,6 @@
     "laaTransactionId",
     "repId",
     "cmuId",
-    "userId",
     "initialAssessmentDate",
     "employmentStatus",
     "assessmentStatus",
