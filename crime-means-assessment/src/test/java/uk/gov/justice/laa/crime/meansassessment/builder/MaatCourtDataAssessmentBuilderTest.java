@@ -82,7 +82,7 @@ public class MaatCourtDataAssessmentBuilderTest {
             assertThat(createRequest.getNworCode())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getNewWorkReason().getCode());
             assertThat(createRequest.getUserCreated())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserId());
+                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
             assertThat(createRequest.getIncomeUpliftRemoveDate())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getIncomeEvidenceSummary().getUpliftRemovedDate());
             assertThat(createRequest.getIncomeUpliftApplyDate())
@@ -119,7 +119,7 @@ public class MaatCourtDataAssessmentBuilderTest {
             assertThat(updateRequest.getFullTotalAggregatedExpenses())
                     .isEqualTo(assessmentDTO.getTotalAggregatedExpense());
             assertThat(updateRequest.getUserModified())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserId());
+                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
         };
 
         assertThat(resultDto).isInstanceOfSatisfying(MaatApiUpdateAssessment.class, updateRequirements);

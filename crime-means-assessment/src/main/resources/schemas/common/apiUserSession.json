@@ -9,40 +9,12 @@
       "type": "string",
       "description": "Unique username"
     },
-    "firstName": {
-      "type": "string",
-      "description": "Users first name"
-    },
-    "initials": {
-      "type": "string",
-      "description": "Users initials"
-    },
-    "surname": {
-      "type": "string",
-      "description": "Users surname"
-    },
-    "enabled": {
-      "type": "boolean",
-      "description": "Indicates whether the user account is enabled"
-    },
-    "locked": {
-      "type": "boolean",
-      "description": "Indicates whether the user account is locked"
-    },
-    "loggedIn": {
-      "type": "boolean",
-      "description": "Indicates whether the user is logged in"
-    },
-    "administrativeArea": {
-      "type": "object",
-      "$ref": "apiAdministrativeArea.json"
-    },
     "sessionId": {
       "type": "string",
       "description": "The users session id"
     }
   },
-  "additionalProperties": true,
+  "additionalProperties": false,
   "required": [
     "userName",
     "sessionId"

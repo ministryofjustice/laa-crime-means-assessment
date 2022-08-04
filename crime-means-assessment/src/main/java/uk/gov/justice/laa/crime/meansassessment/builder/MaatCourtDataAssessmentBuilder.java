@@ -75,7 +75,7 @@ public class MaatCourtDataAssessmentBuilder {
                 .withRtCode(ofNullable(requestDTO.getReviewType())
                         .map(ReviewType::getCode).orElse(null))
                 .withNworCode(requestDTO.getNewWorkReason().getCode())
-                .withUserCreated(requestDTO.getUserId())
+                .withUserCreated(requestDTO.getUserSession().getUserName())
                 .withIncomeUpliftRemoveDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
                         .map(ApiIncomeEvidenceSummary::getUpliftRemovedDate).orElse(null))
                 .withIncomeUpliftApplyDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
@@ -96,6 +96,6 @@ public class MaatCourtDataAssessmentBuilder {
                 .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
                 .withFullOtherHousingNote(meansAssessment.getOtherHousingNote())
                 .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense())
-                .withUserModified(meansAssessment.getUserId());
+                .withUserModified(meansAssessment.getUserSession().getUserName());
     }
 }

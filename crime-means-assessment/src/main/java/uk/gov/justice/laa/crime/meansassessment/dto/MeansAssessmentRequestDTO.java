@@ -15,7 +15,6 @@ public class MeansAssessmentRequestDTO {
     private String laaTransactionId;
     private Integer repId;
     private Integer cmuId;
-    private String userId;
     private LocalDateTime initialAssessmentDate;
     private String otherBenefitNote;
     private String otherIncomeNote;
