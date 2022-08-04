@@ -196,7 +196,6 @@ public class TestModelDataBuilder {
                 .withAssessmentType(AssessmentType.INIT)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withUserId(TEST_USERNAME)
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .withOtherBenefitNote(TEST_NOTE)
@@ -227,7 +226,6 @@ public class TestModelDataBuilder {
                 .withReviewType(ReviewType.NAFI)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withUserId(TEST_USERNAME)
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withNewWorkReason(NewWorkReason.PBI)
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
@@ -255,7 +253,6 @@ public class TestModelDataBuilder {
                 .withAssessmentType(AssessmentType.INIT)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withUserId(TEST_USERNAME)
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withFullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
@@ -283,7 +280,6 @@ public class TestModelDataBuilder {
                 .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .repId(isValid ? 91919 : null)
                 .cmuId(isValid ? 91919 : null)
-                .userId(TEST_USERNAME)
                 .initialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .assessmentStatus(CurrentStatus.COMPLETE)
                 .sectionSummaries(List.of(getApiAssessmentSectionSummary()))
@@ -424,16 +420,10 @@ public class TestModelDataBuilder {
         return List.of(
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(37)
-                        .withWeightingFactor(BigDecimal.valueOf(0.15))
-                        .withLowerAgeRange(0)
-                        .withUpperAgeRange(1)
                         .withNoOfChildren(1)
                 ,
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(38)
-                        .withWeightingFactor(BigDecimal.valueOf(0.3))
-                        .withLowerAgeRange(2)
-                        .withUpperAgeRange(4)
                         .withNoOfChildren(2)
         );
     }
