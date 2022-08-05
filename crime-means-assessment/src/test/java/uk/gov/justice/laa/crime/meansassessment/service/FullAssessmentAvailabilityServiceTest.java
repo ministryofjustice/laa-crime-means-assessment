@@ -28,7 +28,7 @@ public class FullAssessmentAvailabilityServiceTest {
     public void setup() {
         fullAssessmentAvailabilityService = new FullAssessmentAvailabilityService();
         meansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        meansAssessmentResponse = TestModelDataBuilder.getCreateMeansAssessmentResponse(true);
+        meansAssessmentResponse = TestModelDataBuilder.getInitMeansAssessmentResponse(true);
         meansAssessmentRequest.setFullAssessmentDate(null);
     }
 

@@ -10,7 +10,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiCreateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class MaatCourtDataAssessmentBuilder {
 
-    public MaatApiAssessmentRequest buildAssessmentRequest(final MeansAssessmentDTO assessment, final AssessmentRequestType requestType) {
+    public MaatApiAssessmentRequest build(final MeansAssessmentDTO assessment, final AssessmentRequestType requestType) {
 
         CurrentStatus assessmentStatus = assessment.getCurrentStatus();
         MeansAssessmentRequestDTO requestDTO = assessment.getMeansAssessment();
@@ -66,7 +65,6 @@ public class MaatCourtDataAssessmentBuilder {
                 .withChildWeightings(
                         requestDTO.getChildWeightings()
                 );
-
     }
 
     private MaatApiCreateAssessment buildCreate(MeansAssessmentRequestDTO requestDTO) {
