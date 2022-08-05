@@ -31,8 +31,5 @@
     "$ref": "apiMeansAssessmentRequest.json"
   },
   "additionalProperties": false,
-  "required": [
-    "fullAssessmentDate",
-    "initTotalAggregatedIncome"
-  ]
+  "required": ["fullAssessmentDate", "initTotalAggregatedIncome"]
 }

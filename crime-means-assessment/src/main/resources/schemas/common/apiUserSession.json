@@ -15,8 +15,5 @@
     }
   },
   "additionalProperties": false,
-  "required": [
-    "userName",
-    "sessionId"
-  ]
+  "required": ["userName", "sessionId"]
 }
