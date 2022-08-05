@@ -41,7 +41,7 @@ public class MeansAssessmentValidationProcessor {
             throw new ValidationException(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
         }
 
-        boolean isInit = requestDTO.getAssessmentType().equals(AssessmentType.INIT);
+        boolean isInit = AssessmentType.INIT.equals(requestDTO.getAssessmentType());
 
         if (isInit) {
             if (!meansAssessmentValidationService.validateOutstandingAssessments(requestDTO)) {

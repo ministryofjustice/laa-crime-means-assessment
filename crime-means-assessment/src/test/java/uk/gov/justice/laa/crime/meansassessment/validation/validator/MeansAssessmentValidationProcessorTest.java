@@ -10,13 +10,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor.*;
 
@@ -29,10 +32,15 @@ public class MeansAssessmentValidationProcessorTest {
     @Mock
     private InitAssessmentValidator initAssessmentValidator;
 
+    @Mock
+    private FullAssessmentValidator fullAssessmentValidator;
+
     @InjectMocks
     private MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
     MeansAssessmentRequestDTO createMeansAssessmentRequest;
+
+    MeansAssessmentRequestDTO fullAssessment;
 
     @Before
     public void setup() {
@@ -61,13 +69,25 @@ public class MeansAssessmentValidationProcessorTest {
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
+        when(fullAssessmentValidator.validate(
+                any(MeansAssessmentRequestDTO.class)
+        )).thenReturn(Boolean.TRUE);
+
         createMeansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        fullAssessment = MeansAssessmentRequestDTO.builder().assessmentType(AssessmentType.FULL).build();
     }
 
     @Test
-    public void givenValidRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+    public void givenInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
 
         Optional<Void> result = meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest);
+        assertThat(result).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    public void givenFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+        fullAssessment.setFullAssessmentDate(LocalDateTime.now());
+        Optional<Void> result = meansAssessmentValidationProcessor.validate(fullAssessment);
         assertThat(result).isEqualTo(Optional.empty());
     }
 
@@ -80,6 +100,17 @@ public class MeansAssessmentValidationProcessorTest {
         assertThatThrownBy(
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest)
         ).isInstanceOf(ValidationException.class).hasMessage(MSG_INCORRECT_REVIEW_TYPE);
+    }
+
+    @Test
+    public void givenFullAssessmentRequest_whenFullAssessmentValidatorFails_thenValidatorThrowsException() {
+        when(fullAssessmentValidator.validate(
+                any(MeansAssessmentRequestDTO.class)
+        )).thenReturn(Boolean.FALSE);
+
+        assertThatThrownBy(
+                () -> meansAssessmentValidationProcessor.validate(fullAssessment)
+        ).isInstanceOf(ValidationException.class).hasMessage(MSG_FULL_ASSESSMENT_DATE_REQUIRED);
     }
 
     @Test
