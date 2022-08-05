@@ -81,14 +81,14 @@ public class MeansAssessmentValidationProcessorTest {
     public void givenInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
 
         Optional<Void> result = meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest);
-        assertThat(result).isEqualTo(Optional.empty());
+        assertThat(result).isEmpty();
     }
 
     @Test
     public void givenFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
         fullAssessment.setFullAssessmentDate(LocalDateTime.now());
         Optional<Void> result = meansAssessmentValidationProcessor.validate(fullAssessment);
-        assertThat(result).isEqualTo(Optional.empty());
+        assertThat(result).isEmpty();
     }
 
     @Test
