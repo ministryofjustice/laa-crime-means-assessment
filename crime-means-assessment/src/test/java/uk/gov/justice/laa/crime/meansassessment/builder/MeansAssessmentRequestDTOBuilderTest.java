@@ -18,7 +18,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
     @Test
     public void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentRequest meansAssessment =
-                TestModelDataBuilder.getApiMeansAssessmentRequst(true);
+                TestModelDataBuilder.getApiMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(meansAssessment);
 
@@ -26,7 +26,6 @@ public class MeansAssessmentRequestDTOBuilderTest {
             assertThat(resultDto.getLaaTransactionId()).isEqualTo(meansAssessment.getLaaTransactionId());
             assertThat(resultDto.getRepId()).isEqualTo(meansAssessment.getRepId());
             assertThat(resultDto.getCmuId()).isEqualTo(meansAssessment.getCmuId());
-            assertThat(resultDto.getUserId()).isEqualTo(meansAssessment.getUserId());
             assertThat(resultDto.getInitialAssessmentDate()).isEqualTo(meansAssessment.getInitialAssessmentDate());
             assertThat(resultDto.getOtherBenefitNote()).isEqualTo(meansAssessment.getOtherBenefitNote());
             assertThat(resultDto.getOtherIncomeNote()).isEqualTo(meansAssessment.getOtherIncomeNote());
@@ -49,7 +48,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
     @Test
     public void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
         ApiCreateMeansAssessmentRequest initMeansAssessment =
-                TestModelDataBuilder.getApiInitMeansAssessmentRequest(true);
+                TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(initMeansAssessment);
 
@@ -63,7 +62,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
     @Test
     public void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
         ApiUpdateMeansAssessmentRequest fullMeansAssessment =
-                TestModelDataBuilder.getApiFullMeansAssessmentRequest(true);
+                TestModelDataBuilder.getApiUpdateMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(fullMeansAssessment);
 

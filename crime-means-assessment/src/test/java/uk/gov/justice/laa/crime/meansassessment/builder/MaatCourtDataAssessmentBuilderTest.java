@@ -70,7 +70,7 @@ public class MaatCourtDataAssessmentBuilderTest {
     @Test
     public void givenCreateRequestType_whenBuildAssessmentRequestIsInvoked_thenCreateFieldsArePopulated() {
         MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.buildAssessmentRequest(assessmentDTO, AssessmentRequestType.CREATE);
+                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.CREATE);
 
         checkCommonFields(resultDto);
 
@@ -95,7 +95,7 @@ public class MaatCourtDataAssessmentBuilderTest {
     @Test
     public void givenUpdateRequestType_whenBuildAssessmentRequestIsInvoked_thenUpdateFieldsArePopulated() {
         MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.buildAssessmentRequest(assessmentDTO, AssessmentRequestType.UPDATE);
+                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);
 
         checkCommonFields(resultDto);
 
