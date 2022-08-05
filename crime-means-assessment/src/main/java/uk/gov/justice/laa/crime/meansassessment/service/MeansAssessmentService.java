@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
@@ -15,7 +16,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
@@ -29,6 +29,7 @@ public class MeansAssessmentService {
 
     private final MaatCourtDataService maatCourtDataService;
     private final AssessmentCriteriaService assessmentCriteriaService;
+    private final MeansAssessmentResponseBuilder responseBuilder;
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
@@ -54,14 +55,15 @@ public class MeansAssessmentService {
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
-            MaatApiAssessmentResponse maatApiAssessmentResponse = maatCourtDataService.postMeansAssessment(
-                    assessmentBuilder.buildAssessmentRequest(completedAssessment, requestType), requestDTO.getLaaTransactionId(), requestType
-            );
+            MaatApiAssessmentResponse maatApiAssessmentResponse =
+                    maatCourtDataService.postMeansAssessment(
+                            assessmentBuilder.build(completedAssessment, requestType),
+                            requestDTO.getLaaTransactionId(), requestType
+                    );
             log.info("Posting completed means assessment to Court Data API");
 
-            ApiMeansAssessmentResponse assessmentResponse = buildApiCreateMeansAssessmentResponse(
-                    maatApiAssessmentResponse, assessmentCriteria, completedAssessment
-            );
+            ApiMeansAssessmentResponse assessmentResponse =
+                    responseBuilder.build(maatApiAssessmentResponse.getId(), assessmentCriteria, completedAssessment);
 
             fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
 
@@ -127,22 +129,5 @@ public class MeansAssessmentService {
             }
         }
         return detailTotal;
-    }
-
-    private ApiMeansAssessmentResponse buildApiCreateMeansAssessmentResponse(final MaatApiAssessmentResponse maatApiAssessmentResponse,
-                                                                             final AssessmentCriteriaEntity assessmentCriteria,
-                                                                             final MeansAssessmentDTO completedAssessment) {
-        return new ApiMeansAssessmentResponse()
-                .withAssessmentId(maatApiAssessmentResponse.getId())
-                .withRepId(maatApiAssessmentResponse.getRepId())
-                .withCriteriaId(assessmentCriteria.getId())
-                .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
-                .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())
-                .withTotalAggregatedIncome(maatApiAssessmentResponse.getInitTotAggregatedIncome())
-                .withInitResult(maatApiAssessmentResponse.getInitResult())
-                .withInitResultReason(maatApiAssessmentResponse.getInitResultReason())
-                .withAdjustedIncomeValue(maatApiAssessmentResponse.getInitAdjustedIncomeValue())
-                .withFassInitStatus(CurrentStatus.getFrom(maatApiAssessmentResponse.getFassInitStatus()))
-                .withAssessmentSectionSummary(completedAssessment.getMeansAssessment().getSectionSummaries());
     }
 }
