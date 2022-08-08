@@ -76,7 +76,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenAnInvalidResponse_whenPostMeansAssessmentIsInvoked_thenAnAppropriateErrorShouldBeThrown() {
         setupInvalidResponseTest();
-        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, AssessmentRequestType.CREATE));
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.persistMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, AssessmentRequestType.CREATE));
         validateInvalidResponseError(error);
     }
 
@@ -86,7 +86,7 @@ public class MaatCourtDataServiceTest {
         MaatApiAssessmentResponse expectedResponse = new MaatApiAssessmentResponse();
         expectedResponse.setId(testId);
         setupValidResponseTest(expectedResponse);
-        MaatApiAssessmentResponse actualResponse = maatCourtDataService.postMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, AssessmentRequestType.CREATE);
+        MaatApiAssessmentResponse actualResponse = maatCourtDataService.persistMeansAssessment(new MaatApiAssessmentRequest(), laaTransactionId, AssessmentRequestType.CREATE);
         assertEquals(expectedResponse.getId(), actualResponse.getId());
     }
 
