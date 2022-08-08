@@ -32,7 +32,7 @@ public class MeansAssessmentValidationService {
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
 
-    private String getUserIdFromRequest(MeansAssessmentRequestDTO meansAssessmentRequest) {
+    String getUserIdFromRequest(MeansAssessmentRequestDTO meansAssessmentRequest) {
         return meansAssessmentRequest.getUserSession().getUserName();
     }
 
@@ -107,7 +107,7 @@ public class MeansAssessmentValidationService {
         return result;
     }
 
-    private <R> Optional<R> getApiResponseViaGET(final String endpoint, final Map<String, Object> uriVariables, final Class<R> responseClass) {
+    <R> Optional<R> getApiResponseViaGET(final String endpoint, final Map<String, Object> uriVariables, final Class<R> responseClass) {
         Mono<R> response;
         response = webClient
                 .get()
