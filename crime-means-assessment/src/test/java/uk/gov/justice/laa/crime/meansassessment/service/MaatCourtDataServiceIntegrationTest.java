@@ -12,7 +12,6 @@ import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.test.StepVerifier;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
@@ -238,7 +237,7 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
     }
 
     private MaatApiAssessmentResponse runPostMeansAssessment() {
-        return maatCourtDataService.postMeansAssessment(
+        return maatCourtDataService.persistMeansAssessment(
                 new MaatApiAssessmentRequest(),
                 laaTransactionId,
                 AssessmentRequestType.CREATE
