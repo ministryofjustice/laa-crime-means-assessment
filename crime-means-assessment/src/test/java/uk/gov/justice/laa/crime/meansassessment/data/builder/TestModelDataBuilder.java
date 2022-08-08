@@ -410,7 +410,7 @@ public class TestModelDataBuilder {
     public static ApiUserSession getUserSession() {
         return new ApiUserSession()
                 .withSessionId("6c45ebfe-fe3a-5f2f-8dad-f7c8f03b8327")
-                .withUserName("test-userid");
+                .withUserName(TEST_USER);
     }
 
     public static List<ApiAssessmentChildWeighting> getAssessmentChildWeightings() {
