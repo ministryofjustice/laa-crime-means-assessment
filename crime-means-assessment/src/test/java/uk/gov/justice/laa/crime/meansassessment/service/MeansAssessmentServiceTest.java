@@ -269,7 +269,7 @@ public class MeansAssessmentServiceTest {
                         .withInitAdjustedIncomeValue(TestModelDataBuilder.TEST_ADJUSTED_INCOME)
                         .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
 
-        when(maatCourtDataService.postMeansAssessment(
+        when(maatCourtDataService.persistMeansAssessment(
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 

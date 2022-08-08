@@ -4,6 +4,7 @@ import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -32,14 +33,28 @@ public class MaatCourtDataService {
     private final WebClient webClient;
     private final MaatApiConfiguration configuration;
 
-    public MaatApiAssessmentResponse postMeansAssessment(MaatApiAssessmentRequest assessment, String laaTransactionId, AssessmentRequestType requestType) {
-        MaatApiAssessmentResponse response = getApiResponseViaPOST(
-                assessment,
-                MaatApiAssessmentResponse.class,
-                configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId)
-        );
-
+    public MaatApiAssessmentResponse persistMeansAssessment(MaatApiAssessmentRequest assessment,
+                                                            String laaTransactionId,
+                                                            AssessmentRequestType requestType) {
+        MaatApiAssessmentResponse response;
+        String endpoint = configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType);
+        if (AssessmentRequestType.CREATE.equals(requestType)) {
+            response =
+                    getApiResponseViaPOST(
+                            assessment,
+                            MaatApiAssessmentResponse.class,
+                            endpoint,
+                            Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId)
+                    );
+        } else {
+            response =
+                    getApiResponseViaPUT(
+                            assessment,
+                            MaatApiAssessmentResponse.class,
+                            endpoint,
+                            Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId)
+                    );
+        }
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
@@ -94,13 +109,27 @@ public class MaatCourtDataService {
                 .block();
     }
 
-    private <T, R> R getApiResponseViaPOST(T postBody, Class<R> responseClass, String url, Map<String, String> headers) {
+    private <T, R> R getApiResponseViaPOST(T requestBody, Class<R> responseClass, String url, Map<String, String> headers) {
+        return getApiResponse(requestBody, responseClass, url, headers, HttpMethod.POST);
+    }
+
+    private <T, R> R getApiResponseViaPUT(T requestBody, Class<R> responseClass, String url, Map<String, String> headers) {
+        return getApiResponse(requestBody, responseClass, url, headers, HttpMethod.PUT);
+    }
+
+    private <T, R> R getApiResponse(T requestBody,
+                                    Class<R> responseClass,
+                                    String url, Map<String, String> headers,
+                                    HttpMethod requestMethod) {
+        if (!HttpMethod.POST.equals(requestMethod) && !HttpMethod.PUT.equals(requestMethod)) {
+            throw new RuntimeException("Method only supports POST and PUT requests");
+        }
         return webClient
-                .post()
+                .method(requestMethod)
                 .uri(url)
                 .headers(httpHeaders -> httpHeaders.setAll(headers))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(postBody))
+                .body(BodyInserters.fromValue(requestBody))
                 .retrieve()
                 .bodyToMono(responseClass)
                 .onErrorMap(this::handleError)
@@ -114,7 +143,4 @@ public class MaatCourtDataService {
         }
         return new APIClientException("Call to Court Data API failed, invalid response.", error);
     }
-
-
-
 }
