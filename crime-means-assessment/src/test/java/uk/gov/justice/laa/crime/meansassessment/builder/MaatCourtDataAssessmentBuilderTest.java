@@ -62,8 +62,6 @@ public class MaatCourtDataAssessmentBuilderTest {
                                     .flatMap(section -> section.getAssessmentDetails().stream())
                                     .collect(Collectors.toList())
                     );
-            assertThat(resultDto.getChildWeightings())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
         });
     }
 
@@ -120,6 +118,8 @@ public class MaatCourtDataAssessmentBuilderTest {
                     .isEqualTo(assessmentDTO.getTotalAggregatedExpense());
             assertThat(updateRequest.getUserModified())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getUserId());
+            assertThat(resultDto.getChildWeightings())
+                    .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
         };
 
         assertThat(resultDto).isInstanceOfSatisfying(MaatApiUpdateAssessment.class, updateRequirements);
