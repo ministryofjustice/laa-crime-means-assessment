@@ -10,7 +10,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiCreateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.util.stream.Collectors;
@@ -62,11 +61,7 @@ public class MaatCourtDataAssessmentBuilder {
                         requestDTO.getSectionSummaries().stream()
                                 .flatMap(section -> section.getAssessmentDetails().stream())
                                 .collect(Collectors.toList())
-                )
-                .withChildWeightings(
-                        requestDTO.getChildWeightings()
                 );
-
     }
 
     private MaatApiCreateAssessment buildCreate(MeansAssessmentRequestDTO requestDTO) {
@@ -96,6 +91,7 @@ public class MaatCourtDataAssessmentBuilder {
                 .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
                 .withFullOtherHousingNote(meansAssessment.getOtherHousingNote())
                 .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense())
-                .withUserModified(meansAssessment.getUserId());
+                .withUserModified(meansAssessment.getUserId())
+                .withChildWeightings(meansAssessment.getChildWeightings());
     }
 }
