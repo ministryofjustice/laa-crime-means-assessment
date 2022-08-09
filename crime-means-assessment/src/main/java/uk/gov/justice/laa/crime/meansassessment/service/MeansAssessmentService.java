@@ -61,7 +61,9 @@ public class MeansAssessmentService {
                     maatApiAssessmentResponse, assessmentCriteria, completedAssessment
             );
 
-            fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
+            if (requestType.equals(AssessmentRequestType.UPDATE)) {
+                fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
+            }
 
             return assessmentResponse;
         } catch (Exception exception) {

@@ -280,19 +280,26 @@ public class MeansAssessmentServiceTest {
             assertThat(result.getFassInitStatus().getStatus()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
             assertThat(result.getAssessmentSectionSummary().get(0)).isEqualTo(TestModelDataBuilder.getApiAssessmentSectionSummary());
         });
-
-        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
-
     }
 
     @Test
+    public void givenUpdateInitAssessmentRequest_whenDoAssessmentIsInvoked_thenAssessmentIsPersisted() {
+
+        setupDoAssessmentStubbing();
+
+        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(
+                meansAssessment, AssessmentRequestType.UPDATE
+        );
+
+        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
+    }
+    
+    @Test
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenInitAssessmentIsPerformed() {
         setupDoAssessmentStubbing();
-        ApiCreateMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class));
-        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
-
     }
 
     @Test
