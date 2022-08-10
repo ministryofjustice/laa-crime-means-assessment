@@ -8,26 +8,11 @@
       "type": "integer",
       "description": "Weighting ID"
     },
-    "lowerAgeRange": {
-      "type": "integer",
-      "description": "Lower age range"
-    },
-    "upperAgeRange": {
-      "type": "integer",
-      "description": "Upper age range"
-    },
-    "weightingFactor": {
-      "type": "number",
-      "description": "Weighting factor"
-    },
     "noOfChildren": {
       "type": "integer",
       "description": "Number of children"
     }
   },
   "additionalProperties": false,
-  "required": [
-    "weightingId",
-    "noOfChildren"
-  ]
+  "required": ["weightingId", "noOfChildren"]
 }
