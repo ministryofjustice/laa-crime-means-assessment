@@ -7,7 +7,10 @@ import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentB
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -129,6 +132,15 @@ public class MeansAssessmentService {
     private ApiCreateMeansAssessmentResponse buildApiCreateMeansAssessmentResponse(final MaatApiAssessmentResponse maatApiAssessmentResponse,
                                                                                    final AssessmentCriteriaEntity assessmentCriteria,
                                                                                    final MeansAssessmentDTO completedAssessment) {
+        for (ApiAssessmentSectionSummary assessmentSectionSummary : completedAssessment.getMeansAssessment().getSectionSummaries()) {
+            for (ApiAssessmentDetail assessmentDetail : assessmentSectionSummary.getAssessmentDetails()) {
+                for (ApiAssessmentDetail responseAssessmentDetail : maatApiAssessmentResponse.getAssessmentDetails()) {
+                    if (assessmentDetail.getCriteriaDetailId().equals(responseAssessmentDetail.getCriteriaDetailId())) {
+                        assessmentDetail.setId(responseAssessmentDetail.getId());
+                    }
+                }
+            }
+        }
         return new ApiCreateMeansAssessmentResponse()
                 .withAssessmentId(maatApiAssessmentResponse.getId())
                 .withRepId(maatApiAssessmentResponse.getRepId())
