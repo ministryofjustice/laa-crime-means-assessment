@@ -319,5 +319,13 @@ public class MeansAssessmentServiceTest {
         );
     }
 
-
+    @Test
+    public void givenMaatApiAssessmentResponse_whenUpdateDetailIdsIsInvoked_thenDetailIdsAreUpdated() {
+        MeansAssessmentDTO meansAssessmentDTO = TestModelDataBuilder.getMeansAssessmentDTO();
+        meansAssessmentService.updateDetailIds(
+                meansAssessmentDTO, TestModelDataBuilder.getMaatApiAssessmentResponse()
+        );
+        assertThat(meansAssessmentDTO.getMeansAssessment().getSectionSummaries().get(0).getAssessmentDetails().get(0).getId())
+                .isEqualTo(TestModelDataBuilder.getMaatApiAssessmentResponse().getAssessmentDetails().get(0).getId());
+    }
 }
