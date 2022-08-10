@@ -56,7 +56,7 @@ public class MeansAssessmentValidationServiceTest {
 
     @Test
     public void whenGetUserIdFromRequestIsCalled_thenUserIdIsReturned() {
-        assertEquals(meansAssessmentValidationService.getUserIdFromRequest(requestDTO), TestModelDataBuilder.TEST_USER);
+        assertEquals(TestModelDataBuilder.TEST_USER, meansAssessmentValidationService.getUserIdFromRequest(requestDTO));
     }
 
     @Test
@@ -135,15 +135,15 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void whenValidateRoleActionIsCalledWithBlankUserId_thenValidationFails() {
         requestDTO.getUserSession().setUserName("");
-        assertEquals(meansAssessmentValidationService
-                .validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT), Boolean.FALSE
+        assertEquals(Boolean.FALSE, meansAssessmentValidationService
+                .validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT)
         );
     }
 
     @Test
     public void whenValidateRoleActionIsCalledWithBlankAction_thenValidationFails() {
-        assertEquals(meansAssessmentValidationService
-                .validateRoleAction(requestDTO, ""), Boolean.FALSE
+        assertEquals(Boolean.FALSE, meansAssessmentValidationService
+                .validateRoleAction(requestDTO, "")
         );
     }
 
