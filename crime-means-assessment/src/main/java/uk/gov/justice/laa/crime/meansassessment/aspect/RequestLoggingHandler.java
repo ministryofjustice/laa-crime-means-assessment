@@ -17,13 +17,14 @@ public class RequestLoggingHandler {
     @Around("execution(public * uk.gov.justice.laa.crime.meansassessment.controller.MeansAssessmentController.*(..))")
     public Object logAroundControllers(ProceedingJoinPoint pjp) throws Throwable {
         Object result;
+        String maatID = LoggingData.MAAT_ID.getValue();
         String methodName = pjp.getSignature().getName();
         ApiMeansAssessmentRequest meansAssessment = (ApiMeansAssessmentRequest) pjp.getArgs()[0];
-        MDC.put(LoggingData.MAAT_ID.getValue(), Integer.toString(meansAssessment.getRepId()));
-        log.info("{} request received for MAAT ID: {}", methodName, MDC.get(LoggingData.MAAT_ID.getValue()));
+        MDC.put(maatID, Integer.toString(meansAssessment.getRepId()));
+        log.info("{} request received for MAAT ID: {}", methodName, MDC.get(maatID));
         result = pjp.proceed();
-        log.info("{} request completed for MAAT ID: {}", methodName, MDC.get(LoggingData.MAAT_ID.getValue()));
-        MDC.remove(LoggingData.MAAT_ID.getValue());
+        log.info("{} request completed for MAAT ID: {}", methodName, MDC.get(maatID));
+        MDC.remove(maatID);
         return result;
     }
 }
