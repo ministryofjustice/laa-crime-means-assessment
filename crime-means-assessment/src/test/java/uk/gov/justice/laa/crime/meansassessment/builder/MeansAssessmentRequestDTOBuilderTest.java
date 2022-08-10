@@ -4,9 +4,9 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiFullMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiInitMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -18,7 +18,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
     @Test
     public void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentRequest meansAssessment =
-                TestModelDataBuilder.getApiMeansAssessmentRequst(true);
+                TestModelDataBuilder.getApiMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(meansAssessment);
 
@@ -26,7 +26,6 @@ public class MeansAssessmentRequestDTOBuilderTest {
             assertThat(resultDto.getLaaTransactionId()).isEqualTo(meansAssessment.getLaaTransactionId());
             assertThat(resultDto.getRepId()).isEqualTo(meansAssessment.getRepId());
             assertThat(resultDto.getCmuId()).isEqualTo(meansAssessment.getCmuId());
-            assertThat(resultDto.getUserId()).isEqualTo(meansAssessment.getUserId());
             assertThat(resultDto.getInitialAssessmentDate()).isEqualTo(meansAssessment.getInitialAssessmentDate());
             assertThat(resultDto.getOtherBenefitNote()).isEqualTo(meansAssessment.getOtherBenefitNote());
             assertThat(resultDto.getOtherIncomeNote()).isEqualTo(meansAssessment.getOtherIncomeNote());
@@ -48,8 +47,8 @@ public class MeansAssessmentRequestDTOBuilderTest {
 
     @Test
     public void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
-        ApiInitMeansAssessmentRequest initMeansAssessment =
-                TestModelDataBuilder.getApiInitMeansAssessmentRequest(true);
+        ApiCreateMeansAssessmentRequest initMeansAssessment =
+                TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(initMeansAssessment);
 
@@ -62,8 +61,8 @@ public class MeansAssessmentRequestDTOBuilderTest {
 
     @Test
     public void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
-        ApiFullMeansAssessmentRequest fullMeansAssessment =
-                TestModelDataBuilder.getApiFullMeansAssessmentRequest(true);
+        ApiUpdateMeansAssessmentRequest fullMeansAssessment =
+                TestModelDataBuilder.getApiUpdateMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(fullMeansAssessment);
 
