@@ -45,7 +45,8 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_WEIGHTING_FACTOR = BigDecimal.ONE;
 
     // Assessment Criteria Details
-    public static final Integer TEST_DETAIL_ID = 135;
+    public static final Integer TEST_DETAIL_ID = 2;
+    public static final Integer TEST_CRITERIA_DETAIL_ID = 135;
     public static final String TEST_DETAIL_CODE = "TEST_CODE";
     public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION";
     public static final String TEST_SECTION = "SECTION";
@@ -146,7 +147,7 @@ public class TestModelDataBuilder {
 
     public static AssessmentCriteriaDetailEntity getAssessmentCriteriaDetailEntityWithId() {
         var criteriaDetail = getAssessmentCriteriaDetailEntity();
-        criteriaDetail.setId(TEST_DETAIL_ID);
+        criteriaDetail.setId(TEST_CRITERIA_DETAIL_ID);
         return criteriaDetail;
     }
 
@@ -337,7 +338,7 @@ public class TestModelDataBuilder {
                         new ArrayList<>(
                                 List.of(
                                         new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(132)
+                                                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
                                                 .withApplicantFrequency(TEST_FREQUENCY)
                                 )
@@ -469,7 +470,8 @@ public class TestModelDataBuilder {
 
     public static List<ApiAssessmentDetail> getApiAssessmentDetails(boolean withPartner) {
         var assessmentDetail = new ApiAssessmentDetail()
-                .withCriteriaDetailId(TEST_DETAIL_ID)
+                .withId(TEST_DETAIL_ID)
+                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
                 .withApplicantAmount(TEST_APPLICANT_VALUE)
                 .withApplicantFrequency(TEST_FREQUENCY);
 
@@ -483,5 +485,10 @@ public class TestModelDataBuilder {
 
     public static List<ApiAssessmentDetail> getApiAssessmentDetails() {
         return getApiAssessmentDetails(false);
+    }
+
+    public static MaatApiAssessmentResponse getMaatApiAssessmentResponse() {
+        return new MaatApiAssessmentResponse()
+                .withAssessmentDetails(getApiAssessmentDetails());
     }
 }

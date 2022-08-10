@@ -58,9 +58,12 @@ public class MeansAssessmentService {
             MaatApiAssessmentResponse maatApiAssessmentResponse =
                     maatCourtDataService.postMeansAssessment(
                             assessmentBuilder.build(completedAssessment, requestType),
-                            requestDTO.getLaaTransactionId(), requestType
+                            requestDTO.getLaaTransactionId(),
+                            requestType
                     );
             log.info("Posting completed means assessment to Court Data API");
+
+            updateDetailIds(completedAssessment, maatApiAssessmentResponse);
 
             ApiMeansAssessmentResponse assessmentResponse =
                     responseBuilder.build(maatApiAssessmentResponse.getId(), assessmentCriteria, completedAssessment);
@@ -76,6 +79,17 @@ public class MeansAssessmentService {
         }
     }
 
+    void updateDetailIds(MeansAssessmentDTO completedAssessment, MaatApiAssessmentResponse maatApiAssessmentResponse) {
+        for (ApiAssessmentSectionSummary assessmentSectionSummary : completedAssessment.getMeansAssessment().getSectionSummaries()) {
+            for (ApiAssessmentDetail assessmentDetail : assessmentSectionSummary.getAssessmentDetails()) {
+                for (ApiAssessmentDetail responseAssessmentDetail : maatApiAssessmentResponse.getAssessmentDetails()) {
+                    if (assessmentDetail.getCriteriaDetailId().equals(responseAssessmentDetail.getCriteriaDetailId())) {
+                        assessmentDetail.setId(responseAssessmentDetail.getId());
+                    }
+                }
+            }
+        }
+    }
 
     BigDecimal calculateSummariesTotal(final MeansAssessmentRequestDTO requestDTO, final AssessmentCriteriaEntity assessmentCriteria) {
         List<ApiAssessmentSectionSummary> sectionSummaries = requestDTO.getSectionSummaries();
