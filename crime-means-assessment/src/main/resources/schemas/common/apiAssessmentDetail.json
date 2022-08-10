@@ -24,7 +24,6 @@
       "type": "object",
       "description": "The Frequency of Applicant",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency"
-
     },
     "partnerFrequency": {
       "type": "object",
@@ -37,7 +36,5 @@
     }
   },
   "additionalProperties": false,
-  "required": [
-    "criteriaDetailsId"
-  ]
+  "required": ["criteriaDetailsId"]
 }
