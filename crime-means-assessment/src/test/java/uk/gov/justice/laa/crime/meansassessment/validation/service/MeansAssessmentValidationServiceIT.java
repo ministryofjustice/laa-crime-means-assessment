@@ -97,7 +97,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/work-reasons/" + requestDTO.getNewWorkReason().getCode(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/work-reasons/" + requestDTO.getNewWorkReason().getCode(), recordedRequest.getPath());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + request.getUserId() + "/work-reasons/" + request.getNewWorkReason().getCode(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + request.getUserSession().getUserName() + "/work-reasons/" + request.getNewWorkReason().getCode(), recordedRequest.getPath());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
     @Test
     public void whenRoleActionIsNull_thenFalseResultIsReturned() {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        requestDTO.setUserId(null);
+        requestDTO.getUserSession().setUserName(null);
 
         try {
             boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
@@ -181,7 +181,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
     }
 
     @Test
@@ -201,11 +201,11 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
     }
 
     @Test
-    public void whenRoleReservationIsNull_thenFalseResultIsReturned() throws Exception {
+    public void whenRoleReservationIsNull_thenFalseResultIsReturned() {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         requestDTO.setRepId(null);
 
@@ -236,7 +236,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
     }
 
     @Test
@@ -256,7 +256,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
         assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserId() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
+        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
     }
 
     @Test
@@ -289,7 +289,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
     }
 
     @Test
-    public void whenOutstandingAssessmentRepIdIsNull_thenFalseResultIsReturned() throws Exception {
+    public void whenOutstandingAssessmentRepIdIsNull_thenFalseResultIsReturned() {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         requestDTO.setRepId(null);
 

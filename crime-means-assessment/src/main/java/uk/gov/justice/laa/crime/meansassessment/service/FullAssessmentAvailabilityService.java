@@ -3,7 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.util.Objects;
@@ -16,7 +16,7 @@ import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkR
 public class FullAssessmentAvailabilityService {
 
     public void processFullAssessmentAvailable(final MeansAssessmentRequestDTO requestDTO,
-                                               final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
+                                               final ApiMeansAssessmentResponse meansAssessmentResponse) {
 
         log.debug("Start full assessment available check for create means assessment request {} and response {}",
                 requestDTO, meansAssessmentResponse);
@@ -45,7 +45,7 @@ public class FullAssessmentAvailabilityService {
         log.info("fullAssessmentAvailable set to {}", meansAssessmentResponse.getFullAssessmentAvailable());
     }
 
-    private void checkNewWorkReason(MeansAssessmentRequestDTO requestDTO, ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
+    private void checkNewWorkReason(MeansAssessmentRequestDTO requestDTO, ApiMeansAssessmentResponse meansAssessmentResponse) {
         if (requestDTO.getNewWorkReason() == HR) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         }
@@ -53,7 +53,7 @@ public class FullAssessmentAvailabilityService {
 
 
     private void processFullAssessmentAvailableOnResultFail(final MeansAssessmentRequestDTO requestDTO,
-                                                            final ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
+                                                            final ApiMeansAssessmentResponse meansAssessmentResponse) {
         switch (requestDTO.getCaseType()) {
             case COMMITAL:
             case SUMMARY_ONLY:
@@ -69,7 +69,7 @@ public class FullAssessmentAvailabilityService {
         }
     }
 
-    private void checkMagCourtOutcome(MeansAssessmentRequestDTO requestDTO, ApiCreateMeansAssessmentResponse meansAssessmentResponse) {
+    private void checkMagCourtOutcome(MeansAssessmentRequestDTO requestDTO, ApiMeansAssessmentResponse meansAssessmentResponse) {
         if (requestDTO.getMagCourtOutcome() == COMMITTED_FOR_TRIAL) {
             meansAssessmentResponse.setFullAssessmentAvailable(true);
         }

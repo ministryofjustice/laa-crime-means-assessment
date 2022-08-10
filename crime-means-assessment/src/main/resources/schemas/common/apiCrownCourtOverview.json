@@ -12,15 +12,8 @@
       "type": "object",
       "description": "Crown court summary details ",
       "$ref": "apiCrownCourtSummary.json"
-    },
-    "contribution": {
-      "type": "object",
-      "description": "contributions object details",
-      "$ref": "apiContribution.json"
     }
   },
   "additionalProperties": false,
-  "required": [
-    "available"
-  ]
+  "required": ["available"]
 }
