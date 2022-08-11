@@ -68,7 +68,7 @@ public class MeansAssessmentService {
             ApiMeansAssessmentResponse assessmentResponse =
                     responseBuilder.build(maatApiAssessmentResponse.getId(), assessmentCriteria, completedAssessment);
 
-            if (requestType.equals(AssessmentRequestType.UPDATE)) {
+            if (AssessmentRequestType.UPDATE.equals(requestType)) {
                 fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
             }
 
