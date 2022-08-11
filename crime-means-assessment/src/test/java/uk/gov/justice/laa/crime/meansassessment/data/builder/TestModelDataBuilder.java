@@ -45,7 +45,8 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_WEIGHTING_FACTOR = BigDecimal.ONE;
 
     // Assessment Criteria Details
-    public static final Integer TEST_DETAIL_ID = 135;
+    public static final Integer TEST_DETAIL_ID = 2;
+    public static final Integer TEST_CRITERIA_DETAIL_ID = 135;
     public static final String TEST_DETAIL_CODE = "TEST_CODE";
     public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION";
     public static final String TEST_SECTION = "SECTION";
@@ -72,18 +73,14 @@ public class TestModelDataBuilder {
     public static final LocalDateTime TEST_INCOME_EVIDENCE_DUE_DATE =
             LocalDateTime.of(2020, 10, 5, 0, 0, 0);
 
-    public static final String TEST_USERNAME = "MOCK-USERNAME";
-
     public static final BigDecimal TEST_DISPOSABLE_INCOME = BigDecimal.valueOf(4000d);
     public static final BigDecimal TEST_ADJUSTED_LIVING_ALLOWANCE = BigDecimal.valueOf(6000d);
     public static final BigDecimal TEST_AGGREGATED_EXPENDITURE = BigDecimal.valueOf(2000d);
     public static final BigDecimal TEST_AGGREGATED_INCOME = BigDecimal.valueOf(12000d);
     public static final BigDecimal TEST_ADJUSTED_INCOME = BigDecimal.valueOf(20000d);
 
-    //create means assessment
-    public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final int MEANS_ASSESSMENT_ID = 1000;
-    private static final String TEST_SESSION_ID = "TEST_SESSION_ID";
+    public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -150,7 +147,7 @@ public class TestModelDataBuilder {
 
     public static AssessmentCriteriaDetailEntity getAssessmentCriteriaDetailEntityWithId() {
         var criteriaDetail = getAssessmentCriteriaDetailEntity();
-        criteriaDetail.setId(TEST_DETAIL_ID);
+        criteriaDetail.setId(TEST_CRITERIA_DETAIL_ID);
         return criteriaDetail;
     }
 
@@ -190,13 +187,12 @@ public class TestModelDataBuilder {
                 .build();
     }
 
-    public static ApiMeansAssessmentRequest getApiMeansAssessmentRequst(boolean isValid) {
+    public static ApiMeansAssessmentRequest getApiMeansAssessmentRequest(boolean isValid) {
         return new ApiMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withUserId(TEST_USERNAME)
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .withOtherBenefitNote(TEST_NOTE)
@@ -220,14 +216,13 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
-    public static ApiInitMeansAssessmentRequest getApiInitMeansAssessmentRequest(boolean isValid) {
-        return new ApiInitMeansAssessmentRequest()
+    public static ApiCreateMeansAssessmentRequest getApiCreateMeansAssessmentRequest(boolean isValid) {
+        return new ApiCreateMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
                 .withReviewType(ReviewType.NAFI)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withUserId(TEST_USERNAME)
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withNewWorkReason(NewWorkReason.PBI)
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
@@ -249,13 +244,12 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
-    public static ApiFullMeansAssessmentRequest getApiFullMeansAssessmentRequest(boolean isValid) {
-        return new ApiFullMeansAssessmentRequest()
+    public static ApiUpdateMeansAssessmentRequest getApiUpdateMeansAssessmentRequest(boolean isValid) {
+        return new ApiUpdateMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .withAssessmentType(AssessmentType.INIT)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withUserId(TEST_USERNAME)
                 .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withFullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
@@ -265,6 +259,7 @@ public class TestModelDataBuilder {
                 .withInitTotalAggregatedIncome(TEST_AGGREGATED_INCOME)
                 .withFullAssessmentNotes(TEST_NOTE)
                 .withCaseType(CaseType.EITHER_WAY)
+                .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
                 .withAssessmentStatus(CurrentStatus.COMPLETE)
                 .withChildWeightings(getAssessmentChildWeightings())
                 .withUserSession(getUserSession())
@@ -283,7 +278,6 @@ public class TestModelDataBuilder {
                 .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .repId(isValid ? 91919 : null)
                 .cmuId(isValid ? 91919 : null)
-                .userId(TEST_USERNAME)
                 .initialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .assessmentStatus(CurrentStatus.COMPLETE)
                 .sectionSummaries(List.of(getApiAssessmentSectionSummary()))
@@ -344,7 +338,7 @@ public class TestModelDataBuilder {
                         new ArrayList<>(
                                 List.of(
                                         new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(132)
+                                                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
                                                 .withApplicantFrequency(TEST_FREQUENCY)
                                 )
@@ -417,29 +411,23 @@ public class TestModelDataBuilder {
     public static ApiUserSession getUserSession() {
         return new ApiUserSession()
                 .withSessionId("6c45ebfe-fe3a-5f2f-8dad-f7c8f03b8327")
-                .withUserName("test-userid");
+                .withUserName(TEST_USER);
     }
 
     public static List<ApiAssessmentChildWeighting> getAssessmentChildWeightings() {
         return List.of(
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(37)
-                        .withWeightingFactor(BigDecimal.valueOf(0.15))
-                        .withLowerAgeRange(0)
-                        .withUpperAgeRange(1)
                         .withNoOfChildren(1)
                 ,
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(38)
-                        .withWeightingFactor(BigDecimal.valueOf(0.3))
-                        .withLowerAgeRange(2)
-                        .withUpperAgeRange(4)
                         .withNoOfChildren(2)
         );
     }
 
-    public static ApiCreateMeansAssessmentResponse getCreateMeansAssessmentResponse(boolean isValid) {
-        return new ApiCreateMeansAssessmentResponse()
+    public static ApiMeansAssessmentResponse getInitMeansAssessmentResponse(boolean isValid) {
+        return new ApiMeansAssessmentResponse()
                 .withAssessmentId(MEANS_ASSESSMENT_ID)
                 .withCriteriaId(isValid ? 41 : null)
                 .withTotalAggregatedIncome(BigDecimal.valueOf(10))
@@ -447,10 +435,21 @@ public class TestModelDataBuilder {
                 .withAdjustedIncomeValue(BigDecimal.valueOf(12))
                 .withLowerThreshold(BigDecimal.valueOf(12))
                 .withUpperThreshold(BigDecimal.valueOf(13))
-                .withInitResult("testResult")
-                .withInitResultReason("testResultReason")
+                .withInitResult(InitAssessmentResult.PASS.getResult())
+                .withInitResultReason(InitAssessmentResult.PASS.getReason())
                 .withFassInitStatus(isValid ? CurrentStatus.COMPLETE : null)
                 .withAssessmentSectionSummary(getApiAssessmentSummaries(isValid));
+    }
+
+    public static ApiMeansAssessmentResponse getFullMeansAssessmentResponse(boolean isValid) {
+        return getInitMeansAssessmentResponse(isValid)
+                .withFullResult(FullAssessmentResult.PASS.getResult())
+                .withFullResultReason(FullAssessmentResult.PASS.getReason())
+                .withFullThreshold(BigDecimal.TEN)
+                .withFassFullStatus(isValid ? CurrentStatus.COMPLETE: null)
+                .withAdjustedIncomeValue(TEST_ADJUSTED_INCOME)
+                .withTotalAnnualDisposableIncome(TEST_DISPOSABLE_INCOME)
+                .withTotalAggregatedExpense(TEST_AGGREGATED_EXPENDITURE);
     }
 
     public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid) {
@@ -471,7 +470,8 @@ public class TestModelDataBuilder {
 
     public static List<ApiAssessmentDetail> getApiAssessmentDetails(boolean withPartner) {
         var assessmentDetail = new ApiAssessmentDetail()
-                .withCriteriaDetailId(TEST_DETAIL_ID)
+                .withId(TEST_DETAIL_ID)
+                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
                 .withApplicantAmount(TEST_APPLICANT_VALUE)
                 .withApplicantFrequency(TEST_FREQUENCY);
 
@@ -485,5 +485,10 @@ public class TestModelDataBuilder {
 
     public static List<ApiAssessmentDetail> getApiAssessmentDetails() {
         return getApiAssessmentDetails(false);
+    }
+
+    public static MaatApiAssessmentResponse getMaatApiAssessmentResponse() {
+        return new MaatApiAssessmentResponse()
+                .withAssessmentDetails(getApiAssessmentDetails());
     }
 }

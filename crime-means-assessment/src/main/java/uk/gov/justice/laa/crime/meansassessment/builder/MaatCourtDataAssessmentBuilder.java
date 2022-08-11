@@ -21,7 +21,7 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class MaatCourtDataAssessmentBuilder {
 
-    public MaatApiAssessmentRequest buildAssessmentRequest(final MeansAssessmentDTO assessment, final AssessmentRequestType requestType) {
+    public MaatApiAssessmentRequest build(final MeansAssessmentDTO assessment, final AssessmentRequestType requestType) {
 
         CurrentStatus assessmentStatus = assessment.getCurrentStatus();
         MeansAssessmentRequestDTO requestDTO = assessment.getMeansAssessment();
@@ -61,6 +61,9 @@ public class MaatCourtDataAssessmentBuilder {
                         requestDTO.getSectionSummaries().stream()
                                 .flatMap(section -> section.getAssessmentDetails().stream())
                                 .collect(Collectors.toList())
+                )
+                .withChildWeightings(
+                        requestDTO.getChildWeightings()
                 );
     }
 
@@ -70,7 +73,7 @@ public class MaatCourtDataAssessmentBuilder {
                 .withRtCode(ofNullable(requestDTO.getReviewType())
                         .map(ReviewType::getCode).orElse(null))
                 .withNworCode(requestDTO.getNewWorkReason().getCode())
-                .withUserCreated(requestDTO.getUserId())
+                .withUserCreated(requestDTO.getUserSession().getUserName())
                 .withIncomeUpliftRemoveDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
                         .map(ApiIncomeEvidenceSummary::getUpliftRemovedDate).orElse(null))
                 .withIncomeUpliftApplyDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
@@ -91,7 +94,6 @@ public class MaatCourtDataAssessmentBuilder {
                 .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
                 .withFullOtherHousingNote(meansAssessment.getOtherHousingNote())
                 .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense())
-                .withUserModified(meansAssessment.getUserId())
-                .withChildWeightings(meansAssessment.getChildWeightings());
+                .withUserModified(meansAssessment.getUserSession().getUserName());
     }
 }
