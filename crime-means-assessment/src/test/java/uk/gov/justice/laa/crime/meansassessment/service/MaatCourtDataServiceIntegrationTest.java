@@ -7,11 +7,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
+import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
@@ -22,6 +24,7 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.util.MaatWebClientIntegrationTestUtil;
+import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import java.io.IOException;
 
@@ -33,6 +36,7 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
     private final Integer maxRetries = 2;
     private final Integer repId = 1234;
     private final String laaTransactionId = "laa-transaction-id";
+    RetryConfiguration retryConfiguration = generateRetryConfiguration(maxRetries, 1, 0.5);
 
     private MaatCourtDataService maatCourtDataService;
 
@@ -51,37 +55,13 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
     @Before
     public void initialize() throws IOException {
         startMockWebServer();
-        String baseUrl = String.format("http://localhost:%s", mockMaatCourtDataApi.getPort());
-        configuration = new MaatApiConfiguration();
-        configuration.setBaseUrl(baseUrl);
-        configuration.setOAuthEnabled(false);
-        configuration.setPostProcessingUrl("/post-processing/{repId}");
+        configuration = MockMaatApiConfiguration.getConfiguration(mockMaatCourtDataApi.getPort());
 
-        MaatApiConfiguration.PassportAssessmentEndpoints passportEndpoints = new MaatApiConfiguration.PassportAssessmentEndpoints(
-                "/passport-assessments/{repId}"
-        );
-        MaatApiConfiguration.HardshipReviewEndpoints hardshipEndpoints = new MaatApiConfiguration.HardshipReviewEndpoints(
-                "/hardship/{repId}"
-        );
-        MaatApiConfiguration.IOJAppealEndpoints iojEndpoints = new MaatApiConfiguration.IOJAppealEndpoints(
-                "/ioj-appeal/{repId}"
-        );
-        MaatApiConfiguration.FinancialAssessmentEndpoints financialAssessmentEndpoints = new MaatApiConfiguration.FinancialAssessmentEndpoints(
-                "/financial-assessments/{financialAssessmentId}",
-                "/financial-assessments/",
-                "/financial-assessments/{financialAssessmentId}",
-                "/financial-assessments/history/{financialAssessmentId}/fullAvailable/{fullAvailable}"
-        );
+        WebClient maatWebClient =
+                buildWebClient(configuration, retryConfiguration, clientRegistrationRepository, authorizedClients);
 
-        configuration.setPassportAssessmentEndpoints(passportEndpoints);
-        configuration.setHardshipReviewEndpoints(hardshipEndpoints);
-        configuration.setIojAppealEndpoints(iojEndpoints);
-        configuration.setFinancialAssessmentEndpoints(financialAssessmentEndpoints);
-
-        RetryConfiguration retryConfiguration = generateRetryConfiguration(maxRetries, 1, 0.5);
-
-        WebClient maatWebClient = buildWebClient(configuration, retryConfiguration, clientRegistrationRepository, authorizedClients);
-        maatCourtDataService = new MaatCourtDataService(maatWebClient, configuration);
+        MaatCourtDataClient maatCourtDataClient = Mockito.spy(new MaatCourtDataClient(maatWebClient));
+        maatCourtDataService = new MaatCourtDataService(configuration, maatCourtDataClient);
     }
 
     @After
@@ -90,30 +70,30 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
     }
 
     @Test
-    public void whenPostMeansAssessmentAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
+    public void whenPersistMeansAssessmentAPICalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
         String mockResponse = setupMockApiResponses(new MaatApiAssessmentRequest(), 0);
-        MaatApiAssessmentResponse apiResponse = runPostMeansAssessment();
+        MaatApiAssessmentResponse apiResponse = runPersistMeansAssessment();
         assertEquals(mockResponse, OBJECT_MAPPER.writeValueAsString(apiResponse));
     }
 
     @Test
-    public void whenPostMeansAssessmentAPICalled_thenInvalidResponseErrorsAreHandledCorrectly() {
+    public void whenPersistMeansAssessmentAPICalled_thenInvalidResponseErrorsAreHandledCorrectly() {
         setupMockInvalidResponse();
-        APIClientException error = assertThrows(APIClientException.class, this::runPostMeansAssessment);
+        APIClientException error = assertThrows(APIClientException.class, this::runPersistMeansAssessment);
         validateInvalidResponseError(error);
     }
 
     @Test
-    public void whenPostMeansAssessmentAPICallFails_thenTheCallIsRetriedAndSucceeds() throws JsonProcessingException {
+    public void whenPersistMeansAssessmentAPICallFails_thenTheCallIsRetriedAndSucceeds() throws JsonProcessingException {
         String mockResponse = setupMockApiResponses(new MaatApiAssessmentRequest(), maxRetries - 1);
-        MaatApiAssessmentResponse apiResponse = runPostMeansAssessment();
+        MaatApiAssessmentResponse apiResponse = runPersistMeansAssessment();
         assertEquals(mockResponse, OBJECT_MAPPER.writeValueAsString(apiResponse));
     }
 
     @Test
-    public void whenPostMeansAssessmentAPICallFails_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
+    public void whenPersistMeansAssessmentAPICallFails_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
         setupMockApiResponses(new MaatApiAssessmentResponse(), maxRetries + 1);
-        APIClientException error = assertThrows(APIClientException.class, this::runPostMeansAssessment);
+        APIClientException error = assertThrows(APIClientException.class, this::runPersistMeansAssessment);
         validateRetryErrorResponse(error, maxRetries);
     }
 
@@ -236,15 +216,11 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
         assertNull(apiResponse);
     }
 
-    private MaatApiAssessmentResponse runPostMeansAssessment() {
+    private MaatApiAssessmentResponse runPersistMeansAssessment() {
         return maatCourtDataService.persistMeansAssessment(
                 new MaatApiAssessmentRequest(),
                 laaTransactionId,
                 AssessmentRequestType.CREATE
         );
-    }
-
-    private String getPostProcessingSuccessMessage() {
-        return String.format("Assessment post-processing successfully submitted for RepID: %d", repId);
     }
 }
