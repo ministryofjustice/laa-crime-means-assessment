@@ -4,6 +4,10 @@
   "type": "object",
   "description": "Assessment details",
   "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Assessment details ID"
+    },
     "criteriaDetailId": {
       "type": "integer",
       "description": "Criteria Id"
@@ -20,20 +24,13 @@
       "type": "object",
       "description": "The Frequency of Applicant",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency"
-
     },
     "partnerFrequency": {
       "type": "object",
       "description": "The Frequency of the Partner",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency"
-    },
-    "description": {
-      "type": "string",
-      "description": "An explanation about the purpose of this instance."
     }
   },
   "additionalProperties": false,
-  "required": [
-    "criteriaDetailsId"
-  ]
+  "required": ["criteriaDetailsId"]
 }
