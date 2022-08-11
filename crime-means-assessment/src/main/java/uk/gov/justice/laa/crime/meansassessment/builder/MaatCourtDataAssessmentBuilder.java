@@ -30,8 +30,13 @@ public class MaatCourtDataAssessmentBuilder {
 
         MaatApiAssessmentRequest apiAssessmentRequest;
 
-        if (requestType.equals(AssessmentRequestType.UPDATE)) {
+        if (AssessmentRequestType.UPDATE.equals(requestType)) {
             apiAssessmentRequest = buildUpdate(assessment);
+            if (AssessmentType.INIT.equals(assessmentType)) {
+                apiAssessmentRequest = apiAssessmentRequest.withChildWeightings(
+                        requestDTO.getChildWeightings()
+                );
+            }
         } else {
             apiAssessmentRequest = buildCreate(requestDTO);
         }
@@ -61,9 +66,6 @@ public class MaatCourtDataAssessmentBuilder {
                         requestDTO.getSectionSummaries().stream()
                                 .flatMap(section -> section.getAssessmentDetails().stream())
                                 .collect(Collectors.toList())
-                )
-                .withChildWeightings(
-                        requestDTO.getChildWeightings()
                 );
     }
 
