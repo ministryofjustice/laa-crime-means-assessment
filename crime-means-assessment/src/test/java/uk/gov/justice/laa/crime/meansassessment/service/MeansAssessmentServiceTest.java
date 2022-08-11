@@ -283,7 +283,6 @@ public class MeansAssessmentServiceTest {
         verify(initMeansAssessmentService).execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
-        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(meansAssessmentResponseBuilder).build(
                 anyInt(), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
         );
