@@ -117,11 +117,11 @@ public class MaatCourtDataClientTest {
         );
         verify(maatCourtDataClient)
                 .getApiResponse(
-                        eq(requestBody),
-                        eq(MaatApiAssessmentResponse.class),
-                        eq(MOCK_URL),
-                        eq(Map.of("LAA_TRANSACTION_ID", LAA_TRANSACTION_ID)),
-                        eq(HttpMethod.POST)
+                        requestBody,
+                        MaatApiAssessmentResponse.class,
+                        MOCK_URL,
+                        Map.of("LAA_TRANSACTION_ID", LAA_TRANSACTION_ID),
+                        HttpMethod.POST
                 );
     }
 
@@ -137,11 +137,11 @@ public class MaatCourtDataClientTest {
         );
         verify(maatCourtDataClient)
                 .getApiResponse(
-                        eq(requestBody),
-                        eq(MaatApiAssessmentResponse.class),
-                        eq(MOCK_URL),
-                        eq(Map.of("LAA_TRANSACTION_ID", LAA_TRANSACTION_ID)),
-                        eq(HttpMethod.PUT)
+                        requestBody,
+                        MaatApiAssessmentResponse.class,
+                        MOCK_URL,
+                        Map.of("LAA_TRANSACTION_ID", LAA_TRANSACTION_ID),
+                        HttpMethod.PUT
                 );
     }
 
@@ -218,9 +218,5 @@ public class MaatCourtDataClientTest {
                                 .build()
                         )
                 );
-    }
-
-    private void validateInvalidResponseError(APIClientException error) {
-        assertThat(error.getCause()).isInstanceOf(WebClientResponseException.class);
     }
 }
