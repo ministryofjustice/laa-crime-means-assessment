@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
