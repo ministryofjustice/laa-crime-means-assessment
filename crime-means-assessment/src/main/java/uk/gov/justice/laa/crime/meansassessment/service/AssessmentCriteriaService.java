@@ -29,8 +29,8 @@ public class AssessmentCriteriaService {
     private final AssessmentCriteriaDetailFrequencyRepository assessmentCriteriaDetailFrequencyRepository;
     private final CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
 
-     AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
-         log.info("Retrieving assessment criteria for date: {}", assessmentDate);
+    AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
+        log.info("Retrieving assessment criteria for date: {}", assessmentDate);
         AssessmentCriteriaEntity assessmentCriteriaForDate = assessmentCriteriaRepository.findAssessmentCriteriaForDate(assessmentDate);
         if (assessmentCriteriaForDate != null) {
             // If there is no partner or there is a partner with contrary interest, set partnerWeightingFactor to null
@@ -44,7 +44,7 @@ public class AssessmentCriteriaService {
         }
     }
 
-     void checkCriteriaDetailFrequency(AssessmentCriteriaDetailEntity criteriaDetail, Frequency frequency) {
+    void checkCriteriaDetailFrequency(AssessmentCriteriaDetailEntity criteriaDetail, Frequency frequency) {
         Optional<AssessmentCriteriaDetailFrequencyEntity> detailFrequency =
                 assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(criteriaDetail, frequency);
         if (detailFrequency.isEmpty()) {
@@ -52,7 +52,7 @@ public class AssessmentCriteriaService {
         }
     }
 
-     void checkAssessmentDetail(CaseType caseType, String section, AssessmentCriteriaEntity assessmentCriteria, ApiAssessmentDetail detail) {
+    void checkAssessmentDetail(CaseType caseType, String section, AssessmentCriteriaEntity assessmentCriteria, ApiAssessmentDetail detail) {
         AssessmentCriteriaDetailEntity criteriaDetail =
                 assessmentCriteria.getAssessmentCriteriaDetails().stream().filter(
                         d -> d.getSection().equals(section) && d.getId().equals(detail.getCriteriaDetailId())
@@ -77,14 +77,14 @@ public class AssessmentCriteriaService {
                         criteriaDetail, caseType
                 ).orElse(null);
 
-            if (criteriaDetailValue != null && (!criteriaDetailValue.getApplicantValue().equals(detail.getApplicantAmount()) ||
-                    !criteriaDetailValue.getApplicantFrequency().getCode().equals(
-                            Optional.ofNullable(applicantFrequency).map(Frequency::getCode).orElse(null)) ||
-                    !criteriaDetailValue.getPartnerValue().equals(detail.getPartnerAmount()) ||
-                    !criteriaDetailValue.getPartnerFrequency().getCode().equals(
-                            Optional.ofNullable(partnerFrequency).map(Frequency::getCode).orElse(null)))) {
-                throw new ValidationException("Incorrect amount entered for: " + criteriaDetail.getDescription());
-            }
+        if (criteriaDetailValue != null && (!criteriaDetailValue.getApplicantValue().equals(detail.getApplicantAmount()) ||
+                !criteriaDetailValue.getApplicantFrequency().getCode().equals(
+                        Optional.ofNullable(applicantFrequency).map(Frequency::getCode).orElse(null)) ||
+                !criteriaDetailValue.getPartnerValue().equals(detail.getPartnerAmount()) ||
+                !criteriaDetailValue.getPartnerFrequency().getCode().equals(
+                        Optional.ofNullable(partnerFrequency).map(Frequency::getCode).orElse(null)))) {
+            throw new ValidationException("Incorrect amount entered for: " + criteriaDetail.getDescription());
+        }
 
     }
 }

@@ -28,6 +28,7 @@ public class MeansAssessmentValidationServiceTest {
     public static final String MAAT_API_BASE_URL = "http://localhost:8090/";
 
     private MaatApiConfiguration configuration;
+    private MeansAssessmentRequestDTO requestDTO;
     private MeansAssessmentValidationService meansAssessmentValidationService;
 
     private final WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
@@ -49,7 +50,13 @@ public class MeansAssessmentValidationServiceTest {
                 "/financial-assessments/check-outstanding/{repId}"
         );
         configuration.setValidationEndpoints(validationEndpoints);
+        requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         meansAssessmentValidationService = new MeansAssessmentValidationService(webClient, configuration);
+    }
+
+    @Test
+    public void whenGetUserIdFromRequestIsCalled_thenUserIdIsReturned() {
+        assertEquals(TestModelDataBuilder.TEST_USER, meansAssessmentValidationService.getUserIdFromRequest(requestDTO));
     }
 
     @Test
@@ -123,6 +130,21 @@ public class MeansAssessmentValidationServiceTest {
         StepVerifier.create(Mono.just(response))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    public void whenValidateRoleActionIsCalledWithBlankUserId_thenValidationFails() {
+        requestDTO.getUserSession().setUserName("");
+        assertEquals(Boolean.FALSE, meansAssessmentValidationService
+                .validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT)
+        );
+    }
+
+    @Test
+    public void whenValidateRoleActionIsCalledWithBlankAction_thenValidationFails() {
+        assertEquals(Boolean.FALSE, meansAssessmentValidationService
+                .validateRoleAction(requestDTO, "")
+        );
     }
 
     @Test

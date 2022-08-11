@@ -18,6 +18,7 @@ import static uk.gov.justice.laa.crime.meansassessment.common.Constants.ACTION_C
 public class MeansAssessmentValidationProcessor {
 
     private final InitAssessmentValidator initAssessmentValidator;
+    private final FullAssessmentValidator fullAssessmentValidator;
     private final MeansAssessmentValidationService meansAssessmentValidationService;
 
     public static final String MSG_REP_ID_REQUIRED = "Rep Id is missing from request and is required";
@@ -28,6 +29,7 @@ public class MeansAssessmentValidationProcessor {
     public static final String MSG_INCORRECT_REVIEW_TYPE = "Review Type - As the current Crown Court Rep Order Decision is Refused - " +
             "Ineligible (applicants disposable income exceeds eligibility threshold) you must select the appropriate review type - " +
             "Eligibility Review, Miscalculation Review or New Application Following Ineligibility.";
+    public static final String MSG_FULL_ASSESSMENT_DATE_REQUIRED = "Full assessment date is required";
 
     public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO) {
         log.info("Validating means assessment request : {}", requestDTO);
@@ -39,13 +41,19 @@ public class MeansAssessmentValidationProcessor {
             throw new ValidationException(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
         }
 
-        if (AssessmentType.INIT.equals(requestDTO.getAssessmentType())) {
+        boolean isInit = AssessmentType.INIT.equals(requestDTO.getAssessmentType());
+
+        if (isInit) {
             if (!meansAssessmentValidationService.validateOutstandingAssessments(requestDTO)) {
                 throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
             } else if (!meansAssessmentValidationService.validateNewWorkReason(requestDTO)) {
                 throw new ValidationException(MSG_NEW_WORK_REASON_IS_NOT_VALID);
             } else if (!initAssessmentValidator.validate(requestDTO)) {
                 throw new ValidationException(MSG_INCORRECT_REVIEW_TYPE);
+            }
+        } else {
+            if (!fullAssessmentValidator.validate(requestDTO)) {
+                throw new ValidationException(MSG_FULL_ASSESSMENT_DATE_REQUIRED);
             }
         }
         return Optional.empty();
