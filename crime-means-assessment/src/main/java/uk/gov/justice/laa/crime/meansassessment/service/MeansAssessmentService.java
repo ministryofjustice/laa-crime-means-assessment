@@ -56,7 +56,7 @@ public class MeansAssessmentService {
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
             MaatApiAssessmentResponse maatApiAssessmentResponse =
-                    maatCourtDataService.postMeansAssessment(
+                    maatCourtDataService.persistMeansAssessment(
                             assessmentBuilder.build(completedAssessment, requestType),
                             requestDTO.getLaaTransactionId(),
                             requestType
