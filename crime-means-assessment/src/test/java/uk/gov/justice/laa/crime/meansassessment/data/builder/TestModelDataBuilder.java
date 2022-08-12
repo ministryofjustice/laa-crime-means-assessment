@@ -79,6 +79,8 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_AGGREGATED_INCOME = BigDecimal.valueOf(12000d);
     public static final BigDecimal TEST_ADJUSTED_INCOME = BigDecimal.valueOf(20000d);
 
+    //create means assessment
+    public static final Integer TEST_REP_ID = 42312;
     public static final int MEANS_ASSESSMENT_ID = 1000;
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
 

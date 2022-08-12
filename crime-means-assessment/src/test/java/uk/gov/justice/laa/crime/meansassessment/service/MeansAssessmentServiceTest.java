@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -269,7 +268,7 @@ public class MeansAssessmentServiceTest {
                         .withInitAdjustedIncomeValue(TestModelDataBuilder.TEST_ADJUSTED_INCOME)
                         .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
 
-        when(maatCourtDataService.postMeansAssessment(
+        when(maatCourtDataService.persistMeansAssessment(
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
