@@ -32,13 +32,13 @@ public class MaatCourtDataAssessmentBuilder {
 
         if (AssessmentRequestType.UPDATE.equals(requestType)) {
             apiAssessmentRequest = buildUpdate(assessment);
-            if (AssessmentType.INIT.equals(assessmentType)) {
-                apiAssessmentRequest = apiAssessmentRequest.withChildWeightings(
-                        requestDTO.getChildWeightings()
-                );
-            }
         } else {
             apiAssessmentRequest = buildCreate(requestDTO);
+        }
+        if (AssessmentType.INIT.equals(assessmentType)) {
+            apiAssessmentRequest = apiAssessmentRequest.withChildWeightings(
+                    requestDTO.getChildWeightings()
+            );
         }
 
         return apiAssessmentRequest
