@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "laa-crime-means-assessment.labels" . | nindent 4 }}
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-internal: true
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
 spec:
   type: {{ .Values.service.type }}
   ports:
