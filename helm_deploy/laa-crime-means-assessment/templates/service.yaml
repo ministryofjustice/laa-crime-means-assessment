@@ -4,6 +4,8 @@ metadata:
   name: {{ include "laa-crime-means-assessment.fullname" . }}
   labels:
     {{- include "laa-crime-means-assessment.labels" . | nindent 4 }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: true
 spec:
   type: {{ .Values.service.type }}
   ports:
