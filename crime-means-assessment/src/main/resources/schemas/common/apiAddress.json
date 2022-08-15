@@ -39,9 +39,5 @@
     }
   },
   "additionalProperties": true,
-  "required": [
-    "addressId",
-    "line1",
-    "postCode"
-  ]
+  "required": ["addressId", "line1", "postCode"]
 }

@@ -43,8 +43,5 @@
     }
   },
   "additionalProperties": true,
-  "required": [
-    "userName",
-    "sessionId"
-  ]
+  "required": ["userName", "sessionId"]
 }

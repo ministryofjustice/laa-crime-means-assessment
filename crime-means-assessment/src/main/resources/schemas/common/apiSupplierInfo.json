@@ -19,9 +19,5 @@
     }
   },
   "additionalProperties": false,
-  "required": [
-    "accountNumber",
-    "name",
-    "address"
-  ]
+  "required": ["accountNumber", "name", "address"]
 }

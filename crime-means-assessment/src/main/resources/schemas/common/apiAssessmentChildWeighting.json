@@ -26,8 +26,5 @@
     }
   },
   "additionalProperties": false,
-  "required": [
-    "weightingId",
-    "noOfChildren"
-  ]
+  "required": ["weightingId", "noOfChildren"]
 }

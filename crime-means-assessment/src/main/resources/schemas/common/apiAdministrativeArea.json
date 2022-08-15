@@ -23,9 +23,5 @@
     }
   },
   "additionalProperties": true,
-  "required": [
-    "id",
-    "code",
-    "enabled"
-  ]
+  "required": ["id", "code", "enabled"]
 }
