@@ -8,6 +8,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentR
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -23,4 +24,5 @@ public class MeansAssessmentDTO {
     private BigDecimal totalAnnualDisposableIncome;
     private InitAssessmentResult initAssessmentResult;
     private FullAssessmentResult fullAssessmentResult;
+    private LocalDateTime dateCompleted;
 }

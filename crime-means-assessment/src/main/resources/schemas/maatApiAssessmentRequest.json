@@ -88,6 +88,11 @@
       "items": {
         "$ref": "common/apiAssessmentChildWeighting.json"
       }
+    },
+    "dateCompleted": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Assessment completion date"
     }
   },
   "additionalProperties": false,
