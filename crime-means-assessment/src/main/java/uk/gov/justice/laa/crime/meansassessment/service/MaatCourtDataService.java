@@ -3,12 +3,10 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.common.Constants;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -50,36 +48,21 @@ public class MaatCourtDataService {
         return response;
     }
 
-    public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
-        PassportAssessmentDTO response = maatCourtDataClient.getApiResponseViaGET(
-                PassportAssessmentDTO.class,
-                configuration.getPassportAssessmentEndpoints().getFindUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
-                repId
+    public void updateCompletionDate(DateCompletionRequestDTO dateCompletionRequestDTO, String laaTransactionId) {
+        maatCourtDataClient.getApiResponseViaPOST(
+                dateCompletionRequestDTO,
+                Void.class,
+                configuration.getFinancialAssessmentEndpoints().getDateCompletionUrl(),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId)
         );
-
-        log.info(String.format(RESPONSE_STRING, response));
-        return response;
     }
 
-    public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
-        HardshipReviewDTO response = maatCourtDataClient.getApiResponseViaGET(
-                HardshipReviewDTO.class,
-                configuration.getHardshipReviewEndpoints().getFindUrl(),
+    public FinancialAssessmentDTO getFinancialAssessment(Integer financialAssessmentId, String laaTransactionId) {
+        FinancialAssessmentDTO response = maatCourtDataClient.getApiResponseViaGET(
+                FinancialAssessmentDTO.class,
+                configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
                 Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
-                repId
-        );
-
-        log.info(String.format(RESPONSE_STRING, response));
-        return response;
-    }
-
-    public IOJAppealDTO getIOJAppealFromRepId(Integer repId, String laaTransactionId) {
-        IOJAppealDTO response = maatCourtDataClient.getApiResponseViaGET(
-                IOJAppealDTO.class,
-                configuration.getIojAppealEndpoints().getFindUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
-                repId
+                financialAssessmentId
         );
 
         log.info(String.format(RESPONSE_STRING, response));
