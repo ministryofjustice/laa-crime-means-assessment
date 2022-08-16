@@ -71,6 +71,8 @@ public class MeansAssessmentServiceTest {
     @Mock
     private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
+    @Mock
+    private MaatAssessmentCompletionService maatAssessmentCompletionService;
 
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
@@ -277,7 +279,7 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenCreateAssessmentIsPerformed() {
         setupDoAssessmentStubbing(AssessmentType.INIT);
-        ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)

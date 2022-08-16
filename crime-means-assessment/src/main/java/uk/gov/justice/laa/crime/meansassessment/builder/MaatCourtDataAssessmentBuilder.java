@@ -66,7 +66,8 @@ public class MaatCourtDataAssessmentBuilder {
                         requestDTO.getSectionSummaries().stream()
                                 .flatMap(section -> section.getAssessmentDetails().stream())
                                 .collect(Collectors.toList())
-                );
+                )
+                .withDateCompleted(assessment.getDateCompleted());
     }
 
     private MaatApiCreateAssessment buildCreate(MeansAssessmentRequestDTO requestDTO) {
