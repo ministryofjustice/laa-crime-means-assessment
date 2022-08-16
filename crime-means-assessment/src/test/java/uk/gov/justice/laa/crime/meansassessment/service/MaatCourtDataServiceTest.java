@@ -9,9 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -63,37 +61,13 @@ public class MaatCourtDataServiceTest {
     }
 
     @Test
-    public void givenRepId_whenGetPassportAssessmentFromRepIdIsInvoked_thenResponseIsReturned() {
-        PassportAssessmentDTO expected = new PassportAssessmentDTO();
+    public void givenRepId_whenGetFinancialAssessmentIsInvoked_thenResponseIsReturned() {
+        FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
         when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
                 .thenReturn(expected);
 
-        PassportAssessmentDTO response =
-                maatCourtDataService.getPassportAssessmentFromRepId(TestModelDataBuilder.TEST_REP_ID, LAA_TRANSACTION_ID);
-
-        assertThat(response).isEqualTo(expected);
-    }
-
-    @Test
-    public void givenRepId_whenGetHardshipReviewFromRepIdIsInvoked_thenResponseIsReturned() {
-        HardshipReviewDTO expected = new HardshipReviewDTO();
-        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
-                .thenReturn(expected);
-
-        HardshipReviewDTO response =
-                maatCourtDataService.getHardshipReviewFromRepId(TestModelDataBuilder.TEST_REP_ID, LAA_TRANSACTION_ID);
-
-        assertThat(response).isEqualTo(expected);
-    }
-
-    @Test
-    public void givenRepId_whenGetIojAppealFromRepIdIsInvoked_thenResponseIsReturned() {
-        IOJAppealDTO expected = new IOJAppealDTO();
-        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
-                .thenReturn(expected);
-
-        IOJAppealDTO response =
-                maatCourtDataService.getIOJAppealFromRepId(TestModelDataBuilder.TEST_REP_ID, LAA_TRANSACTION_ID);
+        FinancialAssessmentDTO response =
+                maatCourtDataService.getFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, LAA_TRANSACTION_ID);
 
         assertThat(response).isEqualTo(expected);
     }
