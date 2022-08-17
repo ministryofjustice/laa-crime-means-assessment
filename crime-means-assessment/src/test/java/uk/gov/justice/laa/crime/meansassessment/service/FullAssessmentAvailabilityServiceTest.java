@@ -38,7 +38,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setFullAssessmentDate(LocalDateTime.of(2021, 12, 20, 10, 0));
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isTrue();
     }
 
     @Test
@@ -46,7 +46,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("FULL");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isTrue();
     }
 
     @Test
@@ -55,7 +55,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("FAIL");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isTrue();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("FAIL");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isTrue();
     }
 
     @Test
@@ -73,7 +73,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("FAIL");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isTrue();
     }
 
     @Test
@@ -82,7 +82,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("FAIL");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isFalse();
     }
 
     @Test
@@ -92,7 +92,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("FAIL");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isTrue();
     }
 
     @Test
@@ -102,15 +102,16 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("FAIL");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isFalse();
     }
 
     @Test
     public void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonNull_ThenFullAssessmentAvailableIsFalse() {
         meansAssessmentResponse.setInitResult("HARDSHIP APPLICATION");
+        meansAssessmentRequest.setNewWorkReason(null);
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isFalse();
     }
 
     @Test
@@ -119,7 +120,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentRequest.setNewWorkReason(NewWorkReason.HR);
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(true);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isTrue();
     }
 
     @Test
@@ -128,7 +129,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentRequest.setNewWorkReason(NewWorkReason.PBI);
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isFalse();
     }
 
     @Test
@@ -136,7 +137,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult(null);
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isFalse();
     }
 
     @Test
@@ -144,7 +145,7 @@ public class FullAssessmentAvailabilityServiceTest {
         meansAssessmentResponse.setInitResult("");
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
-        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isEqualTo(false);
+        assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isFalse();
     }
 
 }
