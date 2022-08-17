@@ -72,7 +72,7 @@ public class MeansAssessmentServiceTest {
     private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
     @Mock
-    private MaatAssessmentCompletionService maatAssessmentCompletionService;
+    private AssessmentCompletionService maatAssessmentCompletionService;
 
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
