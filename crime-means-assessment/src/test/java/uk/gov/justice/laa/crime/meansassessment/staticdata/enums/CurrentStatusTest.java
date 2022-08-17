@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,9 +12,9 @@ public class CurrentStatusTest {
         assertEquals(CurrentStatus.IN_PROGRESS, CurrentStatus.getFrom("IN PROGRESS"));
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void valueOfCurrentStatusFromString_nullParamenter_ReturnsNull() {
-        assertNull(CurrentStatus.getFrom(null));
+    @Test
+    public void valueOfCurrentStatusFromString_nullParameter_ReturnsNull() {
+        Assert.assertThrows(IllegalArgumentException.class, () -> CurrentStatus.getFrom(null));
     }
 
     @Test(expected=IllegalArgumentException.class)
