@@ -4,22 +4,27 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.time.LocalDateTime;
 
+import static java.util.Optional.ofNullable;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MaatAssessmentCompletionService {
+public class AssessmentCompletionService {
 
     private final MaatCourtDataService maatCourtDataService;
 
-    public void execute(MeansAssessmentDTO assessment, AssessmentType type, String laaTransactionId) {
+    public void execute(MeansAssessmentDTO assessment, String laaTransactionId) {
         boolean isUpdateRequired = false;
-        CurrentStatus assessmentStatus = assessment.getMeansAssessment().getAssessmentStatus();
+        MeansAssessmentRequestDTO meansAssessmentRequest = assessment.getMeansAssessment();
+        CurrentStatus assessmentStatus = meansAssessmentRequest.getAssessmentStatus();
+        AssessmentType type = meansAssessmentRequest.getAssessmentType();
         if (CurrentStatus.COMPLETE.equals(assessmentStatus)) {
             if (AssessmentType.INIT.equals(type)) {
                 isUpdateRequired = isInitAssessmentComplete(assessment);
@@ -29,31 +34,35 @@ public class MaatAssessmentCompletionService {
         }
 
         if (isUpdateRequired) {
-            updateApplicationCompletionDate(assessment, type, laaTransactionId);
+            updateApplicationCompletionDate(assessment, laaTransactionId);
         }
     }
 
-    private void updateApplicationCompletionDate(MeansAssessmentDTO assessment, AssessmentType type, String laaTransactionId) {
+    void updateApplicationCompletionDate(MeansAssessmentDTO assessment, String laaTransactionId) {
         assessment.setDateCompleted(LocalDateTime.now());
-        if (AssessmentType.FULL.equals(type)) {
-            DateCompletionRequestDTO dateCompletionRequestDTO = DateCompletionRequestDTO
-                    .builder()
-                    .repId(assessment.getMeansAssessment().getRepId())
-                    .assessmentDateCompleted(assessment.getDateCompleted())
-                    .build();
-            maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO, laaTransactionId);
+        DateCompletionRequestDTO dateCompletionRequestDTO = DateCompletionRequestDTO
+                .builder()
+                .repId(assessment.getMeansAssessment().getRepId())
+                .assessmentDateCompleted(assessment.getDateCompleted())
+                .build();
+        maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO, laaTransactionId);
+    }
+
+    boolean isFullUpdateRequired(MeansAssessmentDTO assessment, String laaTransactionId) {
+        Integer financialAssessmentId = ofNullable(
+                assessment.getMeansAssessment().getFinancialAssessmentId()
+        ).orElse(null);
+
+        if (financialAssessmentId != null) {
+            FinancialAssessmentDTO existingAssessment = maatCourtDataService.getFinancialAssessment(
+                    financialAssessmentId, laaTransactionId
+            );
+            return existingAssessment.getDateCompleted() == null;
         }
+        return true;
     }
 
-    private boolean isFullUpdateRequired(MeansAssessmentDTO assessment, String laaTransactionId) {
-        int financialAssessmentId = assessment.getMeansAssessment().getFinancialAssessmentId();
-        FinancialAssessmentDTO existingAssessment = maatCourtDataService.getFinancialAssessment(
-                financialAssessmentId, laaTransactionId
-        );
-        return existingAssessment.getDateCompleted() == null;
-    }
-
-    private boolean isInitAssessmentComplete(MeansAssessmentDTO assessment) {
+    boolean isInitAssessmentComplete(MeansAssessmentDTO assessment) {
         InitAssessmentResult initResult = assessment.getInitAssessmentResult();
         if (InitAssessmentResult.PASS.equals(initResult)) {
             return true;

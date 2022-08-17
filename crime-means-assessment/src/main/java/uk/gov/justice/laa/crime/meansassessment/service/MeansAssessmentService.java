@@ -33,7 +33,7 @@ public class MeansAssessmentService {
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
-    private final MaatAssessmentCompletionService maatAssessmentCompletionService;
+    private final AssessmentCompletionService assessmentCompletionService;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -56,7 +56,7 @@ public class MeansAssessmentService {
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
-            maatAssessmentCompletionService.execute(completedAssessment, assessmentType, requestDTO.getLaaTransactionId());
+            assessmentCompletionService.execute(completedAssessment, requestDTO.getLaaTransactionId());
 
             MaatApiAssessmentResponse maatApiAssessmentResponse =
                     maatCourtDataService.persistMeansAssessment(
