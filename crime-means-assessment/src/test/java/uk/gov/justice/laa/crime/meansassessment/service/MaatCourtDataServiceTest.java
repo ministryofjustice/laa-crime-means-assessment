@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
@@ -17,6 +18,7 @@ import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,5 +72,16 @@ public class MaatCourtDataServiceTest {
                 maatCourtDataService.getFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, LAA_TRANSACTION_ID);
 
         assertThat(response).isEqualTo(expected);
+    }
+
+    @Test
+    public void givenDateCompletionRequest_whenUpdateCompletionDateIsInvoked_thenResponseIsReturned() {
+        maatCourtDataService.updateCompletionDate(DateCompletionRequestDTO.builder().build(), LAA_TRANSACTION_ID);
+        verify(maatCourtDataClient).getApiResponseViaPOST(
+                any(DateCompletionRequestDTO.class),
+                any(),
+                anyString(),
+                anyMap()
+        );
     }
 }
