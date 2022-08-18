@@ -1,10 +1,12 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import org.assertj.core.api.SoftAssertions;
+import org.junit.Before;
 import org.junit.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
@@ -15,13 +17,21 @@ public class MeansAssessmentResponseBuilderTest {
     private final MeansAssessmentResponseBuilder responseBuilder =
             new MeansAssessmentResponseBuilder();
 
-    private final MeansAssessmentDTO completedAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
-    private final AssessmentCriteriaEntity assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntity();
+    private MeansAssessmentDTO completedAssessment;
+    private final AssessmentCriteriaEntity assessmentCriteria =
+            TestModelDataBuilder.getAssessmentCriteriaEntity();
+    private MaatApiAssessmentResponse maatApiAssessmentResponse;
+
+    @Before
+    public void setup() {
+        completedAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
+        maatApiAssessmentResponse = TestModelDataBuilder.getMaatApiAssessmentResponse();
+    }
 
     private void checkCommonFieldsPopulated(ApiMeansAssessmentResponse response) {
         SoftAssertions.assertSoftly(softly -> {
             assertThat(response.getAssessmentId())
-                    .isEqualTo(TestModelDataBuilder.MEANS_ASSESSMENT_ID);
+                    .isEqualTo(maatApiAssessmentResponse.getId());
             assertThat(response.getRepId())
                     .isEqualTo(completedAssessment.getMeansAssessment().getRepId());
             assertThat(response.getCriteriaId())
@@ -33,9 +43,9 @@ public class MeansAssessmentResponseBuilderTest {
             assertThat(response.getTotalAggregatedIncome())
                     .isEqualTo(completedAssessment.getTotalAggregatedIncome());
             assertThat(response.getInitResult())
-                    .isEqualTo(completedAssessment.getInitAssessmentResult().getResult());
+                    .isEqualTo(maatApiAssessmentResponse.getInitResult());
             assertThat(response.getInitResultReason())
-                    .isEqualTo(completedAssessment.getInitAssessmentResult().getReason());
+                    .isEqualTo(maatApiAssessmentResponse.getInitResultReason());
             assertThat(response.getAdjustedIncomeValue())
                     .isEqualTo(completedAssessment.getAdjustedIncomeValue());
             assertThat(response.getAssessmentSectionSummary())
@@ -46,7 +56,7 @@ public class MeansAssessmentResponseBuilderTest {
     @Test
     public void givenInitAssessmentType_whenBuildIsInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentResponse response =
-                responseBuilder.build(TestModelDataBuilder.MEANS_ASSESSMENT_ID, assessmentCriteria, completedAssessment);
+                responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
         checkCommonFieldsPopulated(response);
     }
 
@@ -54,7 +64,7 @@ public class MeansAssessmentResponseBuilderTest {
     public void givenFullAssessmentType_whenBuildIsInvoked_thenFullFieldsArePopulated() {
         completedAssessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         ApiMeansAssessmentResponse response =
-                responseBuilder.build(TestModelDataBuilder.MEANS_ASSESSMENT_ID, assessmentCriteria, completedAssessment);
+                responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
 
         checkCommonFieldsPopulated(response);
 
