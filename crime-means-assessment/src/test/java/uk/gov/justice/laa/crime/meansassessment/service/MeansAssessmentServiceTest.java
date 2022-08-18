@@ -283,7 +283,7 @@ public class MeansAssessmentServiceTest {
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
         verify(meansAssessmentResponseBuilder).build(
-                anyInt(), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
+                any(MaatApiAssessmentResponse.class), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
         );
     }
 
@@ -299,7 +299,7 @@ public class MeansAssessmentServiceTest {
         );
         verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(meansAssessmentResponseBuilder).build(
-                anyInt(), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
+                any(MaatApiAssessmentResponse.class), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
         );
     }
 
