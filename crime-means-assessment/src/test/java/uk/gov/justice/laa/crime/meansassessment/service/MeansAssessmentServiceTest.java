@@ -72,7 +72,7 @@ public class MeansAssessmentServiceTest {
     private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
     @Mock
-    private AssessmentCompletionService maatAssessmentCompletionService;
+    private AssessmentCompletionService assessmentCompletionService;
 
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
@@ -83,6 +83,7 @@ public class MeansAssessmentServiceTest {
         assessmentCriteria.setId(TestModelDataBuilder.TEST_CRITERIA_ID);
         financialAssessmentEndpoints.setCreateUrl("create-url");
         financialAssessmentEndpoints.setUpdateUrl("update-url");
+        meansAssessmentService.dateCompletionEnabled = false;
     }
 
     @AfterEach
@@ -274,6 +275,16 @@ public class MeansAssessmentServiceTest {
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
+    }
+
+
+    //    TODO: Remove this test once the dateCompletion feature is enabled
+    @Test
+    public void givenDateCompletionFlagEnabled__whenDoAssessmentIsInvoked_thenAssessmentCompletionServiceIsCalled() {
+        setupDoAssessmentStubbing(AssessmentType.INIT);
+        meansAssessmentService.dateCompletionEnabled = true;
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+        verify(assessmentCompletionService).execute(any(MeansAssessmentDTO.class), anyString());
     }
 
     @Test
