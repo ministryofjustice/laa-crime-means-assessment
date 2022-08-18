@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MeansAssessmentService {
 
     private final MaatCourtDataService maatCourtDataService;
@@ -37,7 +38,7 @@ public class MeansAssessmentService {
     private final AssessmentCompletionService assessmentCompletionService;
 
     @Value("${features.dateCompletionEnabled}")
-    private boolean dateCompletionEnabled;
+    protected boolean dateCompletionEnabled;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
