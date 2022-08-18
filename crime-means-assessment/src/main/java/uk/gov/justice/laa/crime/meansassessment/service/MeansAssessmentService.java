@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -35,6 +36,9 @@ public class MeansAssessmentService {
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
     private final AssessmentCompletionService assessmentCompletionService;
 
+    @Value("${features.dateCompletionEnabled}")
+    private boolean dateCompletionEnabled;
+
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
         try {
@@ -56,7 +60,9 @@ public class MeansAssessmentService {
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
-            assessmentCompletionService.execute(completedAssessment, requestDTO.getLaaTransactionId());
+            if (dateCompletionEnabled) {
+                assessmentCompletionService.execute(completedAssessment, requestDTO.getLaaTransactionId());
+            }
 
             MaatApiAssessmentResponse maatApiAssessmentResponse =
                     maatCourtDataService.persistMeansAssessment(
