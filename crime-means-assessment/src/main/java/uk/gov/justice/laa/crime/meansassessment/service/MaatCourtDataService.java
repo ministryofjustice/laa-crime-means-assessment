@@ -57,6 +57,39 @@ public class MaatCourtDataService {
         );
     }
 
+    public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
+        PassportAssessmentDTO response = maatCourtDataClient.getApiResponseViaGET(
+                PassportAssessmentDTO.class,
+                configuration.getPassportAssessmentEndpoints().getFindUrl(),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
+                repId
+        );
+        log.info(String.format(RESPONSE_STRING, response));
+        return response;
+    }
+
+    public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
+        HardshipReviewDTO response = maatCourtDataClient.getApiResponseViaGET(
+                HardshipReviewDTO.class,
+                configuration.getHardshipReviewEndpoints().getFindUrl(),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
+                repId
+        );
+        log.info(String.format(RESPONSE_STRING, response));
+        return response;
+    }
+
+    public IOJAppealDTO getIOJAppealFromRepId(Integer repId, String laaTransactionId) {
+        IOJAppealDTO response = maatCourtDataClient.getApiResponseViaGET(
+                IOJAppealDTO.class,
+                configuration.getIojAppealEndpoints().getFindUrl(),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
+                repId
+        );
+        log.info(String.format(RESPONSE_STRING, response));
+        return response;
+    }
+
     public FinancialAssessmentDTO getFinancialAssessment(Integer financialAssessmentId, String laaTransactionId) {
         FinancialAssessmentDTO response = maatCourtDataClient.getApiResponseViaGET(
                 FinancialAssessmentDTO.class,
@@ -64,7 +97,6 @@ public class MaatCourtDataService {
                 Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 financialAssessmentId
         );
-
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
