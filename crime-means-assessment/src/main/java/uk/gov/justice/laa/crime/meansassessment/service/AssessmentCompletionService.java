@@ -49,10 +49,7 @@ public class AssessmentCompletionService {
     }
 
     boolean isFullUpdateRequired(MeansAssessmentDTO assessment, String laaTransactionId) {
-        Integer financialAssessmentId = ofNullable(
-                assessment.getMeansAssessment().getFinancialAssessmentId()
-        ).orElse(null);
-
+        Integer financialAssessmentId = assessment.getMeansAssessment().getFinancialAssessmentId();
         if (financialAssessmentId != null) {
             FinancialAssessmentDTO existingAssessment = maatCourtDataService.getFinancialAssessment(
                     financialAssessmentId, laaTransactionId
@@ -68,12 +65,11 @@ public class AssessmentCompletionService {
             return true;
         } else if (InitAssessmentResult.FAIL.equals(initResult)) {
             CaseType caseType = assessment.getMeansAssessment().getCaseType();
-            MagCourtOutcome magCourtOutcome = assessment.getMeansAssessment().getMagCourtOutcome();
             if (CaseType.SUMMARY_ONLY.equals(caseType) || CaseType.COMMITAL.equals(caseType)) {
                 return true;
             } else {
                 return CaseType.EITHER_WAY.equals(caseType) &&
-                        MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(magCourtOutcome);
+                        MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(assessment.getMeansAssessment().getMagCourtOutcome());
             }
         }
         return false;
