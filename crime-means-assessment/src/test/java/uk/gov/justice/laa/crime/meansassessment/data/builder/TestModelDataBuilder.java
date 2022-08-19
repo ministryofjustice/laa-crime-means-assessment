@@ -491,6 +491,8 @@ public class TestModelDataBuilder {
 
     public static MaatApiAssessmentResponse getMaatApiAssessmentResponse() {
         return new MaatApiAssessmentResponse()
+                .withInitResult("PASS")
+                .withInitResultReason("Gross income below the lower threshold")
                 .withAssessmentDetails(getApiAssessmentDetails());
     }
 }
