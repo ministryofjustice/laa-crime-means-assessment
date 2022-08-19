@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
@@ -214,6 +215,46 @@ public class MaatCourtDataServiceIntegrationTest extends MaatWebClientIntegratio
         setupMockNotFoundResponse();
         IOJAppealDTO apiResponse = maatCourtDataService.getIOJAppealFromRepId(repId, laaTransactionId);
         assertNull(apiResponse);
+    }
+
+    @Test
+    public void whenGetFinancialAssessmentIsCalled_thenTheCorrectResponseIsReturnedWhenItSucceedsFirstTime() throws JsonProcessingException {
+        String mockResponse = setupMockApiResponses(new FinancialAssessmentDTO(), 0);
+        FinancialAssessmentDTO apiResponse =
+                maatCourtDataService.getFinancialAssessment(repId, laaTransactionId);
+        assertEquals(mockResponse, OBJECT_MAPPER.writeValueAsString(apiResponse));
+    }
+
+    @Test
+    public void whenGetFinancialAssessmentIsCalled_thenInvalidResponseErrorsAreHandledCorrectly() {
+        setupMockInvalidResponse();
+        APIClientException error = assertThrows(APIClientException.class, () -> maatCourtDataService.getFinancialAssessment(repId, laaTransactionId));
+        validateInvalidResponseError(error);
+    }
+
+    @Test
+    public void whenGetFinancialAssessmentCallFails_thenTheCallIsRetriedAndSucceeds() throws JsonProcessingException {
+        String mockResponse = setupMockApiResponses(new FinancialAssessmentDTO(), maxRetries - 1);
+        FinancialAssessmentDTO apiResponse =
+                maatCourtDataService.getFinancialAssessment(repId, laaTransactionId);
+        assertEquals(mockResponse, OBJECT_MAPPER.writeValueAsString(apiResponse));
+    }
+
+    @Test
+    public void whenGetFinancialAssessmentCallReturnsNotFoundResponse_thenMethodReturnsNull() {
+        setupMockNotFoundResponse();
+        FinancialAssessmentDTO apiResponse = maatCourtDataService.getFinancialAssessment(repId, laaTransactionId);
+        assertNull(apiResponse);
+    }
+
+    @Test
+    public void whenGetFinancialAssessmentCallFails_thenTheCallIsRetriedAndFails() throws JsonProcessingException {
+        setupMockApiResponses(new FinancialAssessmentDTO(), maxRetries + 1);
+        APIClientException error = assertThrows(
+                APIClientException.class,
+                () -> maatCourtDataService.getFinancialAssessment(repId, laaTransactionId)
+        );
+        validateRetryErrorResponse(error, maxRetries);
     }
 
     private MaatApiAssessmentResponse runPersistMeansAssessment() {

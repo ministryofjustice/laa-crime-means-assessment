@@ -69,10 +69,5 @@ retry-config:
   min-back-off-period: 3
   jitter-value: 0.5
 
-aws:
-  sqs:
-    accesskey: test
-    secretkey: test
-    region: test
-  queue:
-    post-processing-queue: dummy
+features:
+  date-completion-enabled: false
