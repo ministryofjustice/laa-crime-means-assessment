@@ -83,6 +83,7 @@ public class TestModelDataBuilder {
     public static final Integer TEST_REP_ID = 42312;
     public static final int MEANS_ASSESSMENT_ID = 1000;
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
+    private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -294,6 +295,7 @@ public class TestModelDataBuilder {
                 .reviewType(ReviewType.NAFI)
                 .newWorkReason(NewWorkReason.PBI)
                 .fullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .financialAssessmentId(TEST_FINANCIAL_ASSESSMENT_ID)
                 .build();
     }
 
