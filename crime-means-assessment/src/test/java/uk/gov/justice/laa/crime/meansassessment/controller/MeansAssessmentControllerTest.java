@@ -14,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,6 +45,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 @RunWith(SpringRunner.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(classes = {CrimeMeansAssessmentApplication.class}, webEnvironment = DEFINED_PORT)
+@DirtiesContext
 public class MeansAssessmentControllerTest {
 
     private static final boolean IS_VALID = true;
