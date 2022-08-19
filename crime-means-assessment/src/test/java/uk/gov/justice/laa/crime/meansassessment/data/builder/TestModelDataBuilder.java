@@ -495,4 +495,109 @@ public class TestModelDataBuilder {
                 .withInitResultReason("Gross income below the lower threshold")
                 .withAssessmentDetails(getApiAssessmentDetails());
     }
+
+    public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid) {
+        return new ApiCreateMeansAssessmentRequest()
+                .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .withAssessmentType(AssessmentType.INIT)
+                .withReviewType(ReviewType.NAFI)
+                .withRepId(isValid ? 91919 : null)
+                .withCmuId(isValid ? 91919 : null)
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withNewWorkReason(NewWorkReason.PBI)
+                .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
+                .withHasPartner(true)
+                .withPartnerContraryInterest(false)
+                .withCaseType(CaseType.EITHER_WAY)
+                .withAssessmentStatus(CurrentStatus.COMPLETE)
+                .withChildWeightings(getListOfAssessmentChildWeightings())
+                .withUserSession(getUserSession())
+                .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .withUsn(TEST_USN)
+                .withCrownCourtOverview(new ApiCrownCourtOverview()
+                        .withAvailable(true)
+                        .withCrownCourtSummary(
+                                new ApiCrownCourtSummary()
+                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                        )
+                )
+                .withSectionSummaries(List.of(getAssessmentSectionSummary()));
+    }
+
+
+    public static ApiUpdateMeansAssessmentRequest getUpdateMeansAssessmentRequest(boolean isValid) {
+        return new ApiUpdateMeansAssessmentRequest()
+                .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
+                .withAssessmentType(AssessmentType.INIT)
+                .withRepId(isValid ? 91919 : null)
+                .withCmuId(isValid ? 91919 : null)
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withFullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
+                .withHasPartner(true)
+                .withPartnerContraryInterest(false)
+                .withOtherHousingNote(TEST_NOTE)
+                .withInitTotalAggregatedIncome(TEST_AGGREGATED_INCOME)
+                .withFullAssessmentNotes(TEST_NOTE)
+                .withCaseType(CaseType.EITHER_WAY)
+                .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .withAssessmentStatus(CurrentStatus.COMPLETE)
+                .withChildWeightings(getListOfAssessmentChildWeightings())
+                .withUserSession(getUserSession())
+                .withCrownCourtOverview(new ApiCrownCourtOverview()
+                        .withAvailable(true)
+                        .withCrownCourtSummary(
+                                new ApiCrownCourtSummary()
+                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
+                        )
+                )
+                .withSectionSummaries(List.of(getAssessmentSectionSummary()));
+    }
+
+
+    public static ApiAssessmentSectionSummary getAssessmentSectionSummary() {
+        return new ApiAssessmentSectionSummary()
+                .withApplicantAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
+                .withAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
+                .withPartnerAnnualTotal(BigDecimal.ZERO)
+                .withSection("INITB")
+                .withAssessmentDetails(
+                        new ArrayList<>(
+                                List.of(
+                                        new ApiAssessmentDetail()
+                                                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
+                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
+                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                )
+                        )
+                );
+    }
+
+    public static List<ApiAssessmentChildWeighting> getListOfAssessmentChildWeightings() {
+        return List.of(
+                new ApiAssessmentChildWeighting()
+                        .withChildWeightingId(37)
+                        .withNoOfChildren(1)
+                ,
+                new ApiAssessmentChildWeighting()
+                        .withChildWeightingId(38)
+                        .withNoOfChildren(2),
+                new ApiAssessmentChildWeighting()
+                        .withChildWeightingId(39)
+                        .withNoOfChildren(2),
+        new ApiAssessmentChildWeighting()
+                .withChildWeightingId(40)
+                .withNoOfChildren(2),
+        new ApiAssessmentChildWeighting()
+                .withChildWeightingId(41)
+                .withNoOfChildren(2),
+        new ApiAssessmentChildWeighting()
+                .withChildWeightingId(42)
+                .withNoOfChildren(2),
+        new ApiAssessmentChildWeighting()
+                .withChildWeightingId(43)
+                .withNoOfChildren(2)
+        );
+    }
+
 }
