@@ -45,7 +45,7 @@ public class AssessmentCompletionServiceTest {
                 .thenReturn(FinancialAssessmentDTO.builder().build());
 
         boolean result = assessmentCompletionService.isFullUpdateRequired(assessment, LAA_TRANSACTION_ID);
-        assertThat(Boolean.TRUE).isEqualTo(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -59,7 +59,7 @@ public class AssessmentCompletionServiceTest {
                 );
 
         boolean result = assessmentCompletionService.isFullUpdateRequired(assessment, LAA_TRANSACTION_ID);
-        assertThat(Boolean.FALSE).isEqualTo(result);
+        assertThat(result).isFalse();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class AssessmentCompletionServiceTest {
         boolean result = assessmentCompletionService.isFullUpdateRequired(
                 assessment, LAA_TRANSACTION_ID
         );
-        assertThat(Boolean.TRUE).isEqualTo(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -82,7 +82,7 @@ public class AssessmentCompletionServiceTest {
     @Test
     public void givenPassedInitAssessmentResult_whenIsInitAssessmentCompleteIsInvoked_thenReturnTrue() {
         assessment.setInitAssessmentResult(InitAssessmentResult.PASS);
-        assertThat(Boolean.TRUE).isEqualTo(assessmentCompletionService.isInitAssessmentComplete(assessment));
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isTrue();
     }
 
     @Test
@@ -95,7 +95,7 @@ public class AssessmentCompletionServiceTest {
     public void givenFailedSummaryOnly_whenIsInitAssessmentCompleteIsInvoked_thenReturnTrue() {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.SUMMARY_ONLY);
-        assertThat(Boolean.TRUE).isEqualTo(assessmentCompletionService.isInitAssessmentComplete(assessment));
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isTrue();
     }
 
     @Test
@@ -109,7 +109,7 @@ public class AssessmentCompletionServiceTest {
     public void givenFailedIndictable_whenIsInitAssessmentCompleteIsInvoked_thenReturnFalse() {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.INDICTABLE);
-        assertThat(Boolean.FALSE).isEqualTo(assessmentCompletionService.isInitAssessmentComplete(assessment));
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isFalse();
     }
 
     @Test
@@ -117,7 +117,7 @@ public class AssessmentCompletionServiceTest {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.EITHER_WAY);
         assessment.getMeansAssessment().setMagCourtOutcome(MagCourtOutcome.COMMITTED_FOR_TRIAL);
-        assertThat(Boolean.TRUE).isEqualTo(assessmentCompletionService.isInitAssessmentComplete(assessment));
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isTrue();
     }
 
     @Test
@@ -125,7 +125,7 @@ public class AssessmentCompletionServiceTest {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.EITHER_WAY);
         assessment.getMeansAssessment().setMagCourtOutcome(MagCourtOutcome.APPEAL_TO_CC);
-        assertThat(Boolean.FALSE).isEqualTo(assessmentCompletionService.isInitAssessmentComplete(assessment));
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isFalse();
     }
 
     @Test
