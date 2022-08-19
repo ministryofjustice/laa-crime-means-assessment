@@ -102,7 +102,7 @@ public class MaatApiConfiguration {
         private String updateUrl;
 
         @NotNull
-        private String createHistoryUrl;
+        private String dateCompletionUrl;
 
         public String getByRequestType(AssessmentRequestType requestType) {
             return (requestType.equals(AssessmentRequestType.CREATE)) ? createUrl : updateUrl;
@@ -138,5 +138,4 @@ public class MaatApiConfiguration {
         @NotNull
         private String findUrl;
     }
-
 }
