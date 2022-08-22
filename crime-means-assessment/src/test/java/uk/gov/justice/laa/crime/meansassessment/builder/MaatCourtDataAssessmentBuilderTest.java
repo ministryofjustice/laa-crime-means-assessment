@@ -63,6 +63,8 @@ public class MaatCourtDataAssessmentBuilderTest {
                                     .flatMap(section -> section.getAssessmentDetails().stream())
                                     .collect(Collectors.toList())
                     );
+            assertThat(resultDto.getDateCompleted())
+                    .isEqualTo(assessmentDTO.getDateCompleted());
         });
     }
 

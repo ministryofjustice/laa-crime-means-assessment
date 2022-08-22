@@ -31,7 +31,7 @@ maatApi:
     create-url: ${maatApi.assessments-domain}/financial-assessments/
     search-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
     update-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
-    create-history-url: ${maatApi.assessments-domain}/financial-assessments/history/{financialAssessmentId}/fullAvailable/{fullAvailable}
+    date-completion-url: ${maatApi.assessments-domain}/financial-assessments/update-date-completed
   passport-assessment-endpoints:
     find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
   hardship-review-endpoints:
@@ -107,5 +107,8 @@ retry-config:
   max-retries: 3
   min-back-off-period: 5
   jitter-value: 0.75
+
+features:
+  date-completion-enabled: false
 
 version: 0.0.1

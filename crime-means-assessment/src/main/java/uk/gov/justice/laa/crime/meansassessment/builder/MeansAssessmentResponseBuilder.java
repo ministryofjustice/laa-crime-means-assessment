@@ -5,27 +5,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
+
+import static java.util.Optional.ofNullable;
 
 @Slf4j
 @Component
 @AllArgsConstructor
 public class MeansAssessmentResponseBuilder {
 
-    public ApiMeansAssessmentResponse build(final Integer financialAssessmentID,
+    public ApiMeansAssessmentResponse build(final MaatApiAssessmentResponse maatApiAssessmentResponse,
                                             final AssessmentCriteriaEntity assessmentCriteria,
                                             final MeansAssessmentDTO completedAssessment) {
 
         ApiMeansAssessmentResponse response = new ApiMeansAssessmentResponse()
-                .withAssessmentId(financialAssessmentID)
+                .withAssessmentId(maatApiAssessmentResponse.getId())
                 .withRepId(completedAssessment.getMeansAssessment().getRepId())
                 .withCriteriaId(assessmentCriteria.getId())
                 .withLowerThreshold(assessmentCriteria.getInitialLowerThreshold())
                 .withUpperThreshold(assessmentCriteria.getInitialUpperThreshold())
                 .withTotalAggregatedIncome(completedAssessment.getTotalAggregatedIncome())
-                .withInitResult(completedAssessment.getInitAssessmentResult().getResult())
-                .withInitResultReason(completedAssessment.getInitAssessmentResult().getReason())
+                .withInitResult(maatApiAssessmentResponse.getInitResult())
+                .withInitResultReason(maatApiAssessmentResponse.getInitResultReason())
                 .withAdjustedIncomeValue(completedAssessment.getAdjustedIncomeValue())
                 .withAssessmentSectionSummary(completedAssessment.getMeansAssessment().getSectionSummaries());
 
@@ -42,7 +47,9 @@ public class MeansAssessmentResponseBuilder {
                 .withTotalAnnualDisposableIncome(completedAssessment.getTotalAnnualDisposableIncome())
                 .withFullThreshold(assessmentCriteria.getFullThreshold())
                 .withTotalAggregatedExpense(completedAssessment.getTotalAggregatedExpense())
-                .withFullResult(completedAssessment.getFullAssessmentResult().getResult())
-                .withFullResultReason(completedAssessment.getFullAssessmentResult().getReason());
+                .withFullResult(ofNullable(completedAssessment.getFullAssessmentResult())
+                        .map(FullAssessmentResult::getResult).orElse(null))
+                .withFullResultReason(ofNullable(completedAssessment.getFullAssessmentResult())
+                        .map(FullAssessmentResult::getReason).orElse(null));
     }
 }

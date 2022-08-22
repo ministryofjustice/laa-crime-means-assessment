@@ -6,7 +6,7 @@
   "description": "Data contract for full means assessment requests",
   "properties": {
     "financialAssessmentId": {
-      "type": "number",
+      "type": "integer",
       "description": "The ID of the financial assessment being updated"
     },
     "fullAssessmentDate": {
