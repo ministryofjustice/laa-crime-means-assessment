@@ -46,6 +46,7 @@ public class MeansAssessmentRequestDTOBuilder {
             requestDTO.setOtherHousingNote(fullMeansAssessmentRequest.getOtherHousingNote());
             requestDTO.setInitTotalAggregatedIncome(fullMeansAssessmentRequest.getInitTotalAggregatedIncome());
             requestDTO.setFullAssessmentNotes(fullMeansAssessmentRequest.getFullAssessmentNotes());
+            requestDTO.setFinancialAssessmentId(fullMeansAssessmentRequest.getFinancialAssessmentId());
         }
 
         return requestDTO;
