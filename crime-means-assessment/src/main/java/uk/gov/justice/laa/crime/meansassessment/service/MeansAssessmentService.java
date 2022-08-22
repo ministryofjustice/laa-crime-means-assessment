@@ -2,10 +2,10 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
+import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
@@ -31,13 +31,11 @@ public class MeansAssessmentService {
     private final MaatCourtDataService maatCourtDataService;
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final MeansAssessmentResponseBuilder responseBuilder;
+    private final FeaturesConfiguration featuresConfiguration;
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
     private final AssessmentCompletionService assessmentCompletionService;
-
-    @Value("${features.dateCompletionEnabled}")
-    protected boolean dateCompletionEnabled;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -60,7 +58,7 @@ public class MeansAssessmentService {
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
-            if (dateCompletionEnabled) {
+            if (featuresConfiguration.isDateCompletionEnabled()) {
                 assessmentCompletionService.execute(completedAssessment, requestDTO.getLaaTransactionId());
             }
 
