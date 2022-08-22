@@ -10,6 +10,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
+import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
@@ -22,6 +23,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentReque
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,9 +44,6 @@ public class MeansAssessmentServiceTest {
 
     private final MeansAssessmentRequestDTO meansAssessment =
             TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-
-    private final MaatApiConfiguration.FinancialAssessmentEndpoints financialAssessmentEndpoints =
-            new MaatApiConfiguration.FinancialAssessmentEndpoints();
 
     @Spy
     @InjectMocks
@@ -74,6 +73,9 @@ public class MeansAssessmentServiceTest {
     @Mock
     private AssessmentCompletionService assessmentCompletionService;
 
+    @Spy
+    private final FeaturesConfiguration featuresConfiguration = new FeaturesConfiguration();
+
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
@@ -81,9 +83,7 @@ public class MeansAssessmentServiceTest {
     @Before
     public void setup() {
         assessmentCriteria.setId(TestModelDataBuilder.TEST_CRITERIA_ID);
-        financialAssessmentEndpoints.setCreateUrl("create-url");
-        financialAssessmentEndpoints.setUpdateUrl("update-url");
-        meansAssessmentService.dateCompletionEnabled = false;
+        featuresConfiguration.setDateCompletionEnabled(false);
     }
 
     @AfterEach
@@ -282,7 +282,7 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenDateCompletionFlagEnabled__whenDoAssessmentIsInvoked_thenAssessmentCompletionServiceIsCalled() {
         setupDoAssessmentStubbing(AssessmentType.INIT);
-        meansAssessmentService.dateCompletionEnabled = true;
+        featuresConfiguration.setDateCompletionEnabled(true);
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
         verify(assessmentCompletionService).execute(any(MeansAssessmentDTO.class), anyString());
     }
