@@ -31,13 +31,14 @@ public class MeansAssessmentRequestDTO {
     private ApiIncomeEvidenceSummary incomeEvidenceSummary;
     private ApiCrownCourtOverview crownCourtOverview;
     private MagCourtOutcome magCourtOutcome;
-    // INIT specific fields
+    // CREATE specific fields
     private Integer usn;
     private ReviewType reviewType;
     private NewWorkReason newWorkReason;
-    // FULL specific fields
+    // UPDATE specific fields
     private LocalDateTime fullAssessmentDate;
     private String otherHousingNote;
     private BigDecimal initTotalAggregatedIncome;
     private String fullAssessmentNotes;
+    private Integer financialAssessmentId;
 }
