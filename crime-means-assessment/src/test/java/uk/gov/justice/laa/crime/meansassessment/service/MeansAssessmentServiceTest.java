@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -23,7 +22,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentReque
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -44,38 +42,27 @@ public class MeansAssessmentServiceTest {
 
     private final MeansAssessmentRequestDTO meansAssessment =
             TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-
+    @Spy
+    private final FeaturesConfiguration featuresConfiguration = new FeaturesConfiguration();
     @Spy
     @InjectMocks
     private MeansAssessmentService meansAssessmentService;
-
     @Mock
     private AssessmentCriteriaService assessmentCriteriaService;
-
     @Mock
     private InitMeansAssessmentService initMeansAssessmentService;
-
     @Mock
     private MaatCourtDataService maatCourtDataService;
-
     @Mock
     private FullMeansAssessmentService fullMeansAssessmentService;
-
     @Mock
     private MaatCourtDataAssessmentBuilder assessmentBuilder;
-
     @Mock
     private MeansAssessmentResponseBuilder meansAssessmentResponseBuilder;
-
     @Mock
     private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
-
     @Mock
     private AssessmentCompletionService assessmentCompletionService;
-
-    @Spy
-    private final FeaturesConfiguration featuresConfiguration = new FeaturesConfiguration();
-
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
@@ -290,11 +277,12 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenCreateAssessmentIsPerformed() {
         setupDoAssessmentStubbing(AssessmentType.INIT);
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+        ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
+        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(meansAssessmentResponseBuilder).build(
                 any(MaatApiAssessmentResponse.class), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
         );
@@ -305,12 +293,11 @@ public class MeansAssessmentServiceTest {
         setupDoAssessmentStubbing(AssessmentType.FULL);
 
         meansAssessment.setAssessmentType(AssessmentType.FULL);
-        ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
 
         verify(fullMeansAssessmentService).execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
-        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
         verify(meansAssessmentResponseBuilder).build(
                 any(MaatApiAssessmentResponse.class), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
         );
