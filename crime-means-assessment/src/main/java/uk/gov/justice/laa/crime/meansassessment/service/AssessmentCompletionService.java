@@ -11,8 +11,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.time.LocalDateTime;
 
-import static java.util.Optional.ofNullable;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
