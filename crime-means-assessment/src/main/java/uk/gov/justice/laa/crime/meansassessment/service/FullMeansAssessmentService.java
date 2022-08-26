@@ -11,26 +11,26 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentR
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class FullMeansAssessmentService implements AssessmentService {
 
+    private final CrownCourtEligibilityService crownCourtEligibilityService;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create full means assessment - Start");
+        CurrentStatus status = requestDTO.getAssessmentStatus();
         BigDecimal adjustedLivingAllowance = getAdjustedLivingAllowance(requestDTO, assessmentCriteria);
         BigDecimal totalDisposableIncome = getDisposableIncome(requestDTO, expenditureTotal, adjustedLivingAllowance);
-        CurrentStatus status = requestDTO.getAssessmentStatus();
         log.info("Full means assessment calculation complete for Rep ID: {}", requestDTO.getRepId());
         return MeansAssessmentDTO
                 .builder()
                 .currentStatus(status)
                 .fullAssessmentResult(
-                        status.equals(CurrentStatus.COMPLETE) ? getResult(
-                                totalDisposableIncome, assessmentCriteria
-                        ) : null
+                        status.equals(CurrentStatus.COMPLETE)
+                                ? getResult(totalDisposableIncome, requestDTO, assessmentCriteria) : null
                 )
                 .adjustedLivingAllowance(adjustedLivingAllowance)
                 .totalAggregatedExpense(expenditureTotal)
@@ -59,8 +59,10 @@ public class FullMeansAssessmentService implements AssessmentService {
         );
     }
 
-    FullAssessmentResult getResult(BigDecimal disposableIncome, AssessmentCriteriaEntity assessmentCriteria) {
-        if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {
+    FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
+        if (!crownCourtEligibilityService.isEligible(disposableIncome, requestDTO, assessmentCriteria)) {
+            return FullAssessmentResult.INEL;
+        } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {
             return FullAssessmentResult.PASS;
         } else {
             return FullAssessmentResult.FAIL;
