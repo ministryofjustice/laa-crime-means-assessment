@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,7 +11,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FinancialAssessmentDTO {
+@EqualsAndHashCode(callSuper = true)
+public class FinancialAssessmentDTO extends Assessment {
 
     private Integer id;
     private Integer repId;

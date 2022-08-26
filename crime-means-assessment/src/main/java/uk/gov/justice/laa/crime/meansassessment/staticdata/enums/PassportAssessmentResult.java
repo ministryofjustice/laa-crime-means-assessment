@@ -10,20 +10,19 @@ import java.util.stream.Stream;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum FullAssessmentResult {
+public enum PassportAssessmentResult {
     PASS("PASS", "Gross income below the threshold"),
-    FAIL("FAIL", "Gross income above the threshold"),
-    INEL("INEL", "Refused - Ineligible");
+    FAIL("FAIL", "Gross income above the threshold");
 
     private String result;
     private String reason;
 
-    public static FullAssessmentResult getFrom(String result) {
+    public static PassportAssessmentResult getFrom(String result) {
         if (StringUtils.isBlank(result)) return null;
 
-        return Stream.of(FullAssessmentResult.values())
-                .filter(a -> a.result.equals(result))
+        return Stream.of(PassportAssessmentResult.values())
+                .filter(p -> p.result.equals(result))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Full Assessment Result with value: %s does not exist.", result)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Passport Assessment Result with value: %s does not exist.", result)));
     }
 }
