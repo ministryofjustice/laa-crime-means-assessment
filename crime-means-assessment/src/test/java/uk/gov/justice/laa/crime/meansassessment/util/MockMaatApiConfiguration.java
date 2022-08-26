@@ -18,10 +18,13 @@ public class MockMaatApiConfiguration {
                 new MaatApiConfiguration.FinancialAssessmentEndpoints(
                         "/financial-assessments/{financialAssessmentId}",
                         "/financial-assessments/",
-                        "/financial-assessments/{financialAssessmentId}",
-                        "/financial-assessments/history/{financialAssessmentId}/fullAvailable/{fullAvailable}"
+                        "/financial-assessments/{financialAssessmentId}"
                 );
-
+        MaatApiConfiguration.RepOrderEndpoints repOrderEndpoints =
+                new MaatApiConfiguration.RepOrderEndpoints(
+                        "/rep-orders",
+                        "/rep-orders/update-date-completed"
+                );
         configuration.setBaseUrl(
                 String.format("http://localhost:%s", port)
         );
