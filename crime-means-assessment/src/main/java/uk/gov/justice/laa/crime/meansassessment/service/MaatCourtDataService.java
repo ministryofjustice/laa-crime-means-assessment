@@ -52,7 +52,7 @@ public class MaatCourtDataService {
         maatCourtDataClient.getApiResponseViaPOST(
                 dateCompletionRequestDTO,
                 Void.class,
-                configuration.getFinancialAssessmentEndpoints().getDateCompletionUrl(),
+                configuration.getRepOrderEndpoints().getDateCompletionUrl(),
                 Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId)
         );
     }
@@ -96,6 +96,17 @@ public class MaatCourtDataService {
                 configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
                 Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 financialAssessmentId
+        );
+        log.info(String.format(RESPONSE_STRING, response));
+        return response;
+    }
+
+    public RepOrderDTO getRepOrder(Integer repId, String laaTransactionId) {
+        RepOrderDTO response = maatCourtDataClient.getApiResponseViaGET(
+                RepOrderDTO.class,
+                configuration.getRepOrderEndpoints().getFindUrl(),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
+                repId
         );
         log.info(String.format(RESPONSE_STRING, response));
         return response;
