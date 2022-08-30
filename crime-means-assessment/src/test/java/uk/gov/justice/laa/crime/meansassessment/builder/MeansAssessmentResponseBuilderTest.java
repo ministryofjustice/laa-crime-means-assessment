@@ -82,6 +82,8 @@ public class MeansAssessmentResponseBuilderTest {
                     .isEqualTo(completedAssessment.getFullAssessmentResult().getResult());
             assertThat(response.getFullResultReason())
                     .isEqualTo(completedAssessment.getFullAssessmentResult().getReason());
+            assertThat(response.getChildWeightings())
+                    .isNotEqualTo(completedAssessment.getMeansAssessment().getChildWeightings());
         });
 
     }
