@@ -16,10 +16,9 @@ public class MeansAssessmentResponseBuilderTest {
 
     private final MeansAssessmentResponseBuilder responseBuilder =
             new MeansAssessmentResponseBuilder();
-
-    private MeansAssessmentDTO completedAssessment;
     private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntity();
+    private MeansAssessmentDTO completedAssessment;
     private MaatApiAssessmentResponse maatApiAssessmentResponse;
 
     @Before
@@ -58,6 +57,8 @@ public class MeansAssessmentResponseBuilderTest {
         ApiMeansAssessmentResponse response =
                 responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
         checkCommonFieldsPopulated(response);
+        assertThat(response.getChildWeightings())
+                .isEqualTo(completedAssessment.getMeansAssessment().getChildWeightings());
     }
 
     @Test
@@ -81,6 +82,8 @@ public class MeansAssessmentResponseBuilderTest {
                     .isEqualTo(completedAssessment.getFullAssessmentResult().getResult());
             assertThat(response.getFullResultReason())
                     .isEqualTo(completedAssessment.getFullAssessmentResult().getReason());
+            assertThat(response.getChildWeightings())
+                    .isNotEqualTo(completedAssessment.getMeansAssessment().getChildWeightings());
         });
 
     }
