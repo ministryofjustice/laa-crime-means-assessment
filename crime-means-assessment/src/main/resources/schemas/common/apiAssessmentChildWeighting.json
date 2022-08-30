@@ -2,8 +2,12 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "apiAssessmentChildWeighting.json",
   "type": "object",
-  "description": "Assessment details",
+  "description": "Assessment Child Weighting",
   "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Assessment child weighting ID"
+    },
     "childWeightingId": {
       "type": "integer",
       "description": "Weighting ID"
