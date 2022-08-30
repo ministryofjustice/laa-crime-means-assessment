@@ -36,7 +36,8 @@ public class MeansAssessmentResponseBuilder {
         AssessmentType assessmentType = completedAssessment.getMeansAssessment().getAssessmentType();
         if (AssessmentType.FULL.equals(assessmentType)) {
             buildFull(assessmentCriteria, completedAssessment, response);
-        } else if (AssessmentType.INIT.equals(assessmentType)) {
+        }
+        if (AssessmentType.INIT.equals(assessmentType)) {
             response.withChildWeightings(maatApiAssessmentResponse.getChildWeightings());
         }
 
