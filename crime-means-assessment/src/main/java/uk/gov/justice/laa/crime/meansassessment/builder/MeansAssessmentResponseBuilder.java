@@ -9,7 +9,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import static java.util.Optional.ofNullable;
 
@@ -38,6 +37,10 @@ public class MeansAssessmentResponseBuilder {
         if (AssessmentType.FULL.equals(assessmentType)) {
             buildFull(assessmentCriteria, completedAssessment, response);
         }
+        if (AssessmentType.INIT.equals(assessmentType)) {
+            response.withChildWeightings(maatApiAssessmentResponse.getChildWeightings());
+        }
+
         return response;
     }
 
