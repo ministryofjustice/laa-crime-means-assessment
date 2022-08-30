@@ -33,6 +33,7 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
+import uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
 import java.util.HashMap;
@@ -63,12 +64,12 @@ public class MeansAssessmentIntegrationTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v1/assessment/means";
 
     private MockMvc mvc;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
-
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -78,6 +79,10 @@ public class MeansAssessmentIntegrationTest {
 
     @MockBean
     private  MaatCourtDataClient maatCourtDataClient;
+
+    @MockBean
+    private CrownCourtEligibilityService crownCourtEligibilityService;
+
     @MockBean
     private WebClient webClient;
 
@@ -163,7 +168,7 @@ public class MeansAssessmentIntegrationTest {
        MvcResult result =  mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().is4xxClientError())
                 .andReturn();
-        assertErrorScenario(String.format("Rep Id is missing from request and is required"), result);
+        assertErrorScenario("Rep Id is missing from request and is required", result);
 
     }
 
@@ -220,7 +225,7 @@ public class MeansAssessmentIntegrationTest {
         MvcResult result =  mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
                 .andExpect(status().is4xxClientError())
                 .andReturn();
-        assertErrorScenario(String.format("New work reason is not valid"), result);
+        assertErrorScenario("New work reason is not valid", result);
 
     }
 
