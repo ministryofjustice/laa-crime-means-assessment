@@ -5,6 +5,8 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
@@ -84,6 +86,13 @@ public class TestModelDataBuilder {
     public static final int MEANS_ASSESSMENT_ID = 1000;
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
+    public static final Integer TEST_ASSESSMENT_DETAILS_ID = 41681819;
+
+    public static final String TEST_ASSESSMENT_TYPE_INIT = "INIT";
+    public static final String TEST_ASSESSMENT_TYPE_FULL = "FULL";
+    public static final String TEST_ASSESSMENT_SECTION_INITA = "INITA";
+    public static final String TEST_ASSESSMENT_SECTION_FULLA = "FULLA";
+
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -603,4 +612,49 @@ public class TestModelDataBuilder {
         );
     }
 
+
+    public static FinancialAssessmentDTO getFinancialAssessmentDTOWithDetails(String assessmentType) {
+        FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO(assessmentType);
+        financialAssessment.setAssessmentDetails(List.of(
+                FinancialAssessmentDetails.builder()
+                        .criteriaDetailId(TEST_ASSESSMENT_DETAILS_ID)
+                        .applicantAmount(BigDecimal.valueOf(1650.00))
+                        .applicantFrequency(Frequency.MONTHLY)
+                        .partnerAmount(BigDecimal.valueOf(1650.00))
+                        .partnerFrequency(Frequency.TWO_WEEKLY)
+                        .build(),
+                FinancialAssessmentDetails.builder()
+                        .criteriaDetailId(41681820)
+                        .applicantAmount(BigDecimal.valueOf(200.00))
+                        .applicantFrequency(Frequency.ANNUALLY)
+                        .partnerAmount(BigDecimal.valueOf(10.00))
+                        .partnerFrequency(Frequency.ANNUALLY)
+                        .build()
+        ));
+        return financialAssessment;
+    }
+
+    public static FinancialAssessmentDTO getFinancialAssessmentDTO(String assessmentType) {
+        return FinancialAssessmentDTO.builder()
+                .repId(TEST_REP_ID)
+                .initialAscrId(1)
+                .assessmentType(assessmentType)
+                .dateCreated(LocalDateTime.now())
+                .initialAssessmentDate(LocalDateTime.now())
+                .initTotAggregatedIncome(BigDecimal.valueOf(15600.00))
+                .initAdjustedIncomeValue(BigDecimal.valueOf(15600.00))
+                .build();
+    }
+
+    public static AssessmentCriteriaDetailEntity getAssessmentCriteriaDetailEntity(String section) {
+        return AssessmentCriteriaDetailEntity.builder()
+                .description(TEST_DESCRIPTION)
+                .section(section)
+                .seq(TEST_SEQ)
+                .createdDateTime(LocalDateTime.now())
+                .createdBy(TEST_USER)
+                .modifiedDateTime(LocalDateTime.now())
+                .modifiedBy(TEST_USER)
+                .build();
+    }
 }
