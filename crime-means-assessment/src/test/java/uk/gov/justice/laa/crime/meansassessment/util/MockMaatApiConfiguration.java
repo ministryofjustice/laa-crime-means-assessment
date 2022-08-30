@@ -33,6 +33,7 @@ public class MockMaatApiConfiguration {
         configuration.setIojAppealEndpoints(iojEndpoints);
         configuration.setHardshipReviewEndpoints(hardshipEndpoints);
         configuration.setPassportAssessmentEndpoints(passportEndpoints);
+        configuration.setRepOrderEndpoints(repOrderEndpoints);
         configuration.setFinancialAssessmentEndpoints(financialAssessmentEndpoints);
 
         return configuration;

@@ -54,6 +54,7 @@ public class FullMeansAssessmentServiceTest {
 
     @Test
     public void givenCompletedAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+        setupGetResultStubbing();
         MeansAssessmentDTO result =
                 fullMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE, meansAssessment, assessmentCriteria);
 
