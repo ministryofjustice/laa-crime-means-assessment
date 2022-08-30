@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -33,6 +35,8 @@ public class MeansAssessmentService {
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
     private final AssessmentCompletionService assessmentCompletionService;
+    private final MeansAssessmentBuilder meansAssessmentBuilder;
+    private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -149,5 +153,15 @@ public class MeansAssessmentService {
             }
         }
         return detailTotal;
+    }
+
+    public FinancialAssessmentDTO getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {
+        log.info("Processing get old assessment request - Start");
+        FinancialAssessmentDTO financialAssessmentDTO = maatCourtDataService.getFinancialAssessment(financialAssessmentId, laaTransactionId);
+        if ( null != financialAssessmentDTO) {
+            meansAssessmentBuilder.build(financialAssessmentDTO, assessmentCriteriaDetailService);
+        }
+        log.info("Processing get old assessment request - End");
+        return financialAssessmentDTO;
     }
 }

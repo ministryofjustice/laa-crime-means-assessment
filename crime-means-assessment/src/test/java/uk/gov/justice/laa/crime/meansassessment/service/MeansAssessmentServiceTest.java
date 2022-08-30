@@ -8,12 +8,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.FullAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.InitialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -27,14 +33,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @RunWith(MockitoJUnitRunner.class)
+@SpringBootTest(classes = { CrimeMeansAssessmentApplication.class, MeansAssessmentBuilder.class})
 public class MeansAssessmentServiceTest {
 
     private final AssessmentCriteriaEntity assessmentCriteria =
@@ -65,6 +74,8 @@ public class MeansAssessmentServiceTest {
     private AssessmentCompletionService assessmentCompletionService;
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
+    @Mock
+    private AssessmentCriteriaDetailService assessmentCriteriaDetailService;
 
 
     @Before
@@ -326,4 +337,31 @@ public class MeansAssessmentServiceTest {
         assertThat(meansAssessmentDTO.getMeansAssessment().getSectionSummaries().get(0).getAssessmentDetails().get(0).getId())
                 .isEqualTo(TestModelDataBuilder.getMaatApiAssessmentResponse().getAssessmentDetails().get(0).getId());
     }
+
+    /*@Test
+    public void givenInitAssessmentTypeResponse_whenGetOldAssessmentInvoked_thenInitialAssessmentShouldUpdate() {
+        when(maatCourtDataService.getFinancialAssessment(any(), any()))
+                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT));
+        when(assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(any()))
+                .thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA)));
+        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
+        List<InitialAssessmentDTO> initialAssessmentDTOList = financialAssessmentDTO.getInitialAssessment();
+        assertThat(initialAssessmentDTOList).isNotNull();
+        assertThat(initialAssessmentDTOList.size()).isEqualTo(1);
+        assertThat((((InitialAssessmentDTO)initialAssessmentDTOList.get(0)).getAssessmentSectionSummaries()).get(0).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA);
+    }
+
+    @Test
+    public void givenFullAssessmentTypeResponse_whenGetOldAssessmentInvoked_thenInitialAssessmentShouldUpdate() {
+        when(maatCourtDataService.getFinancialAssessment(any(), any()))
+                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_FULL));
+        when(assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(any()))
+                .thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA)));
+        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
+        List<FullAssessmentDTO> fullAssessmentDTOS = financialAssessmentDTO.getFullAssessment();
+        assertThat(fullAssessmentDTOS).isNotNull();
+        assertThat(fullAssessmentDTOS.size()).isEqualTo(1);
+        assertThat((((FullAssessmentDTO)fullAssessmentDTOS.get(0)).getAssessmentSectionSummaries()).get(0).getSection())
+                .isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA);
+    }*/
 }
