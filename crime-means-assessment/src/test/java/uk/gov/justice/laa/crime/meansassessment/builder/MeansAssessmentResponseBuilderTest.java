@@ -57,8 +57,8 @@ public class MeansAssessmentResponseBuilderTest {
         ApiMeansAssessmentResponse response =
                 responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
         checkCommonFieldsPopulated(response);
-        SoftAssertions.assertSoftly(softly -> assertThat(response.getChildWeightings())
-                .isEqualTo(completedAssessment.getMeansAssessment().getChildWeightings()));
+        assertThat(response.getChildWeightings())
+                .isEqualTo(completedAssessment.getMeansAssessment().getChildWeightings());
     }
 
     @Test
