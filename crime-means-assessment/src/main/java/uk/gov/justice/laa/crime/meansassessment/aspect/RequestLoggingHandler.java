@@ -16,15 +16,19 @@ public class RequestLoggingHandler {
 
     @Around("execution(public * uk.gov.justice.laa.crime.meansassessment.controller.MeansAssessmentController.*(..))")
     public Object logAroundControllers(ProceedingJoinPoint pjp) throws Throwable {
-        Object result;
-        String maatID = LoggingData.MAAT_ID.getValue();
-        String methodName = pjp.getSignature().getName();
-        ApiMeansAssessmentRequest meansAssessment = (ApiMeansAssessmentRequest) pjp.getArgs()[0];
-        MDC.put(maatID, Integer.toString(meansAssessment.getRepId()));
-        log.info("{} request received for MAAT ID: {}", methodName, MDC.get(maatID));
-        result = pjp.proceed();
-        log.info("{} request completed for MAAT ID: {}", methodName, MDC.get(maatID));
-        MDC.remove(maatID);
+        Object result = null;
+        if (null != pjp.getArgs()[0] && pjp.getArgs()[0] instanceof ApiMeansAssessmentRequest) {
+            String maatID = LoggingData.MAAT_ID.getValue();
+            String methodName = pjp.getSignature().getName();
+            ApiMeansAssessmentRequest meansAssessment = (ApiMeansAssessmentRequest) pjp.getArgs()[0];
+            MDC.put(maatID, Integer.toString(meansAssessment.getRepId()));
+            log.info("{} request received for MAAT ID: {}", methodName, MDC.get(maatID));
+            result = pjp.proceed();
+            log.info("{} request completed for MAAT ID: {}", methodName, MDC.get(maatID));
+            MDC.remove(maatID);
+        } else {
+            result = pjp.proceed();
+        }
         return result;
     }
 }

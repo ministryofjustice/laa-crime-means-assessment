@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.justice.laa.crime.meansassessment.dto.FullAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.InitialAssessmentDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -57,4 +59,8 @@ public class FinancialAssessmentDTO {
     private List<FinancialAssessmentDetails> assessmentDetails = new ArrayList<>();
     @Builder.Default
     private List<ChildWeightings> childWeightings = new ArrayList<>();
+    @Builder.Default
+    private List<InitialAssessmentDTO> initialAssessment = new ArrayList<>();
+    @Builder.Default
+    private List<FullAssessmentDTO> fullAssessment = new ArrayList<>();
 }

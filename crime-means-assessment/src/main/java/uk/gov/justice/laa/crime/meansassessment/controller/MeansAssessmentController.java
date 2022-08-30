@@ -107,4 +107,14 @@ public class MeansAssessmentController {
                 meansAssessmentService.doAssessment(requestDTO, UPDATE)
         );
     }
+
+    @GetMapping(value = "/{financialAssessmentId}/{laaTransactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Retrieve a old financial assessment record")
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+    @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
+    @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorDTO.class)))
+    public ResponseEntity<Object> getOldAssessment(@PathVariable int financialAssessmentId, @PathVariable String laaTransactionId) {
+        log.info("Get old Financial Assessment Request Received");
+        return ResponseEntity.ok(meansAssessmentService.getOldAssessment(financialAssessmentId, laaTransactionId));
+    }
 }
