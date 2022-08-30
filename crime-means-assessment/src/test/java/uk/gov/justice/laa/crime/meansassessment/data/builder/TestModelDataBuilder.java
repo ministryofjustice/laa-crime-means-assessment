@@ -495,7 +495,8 @@ public class TestModelDataBuilder {
         return new MaatApiAssessmentResponse()
                 .withInitResult("PASS")
                 .withInitResultReason("Gross income below the lower threshold")
-                .withAssessmentDetails(getApiAssessmentDetails());
+                .withAssessmentDetails(getApiAssessmentDetails())
+                .withChildWeightings(getAssessmentChildWeightings());
     }
 
     public static ApiCreateMeansAssessmentRequest getCreateMeansAssessmentRequest(boolean isValid) {
