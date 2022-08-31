@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,5 +18,6 @@ public class AssessmentSectionSummaryDTO {
     private BigDecimal applicantAnnualTotal;
     private BigDecimal partnerAnnualTotal;
     private BigDecimal annualTotal;
+    private AssessmentType assessmentType;
     private final List<AssessmentDetailDTO> assessmentDetails = new ArrayList<>();
 }

@@ -11,15 +11,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
-import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentSectionSummaryBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.FullAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.InitialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -40,10 +39,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = { CrimeMeansAssessmentApplication.class, MeansAssessmentBuilder.class})
+@SpringBootTest(classes = { CrimeMeansAssessmentApplication.class, MeansAssessmentSectionSummaryBuilder.class})
 public class MeansAssessmentServiceTest {
 
     private final AssessmentCriteriaEntity assessmentCriteria =
@@ -76,6 +74,9 @@ public class MeansAssessmentServiceTest {
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
     @Mock
     private AssessmentCriteriaDetailService assessmentCriteriaDetailService;
+
+    @Mock
+    private MeansAssessmentSectionSummaryBuilder meansAssessmentSectionSummaryBuilder;
 
 
     @Before
@@ -338,30 +339,63 @@ public class MeansAssessmentServiceTest {
                 .isEqualTo(TestModelDataBuilder.getMaatApiAssessmentResponse().getAssessmentDetails().get(0).getId());
     }
 
-    /*@Test
-    public void givenInitAssessmentTypeResponse_whenGetOldAssessmentInvoked_thenInitialAssessmentShouldUpdate() {
-        when(maatCourtDataService.getFinancialAssessment(any(), any()))
-                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT));
-        when(assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(any()))
-                .thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA)));
-        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
-        List<InitialAssessmentDTO> initialAssessmentDTOList = financialAssessmentDTO.getInitialAssessment();
-        assertThat(initialAssessmentDTOList).isNotNull();
-        assertThat(initialAssessmentDTOList.size()).isEqualTo(1);
-        assertThat((((InitialAssessmentDTO)initialAssessmentDTOList.get(0)).getAssessmentSectionSummaries()).get(0).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA);
+    @Test
+    public void givenAssessmentDetails_whenGetAssessmentSectionSummaryInvoked_thenReturnAssessmentSectionSummaryList() {
+
+        doReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA)))
+                .when(assessmentCriteriaDetailService).getAssessmentCriteriaDetailById(any());
+        when(meansAssessmentSectionSummaryBuilder.buildAssessmentDTO(any(), any())).thenReturn(TestModelDataBuilder
+                .getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT, TestModelDataBuilder.TEST_SEQ));
+        meansAssessmentService.getAssessmentSectionSummary(TestModelDataBuilder
+                .getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA));
+        verify(meansAssessmentSectionSummaryBuilder,times(2)).buildAssessmentDTO(any(), any());
+        verify(meansAssessmentSectionSummaryBuilder, times(1)).build(any());
     }
 
     @Test
-    public void givenFullAssessmentTypeResponse_whenGetOldAssessmentInvoked_thenInitialAssessmentShouldUpdate() {
-        when(maatCourtDataService.getFinancialAssessment(any(), any()))
-                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_FULL));
-        when(assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(any()))
-                .thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA)));
-        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
-        List<FullAssessmentDTO> fullAssessmentDTOS = financialAssessmentDTO.getFullAssessment();
-        assertThat(fullAssessmentDTOS).isNotNull();
-        assertThat(fullAssessmentDTOS.size()).isEqualTo(1);
-        assertThat((((FullAssessmentDTO)fullAssessmentDTOS.get(0)).getAssessmentSectionSummaries()).get(0).getSection())
-                .isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA);
-    }*/
+    public void testGetAssessmentDTOInvoked_whenNonAssessmentCriteriaDetail_thenReturnEmpty() {
+        doReturn(Optional.empty()).when(assessmentCriteriaDetailService).getAssessmentCriteriaDetailById(any());
+        List<AssessmentDTO> assessmentDTOS = meansAssessmentService.getAssessmentDTO(TestModelDataBuilder.getAssessmentDetails());
+        assertThat(assessmentDTOS.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void testGetAssessmentDTOInvoked_whenAssessmentCriteriaDetailFound_thenReturnAssessment() {
+        doReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA)))
+                .when(assessmentCriteriaDetailService).getAssessmentCriteriaDetailById(any());
+        when(meansAssessmentSectionSummaryBuilder.buildAssessmentDTO(any(), any())).thenReturn(TestModelDataBuilder
+                .getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA, TestModelDataBuilder.TEST_SEQ));
+        List<AssessmentDTO> assessmentDTOS = meansAssessmentService.getAssessmentDTO(TestModelDataBuilder.getAssessmentDetails());
+        assertThat(assessmentDTOS.size()).isEqualTo(2);
+        assertThat(assessmentDTOS.get(0).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA);
+    }
+
+    @Test
+    public void testSortAssessmentDetailInvoked_whenAssessmentFound_thenReturnSortedBySectionAndSequence() {
+
+        List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA,
+                TestModelDataBuilder.TEST_SEQ + TestModelDataBuilder.TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITB,
+                TestModelDataBuilder.TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA,
+                TestModelDataBuilder.TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA,
+                TestModelDataBuilder.TEST_SEQ + TestModelDataBuilder.TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA, TestModelDataBuilder.TEST_SEQ));
+
+        meansAssessmentService.sortAssessmentDetail(assessmentDTOList);
+
+        assertThat(assessmentDTOList.get(0).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA);
+        assertThat(assessmentDTOList.get(0).getSequence()).isEqualTo(TestModelDataBuilder.TEST_SEQ);
+        assertThat(assessmentDTOList.get(1).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA);
+        assertThat(assessmentDTOList.get(1).getSequence()).isEqualTo(TestModelDataBuilder.TEST_SEQ + TestModelDataBuilder.TEST_SEQ);
+        assertThat(assessmentDTOList.get(2).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA);
+        assertThat(assessmentDTOList.get(2).getSequence()).isEqualTo(TestModelDataBuilder.TEST_SEQ);
+        assertThat(assessmentDTOList.get(3).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA);
+        assertThat(assessmentDTOList.get(3).getSequence()).isEqualTo(TestModelDataBuilder.TEST_SEQ + TestModelDataBuilder.TEST_SEQ);
+        assertThat(assessmentDTOList.get(4).getSection()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITB);
+        assertThat(assessmentDTOList.get(4).getSequence()).isEqualTo(TestModelDataBuilder.TEST_SEQ);
+
+    }
 }

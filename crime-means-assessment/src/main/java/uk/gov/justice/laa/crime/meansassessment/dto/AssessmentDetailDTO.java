@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AssessmentDetailDTO {
 
-    private Integer id;
     private Integer criteriaDetailId;
     private BigDecimal applicantAmount;
     private BigDecimal partnerAmount;
