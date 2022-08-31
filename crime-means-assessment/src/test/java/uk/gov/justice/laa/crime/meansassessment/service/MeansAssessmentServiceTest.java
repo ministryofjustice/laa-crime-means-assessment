@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = { CrimeMeansAssessmentApplication.class, MeansAssessmentSectionSummaryBuilder.class})
 public class MeansAssessmentServiceTest {
 
     private final AssessmentCriteriaEntity assessmentCriteria =
