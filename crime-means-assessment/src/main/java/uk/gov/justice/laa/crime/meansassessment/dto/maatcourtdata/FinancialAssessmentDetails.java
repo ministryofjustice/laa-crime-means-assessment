@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -19,4 +20,5 @@ public class FinancialAssessmentDetails {
     private Frequency applicantFrequency;
     private BigDecimal partnerAmount;
     private Frequency partnerFrequency;
+    private LocalDateTime dateModified;
 }
