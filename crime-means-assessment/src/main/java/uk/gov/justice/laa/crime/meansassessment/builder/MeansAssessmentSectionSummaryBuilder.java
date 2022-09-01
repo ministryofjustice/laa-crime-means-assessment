@@ -23,11 +23,11 @@ public class MeansAssessmentSectionSummaryBuilder {
 
     public List<AssessmentSectionSummaryDTO> build(List<AssessmentDTO> assessmentDTOList) {
 
-        List<AssessmentSectionSummaryDTO>  assessmentSectionSummaryList = new ArrayList<>();
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = new ArrayList<>();
         Arrays.stream(Section.values()).forEach(section -> {
             List<AssessmentDTO> assessmentDTOS = assessmentDTOList.stream().filter(e -> e.getSection().equals(section.name()))
                     .collect(Collectors.toList());
-            if (!assessmentDTOS.isEmpty() && assessmentDTOS.size() > 0) {
+            if (!assessmentDTOS.isEmpty()) {
                 AssessmentSectionSummaryDTO assessmentSectionSummary = getAssessmentSectionSummaryDTO(section.name(), assessmentDTOS);
                 if (section.equals(Section.INITA) || section.equals(Section.INITB)) {
                     assessmentSectionSummary.setAssessmentType(AssessmentType.INIT);
@@ -75,17 +75,15 @@ public class MeansAssessmentSectionSummaryBuilder {
     protected BigDecimal getAssessmentSectionSummaryTotal(BigDecimal assessmentAmt, Frequency frequency) {
 
         BigDecimal detailTotal = BigDecimal.ZERO;
-        if (assessmentAmt != null && !BigDecimal.ZERO.equals(assessmentAmt)) {
-            if (frequency != null) {
-                detailTotal = assessmentAmt.multiply(BigDecimal.valueOf(frequency.getWeighting()));
-            }
+        if (assessmentAmt != null && !BigDecimal.ZERO.equals(assessmentAmt) && frequency != null) {
+            detailTotal = assessmentAmt.multiply(BigDecimal.valueOf(frequency.getWeighting()));
         }
         return detailTotal;
 
     }
 
     public AssessmentDTO buildAssessmentDTO(AssessmentCriteriaDetailEntity assessmentCriteriaDetailEntity,
-                                               FinancialAssessmentDetails financialAssessmentDetails) {
+                                            FinancialAssessmentDetails financialAssessmentDetails) {
 
         AssessmentDTO assessmentDTO = new AssessmentDTO();
         assessmentDTO.setCriteriaDetailId(financialAssessmentDetails.getCriteriaDetailId());
@@ -98,7 +96,7 @@ public class MeansAssessmentSectionSummaryBuilder {
         assessmentDTO.setPartnerAmount(financialAssessmentDetails.getPartnerAmount());
         assessmentDTO.setDateModified(financialAssessmentDetails.getDateModified());
         assessmentDTO.setSequence(assessmentCriteriaDetailEntity.getSeq());
-        
+
         if (null != assessmentCriteriaDetailEntity.getAssessmentDetail()) {
             assessmentDTO.setAssessmentDetailCode(assessmentCriteriaDetailEntity.getAssessmentDetail().getDetailCode());
         }
