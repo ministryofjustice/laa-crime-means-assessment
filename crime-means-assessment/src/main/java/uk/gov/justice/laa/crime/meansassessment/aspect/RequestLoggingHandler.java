@@ -17,7 +17,7 @@ public class RequestLoggingHandler {
     @Around("execution(public * uk.gov.justice.laa.crime.meansassessment.controller.MeansAssessmentController.*(..))")
     public Object logAroundControllers(ProceedingJoinPoint pjp) throws Throwable {
         Object result = null;
-        if (null != pjp.getArgs()[0] && pjp.getArgs()[0] instanceof ApiMeansAssessmentRequest) {
+        if (pjp.getArgs()[0] instanceof ApiMeansAssessmentRequest) {
             String maatID = LoggingData.MAAT_ID.getValue();
             String methodName = pjp.getSignature().getName();
             ApiMeansAssessmentRequest meansAssessment = (ApiMeansAssessmentRequest) pjp.getArgs()[0];
