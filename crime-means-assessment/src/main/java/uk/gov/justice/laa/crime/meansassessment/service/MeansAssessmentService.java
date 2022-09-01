@@ -166,19 +166,19 @@ public class MeansAssessmentService {
     public FinancialAssessmentDTO getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {
         log.info("Processing get old assessment request - Start");
         FinancialAssessmentDTO financialAssessmentDTO = maatCourtDataService.getFinancialAssessment(financialAssessmentId, laaTransactionId);
-        if ( null != financialAssessmentDTO) {
-            List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = getAssessmentSectionSummary(financialAssessmentDTO);
+        if (null != financialAssessmentDTO) {
+            getAssessmentSectionSummary(financialAssessmentDTO);
         }
         log.info("Processing get old assessment request - End");
         return financialAssessmentDTO;
     }
 
-    protected List<AssessmentSectionSummaryDTO>  getAssessmentSectionSummary(FinancialAssessmentDTO financialAssessmentDTO) {
+    protected List<AssessmentSectionSummaryDTO> getAssessmentSectionSummary(FinancialAssessmentDTO financialAssessmentDTO) {
 
         List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = new ArrayList<>();
-        if (null != financialAssessmentDTO.getAssessmentDetails()) {
+        if (!financialAssessmentDTO.getAssessmentDetails().isEmpty()) {
             List<AssessmentDTO> assessmentList = getAssessmentDTO(financialAssessmentDTO.getAssessmentDetails());
-            if (null!=assessmentList) {
+            if (!assessmentList.isEmpty()) {
                 sortAssessmentDetail(assessmentList);
                 assessmentSectionSummaryList = meansAssessmentBuilder.build(assessmentList);
             }
@@ -187,18 +187,18 @@ public class MeansAssessmentService {
     }
 
     protected List<AssessmentDTO> getAssessmentDTO(List<FinancialAssessmentDetails> financialAssessmentDetailsList) {
-        List<AssessmentDTO> assessmentDTOList = new ArrayList<AssessmentDTO>();
+        List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         financialAssessmentDetailsList.forEach(e -> {
             Optional<AssessmentCriteriaDetailEntity> assessmentCriteriaDetailEntity = assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(e.getCriteriaDetailId());
             if (assessmentCriteriaDetailEntity.isPresent()) {
                 assessmentDTOList.add(meansAssessmentBuilder.buildAssessmentDTO(assessmentCriteriaDetailEntity.get(), e));
             }
         });
-       return assessmentDTOList;
+        return assessmentDTOList;
     }
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-        if (assessmentDTOList.size() > 0) {
+        if (!assessmentDTOList.isEmpty()) {
             Collections.sort(assessmentDTOList, Comparator.comparing(AssessmentDTO::getSection)
                     .thenComparing(AssessmentDTO::getSequence));
         }
