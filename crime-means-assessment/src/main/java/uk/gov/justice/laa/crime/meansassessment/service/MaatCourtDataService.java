@@ -71,21 +71,6 @@ public class MaatCourtDataService {
         return response;
     }
 
-    public List<PassportAssessmentDTO> getPassportAssessmentsFromRepId(Integer repId, String laaTransactionId) {
-
-        ParameterizedTypeReference<List<PassportAssessmentDTO>> responseClass =
-                new ParameterizedTypeReference<>() {
-                };
-
-        PassportAssessmentDTO[] response = maatCourtDataClient.getApiResponseViaGET(
-                PassportAssessmentDTO[].class,
-                configuration.getPassportAssessmentEndpoints().getFindUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
-                repId
-        );
-        return Arrays.asList(response);
-    }
-
     public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
         HardshipReviewDTO response = maatCourtDataClient.getApiResponseViaGET(
                 HardshipReviewDTO.class,
