@@ -28,7 +28,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_SECTION, TEST_SEQ));
         List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
-        assertThat(assessmentSectionSummaryDTOS.isEmpty()).isTrue();
+        assertThat(0).isEqualTo(assessmentSectionSummaryDTOS.size());
     }
 
     @Test
@@ -120,9 +120,9 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
-        assertThat(assessmentSectionSummaryDTOS.size()).isEqualTo(2);
+        assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
-        assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size()).isEqualTo(2);
+        assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_FULLA);
         assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
 

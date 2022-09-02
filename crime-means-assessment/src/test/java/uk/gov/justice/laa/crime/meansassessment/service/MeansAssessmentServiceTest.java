@@ -341,14 +341,14 @@ public class MeansAssessmentServiceTest {
     public void givenEmptyAssessmentDetails_whenGetAssessmentSectionSummaryInvoked_thenReturnEmptyAssessmentSectionSummaryList() {
         List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = meansAssessmentService.getAssessmentSectionSummary(TestModelDataBuilder
                 .getFinancialAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA));
-        assertThat(assessmentSectionSummaryList.isEmpty()).isTrue();
+        assertThat(true).isEqualTo(assessmentSectionSummaryList.isEmpty());
     }
 
     @Test
     public void givenEmptyAssessmentCriteriaDetail_whenGetAssessmentSectionSummaryInvoked_thenReturnEmptyAssessmentSectionSummaryList() {
         List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = meansAssessmentService.getAssessmentSectionSummary(TestModelDataBuilder
                 .getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA));
-        assertThat(assessmentSectionSummaryList.isEmpty()).isTrue();
+        assertThat(true).isEqualTo(assessmentSectionSummaryList.isEmpty());
     }
 
     @Test
