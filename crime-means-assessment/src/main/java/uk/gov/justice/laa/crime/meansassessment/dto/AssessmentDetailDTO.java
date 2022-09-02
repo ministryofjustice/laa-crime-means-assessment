@@ -1,4 +1,4 @@
-package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
+package uk.gov.justice.laa.crime.meansassessment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,14 +11,16 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class FinancialAssessmentDetails {
-    private Integer id;
+@AllArgsConstructor
+public class AssessmentDetailDTO {
+
     private Integer criteriaDetailId;
     private BigDecimal applicantAmount;
-    private Frequency applicantFrequency;
     private BigDecimal partnerAmount;
-    private Frequency partnerFrequency;
+    private String assessmentDescription;
+    private String assessmentDetailCode;
     private LocalDateTime dateModified;
+    private Frequency applicantFrequency;
+    private Frequency partnerFrequency;
 }
