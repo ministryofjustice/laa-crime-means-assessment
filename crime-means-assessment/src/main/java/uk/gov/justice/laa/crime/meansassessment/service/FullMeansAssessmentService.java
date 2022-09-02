@@ -60,7 +60,8 @@ public class FullMeansAssessmentService implements AssessmentService {
     }
 
     FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
-        if (!crownCourtEligibilityService.isEligible(disposableIncome, requestDTO, assessmentCriteria)) {
+        if (crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
+                && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
             return FullAssessmentResult.INEL;
         } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {
             return FullAssessmentResult.PASS;

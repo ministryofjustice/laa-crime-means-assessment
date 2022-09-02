@@ -8,10 +8,8 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,62 +24,65 @@ public class CrownCourtEligibilityService {
 
     private final MaatCourtDataService maatCourtDataService;
 
-    public boolean isEligible(BigDecimal disposableIncome, MeansAssessmentRequestDTO assessmentRequest,
-                              AssessmentCriteriaEntity assessmentCriteria) {
-        if (isEligibilityCheckRequired(assessmentRequest)) {
-            return disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) < 0;
-        }
-        return true;
-    }
-
-    boolean isEligibilityCheckRequired(MeansAssessmentRequestDTO assessmentRequest) {
+    public boolean isEligibilityCheckRequired(MeansAssessmentRequestDTO assessmentRequest) {
         boolean isCheckRequired = true;
         String laaTransactionId = assessmentRequest.getLaaTransactionId();
 
-        RepOrderDTO repOrder = maatCourtDataService.getRepOrder(assessmentRequest.getRepId(), laaTransactionId);
-        List<PassportAssessmentDTO> passportAssessments =
-                maatCourtDataService.getPassportAssessmentsFromRepId(assessmentRequest.getRepId(), laaTransactionId);
+        boolean isEitherWayAndCommittedForTrial =
+                CaseType.EITHER_WAY.equals(assessmentRequest.getCaseType())
+                        && MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(assessmentRequest.getMagCourtOutcome());
 
-        FinancialAssessmentDTO initialAssessment = repOrder.getFinancialAssessments().stream().filter(
-                assessment -> assessment.getId().equals(assessmentRequest.getFinancialAssessmentId())
-        ).findFirst().orElseThrow(() -> new RuntimeException("Cannot find initial assessment"));
+        if (isEitherWayAndCommittedForTrial) {
 
-        boolean isFirstMeansAssessment =
-                NewWorkReason.FMA.equals(NewWorkReason.getFrom(initialAssessment.getNewWorkReason()));
+            Integer financialAssessmentId = assessmentRequest.getFinancialAssessmentId();
+            RepOrderDTO repOrder = maatCourtDataService.getRepOrder(assessmentRequest.getRepId(), laaTransactionId);
+            FinancialAssessmentDTO initialAssessment = repOrder.getFinancialAssessments().stream()
+                    .filter(assessment -> assessment.getId().equals(financialAssessmentId)
+                    ).findFirst().orElseThrow(
+                            () -> new RuntimeException(
+                                    String.format("Cannot find initial assessment with id: %s", financialAssessmentId)
+                            )
+                    );
+            boolean isFirstMeansAssessment =
+                    NewWorkReason.FMA.equals(NewWorkReason.getFrom(initialAssessment.getNewWorkReason()));
 
-        boolean isEitherWayAndCommittedForTrial = CaseType.EITHER_WAY.equals(assessmentRequest.getCaseType())
-                && MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(assessmentRequest.getMagCourtOutcome());
+            if (!isFirstMeansAssessment) {
+                boolean isInitResultPass =
+                        InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(initialAssessment.getInitResult()));
+                boolean isDateCreatedAfterMagsOutcome =
+                        initialAssessment.getDateCreated().toLocalDate().isBefore(repOrder.getMagsOutcomeDateSet());
 
-        if (isFirstMeansAssessment && isEitherWayAndCommittedForTrial) {
-
-            boolean isInitResultPass =
-                    InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(initialAssessment.getInitResult()));
-
-            boolean isDateCreatedAfterMagsOutcome =
-                    initialAssessment.getDateCreated().toLocalDate().isBefore(repOrder.getMagsOutcomeDateSet());
-
-            List<Assessment> combinedAssessments = Stream.of(passportAssessments, repOrder.getFinancialAssessments())
-                    .flatMap(Collection::stream).collect(Collectors.toList());
-
-            if (isInitResultPass || isDateCreatedAfterMagsOutcome) {
-                Assessment previous = combinedAssessments.stream()
-                        .max(comparing(Assessment::getDateCreated)).orElse(null);
-
-                if (previous instanceof FinancialAssessmentDTO) {
-                    FinancialAssessmentDTO means = (FinancialAssessmentDTO) previous;
-                    if (InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(means.getInitResult()))
-                            || FullAssessmentResult.PASS.equals(FullAssessmentResult.getFrom(means.getFullResult()))
-                            || FullAssessmentResult.FAIL.equals(FullAssessmentResult.getFrom(means.getFullResult()))) {
-                        isCheckRequired = false;
-                    }
-                } else if (previous instanceof PassportAssessmentDTO) {
-                    PassportAssessmentDTO passport = (PassportAssessmentDTO) previous;
-                    if (PassportAssessmentResult.PASS.equals(PassportAssessmentResult.getFrom(passport.getResult()))) {
-                        isCheckRequired = false;
+                if (isInitResultPass || isDateCreatedAfterMagsOutcome) {
+                    Assessment previousAssessment = getLatestAssessment(repOrder, financialAssessmentId);
+                    if (previousAssessment != null) {
+                        isCheckRequired = !hasDisqualifyingResult(previousAssessment);
                     }
                 }
             }
         }
         return isCheckRequired;
+    }
+
+    Assessment getLatestAssessment(RepOrderDTO repOrder, Integer financialAssessmentId) {
+        List<Assessment> previousAssessments = Stream.of(
+                        repOrder.getPassportAssessments(), repOrder.getFinancialAssessments()
+                ).flatMap(Collection::stream)
+                .filter(assessment -> !financialAssessmentId.equals(assessment.getId()))
+                .collect(Collectors.toList());
+
+        return previousAssessments.stream()
+                .max(comparing(Assessment::getDateCreated)).orElse(null);
+    }
+
+    boolean hasDisqualifyingResult(Assessment assessment) {
+        if (assessment instanceof FinancialAssessmentDTO) {
+            FinancialAssessmentDTO means = (FinancialAssessmentDTO) assessment;
+            return InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(means.getInitResult()))
+                    || FullAssessmentResult.PASS.equals(FullAssessmentResult.getFrom(means.getFullResult()))
+                    || FullAssessmentResult.FAIL.equals(FullAssessmentResult.getFrom(means.getFullResult()));
+        } else {
+            PassportAssessmentDTO passport = (PassportAssessmentDTO) assessment;
+            return PassportAssessmentResult.PASS.equals(PassportAssessmentResult.getFrom(passport.getResult()));
+        }
     }
 }
