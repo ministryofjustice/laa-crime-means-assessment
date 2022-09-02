@@ -28,6 +28,7 @@ import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
@@ -93,6 +94,17 @@ public class MeansAssessmentControllerTest {
                 MockMvcRequestBuilders.request(method, MEANS_ASSESSMENT_ENDPOINT_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content);
+        if (withAuth) {
+            final String accessToken = obtainAccessToken();
+            requestBuilder.header("Authorization", "Bearer " + accessToken);
+        }
+        return requestBuilder;
+    }
+
+    private MockHttpServletRequestBuilder buildRequestForGet(HttpMethod method, String url, boolean withAuth) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder =
+                MockMvcRequestBuilders.request(method, url)
+                        .contentType(MediaType.APPLICATION_JSON);
         if (withAuth) {
             final String accessToken = obtainAccessToken();
             requestBuilder.header("Authorization", "Bearer " + accessToken);
@@ -208,5 +220,21 @@ public class MeansAssessmentControllerTest {
     public void updateAssessment_Unauthorized_NoAccessToken() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", false))
                 .andExpect(status().isUnauthorized());
+    }
+    @Test
+    public void getOldAssessment_Unauthorized_NoAccessToken() throws Exception {
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, false))
+                .andExpect(status().isUnauthorized());
+    }
+    @Test
+    public void givenInvalidPram_whenGetOldAssessmentInvoked_shouldFailBadRequest() throws Exception {
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, true))
+                .andExpect(status().is4xxClientError());
+    }
+    @Test
+    public void givenValidPram_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
+        when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(FinancialAssessmentDTO.builder().build());
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, true))
+                .andExpect(status().isOk());
     }
 }
