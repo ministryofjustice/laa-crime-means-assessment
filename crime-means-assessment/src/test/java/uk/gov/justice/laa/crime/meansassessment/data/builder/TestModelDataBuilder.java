@@ -5,11 +5,15 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,6 +77,10 @@ public class TestModelDataBuilder {
     public static final LocalDateTime TEST_INCOME_EVIDENCE_DUE_DATE =
             LocalDateTime.of(2020, 10, 5, 0, 0, 0);
 
+    public static final LocalDate TEST_MAGS_OUTCOME_DATE = LocalDate.of(2022, 6, 5);
+    public static final LocalDateTime TEST_DATE_CREATED =
+            LocalDateTime.of(2021, 10, 9, 15, 1, 25);
+
     public static final BigDecimal TEST_DISPOSABLE_INCOME = BigDecimal.valueOf(4000d);
     public static final BigDecimal TEST_ADJUSTED_LIVING_ALLOWANCE = BigDecimal.valueOf(6000d);
     public static final BigDecimal TEST_AGGREGATED_EXPENDITURE = BigDecimal.valueOf(2000d);
@@ -84,6 +92,7 @@ public class TestModelDataBuilder {
     public static final int MEANS_ASSESSMENT_ID = 1000;
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
+    public static final int CMU_ID = 30;
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -215,7 +224,7 @@ public class TestModelDataBuilder {
                                         .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
                         )
                 )
-                .withMagCourtOutcome(MagCourtOutcome.COMMITTED)
+                .withMagCourtOutcome(MagCourtOutcome.COMMITTED_FOR_TRIAL)
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
@@ -293,6 +302,7 @@ public class TestModelDataBuilder {
                 .incomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .crownCourtOverview(getApiCrownCourtOverview())
                 .reviewType(ReviewType.NAFI)
+                .magCourtOutcome(MagCourtOutcome.COMMITTED_FOR_TRIAL)
                 .newWorkReason(NewWorkReason.PBI)
                 .fullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .financialAssessmentId(TEST_FINANCIAL_ASSESSMENT_ID)
@@ -450,7 +460,7 @@ public class TestModelDataBuilder {
                 .withFullResult(FullAssessmentResult.PASS.getResult())
                 .withFullResultReason(FullAssessmentResult.PASS.getReason())
                 .withFullThreshold(BigDecimal.TEN)
-                .withFassFullStatus(isValid ? CurrentStatus.COMPLETE: null)
+                .withFassFullStatus(isValid ? CurrentStatus.COMPLETE : null)
                 .withAdjustedIncomeValue(TEST_ADJUSTED_INCOME)
                 .withTotalAnnualDisposableIncome(TEST_DISPOSABLE_INCOME)
                 .withTotalAggregatedExpense(TEST_AGGREGATED_EXPENDITURE);
@@ -588,19 +598,71 @@ public class TestModelDataBuilder {
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(39)
                         .withNoOfChildren(2),
-        new ApiAssessmentChildWeighting()
-                .withChildWeightingId(40)
-                .withNoOfChildren(2),
-        new ApiAssessmentChildWeighting()
-                .withChildWeightingId(41)
-                .withNoOfChildren(2),
-        new ApiAssessmentChildWeighting()
-                .withChildWeightingId(42)
-                .withNoOfChildren(2),
-        new ApiAssessmentChildWeighting()
-                .withChildWeightingId(43)
-                .withNoOfChildren(2)
+                new ApiAssessmentChildWeighting()
+                        .withChildWeightingId(40)
+                        .withNoOfChildren(2),
+                new ApiAssessmentChildWeighting()
+                        .withChildWeightingId(41)
+                        .withNoOfChildren(2),
+                new ApiAssessmentChildWeighting()
+                        .withChildWeightingId(42)
+                        .withNoOfChildren(2),
+                new ApiAssessmentChildWeighting()
+                        .withChildWeightingId(43)
+                        .withNoOfChildren(2)
         );
     }
 
+    public static PassportAssessmentDTO getPassportAssessment() {
+        return PassportAssessmentDTO.builder()
+                .cmuId(CMU_ID)
+                .usn(TEST_USN)
+                .result(PassportAssessmentResult.PASS.getResult())
+                .repId(TEST_REP_ID)
+                .userCreated(TEST_USER)
+                .nworCode(NewWorkReason.CFC.getCode())
+                .financialAssessmentId(TEST_FINANCIAL_ASSESSMENT_ID)
+                .dateCreated(TEST_DATE_CREATED)
+                .dateCompleted(TEST_DATE_CREATED)
+                .build();
+    }
+
+    public static FinancialAssessmentDTO getFinancialAssessment() {
+        return FinancialAssessmentDTO.builder()
+                .id(TEST_FINANCIAL_ASSESSMENT_ID)
+                .cmuId(CMU_ID)
+                .initialAscrId(1)
+                .repId(TEST_REP_ID)
+                .userCreated(TEST_USER)
+                .assessmentType(AssessmentType.INIT.getType())
+                .newWorkReason(NewWorkReason.CFC.getCode())
+                .dateCreated(TEST_DATE_CREATED)
+                .fassInitStatus(CurrentStatus.COMPLETE.getStatus())
+                .initialAssessmentDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .initTotAggregatedIncome(BigDecimal.valueOf(15600.00))
+                .initAdjustedIncomeValue(BigDecimal.valueOf(15600.00))
+                .initResult(InitAssessmentResult.PASS.getResult())
+                .initApplicationEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .build();
+    }
+
+    public static RepOrderDTO getRepOrderDTO() {
+        return RepOrderDTO.builder()
+                .id(TEST_REP_ID)
+                .catyCaseType(CaseType.EITHER_WAY.getCaseType())
+                .magsOutcome(MagCourtOutcome.COMMITTED.getOutcome())
+                .magsOutcomeDate(TEST_MAGS_OUTCOME_DATE.toString())
+                .magsOutcomeDateSet(TEST_MAGS_OUTCOME_DATE)
+                .committalDate(TEST_MAGS_OUTCOME_DATE)
+                .repOrderDecisionReasonCode("rder-code")
+                .crownRepOrderDecision("cc-rep-doc")
+                .crownRepOrderType("cc-rep-type")
+                .build();
+    }
+
+    public static RepOrderDTO getRepOrderDTOWithAssessments(List<FinancialAssessmentDTO> financialAssessments) {
+        RepOrderDTO repOrderDTO = getRepOrderDTO();
+        repOrderDTO.setFinancialAssessments(financialAssessments);
+        return repOrderDTO;
+    }
 }
