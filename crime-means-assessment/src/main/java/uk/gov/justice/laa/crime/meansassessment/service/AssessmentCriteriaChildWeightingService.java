@@ -1,6 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentChildWeighting;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AssessmentCriteriaChildWeightingService {
 
     protected BigDecimal getTotalChildWeighting(List<ApiAssessmentChildWeighting> childWeightings, AssessmentCriteriaEntity assessmentCriteria) {
