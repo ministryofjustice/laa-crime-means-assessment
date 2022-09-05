@@ -17,7 +17,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -361,7 +360,7 @@ public class MeansAssessmentServiceTest {
         meansAssessmentService.getAssessmentSectionSummary(TestModelDataBuilder
                 .getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA));
         verify(meansAssessmentSectionSummaryBuilder, times(2)).buildAssessmentDTO(any(), any());
-        verify(meansAssessmentSectionSummaryBuilder, times(1)).build(any());
+        verify(meansAssessmentSectionSummaryBuilder, times(1)).buildAssessmentSectionSummary(any());
     }
 
 
@@ -416,9 +415,9 @@ public class MeansAssessmentServiceTest {
     public void givenInvalidValidAssessmentId_whenGetOldAssessmentInvoked_thenReturnEmpty() {
 
         when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(null);
-        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
+        ApiMeansAssessmentResponse apiMeansAssessmentResponse = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
         verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
-        assertThat(financialAssessmentDTO).isNull();
+        assertThat(apiMeansAssessmentResponse).isNull();
 
     }
 
@@ -430,9 +429,9 @@ public class MeansAssessmentServiceTest {
                 .getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT, TestModelDataBuilder.TEST_SEQ));
         when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(TestModelDataBuilder
                 .getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA));
-        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
+        ApiMeansAssessmentResponse apiMeansAssessmentResponse = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
         verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
-        assertThat(financialAssessmentDTO).isNotNull();
+        assertThat(apiMeansAssessmentResponse).isNotNull();
 
     }
 }
