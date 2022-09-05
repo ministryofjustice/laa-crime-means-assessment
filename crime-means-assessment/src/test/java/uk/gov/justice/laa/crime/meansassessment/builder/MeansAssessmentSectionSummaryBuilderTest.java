@@ -27,7 +27,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_SECTION, TEST_SEQ));
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(0).isEqualTo(assessmentSectionSummaryDTOS.size());
     }
 
@@ -38,7 +38,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
@@ -55,7 +55,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
@@ -76,7 +76,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ+TEST_SEQ));
 
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
@@ -97,7 +97,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
@@ -118,7 +118,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ+TEST_SEQ));
 
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
@@ -139,7 +139,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.build(assessmentDTOList);
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
