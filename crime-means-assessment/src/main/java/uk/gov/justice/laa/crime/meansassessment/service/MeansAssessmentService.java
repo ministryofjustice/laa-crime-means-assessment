@@ -176,7 +176,7 @@ public class MeansAssessmentService {
         return assessmentResponse;
     }
 
-    private void getChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void getChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
         List<ApiAssessmentChildWeighting> apiAssessmentChildWeightings = new ArrayList<>();
         financialAssessmentDTO.getChildWeightings().forEach(childWeightings -> {
             Optional<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightingEntityO =
