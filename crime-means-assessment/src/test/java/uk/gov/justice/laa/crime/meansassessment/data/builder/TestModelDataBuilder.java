@@ -6,6 +6,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.ChildWeightings;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -433,10 +434,12 @@ public class TestModelDataBuilder {
     public static List<ApiAssessmentChildWeighting> getAssessmentChildWeightings() {
         return List.of(
                 new ApiAssessmentChildWeighting()
+                        .withId(1234)
                         .withChildWeightingId(37)
                         .withNoOfChildren(1)
                 ,
                 new ApiAssessmentChildWeighting()
+                        .withId(2345)
                         .withChildWeightingId(38)
                         .withNoOfChildren(2)
         );
@@ -615,6 +618,17 @@ public class TestModelDataBuilder {
         );
     }
 
+    public static FinancialAssessmentDTO getFinancialAssessmentDTOWithChildWeightings(String assessmentType) {
+        FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO(assessmentType);
+        ChildWeightings childWeightings = new ChildWeightings();
+        childWeightings.setChildWeightingId(12);
+        childWeightings.setNoOfChildren(2);
+        childWeightings.setId(1234);
+        List<ChildWeightings> childWeightingsList = new ArrayList<>();
+        childWeightingsList.add(childWeightings);
+        financialAssessment.setChildWeightings(childWeightingsList);
+        return financialAssessment;
+    }
 
     public static FinancialAssessmentDTO getFinancialAssessmentDTOWithDetails(String assessmentType) {
         FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO(assessmentType);

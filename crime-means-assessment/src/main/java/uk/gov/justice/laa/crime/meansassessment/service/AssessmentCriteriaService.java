@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailFrequencyEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.CaseTypeAssessmentCriteriaDetailValueEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaChildWeightingRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.CaseTypeAssessmentCriteriaDetailValueRepository;
@@ -28,6 +26,7 @@ public class AssessmentCriteriaService {
     private final AssessmentCriteriaRepository assessmentCriteriaRepository;
     private final AssessmentCriteriaDetailFrequencyRepository assessmentCriteriaDetailFrequencyRepository;
     private final CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
+    private final AssessmentCriteriaChildWeightingRepository assessmentCriteriaChildWeightingRepository;
 
     AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
         log.info("Retrieving assessment criteria for date: {}", assessmentDate);
@@ -87,4 +86,9 @@ public class AssessmentCriteriaService {
         }
 
     }
+
+    public Optional<AssessmentCriteriaChildWeightingEntity> getAssessmentCriteriaChildWeightingsById(Integer id) {
+        return assessmentCriteriaChildWeightingRepository.findById(id);
+    }
+
 }
