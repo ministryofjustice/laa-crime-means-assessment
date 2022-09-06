@@ -363,7 +363,6 @@ public class MeansAssessmentServiceTest {
         verify(meansAssessmentSectionSummaryBuilder, times(1)).buildAssessmentSectionSummary(any());
     }
 
-
     @Test
     public void testGetAssessmentDTOInvoked_whenNonAssessmentCriteriaDetail_thenReturnEmpty() {
         doReturn(Optional.empty()).when(assessmentCriteriaDetailService).getAssessmentCriteriaDetailById(any());
@@ -433,5 +432,23 @@ public class MeansAssessmentServiceTest {
         verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
         assertThat(apiMeansAssessmentResponse).isNotNull();
 
+    }
+
+    @Test
+    public void givenEmptyChildWeightings_whenGetChildWeightingsInvoked_thenResponseIsPopulatedWithEmptyChildWeightingsList() {
+        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
+        meansAssessmentService.getChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+                .getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT));
+        assertThat(true).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().isEmpty());
+    }
+
+    @Test
+    public void givenChildWeightings_whenGetChildWeightingsInvoked_thenResponseIsPopulatedWithChildWeightingsList() {
+        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
+        doReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaChildWeightingEntity()))
+                .when(assessmentCriteriaService).getAssessmentCriteriaChildWeightingsById(any());
+        meansAssessmentService.getChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+                .getFinancialAssessmentDTOWithChildWeightings(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_FULL));
+        assertThat(1).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().size());
     }
 }
