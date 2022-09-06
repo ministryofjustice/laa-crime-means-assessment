@@ -5,12 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentSectionSummaryBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -18,7 +25,10 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -33,6 +43,8 @@ public class MeansAssessmentService {
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
     private final AssessmentCompletionService assessmentCompletionService;
+    private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
+    private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -149,5 +161,67 @@ public class MeansAssessmentService {
             }
         }
         return detailTotal;
+    }
+
+    public ApiMeansAssessmentResponse getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {
+        log.info("Processing get old assessment request - Start");
+        ApiMeansAssessmentResponse assessmentResponse = null;
+        FinancialAssessmentDTO financialAssessmentDTO = maatCourtDataService.getFinancialAssessment(financialAssessmentId, laaTransactionId);
+        if (null != financialAssessmentDTO) {
+            assessmentResponse = new ApiMeansAssessmentResponse();
+            getAssessmentSectionSummary(financialAssessmentDTO);
+            getChildWeightings(assessmentResponse, financialAssessmentDTO);
+        }
+        log.info("Processing get old assessment request - End");
+        return assessmentResponse;
+    }
+
+    protected void getChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+        List<ApiAssessmentChildWeighting> apiAssessmentChildWeightings = new ArrayList<>();
+        financialAssessmentDTO.getChildWeightings().forEach(childWeightings -> {
+            Optional<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightingEntityO =
+                    assessmentCriteriaService.getAssessmentCriteriaChildWeightingsById(childWeightings.getChildWeightingId());
+            if (assessmentCriteriaChildWeightingEntityO.isPresent()) {
+                AssessmentCriteriaChildWeightingEntity assessmentCriteriaChildWeightingEntity = assessmentCriteriaChildWeightingEntityO.get();
+                ApiAssessmentChildWeighting apiAssessmentChildWeighting = new ApiAssessmentChildWeighting()
+                        .withId(childWeightings.getId())
+                        .withChildWeightingId(childWeightings.getChildWeightingId())
+                        .withNoOfChildren(childWeightings.getNoOfChildren())
+                        .withWeightingFactor(assessmentCriteriaChildWeightingEntity.getWeightingFactor())
+                        .withLowerAgeRange(assessmentCriteriaChildWeightingEntity.getLowerAgeRange())
+                        .withUpperAgeRange(assessmentCriteriaChildWeightingEntity.getUpperAgeRange());
+                apiAssessmentChildWeightings.add(apiAssessmentChildWeighting);
+            }
+        });
+        assessmentResponse.withChildWeightings(apiAssessmentChildWeightings);
+    }
+
+    protected List<AssessmentSectionSummaryDTO> getAssessmentSectionSummary(FinancialAssessmentDTO financialAssessmentDTO) {
+
+        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = new ArrayList<>();
+        if (!financialAssessmentDTO.getAssessmentDetails().isEmpty()) {
+            List<AssessmentDTO> assessmentList = getAssessmentDTO(financialAssessmentDTO.getAssessmentDetails());
+            if (!assessmentList.isEmpty()) {
+                sortAssessmentDetail(assessmentList);
+                assessmentSectionSummaryList = meansAssessmentBuilder.buildAssessmentSectionSummary(assessmentList);
+            }
+        }
+        return assessmentSectionSummaryList;
+    }
+
+    protected List<AssessmentDTO> getAssessmentDTO(List<FinancialAssessmentDetails> financialAssessmentDetailsList) {
+        List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
+        financialAssessmentDetailsList.forEach(e -> {
+            Optional<AssessmentCriteriaDetailEntity> assessmentCriteriaDetailEntity = assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(e.getCriteriaDetailId());
+            assessmentCriteriaDetailEntity.ifPresent(criteriaDetailEntity -> assessmentDTOList.add(meansAssessmentBuilder.buildAssessmentDTO(criteriaDetailEntity, e)));
+        });
+        return assessmentDTOList;
+    }
+
+    protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
+        if (!assessmentDTOList.isEmpty()) {
+            assessmentDTOList.sort(Comparator.comparing(AssessmentDTO::getSection)
+                    .thenComparing(AssessmentDTO::getSequence));
+        }
     }
 }
