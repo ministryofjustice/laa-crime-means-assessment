@@ -451,4 +451,12 @@ public class MeansAssessmentServiceTest {
                 .getFinancialAssessmentDTOWithChildWeightings(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_FULL));
         assertThat(1).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().size());
     }
+
+    @Test
+    public void givenAssessmentCriteriaChildWeightingsEmpty_whenGetChildWeightingsInvoked_thenResponseIsPopulatedWithNoChildWeightingsList() {
+        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
+        meansAssessmentService.getChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+                .getFinancialAssessmentDTOWithChildWeightings(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_FULL));
+        assertThat(0).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().size());
+    }
 }
