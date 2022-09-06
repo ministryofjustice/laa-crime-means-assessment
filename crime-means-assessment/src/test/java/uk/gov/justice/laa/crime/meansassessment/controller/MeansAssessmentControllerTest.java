@@ -29,6 +29,7 @@ import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestC
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
@@ -233,7 +234,7 @@ public class MeansAssessmentControllerTest {
     }
     @Test
     public void givenValidPram_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
-        when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(FinancialAssessmentDTO.builder().build());
+        when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(new ApiMeansAssessmentResponse());
         mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, true))
                 .andExpect(status().isOk());
     }

@@ -16,12 +16,7 @@ public class AssessmentCriteriaDetailService {
 
     private final AssessmentCriteriaDetailRepository assessmentCriteriaDetailRepository;
 
-
     public Optional<AssessmentCriteriaDetailEntity> getAssessmentCriteriaDetailById(Integer id) {
-
         return assessmentCriteriaDetailRepository.findById(id);
     }
-
-
-
 }

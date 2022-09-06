@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.*;
@@ -12,7 +11,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class MeansAssessmentSectionSummaryBuilder {
 
-    public List<AssessmentSectionSummaryDTO> build(List<AssessmentDTO> assessmentDTOList) {
+    public List<AssessmentSectionSummaryDTO> buildAssessmentSectionSummary(List<AssessmentDTO> assessmentDTOList) {
 
         List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = new ArrayList<>();
         Arrays.stream(Section.values()).forEach(section -> {
