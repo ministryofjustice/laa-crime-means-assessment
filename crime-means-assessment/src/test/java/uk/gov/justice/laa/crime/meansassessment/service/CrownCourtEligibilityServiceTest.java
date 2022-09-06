@@ -94,6 +94,13 @@ public class CrownCourtEligibilityServiceTest {
     }
 
     @Test
+    public void givenEWCommittedReassessmentInitFailedAndDateCreatedBeforeMagsOutcomeDateSet_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
+        financialAssessment.setInitResult(InitAssessmentResult.FAIL.getResult());
+        financialAssessment.setDateCreated(TestModelDataBuilder.TEST_MAGS_OUTCOME_DATE.minusDays(1).atStartOfDay());
+        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+    }
+
+    @Test
     public void givenNoPreviousAssessmentResults_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
         assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }

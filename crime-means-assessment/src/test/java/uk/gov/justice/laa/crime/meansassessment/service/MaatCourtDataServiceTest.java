@@ -110,6 +110,18 @@ public class MaatCourtDataServiceTest {
     }
 
     @Test
+    public void givenRepId_whenGetRepOrderIsInvoked_thenResponseIsReturned() {
+        RepOrderDTO expected = new RepOrderDTO();
+        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
+                .thenReturn(expected);
+
+        RepOrderDTO response =
+                maatCourtDataService.getRepOrder(TestModelDataBuilder.TEST_REP_ID, LAA_TRANSACTION_ID);
+
+        assertThat(response).isEqualTo(expected);
+    }
+
+    @Test
     public void givenDateCompletionRequest_whenUpdateCompletionDateIsInvoked_thenResponseIsReturned() {
         maatCourtDataService.updateCompletionDate(DateCompletionRequestDTO.builder().build(), LAA_TRANSACTION_ID);
         verify(maatCourtDataClient).getApiResponseViaPOST(
