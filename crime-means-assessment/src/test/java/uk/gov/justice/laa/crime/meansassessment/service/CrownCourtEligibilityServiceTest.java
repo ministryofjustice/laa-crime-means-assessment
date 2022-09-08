@@ -34,7 +34,7 @@ public class CrownCourtEligibilityServiceTest {
 
     private MeansAssessmentRequestDTO requestDTO;
 
-    private FinancialAssessmentDTO financialAssessment = TestModelDataBuilder.getFinancialAssessment();
+    private FinancialAssessmentDTO financialAssessment = TestModelDataBuilder.getFinancialAssessmentDTO();
     private RepOrderDTO repOrderDTO = TestModelDataBuilder.getRepOrderDTOWithAssessments(
             new ArrayList<>(List.of(financialAssessment))
     );
@@ -49,7 +49,7 @@ public class CrownCourtEligibilityServiceTest {
 
     @After
     public void tearDown() {
-        financialAssessment = TestModelDataBuilder.getFinancialAssessment();
+        financialAssessment = TestModelDataBuilder.getFinancialAssessmentDTO();
         repOrderDTO = TestModelDataBuilder.getRepOrderDTOWithAssessments(new ArrayList<>(List.of(financialAssessment)));
     }
 
