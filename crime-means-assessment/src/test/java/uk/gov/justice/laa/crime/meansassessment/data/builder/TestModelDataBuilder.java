@@ -628,8 +628,8 @@ public class TestModelDataBuilder {
         );
     }
 
-    public static FinancialAssessmentDTO getFinancialAssessmentDTOWithChildWeightings(String assessmentType) {
-        FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO(assessmentType);
+    public static FinancialAssessmentDTO getFinancialAssessmentDTOWithChildWeightings() {
+        FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO();
         ChildWeightings childWeightings = new ChildWeightings();
         childWeightings.setChildWeightingId(12);
         childWeightings.setNoOfChildren(2);
@@ -640,21 +640,28 @@ public class TestModelDataBuilder {
         return financialAssessment;
     }
 
-    public static FinancialAssessmentDTO getFinancialAssessmentDTOWithDetails(String assessmentType) {
-        FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO(assessmentType);
+    public static FinancialAssessmentDTO getFinancialAssessmentDTOWithDetails() {
+        FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO();
         financialAssessment.setAssessmentDetails(getAssessmentDetails());
         return financialAssessment;
     }
 
-    public static FinancialAssessmentDTO getFinancialAssessmentDTO(String assessmentType) {
+    public static FinancialAssessmentDTO getFinancialAssessmentDTO() {
         return FinancialAssessmentDTO.builder()
-                .repId(TEST_REP_ID)
+                .id(TEST_FINANCIAL_ASSESSMENT_ID)
+                .cmuId(CMU_ID)
                 .initialAscrId(1)
-                .assessmentType(assessmentType)
-                .dateCreated(LocalDateTime.now())
-                .initialAssessmentDate(LocalDateTime.now())
+                .repId(TEST_REP_ID)
+                .userCreated(TEST_USER)
+                .assessmentType(AssessmentType.INIT.getType())
+                .newWorkReason(NewWorkReason.CFC.getCode())
+                .dateCreated(TEST_DATE_CREATED)
+                .fassInitStatus(CurrentStatus.COMPLETE.getStatus())
+                .initialAssessmentDate(LocalDateTime.parse("2021-10-09T15:02:25"))
                 .initTotAggregatedIncome(BigDecimal.valueOf(15600.00))
                 .initAdjustedIncomeValue(BigDecimal.valueOf(15600.00))
+                .initResult(InitAssessmentResult.PASS.getResult())
+                .initApplicationEmploymentStatus(TEST_EMPLOYMENT_STATUS)
                 .build();
     }
 
@@ -703,8 +710,8 @@ public class TestModelDataBuilder {
                         .build()
         );
     }
-    public static FinancialAssessmentDetails  getAssessmentDetailsWithoutList() {
 
+    public static FinancialAssessmentDetails  getAssessmentDetailsWithoutList() {
         return FinancialAssessmentDetails.builder()
                 .criteriaDetailId(TEST_ASSESSMENT_DETAILS_ID)
                 .applicantAmount(BigDecimal.valueOf(1650.00))
@@ -712,38 +719,6 @@ public class TestModelDataBuilder {
                 .partnerAmount(BigDecimal.valueOf(1650.00))
                 .partnerFrequency(Frequency.TWO_WEEKLY)
                 .id(TEST_DETAIL_ID)
-                .build();
-    }
-    public static PassportAssessmentDTO getPassportAssessment() {
-        return PassportAssessmentDTO.builder()
-                .cmuId(CMU_ID)
-                .usn(TEST_USN)
-                .result(PassportAssessmentResult.PASS.getResult())
-                .repId(TEST_REP_ID)
-                .userCreated(TEST_USER)
-                .nworCode(NewWorkReason.CFC.getCode())
-                .financialAssessmentId(TEST_FINANCIAL_ASSESSMENT_ID)
-                .dateCreated(TEST_DATE_CREATED)
-                .dateCompleted(TEST_DATE_CREATED)
-                .build();
-    }
-
-    public static FinancialAssessmentDTO getFinancialAssessment() {
-        return FinancialAssessmentDTO.builder()
-                .id(TEST_FINANCIAL_ASSESSMENT_ID)
-                .cmuId(CMU_ID)
-                .initialAscrId(1)
-                .repId(TEST_REP_ID)
-                .userCreated(TEST_USER)
-                .assessmentType(AssessmentType.INIT.getType())
-                .newWorkReason(NewWorkReason.CFC.getCode())
-                .dateCreated(TEST_DATE_CREATED)
-                .fassInitStatus(CurrentStatus.COMPLETE.getStatus())
-                .initialAssessmentDate(LocalDateTime.parse("2021-10-09T15:02:25"))
-                .initTotAggregatedIncome(BigDecimal.valueOf(15600.00))
-                .initAdjustedIncomeValue(BigDecimal.valueOf(15600.00))
-                .initResult(InitAssessmentResult.PASS.getResult())
-                .initApplicationEmploymentStatus(TEST_EMPLOYMENT_STATUS)
                 .build();
     }
 
