@@ -78,8 +78,9 @@ public class FullAssessmentAvailabilityServiceTest {
 
     @Test
     public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeNull_ThenFullAssessmentAvailableIsTrue() {
-        meansAssessmentRequest.setCaseType(CaseType.EITHER_WAY);
         meansAssessmentResponse.setInitResult("FAIL");
+        meansAssessmentRequest.setCaseType(CaseType.EITHER_WAY);
+        meansAssessmentRequest.setMagCourtOutcome(MagCourtOutcome.COMMITTED);
 
         fullAssessmentAvailabilityService.processFullAssessmentAvailable(meansAssessmentRequest, meansAssessmentResponse);
         assertThat(meansAssessmentResponse.getFullAssessmentAvailable()).isFalse();

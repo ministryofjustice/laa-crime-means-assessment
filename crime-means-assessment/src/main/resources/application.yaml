@@ -31,13 +31,15 @@ maatApi:
     create-url: ${maatApi.assessments-domain}/financial-assessments/
     search-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
     update-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
-    date-completion-url: ${maatApi.assessments-domain}/financial-assessments/update-date-completed
   passport-assessment-endpoints:
     find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
   hardship-review-endpoints:
     find-url: ${maatApi.assessments-domain}/hardship/repId/{repId}
   ioj-appeal-endpoints:
     find-url: ${maatApi.assessments-domain}/ioj-appeal/repId/{repId}
+  rep-order-endpoints:
+    find-url: ${maatApi.assessments-domain}/rep-orders/{repId}
+    date-completion-url: ${maatApi.assessments-domain}/rep-orders/update-date-completed
 
 means-assessment:
   security:
