@@ -49,6 +49,10 @@
     "userModified": {
       "type": "string",
       "description": "ID of the user that last modified the assessment"
+    },
+    "financialAssessmentId": {
+      "type": "integer",
+      "description": "Financial assessment ID"
     }
   },
   "extends": {
