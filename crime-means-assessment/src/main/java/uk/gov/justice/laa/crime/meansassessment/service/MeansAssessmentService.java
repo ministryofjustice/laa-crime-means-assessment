@@ -15,7 +15,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -28,10 +27,8 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -194,8 +191,8 @@ public class MeansAssessmentService {
     }
 
     private void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
-        finAssIncomeEvidenceDTOList.sort(Comparator.comparing(FinAssIncomeEvidenceDTO::getMandatory));
-//                .thenComparing(FinAssIncomeEvidenceDTO.builder().inevEvidence()::getOtherText));
+        sortListWithComparing(finAssIncomeEvidenceDTOList,
+                incomeEvidenceDTO -> incomeEvidenceDTO.getMandatory(), incomeEvidenceDTO -> incomeEvidenceDTO.getIncomeEvidence().getDescription());
     }
 
     protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
@@ -240,8 +237,16 @@ public class MeansAssessmentService {
         return assessmentDTOList;
     }
 
-    protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-            assessmentDTOList.sort(Comparator.comparing(AssessmentDTO::getSection)
-                    .thenComparing(AssessmentDTO::getSequence));
+
+    public void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
+        sortListWithComparing(assessmentDTOList, assessmentDTO -> assessmentDTO.getSection(), assessmentDTO -> assessmentDTO.getSequence());
     }
+
+    protected <T, U extends Comparable> List<T> sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc) {
+        if (!t.isEmpty()) {
+            Collections.sort(t, Comparator.comparing(compFunction).thenComparing(thenCompFunc));
+        }
+        return t;
+    }
+
 }
