@@ -437,7 +437,7 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenEmptyChildWeightings_whenGetChildWeightingsInvoked_thenResponseIsPopulatedWithEmptyChildWeightingsList() {
         ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
-        meansAssessmentService.getChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+        meansAssessmentService.mapChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithDetails(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT));
         assertThat(true).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().isEmpty());
     }
@@ -447,7 +447,7 @@ public class MeansAssessmentServiceTest {
         ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
         doReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaChildWeightingEntity()))
                 .when(assessmentCriteriaService).getAssessmentCriteriaChildWeightingsById(any());
-        meansAssessmentService.getChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+        meansAssessmentService.mapChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithChildWeightings(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_FULL));
         assertThat(1).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().size());
     }
@@ -455,7 +455,7 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenAssessmentCriteriaChildWeightingsEmpty_whenGetChildWeightingsInvoked_thenResponseIsPopulatedWithNoChildWeightingsList() {
         ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
-        meansAssessmentService.getChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+        meansAssessmentService.mapChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithChildWeightings(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_FULL));
         assertThat(0).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().size());
     }
