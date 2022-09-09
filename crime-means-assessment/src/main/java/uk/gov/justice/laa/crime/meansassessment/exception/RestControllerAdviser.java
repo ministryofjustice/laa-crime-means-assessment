@@ -17,7 +17,7 @@ public class RestControllerAdviser {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDTO> adviceBadRequests(MethodArgumentNotValidException ex) {
-        log.error(" EA Bad request is passed in: ", ex);
+        log.error("Bad request is passed in: ", ex);
         return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, String.valueOf(ex.getBindingResult()));
     }
 
