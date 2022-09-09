@@ -50,9 +50,10 @@
       "type": "string",
       "description": "ID of the user that last modified the assessment"
     },
-    "financialAssessmentId": {
+    "id": {
       "type": "integer",
-      "description": "Financial assessment ID"
+      "description": "Financial assessment ID",
+      "javaName": "financialAssessmentId"
     }
   },
   "extends": {
