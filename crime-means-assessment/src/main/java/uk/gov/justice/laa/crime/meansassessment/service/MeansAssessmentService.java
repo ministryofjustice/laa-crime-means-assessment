@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -11,8 +12,10 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -170,13 +173,32 @@ public class MeansAssessmentService {
         if (null != financialAssessmentDTO) {
             assessmentResponse = new ApiMeansAssessmentResponse();
             getAssessmentSectionSummary(financialAssessmentDTO);
-            getChildWeightings(assessmentResponse, financialAssessmentDTO);
+            mapChildWeightings(assessmentResponse, financialAssessmentDTO);
+            mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
         }
         log.info("Processing get old assessment request - End");
         return assessmentResponse;
     }
 
-    protected void getChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    private void mapIncomeEvidence(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+        List<ApiIncomeEvidenceSummary> apiIncomeEvidenceSummaryList = new ArrayList<>();
+        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidence();
+        if (!finAssIncomeEvidenceDTOList.isEmpty()) {
+            sortFinAssIncomeEvidenceSummary(finAssIncomeEvidenceDTOList);
+            finAssIncomeEvidenceDTOList.forEach(finAssIncomeEvidenceDTO -> {
+                if (StringUtils.isNotEmpty(finAssIncomeEvidenceDTO.getAdhoc())) {
+
+                }
+            });
+        }
+    }
+
+    private void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
+        finAssIncomeEvidenceDTOList.sort(Comparator.comparing(FinAssIncomeEvidenceDTO::getMandatory));
+//                .thenComparing(FinAssIncomeEvidenceDTO.builder().inevEvidence()::getOtherText));
+    }
+
+    protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
         List<ApiAssessmentChildWeighting> apiAssessmentChildWeightings = new ArrayList<>();
         financialAssessmentDTO.getChildWeightings().forEach(childWeightings -> {
             Optional<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightingEntityO =
@@ -219,9 +241,7 @@ public class MeansAssessmentService {
     }
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-        if (!assessmentDTOList.isEmpty()) {
             assessmentDTOList.sort(Comparator.comparing(AssessmentDTO::getSection)
                     .thenComparing(AssessmentDTO::getSequence));
-        }
     }
 }
