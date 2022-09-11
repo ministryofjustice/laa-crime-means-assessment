@@ -1,9 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +8,8 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PassportAssessmentDTO {
+@EqualsAndHashCode(callSuper = true)
+public class PassportAssessmentDTO extends Assessment {
 
     private Integer id;
     private Integer financialAssessmentId;
