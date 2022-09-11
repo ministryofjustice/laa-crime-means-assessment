@@ -38,6 +38,9 @@ public class FullMeansAssessmentServiceTest {
     private FullMeansAssessmentService fullMeansAssessmentService;
 
     @Mock
+    private CrownCourtEligibilityService crownCourtEligibilityService;
+
+    @Mock
     private AssessmentCriteriaChildWeightingService childWeightingService;
 
     @Before
@@ -51,6 +54,7 @@ public class FullMeansAssessmentServiceTest {
 
     @Test
     public void givenCompletedAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+        setupEligibilityCheckStubbing(false);
         MeansAssessmentDTO result =
                 fullMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE, meansAssessment, assessmentCriteria);
 
@@ -97,20 +101,55 @@ public class FullMeansAssessmentServiceTest {
         assertThat(result).isEqualByComparingTo(EXPECTED_ADJUSTED_LIVING_ALLOWANCE);
     }
 
+    private void setupEligibilityCheckStubbing(boolean returnValue) {
+        when(crownCourtEligibilityService.isEligibilityCheckRequired(
+                any(MeansAssessmentRequestDTO.class)
+        )).thenReturn(returnValue);
+    }
+
     @Test
     public void givenDisposableIncomeAboveThreshold_whenGetResultIsInvoked_thenResultIsFail() {
+        setupEligibilityCheckStubbing(false);
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().add(BigDecimal.valueOf(0.01));
-        FullAssessmentResult result = fullMeansAssessmentService.getResult(disposableIncome, assessmentCriteria);
+        FullAssessmentResult result = fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
         assertThat(result).isEqualTo(FullAssessmentResult.FAIL);
     }
 
     @Test
     public void givenDisposableIncomeBelowThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+        setupEligibilityCheckStubbing(false);
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().subtract(BigDecimal.valueOf(0.01));
-        FullAssessmentResult result = fullMeansAssessmentService.getResult(disposableIncome, assessmentCriteria);
+        FullAssessmentResult result = fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
         assertThat(result).isEqualTo(FullAssessmentResult.PASS);
+    }
+
+    @Test
+    public void givenEligibilityCheckRequiredAndIncomeBelowThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+        setupEligibilityCheckStubbing(true);
+        BigDecimal disposableIncome =
+                assessmentCriteria.getEligibilityThreshold().subtract(BigDecimal.valueOf(0.01));
+        assertThat(fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria))
+                .isEqualTo(FullAssessmentResult.FAIL);
+    }
+
+    @Test
+    public void givenEligibilityCheckRequiredAndEqualsThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+        setupEligibilityCheckStubbing(true);
+        BigDecimal disposableIncome =
+                assessmentCriteria.getEligibilityThreshold();
+        assertThat(fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria))
+                .isEqualTo(FullAssessmentResult.INEL);
+    }
+
+    @Test
+    public void givenEligibilityCheckRequiredAndIncomeAboveThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+        setupEligibilityCheckStubbing(true);
+        BigDecimal disposableIncome =
+                assessmentCriteria.getEligibilityThreshold().add(BigDecimal.valueOf(0.01));
+        assertThat(fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria))
+                .isEqualTo(FullAssessmentResult.INEL);
     }
 
 }
