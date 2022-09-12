@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class InitAssessmentValidator {
 
     public boolean validate(MeansAssessmentRequestDTO requestDTO) {
