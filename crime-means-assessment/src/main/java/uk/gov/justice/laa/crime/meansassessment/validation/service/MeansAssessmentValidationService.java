@@ -68,7 +68,7 @@ public class MeansAssessmentValidationService {
         return result;
     }
 
-    public boolean isRepIdPresentForCreateAssessment(final MeansAssessmentRequestDTO meansAssessmentRequest) {
+    public boolean validateRepIdPresent(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         return (meansAssessmentRequest.getRepId() != null && Integer.signum(meansAssessmentRequest.getRepId()) >= 0);
     }
 
