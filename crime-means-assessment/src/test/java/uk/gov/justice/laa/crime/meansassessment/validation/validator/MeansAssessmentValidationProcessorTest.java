@@ -61,7 +61,7 @@ public class MeansAssessmentValidationProcessorTest {
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
-        when(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(
+        when(meansAssessmentValidationService.validateRepIdPresent(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
@@ -128,7 +128,7 @@ public class MeansAssessmentValidationProcessorTest {
     @Test
     public void givenValidRequest_whenRepIdValidationFails_thenValidatorThrowsException() {
 
-        when(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(
+        when(meansAssessmentValidationService.validateRepIdPresent(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 

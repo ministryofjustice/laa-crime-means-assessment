@@ -68,20 +68,20 @@ public class MeansAssessmentValidationServiceTest {
     public void whenRepIdIsNull_thenFalseResultIsReturned() {
         MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         request.setRepId(null);
-        assertFalse(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(request));
+        assertFalse(meansAssessmentValidationService.validateRepIdPresent(request));
     }
 
     @Test
     public void whenRepIdIsNegative_thenFalseResultIsReturned() {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         requestDTO.setRepId(-1);
-        assertFalse(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(requestDTO));
+        assertFalse(meansAssessmentValidationService.validateRepIdPresent(requestDTO));
     }
 
     @Test
     public void whenRepIdIsValid_thenTrueResultIsReturned() {
         MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        assertTrue(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(request));
+        assertTrue(meansAssessmentValidationService.validateRepIdPresent(request));
     }
 
     @Test
