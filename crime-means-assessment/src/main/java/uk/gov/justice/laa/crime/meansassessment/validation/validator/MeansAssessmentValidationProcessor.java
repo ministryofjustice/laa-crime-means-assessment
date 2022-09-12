@@ -33,7 +33,7 @@ public class MeansAssessmentValidationProcessor {
 
     public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO) {
         log.info("Validating means assessment request : {}", requestDTO);
-        if (!meansAssessmentValidationService.isRepIdPresentForCreateAssessment(requestDTO)) {
+        if (!meansAssessmentValidationService.validateRepIdPresent(requestDTO)) {
             throw new ValidationException(MSG_REP_ID_REQUIRED);
         } else if (!meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT)) {
             throw new ValidationException(MSG_ROLE_ACTION_IS_NOT_VALID);
