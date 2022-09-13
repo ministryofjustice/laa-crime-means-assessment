@@ -40,6 +40,9 @@ public class MaatApiConfiguration {
     private FinancialAssessmentEndpoints financialAssessmentEndpoints;
 
     @NotNull
+    private RepOrderEndpoints repOrderEndpoints;
+
+    @NotNull
     private PassportAssessmentEndpoints passportAssessmentEndpoints;
 
     @NotNull
@@ -101,12 +104,22 @@ public class MaatApiConfiguration {
         @NotNull
         private String updateUrl;
 
-        @NotNull
-        private String dateCompletionUrl;
-
         public String getByRequestType(AssessmentRequestType requestType) {
             return (requestType.equals(AssessmentRequestType.CREATE)) ? createUrl : updateUrl;
         }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RepOrderEndpoints {
+
+        @NotNull
+        private String findUrl;
+
+        @NotNull
+        private String dateCompletionUrl;
     }
 
     @Getter

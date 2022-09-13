@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.common.Constants;
@@ -11,6 +12,8 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRe
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -52,7 +55,7 @@ public class MaatCourtDataService {
         maatCourtDataClient.getApiResponseViaPOST(
                 dateCompletionRequestDTO,
                 Void.class,
-                configuration.getFinancialAssessmentEndpoints().getDateCompletionUrl(),
+                configuration.getRepOrderEndpoints().getDateCompletionUrl(),
                 Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId)
         );
     }
@@ -96,6 +99,17 @@ public class MaatCourtDataService {
                 configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
                 Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 financialAssessmentId
+        );
+        log.info(String.format(RESPONSE_STRING, response));
+        return response;
+    }
+
+    public RepOrderDTO getRepOrder(Integer repId, String laaTransactionId) {
+        RepOrderDTO response = maatCourtDataClient.getApiResponseViaGET(
+                RepOrderDTO.class,
+                configuration.getRepOrderEndpoints().getFindUrl(),
+                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
+                repId
         );
         log.info(String.format(RESPONSE_STRING, response));
         return response;
