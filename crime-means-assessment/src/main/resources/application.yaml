@@ -29,8 +29,8 @@ maatApi:
     outstanding-assessments-url: ${maatApi.assessments-domain}/financial-assessments/check-outstanding/{repId}
   financial-assessment-endpoints:
     create-url: ${maatApi.assessments-domain}/financial-assessments/
+    update-url: ${maatApi.assessments-domain}/financial-assessments/
     search-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
-    update-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
   passport-assessment-endpoints:
     find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
   hardship-review-endpoints:

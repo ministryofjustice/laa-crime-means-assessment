@@ -49,13 +49,16 @@
     "userModified": {
       "type": "string",
       "description": "ID of the user that last modified the assessment"
+    },
+    "id": {
+      "type": "integer",
+      "description": "Financial assessment ID",
+      "javaName": "financialAssessmentId"
     }
   },
   "extends": {
     "$ref": "maatApiAssessmentRequest.json"
   },
   "additionalProperties": false,
-  "required": [
-    "userModified"
-  ]
+  "required": ["userModified"]
 }

@@ -68,15 +68,7 @@ public class MaatCourtDataAssessmentBuilderTest {
         });
     }
 
-    @Test
-    public void givenCreateRequestType_whenBuildAssessmentRequestIsInvoked_thenCreateFieldsArePopulated() {
-        MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.CREATE);
-
-        checkCommonFields(resultDto);
-        assertThat(resultDto.getChildWeightings())
-                .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
-
+    private void checkCreateFields(MaatApiAssessmentRequest resultDto) {
         Consumer<MaatApiCreateAssessment> createRequirements = createRequest -> {
             assertThat(createRequest.getUsn())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getUsn());
@@ -95,15 +87,7 @@ public class MaatCourtDataAssessmentBuilderTest {
         assertThat(resultDto).isInstanceOfSatisfying(MaatApiCreateAssessment.class, createRequirements);
     }
 
-    @Test
-    public void givenUpdateRequestType_whenBuildAssessmentRequestIsInvoked_thenUpdateFieldsArePopulated() {
-        MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);
-
-        checkCommonFields(resultDto);
-        assertThat(resultDto.getChildWeightings())
-                .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
-
+    private void checkUpdateFields(MaatApiAssessmentRequest resultDto) {
         Consumer<MaatApiUpdateAssessment> updateRequirements = updateRequest -> {
             assertThat(updateRequest.getFullAscrId())
                     .isEqualTo(assessmentDTO.getAssessmentCriteria().getId());
@@ -128,6 +112,28 @@ public class MaatCourtDataAssessmentBuilderTest {
         };
 
         assertThat(resultDto).isInstanceOfSatisfying(MaatApiUpdateAssessment.class, updateRequirements);
+    }
+
+    @Test
+    public void givenCreateRequestType_whenBuildAssessmentRequestIsInvoked_thenCreateFieldsArePopulated() {
+        MaatApiAssessmentRequest resultDto =
+                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.CREATE);
+
+        checkCommonFields(resultDto);
+        checkCreateFields(resultDto);
+        assertThat(resultDto.getChildWeightings())
+                .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
+    }
+
+    @Test
+    public void givenUpdateRequestType_whenBuildAssessmentRequestIsInvoked_thenUpdateFieldsArePopulated() {
+        MaatApiAssessmentRequest resultDto =
+                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);
+
+        checkCommonFields(resultDto);
+        checkUpdateFields(resultDto);
+        assertThat(resultDto.getChildWeightings())
+                .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
     }
 
     @Test
@@ -137,25 +143,9 @@ public class MaatCourtDataAssessmentBuilderTest {
                 requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.CREATE);
 
         checkCommonFields(resultDto);
+        checkCreateFields(resultDto);
         assertThat(resultDto.getChildWeightings())
                 .isNotEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
-
-        Consumer<MaatApiCreateAssessment> createRequirements = createRequest -> {
-            assertThat(createRequest.getUsn())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getUsn());
-            assertThat(createRequest.getRtCode())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getReviewType().getCode());
-            assertThat(createRequest.getNworCode())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getNewWorkReason().getCode());
-            assertThat(createRequest.getUserCreated())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
-            assertThat(createRequest.getIncomeUpliftRemoveDate())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getIncomeEvidenceSummary().getUpliftRemovedDate());
-            assertThat(createRequest.getIncomeUpliftApplyDate())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getIncomeEvidenceSummary().getUpliftAppliedDate());
-        };
-
-        assertThat(resultDto).isInstanceOfSatisfying(MaatApiCreateAssessment.class, createRequirements);
     }
 
     @Test
@@ -165,32 +155,8 @@ public class MaatCourtDataAssessmentBuilderTest {
                 requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);
 
         checkCommonFields(resultDto);
+        checkUpdateFields(resultDto);
         assertThat(resultDto.getChildWeightings())
                 .isNotEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
-
-        Consumer<MaatApiUpdateAssessment> updateRequirements = updateRequest -> {
-            assertThat(updateRequest.getFullAscrId())
-                    .isEqualTo(assessmentDTO.getAssessmentCriteria().getId());
-            assertThat(updateRequest.getFullAssessmentDate())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getFullAssessmentDate());
-            assertThat(updateRequest.getFullResult())
-                    .isEqualTo(assessmentDTO.getFullAssessmentResult().getResult());
-            assertThat(updateRequest.getFullResultReason())
-                    .isEqualTo(assessmentDTO.getFullAssessmentResult().getReason());
-            assertThat(updateRequest.getFullAssessmentNotes())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getFullAssessmentNotes());
-            assertThat(updateRequest.getFullAdjustedLivingAllowance())
-                    .isEqualTo(assessmentDTO.getAdjustedLivingAllowance());
-            assertThat(updateRequest.getFullTotalAnnualDisposableIncome())
-                    .isEqualTo(assessmentDTO.getTotalAnnualDisposableIncome());
-            assertThat(updateRequest.getFullOtherHousingNote())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getOtherHousingNote());
-            assertThat(updateRequest.getFullTotalAggregatedExpenses())
-                    .isEqualTo(assessmentDTO.getTotalAggregatedExpense());
-            assertThat(updateRequest.getUserModified())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
-        };
-
-        assertThat(resultDto).isInstanceOfSatisfying(MaatApiUpdateAssessment.class, updateRequirements);
     }
 }
