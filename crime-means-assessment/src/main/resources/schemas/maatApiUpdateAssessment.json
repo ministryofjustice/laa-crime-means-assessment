@@ -60,7 +60,5 @@
     "$ref": "maatApiAssessmentRequest.json"
   },
   "additionalProperties": false,
-  "required": [
-    "userModified"
-  ]
+  "required": ["userModified"]
 }
