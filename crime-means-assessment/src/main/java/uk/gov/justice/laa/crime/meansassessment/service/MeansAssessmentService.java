@@ -2,7 +2,6 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -27,7 +26,10 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Slf4j
@@ -178,21 +180,36 @@ public class MeansAssessmentService {
     }
 
     private void mapIncomeEvidence(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
-        List<ApiIncomeEvidenceSummary> apiIncomeEvidenceSummaryList = new ArrayList<>();
-        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidence();
-        if (!finAssIncomeEvidenceDTOList.isEmpty()) {
-            sortFinAssIncomeEvidenceSummary(finAssIncomeEvidenceDTOList);
-            finAssIncomeEvidenceDTOList.forEach(finAssIncomeEvidenceDTO -> {
-                if (StringUtils.isNotEmpty(finAssIncomeEvidenceDTO.getAdhoc())) {
+        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
-                }
+        if (!finAssIncomeEvidenceDTOList.isEmpty()) {
+
+            sortFinAssIncomeEvidenceSummary(finAssIncomeEvidenceDTOList);
+
+            List<ApiIncomeEvidence> apiIncomeEvidenceList = new ArrayList<>();
+            finAssIncomeEvidenceDTOList.forEach(finAssIncomeEvidenceDTO -> {
+                ApiIncomeEvidence apiIncomeEvidence = new ApiIncomeEvidence()
+                        .withId(finAssIncomeEvidenceDTO.getId())
+                        .withApplicantId(finAssIncomeEvidenceDTO.getApplicant().getId())
+                        .withAdhoc(finAssIncomeEvidenceDTO.getAdhoc())
+                        .withMandatory(finAssIncomeEvidenceDTO.getMandatory())
+                        .withOtherText(finAssIncomeEvidenceDTO.getOtherText())
+                        .withDateModified(finAssIncomeEvidenceDTO.getDateModified())
+                        .withDateReceived(finAssIncomeEvidenceDTO.getDateReceived())
+                        .withApiEvidenceType(new ApiEvidenceType()
+                                .withCode(finAssIncomeEvidenceDTO.getIncomeEvidence().getId())
+                                .withDescription(finAssIncomeEvidenceDTO.getIncomeEvidence().getDescription()));
+
+                apiIncomeEvidenceList.add(apiIncomeEvidence);
             });
+
+            assessmentResponse.getIncomeEvidenceSummary().setIncomeEvidence(apiIncomeEvidenceList);
         }
     }
 
     private void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
         sortListWithComparing(finAssIncomeEvidenceDTOList,
-                incomeEvidenceDTO -> incomeEvidenceDTO.getMandatory(), incomeEvidenceDTO -> incomeEvidenceDTO.getIncomeEvidence().getDescription());
+                FinAssIncomeEvidenceDTO::getMandatory, incomeEvidenceDTO -> incomeEvidenceDTO.getIncomeEvidence().getDescription());
     }
 
     protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
@@ -237,16 +254,11 @@ public class MeansAssessmentService {
         return assessmentDTOList;
     }
 
-
-    public void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-        sortListWithComparing(assessmentDTOList, assessmentDTO -> assessmentDTO.getSection(), assessmentDTO -> assessmentDTO.getSequence());
+    protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
+        sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence);
     }
 
-    protected <T, U extends Comparable> List<T> sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc) {
-        if (!t.isEmpty()) {
-            Collections.sort(t, Comparator.comparing(compFunction).thenComparing(thenCompFunc));
-        }
-        return t;
+    protected <T, U extends Comparable> void sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc) {
+        t.sort(Comparator.comparing(compFunction).thenComparing(thenCompFunc));
     }
-
 }

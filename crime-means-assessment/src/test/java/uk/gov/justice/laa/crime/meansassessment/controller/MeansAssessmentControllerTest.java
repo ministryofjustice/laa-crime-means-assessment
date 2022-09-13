@@ -69,9 +69,6 @@ public class MeansAssessmentControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private Environment env;
 
     @MockBean
