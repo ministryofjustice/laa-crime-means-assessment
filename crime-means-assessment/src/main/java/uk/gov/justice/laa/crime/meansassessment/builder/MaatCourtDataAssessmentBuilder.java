@@ -97,6 +97,7 @@ public class MaatCourtDataAssessmentBuilder {
                 .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
                 .withFullOtherHousingNote(meansAssessment.getOtherHousingNote())
                 .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense())
-                .withUserModified(meansAssessment.getUserSession().getUserName());
+                .withUserModified(meansAssessment.getUserSession().getUserName())
+                .withFinancialAssessmentId(meansAssessment.getFinancialAssessmentId());
     }
 }
