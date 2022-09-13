@@ -51,11 +51,10 @@ public class FinancialAssessmentDTO extends Assessment {
     private String userModified;
     private Integer usn;
     private String rtCode;
-    private FinancialRepOrderDTO repOrder;
     @Builder.Default
     private List<FinancialAssessmentDetails> assessmentDetails = new ArrayList<>();
     @Builder.Default
     private List<ChildWeightings> childWeightings = new ArrayList<>();
     @Builder.Default
-    private List<FinAssIncomeEvidenceDTO> finAssIncomeEvidence = new ArrayList<>();
+    private List<FinAssIncomeEvidenceDTO> finAssIncomeEvidences = new ArrayList<>();
 }

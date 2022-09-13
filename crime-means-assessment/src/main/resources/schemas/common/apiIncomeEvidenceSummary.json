@@ -23,6 +23,13 @@
     "incomeEvidenceNotes": {
       "type": "string",
       "description": "Income Evidence Notes"
+    },
+    "incomeEvidence": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "$ref": "apiIncomeEvidence.json"
+      }
     }
   },
   "additionalProperties": true
