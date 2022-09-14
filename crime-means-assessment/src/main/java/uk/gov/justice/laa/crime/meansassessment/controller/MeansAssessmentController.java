@@ -16,6 +16,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
 import javax.validation.Valid;
@@ -34,10 +35,10 @@ public class MeansAssessmentController {
     private final MeansAssessmentRequestDTOBuilder meansAssessmentRequestDTOBuilder;
     private final MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
-    private MeansAssessmentRequestDTO preProcessRequest(ApiMeansAssessmentRequest meansAssessment) {
+    private MeansAssessmentRequestDTO preProcessRequest(ApiMeansAssessmentRequest meansAssessment,AssessmentRequestType requestType) {
         MeansAssessmentRequestDTO requestDTO =
                 meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
-        meansAssessmentValidationProcessor.validate(requestDTO);
+        meansAssessmentValidationProcessor.validate(requestDTO, requestType);
         return requestDTO;
     }
 
@@ -67,7 +68,7 @@ public class MeansAssessmentController {
             )
     ) @Valid @RequestBody ApiCreateMeansAssessmentRequest meansAssessment) {
 
-        MeansAssessmentRequestDTO requestDTO = preProcessRequest(meansAssessment);
+        MeansAssessmentRequestDTO requestDTO = preProcessRequest(meansAssessment, CREATE);
         return ResponseEntity.ok(
                 meansAssessmentService.doAssessment(requestDTO, CREATE)
         );
@@ -99,7 +100,7 @@ public class MeansAssessmentController {
             )
     ) @Valid @RequestBody ApiUpdateMeansAssessmentRequest meansAssessment) {
 
-        MeansAssessmentRequestDTO requestDTO = preProcessRequest(meansAssessment);
+        MeansAssessmentRequestDTO requestDTO = preProcessRequest(meansAssessment, UPDATE);
         return ResponseEntity.ok(
                 meansAssessmentService.doAssessment(requestDTO, UPDATE)
         );
