@@ -214,8 +214,8 @@ public class MeansAssessmentService {
     }
 
     protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
-        reverseSortListWithComparing(finAssIncomeEvidenceDTOList,
-                FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence);
+        sortListWithComparing(finAssIncomeEvidenceDTOList,
+                FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence, getReverseComparator());
     }
 
     protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
@@ -261,14 +261,18 @@ public class MeansAssessmentService {
     }
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-        sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence);
+        sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, getComparator());
     }
 
-    protected <T, U extends Comparable> void sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc) {
-        t.sort(Comparator.comparing(compFunction).thenComparing(thenCompFunc));
+    protected <T, U extends Comparable> void sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc, Comparator<U> comparator) {
+        t.sort(Comparator.comparing(compFunction, comparator).thenComparing(thenCompFunc, comparator));
     }
 
-    protected <T, U extends Comparable> void reverseSortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc) {
-        t.sort(Comparator.comparing(compFunction, Comparator.reverseOrder()).thenComparing(thenCompFunc, Comparator.reverseOrder()));
+    private <U extends Comparable> Comparator<U> getComparator() {
+        return Comparator.naturalOrder();
+    }
+
+    private <U extends Comparable> Comparator<U> getReverseComparator() {
+        return Comparator.reverseOrder();
     }
 }
