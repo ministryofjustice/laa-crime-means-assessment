@@ -66,7 +66,7 @@ public class MeansAssessmentValidationProcessorTest {
         )).thenReturn(Boolean.TRUE);
 
         createMeansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        fullAssessment = MeansAssessmentRequestDTO.builder().assessmentType(AssessmentType.FULL).build();
+        fullAssessment = MeansAssessmentRequestDTO.builder().assessmentType(AssessmentType.FULL).repId(1000).build();
     }
 
     @Test
@@ -107,7 +107,6 @@ public class MeansAssessmentValidationProcessorTest {
 
     @Test
     public void givenInvalidNewWorkReason_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
-
         when(meansAssessmentValidationService.isNewWorkReasonValid(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
@@ -135,7 +134,6 @@ public class MeansAssessmentValidationProcessorTest {
 
     @Test
     public void givenInvalidRoleReservation_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
-
         when(meansAssessmentValidationService.isRepOrderReserved(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
@@ -147,7 +145,6 @@ public class MeansAssessmentValidationProcessorTest {
 
     @Test
     public void givenInvalidRoleAction_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
-
         when(meansAssessmentValidationService.isRoleActionValid(
                 any(MeansAssessmentRequestDTO.class), any(String.class))
         ).thenReturn(Boolean.FALSE);
@@ -159,10 +156,9 @@ public class MeansAssessmentValidationProcessorTest {
 
     @Test
     public void givenOutstandingAssessment_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
-
         when(meansAssessmentValidationService.isOutstandingAssessment(
                 any(MeansAssessmentRequestDTO.class))
-        ).thenReturn(Boolean.FALSE);
+        ).thenReturn(Boolean.TRUE);
 
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.CREATE));
