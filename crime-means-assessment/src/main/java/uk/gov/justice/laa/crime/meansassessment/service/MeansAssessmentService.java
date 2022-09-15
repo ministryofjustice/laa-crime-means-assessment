@@ -258,7 +258,7 @@ public class MeansAssessmentService {
         });
         return assessmentDTOList;
     }
-    
+
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
         SortUtils.sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator());
     }
