@@ -20,6 +20,7 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.IncomeEvidenceEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
@@ -47,6 +48,7 @@ public class MeansAssessmentService {
     private final AssessmentCompletionService assessmentCompletionService;
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
+    private final IncomeEvidenceService incomeEvidenceService;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -183,9 +185,7 @@ public class MeansAssessmentService {
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
         if (!finAssIncomeEvidenceDTOList.isEmpty()) {
-
             sortFinAssIncomeEvidenceSummary(finAssIncomeEvidenceDTOList);
-
             List<ApiIncomeEvidence> apiIncomeEvidenceList = new ArrayList<>();
             finAssIncomeEvidenceDTOList.forEach(finAssIncomeEvidenceDTO -> {
                 ApiIncomeEvidence apiIncomeEvidence = new ApiIncomeEvidence()
@@ -196,20 +196,26 @@ public class MeansAssessmentService {
                         .withOtherText(finAssIncomeEvidenceDTO.getOtherText())
                         .withDateModified(finAssIncomeEvidenceDTO.getDateModified())
                         .withDateReceived(finAssIncomeEvidenceDTO.getDateReceived())
-                        .withApiEvidenceType(new ApiEvidenceType()
-                                .withCode(finAssIncomeEvidenceDTO.getIncomeEvidence().getId())
-                                .withDescription(finAssIncomeEvidenceDTO.getIncomeEvidence().getDescription()));
-
+                        .withApiEvidenceType(getEvidenceType(finAssIncomeEvidenceDTO.getIncomeEvidence()));
                 apiIncomeEvidenceList.add(apiIncomeEvidence);
             });
-
             assessmentResponse.getIncomeEvidenceSummary().setIncomeEvidence(apiIncomeEvidenceList);
         }
     }
 
-    private void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
-        sortListWithComparing(finAssIncomeEvidenceDTOList,
-                FinAssIncomeEvidenceDTO::getMandatory, incomeEvidenceDTO -> incomeEvidenceDTO.getIncomeEvidence().getDescription());
+    private ApiEvidenceType getEvidenceType(String evidence) {
+        ApiEvidenceType apiEvidenceType = new ApiEvidenceType().withCode(evidence);
+        Optional<IncomeEvidenceEntity> incomeEvidenceEntityOptional = incomeEvidenceService
+                .getIncomeEvidenceById(evidence);
+        incomeEvidenceEntityOptional.ifPresent(incomeEvidenceEntity ->
+                apiEvidenceType.setDescription(incomeEvidenceEntity.getDescription())
+        );
+        return apiEvidenceType;
+    }
+
+    protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
+        reverseSortListWithComparing(finAssIncomeEvidenceDTOList,
+                FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence);
     }
 
     protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
@@ -260,5 +266,9 @@ public class MeansAssessmentService {
 
     protected <T, U extends Comparable> void sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc) {
         t.sort(Comparator.comparing(compFunction).thenComparing(thenCompFunc));
+    }
+
+    protected <T, U extends Comparable> void reverseSortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc) {
+        t.sort(Comparator.comparing(compFunction, Comparator.reverseOrder()).thenComparing(thenCompFunc, Comparator.reverseOrder()));
     }
 }

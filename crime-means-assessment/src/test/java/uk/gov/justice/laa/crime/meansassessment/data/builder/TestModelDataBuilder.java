@@ -5,13 +5,9 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.ChildWeightings;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
@@ -740,5 +736,22 @@ public class TestModelDataBuilder {
         RepOrderDTO repOrderDTO = getRepOrderDTO();
         repOrderDTO.setFinancialAssessments(financialAssessments);
         return repOrderDTO;
+    }
+
+    public static FinAssIncomeEvidenceDTO getFinAssIncomeEvidenceDTO(String mandatory, String evidence) {
+        return FinAssIncomeEvidenceDTO.builder()
+                .incomeEvidence(evidence)
+                .mandatory(mandatory)
+                .adhoc("Y")
+                .dateModified(LocalDateTime.now())
+                .id(1234)
+                .dateCreated(LocalDateTime.now())
+                .dateReceived(LocalDateTime.now())
+                .removedDate(LocalDate.now())
+                .active("Y")
+                .otherText("Other")
+                .userCreated(TEST_USER)
+                .applicant(new ApplicantDTO().builder().id(12).build())
+                .build();
     }
 }

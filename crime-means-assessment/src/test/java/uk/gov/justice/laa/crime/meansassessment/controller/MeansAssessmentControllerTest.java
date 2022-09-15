@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,7 +27,6 @@ import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
@@ -219,16 +217,19 @@ public class MeansAssessmentControllerTest {
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", false))
                 .andExpect(status().isUnauthorized());
     }
+
     @Test
     public void getOldAssessment_Unauthorized_NoAccessToken() throws Exception {
         mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, false))
                 .andExpect(status().isUnauthorized());
     }
+
     @Test
     public void givenInvalidPram_whenGetOldAssessmentInvoked_shouldFailBadRequest() throws Exception {
         mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, true))
                 .andExpect(status().is4xxClientError());
     }
+
     @Test
     public void givenValidPram_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
         when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(new ApiMeansAssessmentResponse());
