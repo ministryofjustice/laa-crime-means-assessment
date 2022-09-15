@@ -45,7 +45,7 @@ public class MeansAssessmentValidationProcessor {
         if (AssessmentRequestType.CREATE.equals(requestType)) {
             if (!meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)) {
                 throw new ValidationException(MSG_NEW_WORK_REASON_IS_NOT_VALID);
-            } else if (!meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
+            } else if (meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
                 throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
             }
         }
