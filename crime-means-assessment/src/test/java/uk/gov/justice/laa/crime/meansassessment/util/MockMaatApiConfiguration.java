@@ -25,6 +25,12 @@ public class MockMaatApiConfiguration {
                         "/rep-orders",
                         "/rep-orders/update-date-completed"
                 );
+        MaatApiConfiguration.ValidationEndpoints validationEndpoints = new MaatApiConfiguration.ValidationEndpoints(
+                "/authorization/users/{username}/actions/{action}",
+                "/authorization/users/{username}/work-reasons/{nworCode}",
+                "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}",
+                "/financial-assessments/check-outstanding/{repId}"
+        );
         configuration.setBaseUrl(
                 String.format("http://localhost:%s", port)
         );
@@ -34,6 +40,7 @@ public class MockMaatApiConfiguration {
         configuration.setHardshipReviewEndpoints(hardshipEndpoints);
         configuration.setPassportAssessmentEndpoints(passportEndpoints);
         configuration.setRepOrderEndpoints(repOrderEndpoints);
+        configuration.setValidationEndpoints(validationEndpoints);
         configuration.setFinancialAssessmentEndpoints(financialAssessmentEndpoints);
 
         return configuration;
