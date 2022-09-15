@@ -24,6 +24,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.IncomeEvidence
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
+import uk.gov.justice.laa.crime.meansassessment.util.SortUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -214,8 +215,8 @@ public class MeansAssessmentService {
     }
 
     protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
-        sortListWithComparing(finAssIncomeEvidenceDTOList,
-                FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence, getReverseComparator());
+        SortUtils.sortListWithComparing(finAssIncomeEvidenceDTOList,
+                FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence, SortUtils.getReverseComparator());
     }
 
     protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
@@ -260,19 +261,7 @@ public class MeansAssessmentService {
         return assessmentDTOList;
     }
 
-    protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-        sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, getComparator());
-    }
-
-    protected <T, U extends Comparable> void sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc, Comparator<U> comparator) {
-        t.sort(Comparator.comparing(compFunction, comparator).thenComparing(thenCompFunc, comparator));
-    }
-
-    private <U extends Comparable> Comparator<U> getComparator() {
-        return Comparator.naturalOrder();
-    }
-
-    private <U extends Comparable> Comparator<U> getReverseComparator() {
-        return Comparator.reverseOrder();
+    public static void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
+        SortUtils.sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator());
     }
 }
