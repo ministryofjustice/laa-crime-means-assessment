@@ -72,10 +72,10 @@ public class MeansAssessmentServiceTest {
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
     @Mock
     private AssessmentCriteriaDetailService assessmentCriteriaDetailService;
-
     @Mock
     private MeansAssessmentSectionSummaryBuilder meansAssessmentSectionSummaryBuilder;
-
+    @Mock
+    private IncomeEvidenceService incomeEvidenceService;
 
     @Before
     public void setup() {
@@ -487,4 +487,31 @@ public class MeansAssessmentServiceTest {
 
     }
 
+    @Test
+    public void givenEmptyFinAssIncomeEvidence_whenMapIncomeEvidenceInvoked_thenResponseIsPopulatedWithEmptyIncomeEvidenceList() {
+        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse()
+                .withIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
+        meansAssessmentService.mapIncomeEvidence(apiMeansAssessmentResponse, TestModelDataBuilder
+                .getFinancialAssessmentDTOWithDetails());
+        assertThat(true).isEqualTo(apiMeansAssessmentResponse.getIncomeEvidenceSummary().getIncomeEvidence().isEmpty());
+    }
+
+    @Test
+    public void givenIncomeEvidences_whenMapIncomeEvidenceInvoked_thenResponseIsPopulatedWithIncomeEvidenceList() {
+        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse()
+                .withIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
+        doReturn(Optional.of(TestModelDataBuilder.getIncomeEvidenceEntity()))
+                .when(incomeEvidenceService).getIncomeEvidenceById(any());
+        meansAssessmentService.mapIncomeEvidence(apiMeansAssessmentResponse, TestModelDataBuilder
+                .getFinancialAssessmentDTOWithIncomeEvidence());
+        assertThat(1).isEqualTo(apiMeansAssessmentResponse.getIncomeEvidenceSummary().getIncomeEvidence().size());
+    }
+
+    @Test
+    public void givenInvalidEvidence_whenGetEvidenceTypeInvoked_thenEvidenceDescriptionIsNull() {
+        String evidence = "NONE";
+        ApiEvidenceType apiEvidenceType = meansAssessmentService.getEvidenceType(evidence);
+        assertThat(evidence).isEqualTo(apiEvidenceType.getCode());
+        assertThat(apiEvidenceType.getDescription()).isNull();
+    }
 }
