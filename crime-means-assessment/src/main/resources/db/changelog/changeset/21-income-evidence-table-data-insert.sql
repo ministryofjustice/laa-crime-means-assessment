@@ -1,4 +1,5 @@
 --liquibase formatted sql
+--changeset muthus:21-income-evidence-table-insert
 Insert into crime_means_assessment.income_evidence (EVIDENCE,DESCRIPTION,DATE_CREATED,USER_CREATED,DATE_MODIFIED,USER_MODIFIED,LETTER_DESCRIPTION,WELSH_LETTER_DESCRIPTION,ADHOC) values ('SIGNATURE','Signature',to_timestamp('20-DEC-10 20.23.24.644928000','DD-MON-RR HH24.MI.SSXFF'),'crime_means_assessment',null,null,'Signature','Llofnod','N');
 Insert into crime_means_assessment.income_evidence (EVIDENCE,DESCRIPTION,DATE_CREATED,USER_CREATED,DATE_MODIFIED,USER_MODIFIED,LETTER_DESCRIPTION,WELSH_LETTER_DESCRIPTION,ADHOC) values ('CDS15','CDS 15',to_timestamp('29-FEB-12 17.10.04.000000000','DD-MON-RR HH24.MI.SSXFF'),'TASK343',null,null,'CDS 15','CDS 15','Y');
 Insert into crime_means_assessment.income_evidence (EVIDENCE,DESCRIPTION,DATE_CREATED,USER_CREATED,DATE_MODIFIED,USER_MODIFIED,LETTER_DESCRIPTION,WELSH_LETTER_DESCRIPTION,ADHOC) values ('FREEZING','Freezing order',to_timestamp('29-FEB-12 17.10.04.000000000','DD-MON-RR HH24.MI.SSXFF'),'TASK343',null,null,'Freezing order','Gorchymyn Rhewi','Y');
