@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
-public class SortUtils {
+public final class SortUtils {
 
     private SortUtils() {
         throw new IllegalStateException("Utility class");
