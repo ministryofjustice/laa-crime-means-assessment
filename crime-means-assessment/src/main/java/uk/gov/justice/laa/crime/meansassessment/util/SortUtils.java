@@ -1,7 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.util;
 
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
