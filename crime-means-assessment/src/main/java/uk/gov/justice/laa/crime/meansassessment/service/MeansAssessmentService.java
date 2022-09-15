@@ -29,10 +29,8 @@ import uk.gov.justice.laa.crime.meansassessment.util.SortUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -182,7 +180,7 @@ public class MeansAssessmentService {
         return assessmentResponse;
     }
 
-    private void mapIncomeEvidence(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapIncomeEvidence(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
         if (!finAssIncomeEvidenceDTOList.isEmpty()) {
@@ -204,7 +202,7 @@ public class MeansAssessmentService {
         }
     }
 
-    private ApiEvidenceType getEvidenceType(String evidence) {
+    protected ApiEvidenceType getEvidenceType(String evidence) {
         ApiEvidenceType apiEvidenceType = new ApiEvidenceType().withCode(evidence);
         Optional<IncomeEvidenceEntity> incomeEvidenceEntityOptional = incomeEvidenceService
                 .getIncomeEvidenceById(evidence);
@@ -260,8 +258,8 @@ public class MeansAssessmentService {
         });
         return assessmentDTOList;
     }
-
-    public static void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
+    
+    protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
         SortUtils.sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator());
     }
 }
