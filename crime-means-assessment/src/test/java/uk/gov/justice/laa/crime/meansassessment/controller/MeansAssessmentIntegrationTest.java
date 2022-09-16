@@ -25,18 +25,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
 
 import java.util.HashMap;
 
@@ -88,9 +85,6 @@ public class MeansAssessmentIntegrationTest {
     @MockBean
     private CrownCourtEligibilityService crownCourtEligibilityService;
 
-    @MockBean
-    private MeansAssessmentValidationService meansAssessmentValidationService;
-
     private final WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
     private final WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
     private final WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
@@ -136,16 +130,18 @@ public class MeansAssessmentIntegrationTest {
     }
 
     private void setUpWebClientMock() {
-
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
-        OutstandingAssessmentResultDTO outstandingAssessmentResultDTO = getOutstandingAssessmentResultDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(any(String.class), any(HashMap.class));
         doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(any(String.class), any(HashMap.class));
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-        when(responseSpec.bodyToMono(OutstandingAssessmentResultDTO.class)).thenReturn(Mono.just(outstandingAssessmentResultDTO));
 
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(getAuthorizationResponseDTO(true));
+
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(getOutstandingAssessmentResultDTO(false));
     }
 
     @Test
@@ -175,7 +171,7 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAValidCreateMeansAssessmentRequest_whenMatCourtApiCallFails_ShouldFailsCreateMeanAssessment() throws Exception {
+    public void givenAValidCreateMeansAssessmentRequest_whenMaatCourtApiCallFails_ShouldFailsCreateMeanAssessment() throws Exception {
         var initialMeansAssessmentRequest =
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
@@ -186,7 +182,6 @@ public class MeansAssessmentIntegrationTest {
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().is5xxServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPOST(any(), any(), any(), any());
     }
 
     @Test
@@ -218,24 +213,6 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAInvalidWorkReason_whenCreateAssessmentInvoked_ShouldFailsValidation() throws Exception {
-
-        setUpWebClientMock();
-        var createAssessmentRequest =
-                TestModelDataBuilder.getApiCreateMeansAssessmentRequest(IS_VALID);
-        var createAssessmentRequestJson = objectMapper.writeValueAsString(createAssessmentRequest);
-
-        when(meansAssessmentValidationService.isNewWorkReasonValid(any(MeansAssessmentRequestDTO.class)))
-                .thenReturn(Boolean.FALSE);
-
-        MvcResult result = mvc.perform(buildRequestGivenContent(HttpMethod.POST, createAssessmentRequestJson))
-                .andExpect(status().is4xxClientError())
-                .andReturn();
-        assertErrorScenario("New work reason is not valid", result);
-
-    }
-
-    @Test
     public void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ShouldSuccess() throws Exception {
 
         var updateAssessmentRequest =
@@ -257,6 +234,4 @@ public class MeansAssessmentIntegrationTest {
         assertThat(result.getResponse().getContentAsString())
                 .isEqualTo(objectMapper.writeValueAsString(expectedError));
     }
-
-
 }
