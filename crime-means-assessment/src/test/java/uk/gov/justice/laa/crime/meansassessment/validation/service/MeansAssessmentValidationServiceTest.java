@@ -59,7 +59,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenInvalidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenFalseIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(AuthorizationResponseDTO.class), anyString(), any(), anyMap()
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
         )).thenReturn(FALSE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
     }
@@ -67,7 +67,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenValidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenTrueIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(AuthorizationResponseDTO.class), anyString(), any(), anyMap()
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
         )).thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isTrue();
     }
@@ -92,7 +92,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenInvalidRoleAction_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(AuthorizationResponseDTO.class), anyString(), any(), anyMap()
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
         )).thenReturn(FALSE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isFalse();
     }
@@ -100,7 +100,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenValidRoleAction_whenIsRoleActionValidIsInvoked_thenTrueIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(AuthorizationResponseDTO.class), anyString(), any(), anyMap()
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
         )).thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isTrue();
     }
@@ -108,7 +108,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenValidReservation_whenIsRepOrderReserved_thenTrueIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(AuthorizationResponseDTO.class), anyString(), any(), anyMap()
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
         )).thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isTrue();
     }
@@ -116,7 +116,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenInvalidReservation_whenIsRepOrderReserved_thenFalseIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(AuthorizationResponseDTO.class), anyString(), any(), anyMap()
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
         )).thenReturn(FALSE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
     }
@@ -142,7 +142,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenAnOutstandingAssessment_whenIsOutstandingAssessmentIsInvoked_thenTrueIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(OutstandingAssessmentResultDTO.class), anyString(), any(), anyMap()
+                eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any()
         )).thenReturn(IS_OUTSTANDING_ASSESSMENT);
         assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isTrue();
     }
@@ -150,7 +150,7 @@ public class MeansAssessmentValidationServiceTest {
     @Test
     public void givenNoOutstandingAssessments_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
         when(maatCourtDataClient.getApiResponseViaGET(
-                eq(OutstandingAssessmentResultDTO.class), anyString(), any(), anyMap()
+                eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any()
         )).thenReturn(NO_OUTSTANDING_ASSESSMENT);
         assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
     }

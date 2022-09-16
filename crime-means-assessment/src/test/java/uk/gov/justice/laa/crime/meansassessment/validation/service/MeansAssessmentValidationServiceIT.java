@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
+import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
@@ -19,6 +20,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.util.MaatWebClientIntegrationTestUtil;
+import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import java.io.IOException;
 
@@ -47,18 +49,11 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
     @Before
     public void initialize() throws IOException {
         startMockWebServer();
-        configuration = new MaatApiConfiguration();
-        configuration.setBaseUrl(String.format("http://localhost:%s", mockMaatCourtDataApi.getPort()));
-        MaatApiConfiguration.ValidationEndpoints validationEndpoints = new MaatApiConfiguration.ValidationEndpoints(
-                "/authorization/users/{username}/actions/{action}",
-                "/authorization/users/{username}/work-reasons/{nworCode}",
-                "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}",
-                "/financial-assessments/check-outstanding/{repId}"
-        );
-        configuration.setValidationEndpoints(validationEndpoints);
+        configuration = MockMaatApiConfiguration.getConfiguration(mockMaatCourtDataApi.getPort());
         RetryConfiguration retryConfiguration = generateRetryConfiguration(maxRetries, 1, 0.5);
         WebClient maatWebClient = buildWebClient(configuration, retryConfiguration, clientRegistrationRepository, authorizedClients);
-        meansAssessmentValidationService = new MeansAssessmentValidationService(maatWebClient, configuration);
+        MaatCourtDataClient courtDataClient = new MaatCourtDataClient(maatWebClient);
+        meansAssessmentValidationService = new MeansAssessmentValidationService(configuration, courtDataClient);
     }
 
     @After
@@ -71,7 +66,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         requestDTO.setNewWorkReason(null);
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
+            boolean result = meansAssessmentValidationService.isNewWorkReasonValid(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,7 +82,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
+            boolean result = meansAssessmentValidationService.isNewWorkReasonValid(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,7 +102,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(request);
+            boolean result = meansAssessmentValidationService.isNewWorkReasonValid(request);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +122,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, maxRetries - 1);
 
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(request);
+            boolean result = meansAssessmentValidationService.isNewWorkReasonValid(request);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -144,7 +139,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         APIClientException error = assertThrows(
                 APIClientException.class,
-                () -> meansAssessmentValidationService.validateNewWorkReason(request)
+                () -> meansAssessmentValidationService.isNewWorkReasonValid(request)
         );
         validateRetryErrorResponse(error, maxRetries);
     }
@@ -155,7 +150,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         requestDTO.getUserSession().setUserName(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
+            boolean result = meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -171,7 +166,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
+            boolean result = meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,7 +186,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
+            boolean result = meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -210,7 +205,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         requestDTO.setRepId(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
+            boolean result = meansAssessmentValidationService.isRepOrderReserved(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,7 +221,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
+            boolean result = meansAssessmentValidationService.isRepOrderReserved(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -246,7 +241,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
+            boolean result = meansAssessmentValidationService.isRepOrderReserved(requestDTO);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -266,7 +261,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, maxRetries - 1);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
+            boolean result = meansAssessmentValidationService.isRepOrderReserved(requestDTO);
             assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -283,7 +278,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         APIClientException error = assertThrows(
                 APIClientException.class,
-                () -> meansAssessmentValidationService.validateRoleReservation(requestDTO)
+                () -> meansAssessmentValidationService.isRepOrderReserved(requestDTO)
         );
         validateRetryErrorResponse(error, maxRetries);
     }
@@ -294,7 +289,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         requestDTO.setRepId(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
+            boolean result = meansAssessmentValidationService.isOutstandingAssessment(requestDTO);
             assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -304,14 +299,14 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreFound_thenFalseResultIsReturned() throws Exception {
+    public void whenOutstandingAssessmentsAreFound_thenTrueResultIsReturned() throws Exception {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(true);
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertFalse(result);
+            boolean result = meansAssessmentValidationService.isOutstandingAssessment(requestDTO);
+            assertTrue(result);
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
@@ -324,14 +319,14 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreNotFound_thenTrueResultIsReturned() throws Exception {
+    public void whenOutstandingAssessmentsAreNotFound_thenFalseResultIsReturned() throws Exception {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertTrue(result);
+            boolean result = meansAssessmentValidationService.isOutstandingAssessment(requestDTO);
+            assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
@@ -350,8 +345,8 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, maxRetries - 1);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertTrue(result);
+            boolean result = meansAssessmentValidationService.isOutstandingAssessment(requestDTO);
+            assertFalse(result);
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
@@ -367,7 +362,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
 
         APIClientException error = assertThrows(
                 APIClientException.class,
-                () -> meansAssessmentValidationService.validateOutstandingAssessments(requestDTO)
+                () -> meansAssessmentValidationService.isOutstandingAssessment(requestDTO)
         );
         validateRetryErrorResponse(error, maxRetries);
     }
