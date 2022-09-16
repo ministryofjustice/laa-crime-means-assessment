@@ -11,9 +11,9 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 
-import java.util.HashMap;
+import java.util.Map;
 
-import static uk.gov.justice.laa.crime.meansassessment.common.Constants.*;
+import static uk.gov.justice.laa.crime.meansassessment.common.Constants.LAA_TRANSACTION_ID;
 
 /**
  * This service provides methods for validation of means assessment requests
@@ -33,11 +33,12 @@ public class MeansAssessmentValidationService {
 
     public boolean isRoleActionValid(final MeansAssessmentRequestDTO meansAssessmentRequest, String action) {
         if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest)) && StringUtils.isNotBlank(action)) {
-            HashMap<String, Object> uriVariables = new HashMap<>();
-            uriVariables.put(URIVAR_USERNAME, getUserIdFromRequest(meansAssessmentRequest));
-            uriVariables.put(URIVAR_ACTION, action);
             AuthorizationResponseDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    AuthorizationResponseDTO.class, configuration.getValidationEndpoints().getRoleActionUrl(), null, uriVariables
+                    AuthorizationResponseDTO.class,
+                    configuration.getValidationEndpoints().getRoleActionUrl(),
+                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
+                    getUserIdFromRequest(meansAssessmentRequest),
+                    action
             );
             return apiResponse.isResult();
         }
@@ -46,11 +47,12 @@ public class MeansAssessmentValidationService {
 
     public boolean isNewWorkReasonValid(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         if (meansAssessmentRequest.getNewWorkReason() != null) {
-            HashMap<String, Object> uriVariables = new HashMap<>();
-            uriVariables.put(URIVAR_USERNAME, getUserIdFromRequest(meansAssessmentRequest));
-            uriVariables.put(URIVAR_NWOR_CODE, meansAssessmentRequest.getNewWorkReason().getCode());
             AuthorizationResponseDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    AuthorizationResponseDTO.class, configuration.getValidationEndpoints().getNewWorkReasonUrl(), null, uriVariables
+                    AuthorizationResponseDTO.class,
+                    configuration.getValidationEndpoints().getNewWorkReasonUrl(),
+                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
+                    getUserIdFromRequest(meansAssessmentRequest),
+                    meansAssessmentRequest.getNewWorkReason().getCode()
             );
             return apiResponse.isResult();
         }
@@ -59,10 +61,11 @@ public class MeansAssessmentValidationService {
 
     public boolean isOutstandingAssessment(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         if (meansAssessmentRequest.getRepId() != null) {
-            HashMap<String, Object> uriVariables = new HashMap<>();
-            uriVariables.put(URIVAR_REP_ID, meansAssessmentRequest.getRepId());
             OutstandingAssessmentResultDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    OutstandingAssessmentResultDTO.class, configuration.getValidationEndpoints().getOutstandingAssessmentsUrl(), null, uriVariables
+                    OutstandingAssessmentResultDTO.class,
+                    configuration.getValidationEndpoints().getOutstandingAssessmentsUrl(),
+                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
+                    meansAssessmentRequest.getRepId()
             );
             return apiResponse.isOutstandingAssessments();
         }
@@ -73,13 +76,13 @@ public class MeansAssessmentValidationService {
         if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest))
                 && StringUtils.isNotBlank(meansAssessmentRequest.getUserSession().getSessionId())
                 && meansAssessmentRequest.getRepId() != null) {
-
-            HashMap<String, Object> uriVariables = new HashMap<>();
-            uriVariables.put(URIVAR_USERNAME, getUserIdFromRequest(meansAssessmentRequest));
-            uriVariables.put(URIVAR_RESERVATION_ID, meansAssessmentRequest.getRepId());
-            uriVariables.put(URIVAR_SESSION_ID, meansAssessmentRequest.getUserSession().getSessionId());
             AuthorizationResponseDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    AuthorizationResponseDTO.class, configuration.getValidationEndpoints().getReservationsUrl(), null, uriVariables
+                    AuthorizationResponseDTO.class,
+                    configuration.getValidationEndpoints().getReservationsUrl(),
+                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
+                    getUserIdFromRequest(meansAssessmentRequest),
+                    meansAssessmentRequest.getRepId(),
+                    meansAssessmentRequest.getUserSession().getSessionId()
             );
             return apiResponse.isResult();
         }
