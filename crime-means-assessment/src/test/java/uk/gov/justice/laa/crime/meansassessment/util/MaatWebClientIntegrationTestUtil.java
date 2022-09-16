@@ -10,19 +10,21 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiOAuth2Client;
 import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 
 import java.io.IOException;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpResponseStatus.SERVICE_UNAVAILABLE;
-import static org.junit.Assert.assertEquals;
 
 public abstract class MaatWebClientIntegrationTestUtil {
 
     public static MockWebServer mockMaatCourtDataApi;
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    public static final String INVALID_RESPONSE_ERROR_MSG = "Call to Court Data API failed, invalid response.";
+    public static final String SERVICE_UNAVAILABLE_ERROR_MSG = "503 Received error 503 due to Service Unavailable";
+    public static final String RETRIES_EXHAUSTED_ERROR_MSG = "Call to Court Data API failed. Retries exhausted: %d/%d.";
 
     protected void startMockWebServer() throws IOException {
         mockMaatCourtDataApi = new MockWebServer();
@@ -75,12 +77,7 @@ public abstract class MaatWebClientIntegrationTestUtil {
         mockMaatCourtDataApi.enqueue(new MockResponse().setResponseCode(NOT_FOUND.code()));
     }
 
-    protected void validateInvalidResponseError(APIClientException error) {
-        assertEquals("Call to Court Data API failed, invalid response.", error.getMessage());
-    }
-
-    protected void validateRetryErrorResponse(APIClientException error, Integer maxRetries) {
-        assertEquals(String.format("Call to Court Data API failed. Retries exhausted: %d/%d.", maxRetries, maxRetries), error.getMessage());
-        assertEquals("503 Received error 503 due to Service Unavailable", error.getCause().getLocalizedMessage());
+    protected String getRetryErrorResponse(int maxRetries) {
+        return String.format(RETRIES_EXHAUSTED_ERROR_MSG, maxRetries, maxRetries);
     }
 }
