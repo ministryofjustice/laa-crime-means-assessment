@@ -73,7 +73,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(0);
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
@@ -162,7 +162,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(0);
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
@@ -224,7 +224,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(0);
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
@@ -316,7 +316,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(0);
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
