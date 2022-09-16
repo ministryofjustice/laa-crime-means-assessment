@@ -24,10 +24,10 @@ import javax.validation.Valid;
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType.CREATE;
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType.UPDATE;
 
-@RestController
-@RequestMapping("api/internal/v1/assessment/means")
 @Slf4j
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("api/internal/v1/assessment/means")
 @Tag(name = "Means Assessment", description = "Rest API for Means Assessment.")
 public class MeansAssessmentController {
 
@@ -44,7 +44,7 @@ public class MeansAssessmentController {
 
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "This endpoint creates an initial means assessment")
+    @Operation(description = "Create an initial means assessment")
     @ApiResponse(responseCode = "200",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
@@ -76,7 +76,7 @@ public class MeansAssessmentController {
 
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "This endpoint updates an initial means assessment or converts it to a full one")
+    @Operation(description = "Update a means assessment")
     @ApiResponse(responseCode = "200",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
@@ -107,7 +107,7 @@ public class MeansAssessmentController {
     }
 
     @GetMapping(value = "/{financialAssessmentId}/{laaTransactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "Retrieve an old financial assessment record")
+    @Operation(description = "Retrieve an old means assessment")
     @ApiResponse(responseCode = "200",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
@@ -125,8 +125,9 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ErrorDTO.class)
             )
     )
-    public ResponseEntity<ApiMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId, @PathVariable String laaTransactionId) {
-        log.info("Get old Financial Assessment Request Received");
+    public ResponseEntity<ApiMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId,
+                                                                       @PathVariable String laaTransactionId) {
+        log.info("Get old means assessment request received");
         return ResponseEntity.ok(meansAssessmentService.getOldAssessment(financialAssessmentId, laaTransactionId));
     }
 }
