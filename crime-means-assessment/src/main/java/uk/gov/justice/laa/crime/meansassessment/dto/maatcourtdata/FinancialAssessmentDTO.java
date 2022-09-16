@@ -55,4 +55,6 @@ public class FinancialAssessmentDTO extends Assessment {
     private List<FinancialAssessmentDetails> assessmentDetails = new ArrayList<>();
     @Builder.Default
     private List<ChildWeightings> childWeightings = new ArrayList<>();
+    @Builder.Default
+    private List<FinAssIncomeEvidenceDTO> finAssIncomeEvidences = new ArrayList<>();
 }
