@@ -11,6 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
@@ -19,14 +20,15 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.IncomeEvidenceEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
+import uk.gov.justice.laa.crime.meansassessment.util.SortUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +47,7 @@ public class MeansAssessmentService {
     private final AssessmentCompletionService assessmentCompletionService;
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
+    private final IncomeEvidenceService incomeEvidenceService;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -170,13 +173,51 @@ public class MeansAssessmentService {
         if (null != financialAssessmentDTO) {
             assessmentResponse = new ApiMeansAssessmentResponse();
             getAssessmentSectionSummary(financialAssessmentDTO);
-            getChildWeightings(assessmentResponse, financialAssessmentDTO);
+            mapChildWeightings(assessmentResponse, financialAssessmentDTO);
+            mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
         }
         log.info("Processing get old assessment request - End");
         return assessmentResponse;
     }
 
-    protected void getChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapIncomeEvidence(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
+
+        if (!finAssIncomeEvidenceDTOList.isEmpty()) {
+            sortFinAssIncomeEvidenceSummary(finAssIncomeEvidenceDTOList);
+            List<ApiIncomeEvidence> apiIncomeEvidenceList = new ArrayList<>();
+            finAssIncomeEvidenceDTOList.forEach(finAssIncomeEvidenceDTO -> {
+                ApiIncomeEvidence apiIncomeEvidence = new ApiIncomeEvidence()
+                        .withId(finAssIncomeEvidenceDTO.getId())
+                        .withApplicantId(finAssIncomeEvidenceDTO.getApplicant().getId())
+                        .withAdhoc(finAssIncomeEvidenceDTO.getAdhoc())
+                        .withMandatory(finAssIncomeEvidenceDTO.getMandatory())
+                        .withOtherText(finAssIncomeEvidenceDTO.getOtherText())
+                        .withDateModified(finAssIncomeEvidenceDTO.getDateModified())
+                        .withDateReceived(finAssIncomeEvidenceDTO.getDateReceived())
+                        .withApiEvidenceType(getEvidenceType(finAssIncomeEvidenceDTO.getIncomeEvidence()));
+                apiIncomeEvidenceList.add(apiIncomeEvidence);
+            });
+            assessmentResponse.getIncomeEvidenceSummary().setIncomeEvidence(apiIncomeEvidenceList);
+        }
+    }
+
+    protected ApiEvidenceType getEvidenceType(String evidence) {
+        ApiEvidenceType apiEvidenceType = new ApiEvidenceType().withCode(evidence);
+        Optional<IncomeEvidenceEntity> incomeEvidenceEntityOptional = incomeEvidenceService
+                .getIncomeEvidenceById(evidence);
+        incomeEvidenceEntityOptional.ifPresent(incomeEvidenceEntity ->
+                apiEvidenceType.setDescription(incomeEvidenceEntity.getDescription())
+        );
+        return apiEvidenceType;
+    }
+
+    protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
+        SortUtils.sortListWithComparing(finAssIncomeEvidenceDTOList,
+                FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence, SortUtils.getReverseComparator());
+    }
+
+    protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
         List<ApiAssessmentChildWeighting> apiAssessmentChildWeightings = new ArrayList<>();
         financialAssessmentDTO.getChildWeightings().forEach(childWeightings -> {
             Optional<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightingEntityO =
@@ -219,9 +260,6 @@ public class MeansAssessmentService {
     }
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-        if (!assessmentDTOList.isEmpty()) {
-            assessmentDTOList.sort(Comparator.comparing(AssessmentDTO::getSection)
-                    .thenComparing(AssessmentDTO::getSequence));
-        }
+        SortUtils.sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator());
     }
 }

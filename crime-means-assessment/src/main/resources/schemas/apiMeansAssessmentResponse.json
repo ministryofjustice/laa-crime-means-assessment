@@ -116,6 +116,11 @@
         "$ref": "common/apiAssessmentChildWeighting.json"
       }
     },
+    "incomeEvidenceSummary": {
+      "type": "object",
+      "description": "Income Evidence Summary",
+      "$ref": "common/apiIncomeEvidenceSummary.json"
+    },
     "fullAssessmentAvailable": {
       "type": "boolean",
       "description": "Indicates the availability of Full Means Assessment."

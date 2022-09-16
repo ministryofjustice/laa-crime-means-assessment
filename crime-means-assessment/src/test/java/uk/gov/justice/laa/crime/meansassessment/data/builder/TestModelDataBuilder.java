@@ -1,17 +1,8 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.ChildWeightings;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
+import uk.gov.justice.laa.crime.meansassessment.dto.*;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
@@ -95,17 +86,15 @@ public class TestModelDataBuilder {
     public static final Integer TEST_REP_ID = 42312;
     public static final int MEANS_ASSESSMENT_ID = 1000;
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
-    private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
     public static final Integer TEST_ASSESSMENT_DETAILS_ID = 41681819;
-
     public static final String TEST_ASSESSMENT_TYPE_INIT = "INIT";
     public static final String TEST_ASSESSMENT_TYPE_FULL = "FULL";
     public static final String TEST_ASSESSMENT_SECTION_INITA = "INITA";
     public static final String TEST_ASSESSMENT_SECTION_INITB = "INITB";
     public static final String TEST_ASSESSMENT_SECTION_FULLA = "FULLA";
     public static final String TEST_ASSESSMENT_SECTION_FULLB = "FULLB";
-
     public static final int CMU_ID = 30;
+    private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -209,6 +198,20 @@ public class TestModelDataBuilder {
                 .createdBy(TEST_USER)
                 .modifiedDateTime(LocalDateTime.now())
                 .modifiedBy(TEST_USER)
+                .build();
+    }
+
+    public static IncomeEvidenceEntity getIncomeEvidenceEntity() {
+        return IncomeEvidenceEntity.builder()
+                .adhoc("Y")
+                .dateCreated(LocalDateTime.now())
+                .dateModified(LocalDateTime.now())
+                .description("Signature")
+                .id("SIGNATURE")
+                .userModified(null)
+                .userCreated(TEST_USER)
+                .letterDescription("Signature")
+                .welshLetterDescription("Llofnod")
                 .build();
     }
 
@@ -691,9 +694,9 @@ public class TestModelDataBuilder {
                 .criteriaDetailDescription(TEST_DESCRIPTION).build();
     }
 
-    public static List<FinancialAssessmentDetails>  getAssessmentDetails() {
+    public static List<FinancialAssessmentDetails> getAssessmentDetails() {
 
-       return List.of(
+        return List.of(
                 FinancialAssessmentDetails.builder()
                         .criteriaDetailId(TEST_ASSESSMENT_DETAILS_ID)
                         .applicantAmount(BigDecimal.valueOf(1650.00))
@@ -711,7 +714,7 @@ public class TestModelDataBuilder {
         );
     }
 
-    public static FinancialAssessmentDetails  getAssessmentDetailsWithoutList() {
+    public static FinancialAssessmentDetails getAssessmentDetailsWithoutList() {
         return FinancialAssessmentDetails.builder()
                 .criteriaDetailId(TEST_ASSESSMENT_DETAILS_ID)
                 .applicantAmount(BigDecimal.valueOf(1650.00))
@@ -740,5 +743,36 @@ public class TestModelDataBuilder {
         RepOrderDTO repOrderDTO = getRepOrderDTO();
         repOrderDTO.setFinancialAssessments(financialAssessments);
         return repOrderDTO;
+    }
+
+    public static FinAssIncomeEvidenceDTO getFinAssIncomeEvidenceDTO(String mandatory, String evidence) {
+        return FinAssIncomeEvidenceDTO.builder()
+                .incomeEvidence(evidence)
+                .mandatory(mandatory)
+                .adhoc("Y")
+                .dateModified(LocalDateTime.now())
+                .id(1234)
+                .dateCreated(LocalDateTime.now())
+                .dateReceived(LocalDateTime.now())
+                .removedDate(LocalDate.now())
+                .active("Y")
+                .otherText("Other")
+                .userCreated(TEST_USER)
+                .applicant(getApplicantDTO())
+                .build();
+    }
+
+    public static ApplicantDTO getApplicantDTO() {
+        return ApplicantDTO.builder()
+                .id(12)
+                .build();
+    }
+
+    public static FinancialAssessmentDTO getFinancialAssessmentDTOWithIncomeEvidence() {
+        FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO();
+        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
+        finAssIncomeEvidenceDTOList.add(getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
+        financialAssessment.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
+        return financialAssessment;
     }
 }
