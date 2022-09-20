@@ -166,26 +166,30 @@ public class MeansAssessmentService {
         return detailTotal;
     }
 
-    public ApiMeansAssessmentResponse getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {
+    public ApiGetMeansAssessmentResponse getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {
         log.info("Processing get old assessment request - Start");
-        ApiMeansAssessmentResponse assessmentResponse = null;
+        ApiGetMeansAssessmentResponse assessmentResponse = null;
         FinancialAssessmentDTO financialAssessmentDTO = maatCourtDataService.getFinancialAssessment(financialAssessmentId, laaTransactionId);
         if (null != financialAssessmentDTO) {
-            assessmentResponse = new ApiMeansAssessmentResponse();
-            getAssessmentSectionSummary(financialAssessmentDTO);
-            mapChildWeightings(assessmentResponse, financialAssessmentDTO);
-            mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
+            assessmentResponse = new ApiGetMeansAssessmentResponse();
+            buildMeansAssessmentResponse(assessmentResponse, financialAssessmentDTO);
         }
         log.info("Processing get old assessment request - End");
         return assessmentResponse;
     }
 
-    protected void mapIncomeEvidence(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapIncomeEvidence(ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
+        ApiIncomeEvidenceSummary apiIncomeEvidenceSummary = new ApiIncomeEvidenceSummary();
+        apiIncomeEvidenceSummary.setEvidenceDueDate(financialAssessmentDTO.getIncomeEvidenceDueDate());
+        apiIncomeEvidenceSummary.setIncomeEvidenceNotes(financialAssessmentDTO.getIncomeEvidenceNotes());
+        apiIncomeEvidenceSummary.setUpliftAppliedDate(financialAssessmentDTO.getIncomeUpliftApplyDate());
+        apiIncomeEvidenceSummary.setUpliftRemovedDate(financialAssessmentDTO.getIncomeUpliftRemoveDate());
+        apiIncomeEvidenceSummary.setFirstReminderDate(financialAssessmentDTO.getFirstIncomeReminderDate());
+        apiIncomeEvidenceSummary.setSecondReminderDate(financialAssessmentDTO.getSecondIncomeReminderDate());
         if (!finAssIncomeEvidenceDTOList.isEmpty()) {
             sortFinAssIncomeEvidenceSummary(finAssIncomeEvidenceDTOList);
-            List<ApiIncomeEvidence> apiIncomeEvidenceList = new ArrayList<>();
             finAssIncomeEvidenceDTOList.forEach(finAssIncomeEvidenceDTO -> {
                 ApiIncomeEvidence apiIncomeEvidence = new ApiIncomeEvidence()
                         .withId(finAssIncomeEvidenceDTO.getId())
@@ -196,10 +200,10 @@ public class MeansAssessmentService {
                         .withDateModified(finAssIncomeEvidenceDTO.getDateModified())
                         .withDateReceived(finAssIncomeEvidenceDTO.getDateReceived())
                         .withApiEvidenceType(getEvidenceType(finAssIncomeEvidenceDTO.getIncomeEvidence()));
-                apiIncomeEvidenceList.add(apiIncomeEvidence);
+                apiIncomeEvidenceSummary.getIncomeEvidence().add(apiIncomeEvidence);
             });
-            assessmentResponse.getIncomeEvidenceSummary().setIncomeEvidence(apiIncomeEvidenceList);
         }
+        apiGetMeansAssessmentResponse.setIncomeEvidenceSummary(apiIncomeEvidenceSummary);
     }
 
     protected ApiEvidenceType getEvidenceType(String evidence) {
@@ -217,7 +221,7 @@ public class MeansAssessmentService {
                 FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence, SortUtils.getReverseComparator());
     }
 
-    protected void mapChildWeightings(ApiMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapChildWeightings(ApiInitialMeansAssessment initialMeansAssessment, FinancialAssessmentDTO financialAssessmentDTO) {
         List<ApiAssessmentChildWeighting> apiAssessmentChildWeightings = new ArrayList<>();
         financialAssessmentDTO.getChildWeightings().forEach(childWeightings -> {
             Optional<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightingEntityO =
@@ -234,12 +238,30 @@ public class MeansAssessmentService {
                 apiAssessmentChildWeightings.add(apiAssessmentChildWeighting);
             }
         });
-        assessmentResponse.withChildWeightings(apiAssessmentChildWeightings);
+        initialMeansAssessment.setChildWeighting(apiAssessmentChildWeightings);
     }
 
-    protected List<AssessmentSectionSummaryDTO> getAssessmentSectionSummary(FinancialAssessmentDTO financialAssessmentDTO) {
+    public void buildMeansAssessmentResponse(ApiGetMeansAssessmentResponse assessmentResponse
+            , FinancialAssessmentDTO financialAssessmentDTO) {
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList = new ArrayList<>();
+        assessmentResponse.setId(financialAssessmentDTO.getId());
+        assessmentResponse.setUsn(financialAssessmentDTO.getUsn());
+        assessmentResponse.setInitialAssessment(new ApiInitialMeansAssessment());
+        assessmentResponse.setFullAssessment(new ApiFullMeansAssessment());
+        assessmentResponse.setIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
+
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = getAssessmentSectionSummary(financialAssessmentDTO);
+        Optional<AssessmentCriteriaEntity> initAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getInitialAscrId());
+        meansAssessmentBuilder.buildInitialAssessment(assessmentResponse,financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria);
+        Optional<AssessmentCriteriaEntity> fullAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getFullAscrId());
+        meansAssessmentBuilder.buildFullAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria);
+        mapChildWeightings(assessmentResponse.getInitialAssessment(), financialAssessmentDTO);
+        mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
+    }
+
+    protected List<ApiAssessmentSectionSummary> getAssessmentSectionSummary(FinancialAssessmentDTO financialAssessmentDTO) {
+
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
         if (!financialAssessmentDTO.getAssessmentDetails().isEmpty()) {
             List<AssessmentDTO> assessmentList = getAssessmentDTO(financialAssessmentDTO.getAssessmentDetails());
             if (!assessmentList.isEmpty()) {

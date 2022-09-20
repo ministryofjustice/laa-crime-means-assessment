@@ -10,6 +10,11 @@
       "description": "Evidence Due Date",
       "format": "date-time"
     },
+    "evidenceReceivedDate": {
+      "type": "string",
+      "description": "Evidence received Date",
+      "format": "date-time"
+    },
     "upliftAppliedDate": {
       "type": "string",
       "description": "Uplift Applied Date",
@@ -18,6 +23,16 @@
     "upliftRemovedDate": {
       "type": "string",
       "description": "Uplift Removed Date",
+      "format": "date-time"
+    },
+    "firstReminderDate": {
+      "type": "string",
+      "description": "first reminder Date",
+      "format": "date-time"
+    },
+    "secondReminderDate": {
+      "type": "string",
+      "description": "second reminder Date",
       "format": "date-time"
     },
     "incomeEvidenceNotes": {
@@ -34,3 +49,4 @@
   },
   "additionalProperties": true
 }
+

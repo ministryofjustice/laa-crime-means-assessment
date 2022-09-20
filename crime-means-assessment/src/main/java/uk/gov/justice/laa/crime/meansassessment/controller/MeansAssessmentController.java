@@ -124,7 +124,7 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ErrorDTO.class)
             )
     )
-    public ResponseEntity<ApiMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId, @PathVariable String laaTransactionId) {
+    public ResponseEntity<ApiGetMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId, @PathVariable String laaTransactionId) {
         log.info("Get old Financial Assessment Request Received");
         return ResponseEntity.ok(meansAssessmentService.getOldAssessment(financialAssessmentId, laaTransactionId));
     }
