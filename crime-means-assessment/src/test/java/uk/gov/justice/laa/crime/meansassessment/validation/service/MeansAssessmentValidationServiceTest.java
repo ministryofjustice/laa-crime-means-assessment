@@ -3,291 +3,161 @@ package uk.gov.justice.laa.crime.meansassessment.validation.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
+import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
+import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
-import java.util.HashMap;
-
-import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
-import static uk.gov.justice.laa.crime.meansassessment.common.Constants.ACTION_CREATE_ASSESSMENT;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.getAuthorizationResponseDTO;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.getOutstandingAssessmentResultDTO;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentValidationServiceTest {
 
-    private static WebClient webClient;
-    public static final String MAAT_API_BASE_URL = "http://localhost:8090/";
-
-    private MaatApiConfiguration configuration;
     private MeansAssessmentRequestDTO requestDTO;
+
+    @Mock
+    private MaatCourtDataClient maatCourtDataClient;
+
+    @InjectMocks
     private MeansAssessmentValidationService meansAssessmentValidationService;
 
-    private final WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
-    private final WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
-    private final WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
-    private final WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
-    private final WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+    @Spy
+    private MaatApiConfiguration maatApiConfiguration = MockMaatApiConfiguration.getConfiguration(1000);
 
+    private static final AuthorizationResponseDTO TRUE_AUTH_RESPONSE =
+            AuthorizationResponseDTO.builder().result(true).build();
+
+    private static final AuthorizationResponseDTO FALSE_AUTH_RESPONSE =
+            AuthorizationResponseDTO.builder().result(false).build();
+
+    private static final OutstandingAssessmentResultDTO NO_OUTSTANDING_ASSESSMENT =
+            OutstandingAssessmentResultDTO.builder().build();
+
+    private static final OutstandingAssessmentResultDTO IS_OUTSTANDING_ASSESSMENT =
+            OutstandingAssessmentResultDTO.builder().outstandingAssessments(true).build();
 
     @Before
     public void setup() {
-        webClient = mock(WebClient.class);
-        configuration = new MaatApiConfiguration();
-        configuration.setBaseUrl(MAAT_API_BASE_URL);
-        MaatApiConfiguration.ValidationEndpoints validationEndpoints = new MaatApiConfiguration.ValidationEndpoints(
-                "/authorization/users/{username}/actions/{action}",
-                "/authorization/users/{username}/work-reasons/{nworCode}",
-                "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}",
-                "/financial-assessments/check-outstanding/{repId}"
-        );
-        configuration.setValidationEndpoints(validationEndpoints);
         requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        meansAssessmentValidationService = new MeansAssessmentValidationService(webClient, configuration);
     }
 
     @Test
     public void whenGetUserIdFromRequestIsCalled_thenUserIdIsReturned() {
-        assertEquals(TestModelDataBuilder.TEST_USER, meansAssessmentValidationService.getUserIdFromRequest(requestDTO));
+        assertThat(meansAssessmentValidationService.getUserIdFromRequest(requestDTO))
+                .isEqualTo(TestModelDataBuilder.TEST_USER);
     }
 
     @Test
-    public void whenGetWebClientIsCalled_thenTheClientIsReturned() {
-        assertEquals(webClient, meansAssessmentValidationService.getWebClient());
+    public void givenInvalidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenFalseIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(FALSE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
     }
 
     @Test
-    public void whenRepIdIsNull_thenFalseResultIsReturned() {
-        MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        request.setRepId(null);
-        assertFalse(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(request));
+    public void givenValidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenTrueIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(TRUE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isTrue();
     }
 
     @Test
-    public void whenRepIdIsNegative_thenFalseResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        requestDTO.setRepId(-1);
-        assertFalse(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(requestDTO));
+    public void givenNullNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenFalseIsReturned() {
+        requestDTO.setNewWorkReason(NewWorkReason.getFrom(""));
+        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
     }
 
     @Test
-    public void whenRepIdIsValid_thenTrueResultIsReturned() {
-        MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        assertTrue(meansAssessmentValidationService.isRepIdPresentForCreateAssessment(request));
-    }
-
-    @Test
-    public void whenNworCodeIsInvalid_thenFalseResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getNewWorkReasonUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
-            assertFalse(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
-
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
-    }
-
-    @Test
-    public void whenNworCodeIsValid_thenTrueResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getNewWorkReasonUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
-            assertTrue(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
-
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
-    }
-
-    @Test
-    public void whenValidateRoleActionIsCalledWithBlankUserId_thenValidationFails() {
+    public void givenBlankUserId_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
         requestDTO.getUserSession().setUserName("");
-        assertEquals(Boolean.FALSE, meansAssessmentValidationService
-                .validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT)
-        );
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isFalse();
     }
 
     @Test
-    public void whenValidateRoleActionIsCalledWithBlankAction_thenValidationFails() {
-        assertEquals(Boolean.FALSE, meansAssessmentValidationService
-                .validateRoleAction(requestDTO, "")
-        );
+    public void givenBlankAction_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "")).isFalse();
     }
 
     @Test
-    public void whenRoleActionIsInvalid_thenFalseResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getRoleActionUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
-            assertFalse(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
-
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
+    public void givenInvalidRoleAction_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(FALSE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isFalse();
     }
 
     @Test
-    public void whenRoleActionIsValid_thenTrueResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getRoleActionUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
-            assertTrue(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
-
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
+    public void givenValidRoleAction_whenIsRoleActionValidIsInvoked_thenTrueIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(TRUE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isTrue();
     }
 
     @Test
-    public void whenRoleReservationIsInvalid_thenFalseResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(false);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getReservationsUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
-            assertFalse(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
-
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
+    public void givenValidReservation_whenIsRepOrderReserved_thenTrueIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(TRUE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isTrue();
     }
 
     @Test
-    public void whenRoleReservationIsValid_thenTrueResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getReservationsUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
-            assertTrue(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
-
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
+    public void givenInvalidReservation_whenIsRepOrderReserved_thenFalseIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(FALSE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreFound_thenFalseResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(true);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(OutstandingAssessmentResultDTO.class)).thenReturn(Mono.just(response));
-
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertFalse(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
-
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
+    public void givenBlankUserIdInRequest_whenIsRepOrderReserved_thenFalseIsReturned() {
+        requestDTO.getUserSession().setUserName("");
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreNotFound_thenTrueResultIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(eq(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl()), any(HashMap.class)))
-                .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(OutstandingAssessmentResultDTO.class)).thenReturn(Mono.just(response));
+    public void givenBlankSessionIDInRequest_whenIsRepOrderReserved_thenFalseIsReturned() {
+        requestDTO.getUserSession().setSessionId("");
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
+    }
 
-        boolean result;
-        try {
-            result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertTrue(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("UnexpectedException : " + e.getMessage());
-        }
+    @Test
+    public void givenNullRepIdInRequest_whenIsRepOrderReserved_thenFalseIsReturned() {
+        requestDTO.setRepId(null);
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
+    }
 
-        StepVerifier.create(Mono.just(response))
-                .expectNext(response)
-                .verifyComplete();
+    @Test
+    public void givenAnOutstandingAssessment_whenIsOutstandingAssessmentIsInvoked_thenTrueIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(IS_OUTSTANDING_ASSESSMENT);
+        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isTrue();
+    }
+
+    @Test
+    public void givenNoOutstandingAssessments_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any()
+        )).thenReturn(NO_OUTSTANDING_ASSESSMENT);
+        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
+    }
+
+    @Test
+    public void givenNoRepId_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
+        requestDTO.setRepId(null);
+        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
     }
 }
