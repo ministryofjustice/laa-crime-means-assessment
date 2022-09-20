@@ -25,7 +25,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
@@ -78,14 +77,13 @@ public class MeansAssessmentIntegrationTest {
     private Environment env;
 
     @MockBean
-    private  MaatCourtDataClient maatCourtDataClient;
+    private WebClient webClient;
+
+    @MockBean
+    private MaatCourtDataClient maatCourtDataClient;
 
     @MockBean
     private CrownCourtEligibilityService crownCourtEligibilityService;
-
-    @MockBean
-    private WebClient webClient;
-
 
     private final WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
     private final WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
@@ -93,8 +91,6 @@ public class MeansAssessmentIntegrationTest {
     private final WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
 
     private final WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
-
-    private ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Before
     public void setup() {
@@ -134,16 +130,18 @@ public class MeansAssessmentIntegrationTest {
     }
 
     private void setUpWebClientMock() {
-
-        AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
-        OutstandingAssessmentResultDTO outstandingAssessmentResultDTO = getOutstandingAssessmentResultDTO(false);
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
         doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(any(String.class), any(HashMap.class));
         doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(any(String.class), any(HashMap.class));
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(AuthorizationResponseDTO.class)).thenReturn(Mono.just(response));
-        when(responseSpec.bodyToMono(OutstandingAssessmentResultDTO.class)).thenReturn(Mono.just(outstandingAssessmentResultDTO));
 
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(getAuthorizationResponseDTO(true));
+
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(getOutstandingAssessmentResultDTO(false));
     }
 
     @Test
@@ -165,7 +163,7 @@ public class MeansAssessmentIntegrationTest {
         initialMeansAssessmentRequest.setRepId(-1000);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-       MvcResult result =  mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
+        MvcResult result = mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().is4xxClientError())
                 .andReturn();
         assertErrorScenario("Rep Id is missing from request and is required", result);
@@ -173,18 +171,17 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAValidCreateMeansAssessmentRequest_whenMatCourtApiCallFails_ShouldFailsCreateMeanAssessment() throws Exception {
+    public void givenAValidCreateMeansAssessmentRequest_whenMaatCourtApiCallFails_ShouldFailsCreateMeanAssessment() throws Exception {
         var initialMeansAssessmentRequest =
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        doThrow(new RuntimeException()).when(maatCourtDataClient).getApiResponseViaPOST(any(),any(),any(),any());
+        doThrow(new RuntimeException()).when(maatCourtDataClient).getApiResponseViaPOST(any(), any(), any(), any());
         setUpWebClientMock();
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().is5xxServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPOST(any(), any() ,any(), any());
     }
 
     @Test
@@ -193,14 +190,14 @@ public class MeansAssessmentIntegrationTest {
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        when(maatCourtDataClient.getApiResponseViaPOST(any(),any(),any(),any()))
+        when(maatCourtDataClient.getApiResponseViaPOST(any(), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
         setUpWebClientMock();
 
-         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
+        mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPOST(any(), any() ,any(), any());
+        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPOST(any(), any(), any(), any());
     }
 
     @Test
@@ -216,20 +213,6 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAInvalidWorkReason_whenUpdateAssessmentInvoked_ShouldFailsValidation() throws Exception {
-
-        var updateAssessmentRequest =
-                TestModelDataBuilder.getApiUpdateMeansAssessmentRequest(IS_VALID);
-        var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
-        setUpWebClientMock();
-        MvcResult result =  mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
-                .andExpect(status().is4xxClientError())
-                .andReturn();
-        assertErrorScenario("New work reason is not valid", result);
-
-    }
-
-    @Test
     public void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ShouldSuccess() throws Exception {
 
         var updateAssessmentRequest =
@@ -237,20 +220,18 @@ public class MeansAssessmentIntegrationTest {
         updateAssessmentRequest.setAssessmentType(AssessmentType.FULL);
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
         setUpWebClientMock();
-        when(maatCourtDataClient.getApiResponseViaPUT(any(),any(),any(),any()))
+        when(maatCourtDataClient.getApiResponseViaPUT(any(), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPUT(any(), any() ,any(), any());
+        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPUT(any(), any(), any(), any());
 
     }
 
-    private void assertErrorScenario(String expectedErrorMessage, MvcResult result) throws Exception{
-        ErrorDTO expectedError = ErrorDTO.builder().code(HttpStatus.BAD_REQUEST.value() +" "+ HttpStatus.BAD_REQUEST.name()).message(expectedErrorMessage).build();
+    private void assertErrorScenario(String expectedErrorMessage, MvcResult result) throws Exception {
+        ErrorDTO expectedError = ErrorDTO.builder().code(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.name()).message(expectedErrorMessage).build();
         assertThat(result.getResponse().getContentAsString())
                 .isEqualTo(objectMapper.writeValueAsString(expectedError));
     }
-
-
 }

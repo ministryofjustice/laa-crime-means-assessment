@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.reactive.function.client.WebClient;
+import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
@@ -19,10 +20,13 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.util.MaatWebClientIntegrationTestUtil;
+import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.Assert.fail;
 import static uk.gov.justice.laa.crime.meansassessment.common.Constants.ACTION_CREATE_ASSESSMENT;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.getAuthorizationResponseDTO;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.getOutstandingAssessmentResultDTO;
@@ -47,18 +51,11 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
     @Before
     public void initialize() throws IOException {
         startMockWebServer();
-        configuration = new MaatApiConfiguration();
-        configuration.setBaseUrl(String.format("http://localhost:%s", mockMaatCourtDataApi.getPort()));
-        MaatApiConfiguration.ValidationEndpoints validationEndpoints = new MaatApiConfiguration.ValidationEndpoints(
-                "/authorization/users/{username}/actions/{action}",
-                "/authorization/users/{username}/work-reasons/{nworCode}",
-                "/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}",
-                "/financial-assessments/check-outstanding/{repId}"
-        );
-        configuration.setValidationEndpoints(validationEndpoints);
+        configuration = MockMaatApiConfiguration.getConfiguration(mockMaatCourtDataApi.getPort());
         RetryConfiguration retryConfiguration = generateRetryConfiguration(maxRetries, 1, 0.5);
         WebClient maatWebClient = buildWebClient(configuration, retryConfiguration, clientRegistrationRepository, authorizedClients);
-        meansAssessmentValidationService = new MeansAssessmentValidationService(maatWebClient, configuration);
+        MaatCourtDataClient courtDataClient = new MaatCourtDataClient(maatWebClient);
+        meansAssessmentValidationService = new MeansAssessmentValidationService(configuration, courtDataClient);
     }
 
     @After
@@ -71,13 +68,12 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         requestDTO.setNewWorkReason(null);
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(0, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
@@ -87,37 +83,43 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(requestDTO);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/work-reasons/" + requestDTO.getNewWorkReason().getCode(), recordedRequest.getPath());
+        String expectedPath = String.format("/authorization/users/%s/work-reasons/%s",
+                requestDTO.getUserSession().getUserName(), requestDTO.getNewWorkReason().getCode()
+        );
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
     public void whenNworCodeIsValid_thenTrueResultIsReturned() throws Exception {
-        MeansAssessmentRequestDTO request = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(request);
-            assertTrue(result);
+            assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isTrue();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + request.getUserSession().getUserName() + "/work-reasons/" + request.getNewWorkReason().getCode(), recordedRequest.getPath());
+        String expectedPath = String.format("/authorization/users/%s/work-reasons/%s",
+                requestDTO.getUserSession().getUserName(), requestDTO.getNewWorkReason().getCode()
+        );
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
@@ -127,13 +129,12 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, maxRetries - 1);
 
         try {
-            boolean result = meansAssessmentValidationService.validateNewWorkReason(request);
-            assertTrue(result);
+            assertThat(meansAssessmentValidationService.isNewWorkReasonValid(request)).isTrue();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(maxRetries.longValue(), mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(maxRetries.longValue());
     }
 
     @Test
@@ -142,11 +143,11 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         setupMockApiResponses(response, maxRetries + 1);
 
-        APIClientException error = assertThrows(
-                APIClientException.class,
-                () -> meansAssessmentValidationService.validateNewWorkReason(request)
-        );
-        validateRetryErrorResponse(error, maxRetries);
+        assertThatThrownBy(
+                () -> meansAssessmentValidationService.isNewWorkReasonValid(request)
+        ).isInstanceOf(APIClientException.class)
+                .hasMessage(getRetryErrorResponse(maxRetries))
+                .hasRootCauseMessage(SERVICE_UNAVAILABLE_ERROR_MSG);
     }
 
     @Test
@@ -155,13 +156,13 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         requestDTO.getUserSession().setUserName(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT))
+                    .isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(0, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
@@ -171,17 +172,21 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT))
+                    .isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        String expectedPath = String.format("/authorization/users/%s/actions/%s",
+                requestDTO.getUserSession().getUserName(), ACTION_CREATE_ASSESSMENT
+        );
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
@@ -191,17 +196,21 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT);
-            assertTrue(result);
+            assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT))
+                    .isTrue();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/actions/" + ACTION_CREATE_ASSESSMENT, recordedRequest.getPath());
+        String expectedPath = String.format("/authorization/users/%s/actions/%s",
+                requestDTO.getUserSession().getUserName(), ACTION_CREATE_ASSESSMENT
+        );
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
@@ -210,13 +219,12 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         requestDTO.setRepId(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(0, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
@@ -226,17 +234,22 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
+        String expectedPath = String.format("/authorization/users/%s/reservations/%s/sessions/%s",
+                requestDTO.getUserSession().getUserName(),
+                requestDTO.getRepId(),
+                requestDTO.getUserSession().getSessionId()
+        );
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
@@ -246,17 +259,22 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
-            assertTrue(result);
+            assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isTrue();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/authorization/users/" + requestDTO.getUserSession().getUserName() + "/reservations/" + requestDTO.getRepId() + "/sessions/" + requestDTO.getUserSession().getSessionId(), recordedRequest.getPath());
+        String expectedPath = String.format("/authorization/users/%s/reservations/%s/sessions/%s",
+                requestDTO.getUserSession().getUserName(),
+                requestDTO.getRepId(),
+                requestDTO.getUserSession().getSessionId()
+        );
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
@@ -266,13 +284,12 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, maxRetries - 1);
 
         try {
-            boolean result = meansAssessmentValidationService.validateRoleReservation(requestDTO);
-            assertTrue(result);
+            assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isTrue();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(maxRetries.longValue(), mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(maxRetries.longValue());
     }
 
     @Test
@@ -281,11 +298,11 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         AuthorizationResponseDTO response = getAuthorizationResponseDTO(true);
         setupMockApiResponses(response, maxRetries + 1);
 
-        APIClientException error = assertThrows(
-                APIClientException.class,
-                () -> meansAssessmentValidationService.validateRoleReservation(requestDTO)
-        );
-        validateRetryErrorResponse(error, maxRetries);
+        assertThatThrownBy(
+                () -> meansAssessmentValidationService.isRepOrderReserved(requestDTO)
+        ).isInstanceOf(APIClientException.class)
+                .hasMessage(getRetryErrorResponse(maxRetries))
+                .hasRootCauseMessage(SERVICE_UNAVAILABLE_ERROR_MSG);
     }
 
     @Test
@@ -294,53 +311,54 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         requestDTO.setRepId(null);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(0, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isZero();
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreFound_thenFalseResultIsReturned() throws Exception {
+    public void whenOutstandingAssessmentsAreFound_thenTrueResultIsReturned() throws Exception {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(true);
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertFalse(result);
+            assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isTrue();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/financial-assessments/check-outstanding/" + requestDTO.getRepId(), recordedRequest.getPath());
+        String expectedPath = String.format("/financial-assessments/check-outstanding/%d", requestDTO.getRepId());
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
-    public void whenOutstandingAssessmentsAreNotFound_thenTrueResultIsReturned() throws Exception {
+    public void whenOutstandingAssessmentsAreNotFound_thenFalseResultIsReturned() throws Exception {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
         setupMockApiResponses(response, 0);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertTrue(result);
+            assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(1, mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(1);
 
         RecordedRequest recordedRequest = mockMaatCourtDataApi.takeRequest();
-        assertEquals("GET", recordedRequest.getMethod());
-        assertEquals("/financial-assessments/check-outstanding/" + requestDTO.getRepId(), recordedRequest.getPath());
+        String expectedPath = String.format("/financial-assessments/check-outstanding/%d", requestDTO.getRepId());
+        assertThat(recordedRequest.getMethod()).isEqualTo("GET");
+        assertThat(recordedRequest.getPath())
+                .isEqualTo(expectedPath);
     }
 
     @Test
@@ -350,13 +368,12 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         setupMockApiResponses(response, maxRetries - 1);
 
         try {
-            boolean result = meansAssessmentValidationService.validateOutstandingAssessments(requestDTO);
-            assertTrue(result);
+            assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
         } catch (Exception e) {
             e.printStackTrace();
             fail("UnexpectedException : " + e.getMessage());
         }
-        assertEquals(maxRetries.longValue(), mockMaatCourtDataApi.getRequestCount());
+        assertThat(mockMaatCourtDataApi.getRequestCount()).isEqualTo(maxRetries.longValue());
     }
 
     @Test
@@ -365,10 +382,10 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         OutstandingAssessmentResultDTO response = getOutstandingAssessmentResultDTO(false);
         setupMockApiResponses(response, maxRetries + 1);
 
-        APIClientException error = assertThrows(
-                APIClientException.class,
-                () -> meansAssessmentValidationService.validateOutstandingAssessments(requestDTO)
-        );
-        validateRetryErrorResponse(error, maxRetries);
+        assertThatThrownBy(
+                () -> meansAssessmentValidationService.isOutstandingAssessment(requestDTO)
+        ).isInstanceOf(APIClientException.class)
+                .hasMessage(getRetryErrorResponse(maxRetries))
+                .hasRootCauseMessage(SERVICE_UNAVAILABLE_ERROR_MSG);
     }
 }
