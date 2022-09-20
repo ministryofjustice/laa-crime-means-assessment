@@ -239,6 +239,59 @@ public class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
+    public void givenEmptyCurrentStatus_whenBuildInitialAssessmentInvoked_shouldNotReturnAssessmentStatus() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(null, NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getAssessmentStatus()).isNull();
+    }
+
+    @Test
+    public void givenEmptyWorkReason_whenBuildInitialAssessmentInvoked_shouldNotReturnNewWorkReason() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), null,
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getNewWorkReason()).isNull();
+    }
+
+    @Test
+    public void givenEmptyReview_whenBuildInitialAssessmentInvoked_shouldNotReturnReviewType() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                null);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getReviewType()).isNull();
+    }
+
+    @Test
+    public void givenEmptyAssessmentCriteriaEntity_whenBuildInitialAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getLowerThreshold()).isNull();
+        assertThat(response.getInitialAssessment().getUpperThreshold()).isNull();
+    }
+
+    @Test
     public void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() throws Exception {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
@@ -257,6 +310,77 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
         assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+    }
+
+    @Test
+    public void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+
+        var expectedFullAssessment = TestModelDataBuilder.getApiFullAssessment(null);
+        expectedFullAssessment.setAssessmentSectionSummary(new ArrayList<>(
+                List.of(
+                        TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL))
+        ));
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(null, NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+    }
+
+    @Test
+    public void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+
+        var expectedFullAssessment = TestModelDataBuilder.getApiFullAssessment(CurrentStatus.IN_PROGRESS);
+        expectedFullAssessment.setAssessmentSectionSummary(new ArrayList<>(
+                List.of(
+                        TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL))
+        ));
+        expectedFullAssessment.setThreshold(null);
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+    }
+    @Test
+    public void givenEmptyAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsFalse() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        financialAssessmentDTO.setFullAssessmentDate(null);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getFullAvailable()).isFalse();
+
+    }
+    @Test
+    public void givenAAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsTrue() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getFullAvailable()).isTrue();
+
     }
 
 }
