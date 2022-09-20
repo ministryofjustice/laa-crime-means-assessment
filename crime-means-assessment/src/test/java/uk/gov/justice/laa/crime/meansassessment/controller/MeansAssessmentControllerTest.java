@@ -135,7 +135,8 @@ public class MeansAssessmentControllerTest {
         when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(initialMeansAssessmentResponse);
 
-        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class))).thenReturn(Optional.empty());
+        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+                .thenReturn(Optional.empty());
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().isOk())
@@ -154,7 +155,8 @@ public class MeansAssessmentControllerTest {
         when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(updateAssessmentResponse);
 
-        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class))).thenReturn(Optional.empty());
+        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+                .thenReturn(Optional.empty());
 
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
                 .andExpect(status().isOk())

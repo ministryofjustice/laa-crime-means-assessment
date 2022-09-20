@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
 
@@ -12,9 +13,9 @@ import java.util.Optional;
 
 import static uk.gov.justice.laa.crime.meansassessment.common.Constants.ACTION_CREATE_ASSESSMENT;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class MeansAssessmentValidationProcessor {
 
     private final InitAssessmentValidator initAssessmentValidator;
@@ -31,24 +32,26 @@ public class MeansAssessmentValidationProcessor {
             "Eligibility Review, Miscalculation Review or New Application Following Ineligibility.";
     public static final String MSG_FULL_ASSESSMENT_DATE_REQUIRED = "Full assessment date is required";
 
-    public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO) {
+    public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Validating means assessment request : {}", requestDTO);
-        if (!meansAssessmentValidationService.isRepIdPresentForCreateAssessment(requestDTO)) {
+        if (!isRepIdValid(requestDTO)) {
             throw new ValidationException(MSG_REP_ID_REQUIRED);
-        } else if (!meansAssessmentValidationService.validateRoleAction(requestDTO, ACTION_CREATE_ASSESSMENT)) {
+        } else if (!meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT)) {
             throw new ValidationException(MSG_ROLE_ACTION_IS_NOT_VALID);
-        } else if (!meansAssessmentValidationService.validateRoleReservation(requestDTO)) {
+        } else if (!meansAssessmentValidationService.isRepOrderReserved(requestDTO)) {
             throw new ValidationException(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
         }
 
-        boolean isInit = AssessmentType.INIT.equals(requestDTO.getAssessmentType());
-
-        if (isInit) {
-            if (!meansAssessmentValidationService.validateOutstandingAssessments(requestDTO)) {
-                throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
-            } else if (!meansAssessmentValidationService.validateNewWorkReason(requestDTO)) {
+        if (AssessmentRequestType.CREATE.equals(requestType)) {
+            if (!meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)) {
                 throw new ValidationException(MSG_NEW_WORK_REASON_IS_NOT_VALID);
-            } else if (!initAssessmentValidator.validate(requestDTO)) {
+            } else if (meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
+                throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
+            }
+        }
+
+        if (AssessmentType.INIT.equals(requestDTO.getAssessmentType())) {
+            if (!initAssessmentValidator.validate(requestDTO)) {
                 throw new ValidationException(MSG_INCORRECT_REVIEW_TYPE);
             }
         } else {
@@ -57,5 +60,9 @@ public class MeansAssessmentValidationProcessor {
             }
         }
         return Optional.empty();
+    }
+
+    boolean isRepIdValid(final MeansAssessmentRequestDTO meansAssessmentRequest) {
+        return (meansAssessmentRequest.getRepId() != null && Integer.signum(meansAssessmentRequest.getRepId()) >= 0);
     }
 }
