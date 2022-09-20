@@ -46,11 +46,6 @@
       "type": "string",
       "description": "Assessment result reason"
     },
-    "apiEvidenceType": {
-      "type": "object",
-      "description": "Evidence Type",
-      "$ref": "apiEvidenceType.json"
-    },
     "assessmentStatus": {
       "type": "object",
       "description": "Assessment Status",
