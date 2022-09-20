@@ -88,6 +88,9 @@ public class MeansAssessmentSectionSummaryBuilder {
         }
         apiFullMeansAssessment.setResult(financialAssessmentDTO.getFullResult());
         apiFullMeansAssessment.setResultReason(financialAssessmentDTO.getFullResultReason());
+        if (null != financialAssessmentDTO.getFullAssessmentDate()) {
+            assessmentResponse.setFullAvailable(Boolean.TRUE);
+        }
 
 
         ApiAssessmentStatus assessmentStatus = new ApiAssessmentStatus();
