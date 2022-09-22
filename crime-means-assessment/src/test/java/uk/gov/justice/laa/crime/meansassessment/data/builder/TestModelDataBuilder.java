@@ -848,6 +848,7 @@ public class TestModelDataBuilder {
             ApiNewWorkReason apiNewWorkReason = new ApiNewWorkReason();
             apiNewWorkReason.setCode(newWorkReason.getCode());
             apiNewWorkReason.setDescription(newWorkReason.getDescription());
+            apiNewWorkReason.setType(newWorkReason.getType());
             apiInitialMeansAssessment.setNewWorkReason(apiNewWorkReason);
         }
 
