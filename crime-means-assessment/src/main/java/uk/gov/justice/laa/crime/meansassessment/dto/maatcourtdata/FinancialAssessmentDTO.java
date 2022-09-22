@@ -53,6 +53,7 @@ public class FinancialAssessmentDTO extends Assessment {
     private String rtCode;
     private LocalDateTime firstIncomeReminderDate;
     private LocalDateTime secondIncomeReminderDate;
+    private LocalDateTime evidenceReceivedDate;
     @Builder.Default
     private List<FinancialAssessmentDetails> assessmentDetails = new ArrayList<>();
     @Builder.Default

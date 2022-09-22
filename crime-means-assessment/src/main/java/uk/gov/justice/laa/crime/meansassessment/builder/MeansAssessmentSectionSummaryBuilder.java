@@ -27,8 +27,7 @@ public class MeansAssessmentSectionSummaryBuilder {
                                        Optional<AssessmentCriteriaEntity> criteriaEntity) {
 
         ApiInitialMeansAssessment initialMeansAssessment = assessmentResponse.getInitialAssessment();
-        initialMeansAssessment.setId(financialAssessmentDTO.getId());
-        initialMeansAssessment.setCriteriaId(financialAssessmentDTO.getInitialAscrId());
+        initialMeansAssessment.setId(financialAssessmentDTO.getInitialAscrId());
         initialMeansAssessment.setAssessmentDate(financialAssessmentDTO.getInitialAssessmentDate());
         initialMeansAssessment.setOtherBenefitNote(financialAssessmentDTO.getInitOtherBenefitNote());
         initialMeansAssessment.setOtherIncomeNote(financialAssessmentDTO.getInitOtherIncomeNote());
@@ -76,7 +75,7 @@ public class MeansAssessmentSectionSummaryBuilder {
                                     Optional<AssessmentCriteriaEntity> criteriaEntity) {
 
         ApiFullMeansAssessment apiFullMeansAssessment = assessmentResponse.getFullAssessment();
-        apiFullMeansAssessment.setCriteriaId(financialAssessmentDTO.getFullAscrId());
+        apiFullMeansAssessment.setId(financialAssessmentDTO.getFullAscrId());
         apiFullMeansAssessment.setAssessmentDate(financialAssessmentDTO.getFullAssessmentDate());
         apiFullMeansAssessment.setAssessmentNotes(financialAssessmentDTO.getFullAssessmentNotes());
         apiFullMeansAssessment.setAdjustedLivingAllowance(financialAssessmentDTO.getFullAdjustedLivingAllowance());
