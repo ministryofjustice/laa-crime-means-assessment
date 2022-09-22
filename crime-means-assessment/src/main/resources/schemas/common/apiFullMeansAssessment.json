@@ -5,7 +5,7 @@
   "title": "The Income Evidence schema",
   "description": "Details of income evidence",
   "properties": {
-    "criteriaId": {
+    "id": {
       "type": "integer",
       "description": "Assessment criteria Id"
     },
