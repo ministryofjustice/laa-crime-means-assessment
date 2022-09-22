@@ -183,6 +183,7 @@ public class MeansAssessmentService {
 
         ApiIncomeEvidenceSummary apiIncomeEvidenceSummary = new ApiIncomeEvidenceSummary();
         apiIncomeEvidenceSummary.setEvidenceDueDate(financialAssessmentDTO.getIncomeEvidenceDueDate());
+        apiIncomeEvidenceSummary.setEvidenceReceivedDate(financialAssessmentDTO.getEvidenceReceivedDate());
         apiIncomeEvidenceSummary.setIncomeEvidenceNotes(financialAssessmentDTO.getIncomeEvidenceNotes());
         apiIncomeEvidenceSummary.setUpliftAppliedDate(financialAssessmentDTO.getIncomeUpliftApplyDate());
         apiIncomeEvidenceSummary.setUpliftRemovedDate(financialAssessmentDTO.getIncomeUpliftRemoveDate());

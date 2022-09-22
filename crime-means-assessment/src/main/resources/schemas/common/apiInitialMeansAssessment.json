@@ -9,10 +9,6 @@
       "type": "integer",
       "description": "Initial Assessment Id"
     },
-    "criteriaId": {
-      "type": "integer",
-      "description": "Criteria Id"
-    },
     "assessmentDate": {
       "type": "string",
       "description": "Assessment Date",

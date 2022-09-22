@@ -826,8 +826,7 @@ public class TestModelDataBuilder {
     public static ApiInitialMeansAssessment getApiInitialMeansAssessment(CurrentStatus currentStatus, NewWorkReason newWorkReason,
                                                                          ReviewType reviewType) {
         ApiInitialMeansAssessment apiInitialMeansAssessment = new ApiInitialMeansAssessment();
-        apiInitialMeansAssessment.setId(TEST_FINANCIAL_ASSESSMENT_ID);
-        apiInitialMeansAssessment.setCriteriaId(TEST_CRITERIA_ID);
+        apiInitialMeansAssessment.setId(TEST_CRITERIA_ID);
         apiInitialMeansAssessment.setAssessmentDate(LocalDateTime.parse("2021-10-09T15:02:25"));
         apiInitialMeansAssessment.setOtherBenefitNote(TEST_NOTE);
         apiInitialMeansAssessment.setOtherIncomeNote(TEST_INCOME_NOTE);
@@ -864,7 +863,7 @@ public class TestModelDataBuilder {
 
     public static ApiFullMeansAssessment getApiFullAssessment(CurrentStatus currentStatus) {
         ApiFullMeansAssessment apiFullMeansAssessment = new ApiFullMeansAssessment();
-        apiFullMeansAssessment.setCriteriaId(TEST_CRITERIA_ID);
+        apiFullMeansAssessment.setId(TEST_CRITERIA_ID);
         apiFullMeansAssessment.setAssessmentDate(LocalDateTime.parse("2022-10-09T15:02:25"));
         apiFullMeansAssessment.setAssessmentNotes(TEST_NOTE);
         apiFullMeansAssessment.setAdjustedLivingAllowance(BigDecimal.valueOf(15600.00));
