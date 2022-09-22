@@ -10,21 +10,22 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public enum NewWorkReason {
 
-    PBI("PBI", "Crown Court Section 51"),
-    PCI("PCI", "Crown Court either way offence"),
-    FMA("FMA", "First Means Assessment"),
-    PAI("PAI", "Previous Assessment was Incorrect"),
-    CFC("CFC", "Change in Financial Circumstances"),
-    CPS("CPS", "Change in Solicitor"),
-    HR("HR", "Hardship Review (NCT only)"),
-    NEW("NEW", "New"),
-    PRI("PRI", "Previous Record Incorrect"),
-    JR("JR", "Judicial Review"),
-    EVI("EVI", "Income Evidence Differs from Declaration"),
-    INF("INF", "Re-assessment Following New Information"),
-    CSP("CSP", "Change in Partner Status");
+    PBI("PBI", "ASS", "Crown Court Section 51"),
+    PCI("PCI", "ASS", "Crown Court either way offence"),
+    FMA("FMA", "ASS", "First Means Assessment"),
+    PAI("PAI", "ASS", "Previous Assessment was Incorrect"),
+    CFC("CFC", "ASS", "Change in Financial Circumstances"),
+    CPS("CPS", "ASS", "Change in Solicitor"),
+    HR("HR", "ASS", "Hardship Review (NCT only)"),
+    NEW("NEW", "HARDIOJ", "New"),
+    PRI("PRI", "HARDIOJ", "Previous Record Incorrect"),
+    JR("JR", "HARDIOJ", "Judicial Review"),
+    EVI("EVI", "ASS", "Income Evidence Differs from Declaration"),
+    INF("INF", "ASS", "Re-assessment Following New Information"),
+    CSP("CSP", "ASS", "Change in Partner Status");
 
     private String code;
+    private String type;
     private String description;
 
     public static NewWorkReason getFrom(String code) {

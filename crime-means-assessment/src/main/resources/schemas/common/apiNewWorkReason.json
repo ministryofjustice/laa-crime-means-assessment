@@ -9,6 +9,10 @@
       "type": "string",
       "description": "New Work reason code"
     },
+    "type": {
+      "type": "string",
+      "description": "New Work reason type"
+    },
     "description": {
       "type": "string",
       "description": "New work reason description"
