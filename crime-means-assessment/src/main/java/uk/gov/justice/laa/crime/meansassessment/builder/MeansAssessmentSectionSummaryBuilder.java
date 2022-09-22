@@ -52,6 +52,7 @@ public class MeansAssessmentSectionSummaryBuilder {
         if (StringUtils.isNotBlank(financialAssessmentDTO.getNewWorkReason())) {
             newWorkReason.setCode(financialAssessmentDTO.getNewWorkReason());
             newWorkReason.setDescription(NewWorkReason.getFrom(financialAssessmentDTO.getNewWorkReason()).getDescription());
+            newWorkReason.setType(NewWorkReason.getFrom(financialAssessmentDTO.getNewWorkReason()).getType());
             initialMeansAssessment.setNewWorkReason(newWorkReason);
         }
 
