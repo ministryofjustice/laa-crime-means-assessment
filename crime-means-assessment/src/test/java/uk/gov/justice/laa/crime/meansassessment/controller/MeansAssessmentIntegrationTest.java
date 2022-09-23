@@ -128,6 +128,7 @@ public class MeansAssessmentIntegrationTest {
         if (withAuth) {
             final String accessToken = obtainAccessToken();
             requestBuilder.header("Authorization", "Bearer " + accessToken);
+            requestBuilder.header("Laa-Transaction-Id", TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
         }
         return requestBuilder;
     }
@@ -246,11 +247,11 @@ public class MeansAssessmentIntegrationTest {
         verify(maatCourtDataClient, timeout(1)).getApiResponseViaPUT(any(), any(), any(), any());
 
     }
-    
+
     @Test
     public void givenAInvalidContent_whenGetOldAssessmentInvoked_ShouldFailsBadRequest() throws Exception {
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
-                .andExpect(status().isNotFound());
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, Boolean.TRUE))
+                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
@@ -263,22 +264,22 @@ public class MeansAssessmentIntegrationTest {
     @Test
     public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldSuccessApiGetMeansAssessmentResponse() throws Exception {
         FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(),
-                NewWorkReason.HR.getCode(),ReviewType.NAFI.getCode());
+                NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
         financialAssessmentDTO.setAssessmentDetails(TestModelDataBuilder.getAssessmentDetails());
         financialAssessmentDTO.setChildWeightings(TestModelDataBuilder.getChildWeightings());
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
         finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
         financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
-        when(maatCourtDataClient.getApiResponseViaGET(any(),any(),any(),any()))
+        when(maatCourtDataClient.getApiResponseViaGET(any(), any(), any(), any()))
                 .thenReturn(financialAssessmentDTO);
         ResultActions result = mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
-                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, Boolean.TRUE))
+                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
                 .andExpect(status().isOk());
     }
 
-    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldReturn() throws Exception{
+    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldReturn() throws Exception {
         mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
-                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, Boolean.TRUE))
+                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
                 .andExpect(status().isOk());
     }
 
