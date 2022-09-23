@@ -39,7 +39,7 @@ public enum NewWorkReason {
     }
 
     private static class NewWorkReasonType {
-        private final static String ASS = "ASS";
-        private final static String HARDIOJ = "HARDIOJ";
+        private static final String ASS = "ASS";
+        private static final String HARDIOJ = "HARDIOJ";
     }
 }
