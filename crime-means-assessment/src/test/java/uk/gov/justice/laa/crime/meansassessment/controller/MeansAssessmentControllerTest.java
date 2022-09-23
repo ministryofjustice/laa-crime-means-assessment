@@ -105,6 +105,7 @@ public class MeansAssessmentControllerTest {
         if (withAuth) {
             final String accessToken = obtainAccessToken();
             requestBuilder.header("Authorization", "Bearer " + accessToken);
+            requestBuilder.header("Laa-Transaction-Id", TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
         }
         return requestBuilder;
     }
@@ -236,7 +237,7 @@ public class MeansAssessmentControllerTest {
     @Test
     public void givenValidPram_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
         when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(new ApiGetMeansAssessmentResponse());
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, true))
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID , true))
                 .andExpect(status().isOk());
     }
 }

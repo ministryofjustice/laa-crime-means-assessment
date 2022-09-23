@@ -10,19 +10,20 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public enum NewWorkReason {
 
-    PBI("PBI", "ASS", "Crown Court Section 51"),
-    PCI("PCI", "ASS", "Crown Court either way offence"),
-    FMA("FMA", "ASS", "First Means Assessment"),
-    PAI("PAI", "ASS", "Previous Assessment was Incorrect"),
-    CFC("CFC", "ASS", "Change in Financial Circumstances"),
-    CPS("CPS", "ASS", "Change in Solicitor"),
-    HR("HR", "ASS", "Hardship Review (NCT only)"),
+
+    PBI("PBI", NewWorkReasonType.ASS, "Crown Court Section 51"),
+    PCI("PCI", NewWorkReasonType.ASS, "Crown Court either way offence"),
+    FMA("FMA", NewWorkReasonType.ASS, "First Means Assessment"),
+    PAI("PAI", NewWorkReasonType.ASS, "Previous Assessment was Incorrect"),
+    CFC("CFC", NewWorkReasonType.ASS, "Change in Financial Circumstances"),
+    CPS("CPS", NewWorkReasonType.ASS, "Change in Solicitor"),
+    HR("HR", NewWorkReasonType.ASS, "Hardship Review (NCT only)"),
     NEW("NEW", "HARDIOJ", "New"),
     PRI("PRI", "HARDIOJ", "Previous Record Incorrect"),
     JR("JR", "HARDIOJ", "Judicial Review"),
-    EVI("EVI", "ASS", "Income Evidence Differs from Declaration"),
-    INF("INF", "ASS", "Re-assessment Following New Information"),
-    CSP("CSP", "ASS", "Change in Partner Status");
+    EVI("EVI", NewWorkReasonType.ASS, "Income Evidence Differs from Declaration"),
+    INF("INF", NewWorkReasonType.ASS, "Re-assessment Following New Information"),
+    CSP("CSP", NewWorkReasonType.ASS, "Change in Partner Status");
 
     private String code;
     private String type;
@@ -35,5 +36,10 @@ public enum NewWorkReason {
                 .filter(newWorkReason -> newWorkReason.code.equals(code))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("New Work Reason with value: %s does not exist.", code)));
+    }
+
+    private static class NewWorkReasonType {
+        private final static String ASS = "ASS";
+        private final String HARDIOJ = "HARDIOJ";
     }
 }
