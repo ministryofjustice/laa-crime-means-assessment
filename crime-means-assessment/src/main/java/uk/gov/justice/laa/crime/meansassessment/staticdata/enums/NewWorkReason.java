@@ -18,9 +18,9 @@ public enum NewWorkReason {
     CFC("CFC", NewWorkReasonType.ASS, "Change in Financial Circumstances"),
     CPS("CPS", NewWorkReasonType.ASS, "Change in Solicitor"),
     HR("HR", NewWorkReasonType.ASS, "Hardship Review (NCT only)"),
-    NEW("NEW", "HARDIOJ", "New"),
-    PRI("PRI", "HARDIOJ", "Previous Record Incorrect"),
-    JR("JR", "HARDIOJ", "Judicial Review"),
+    NEW("NEW", NewWorkReasonType.HARDIOJ, "New"),
+    PRI("PRI", NewWorkReasonType.HARDIOJ, "Previous Record Incorrect"),
+    JR("JR", NewWorkReasonType.HARDIOJ, "Judicial Review"),
     EVI("EVI", NewWorkReasonType.ASS, "Income Evidence Differs from Declaration"),
     INF("INF", NewWorkReasonType.ASS, "Re-assessment Following New Information"),
     CSP("CSP", NewWorkReasonType.ASS, "Change in Partner Status");
@@ -40,6 +40,6 @@ public enum NewWorkReason {
 
     private static class NewWorkReasonType {
         private final static String ASS = "ASS";
-        private final String HARDIOJ = "HARDIOJ";
+        private final static String HARDIOJ = "HARDIOJ";
     }
 }
