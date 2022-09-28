@@ -20,6 +20,11 @@
       "type": "number",
       "description": "Annual Total"
     },
+    "assessmentType": {
+      "type": "object",
+      "description": "The Frequency of Applicant",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType"
+    },
     "assessmentDetails": {
       "type": "array",
       "minItems": 1,
@@ -29,8 +34,5 @@
     }
   },
   "additionalProperties": false,
-  "required": [
-    "section",
-    "assessmentDetails"
-  ]
+  "required": ["section", "assessmentDetails"]
 }
