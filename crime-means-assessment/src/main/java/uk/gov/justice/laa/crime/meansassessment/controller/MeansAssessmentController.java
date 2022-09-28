@@ -106,7 +106,7 @@ public class MeansAssessmentController {
         );
     }
 
-    @GetMapping(value = "/{financialAssessmentId}/{laaTransactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{financialAssessmentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Retrieve an old means assessment")
     @ApiResponse(responseCode = "200",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -125,8 +125,8 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ErrorDTO.class)
             )
     )
-    public ResponseEntity<ApiMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId,
-                                                                       @PathVariable String laaTransactionId) {
+    public ResponseEntity<ApiGetMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId,
+                                                                          @Parameter(description = "Used for tracing calls") @RequestHeader(value = "Laa-Transaction-Id", required = false) String laaTransactionId) {
         log.info("Get old means assessment request received");
         return ResponseEntity.ok(meansAssessmentService.getOldAssessment(financialAssessmentId, laaTransactionId));
     }

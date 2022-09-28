@@ -91,4 +91,8 @@ public class AssessmentCriteriaService {
         return assessmentCriteriaChildWeightingRepository.findById(id);
     }
 
+    public Optional<AssessmentCriteriaEntity> getAssessmentCriteriaById(Integer id) {
+        return assessmentCriteriaRepository.findById(id);
+    }
+
 }

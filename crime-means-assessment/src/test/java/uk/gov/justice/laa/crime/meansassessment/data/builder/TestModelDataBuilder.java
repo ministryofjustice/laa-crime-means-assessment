@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
@@ -54,6 +55,7 @@ public class TestModelDataBuilder {
     public static final String TEST_EMPLOYMENT_STATUS = "EMPLOY";
     public static final Integer TEST_USN = 4056595;
     public static final String TEST_NOTE = "TEST_NOTE";
+    public static final String TEST_INCOME_NOTE = "TEST_INCOME_NOTE";
 
     public static final Frequency TEST_FREQUENCY = Frequency.MONTHLY;
     public static final CaseType TEST_CASE_TYPE = CaseType.APPEAL_CC;
@@ -552,7 +554,7 @@ public class TestModelDataBuilder {
                                         .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
                         )
                 )
-                .withSectionSummaries(List.of(getAssessmentSectionSummary()));
+                .withSectionSummaries(List.of(getAssessmentSectionSummary(Section.INITB.name(), AssessmentType.INIT)));
     }
 
 
@@ -582,16 +584,17 @@ public class TestModelDataBuilder {
                                         .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
                         )
                 )
-                .withSectionSummaries(List.of(getAssessmentSectionSummary()));
+                .withSectionSummaries(List.of(getAssessmentSectionSummary(Section.INITB.name(), AssessmentType.INIT)));
     }
 
 
-    public static ApiAssessmentSectionSummary getAssessmentSectionSummary() {
+    public static ApiAssessmentSectionSummary getAssessmentSectionSummary(String section, AssessmentType assessmentType) {
         return new ApiAssessmentSectionSummary()
                 .withApplicantAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
                 .withAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
                 .withPartnerAnnualTotal(BigDecimal.ZERO)
-                .withSection("INITB")
+                .withSection(section)
+                .withAssessmentType(assessmentType)
                 .withAssessmentDetails(
                         new ArrayList<>(
                                 List.of(
@@ -633,14 +636,19 @@ public class TestModelDataBuilder {
 
     public static FinancialAssessmentDTO getFinancialAssessmentDTOWithChildWeightings() {
         FinancialAssessmentDTO financialAssessment = getFinancialAssessmentDTO();
+        financialAssessment.setChildWeightings(getChildWeightings());
+        return financialAssessment;
+    }
+
+    public static List<ChildWeightings> getChildWeightings() {
+        List<ChildWeightings> childWeightingsList = new ArrayList<>();
         ChildWeightings childWeightings = new ChildWeightings();
-        childWeightings.setChildWeightingId(12);
+        childWeightings.setChildWeightingId(37);
         childWeightings.setNoOfChildren(2);
         childWeightings.setId(1234);
-        List<ChildWeightings> childWeightingsList = new ArrayList<>();
         childWeightingsList.add(childWeightings);
-        financialAssessment.setChildWeightings(childWeightingsList);
-        return financialAssessment;
+        return childWeightingsList;
+
     }
 
     public static FinancialAssessmentDTO getFinancialAssessmentDTOWithDetails() {
@@ -698,14 +706,14 @@ public class TestModelDataBuilder {
 
         return List.of(
                 FinancialAssessmentDetails.builder()
-                        .criteriaDetailId(TEST_ASSESSMENT_DETAILS_ID)
+                        .criteriaDetailId(TEST_CRITERIA_DETAIL_ID)
                         .applicantAmount(BigDecimal.valueOf(1650.00))
                         .applicantFrequency(Frequency.MONTHLY)
                         .partnerAmount(BigDecimal.valueOf(1650.00))
                         .partnerFrequency(Frequency.TWO_WEEKLY)
                         .build(),
                 FinancialAssessmentDetails.builder()
-                        .criteriaDetailId(41681820)
+                        .criteriaDetailId(131)
                         .applicantAmount(BigDecimal.valueOf(200.00))
                         .applicantFrequency(Frequency.ANNUALLY)
                         .partnerAmount(BigDecimal.valueOf(10.00))
@@ -775,4 +783,104 @@ public class TestModelDataBuilder {
         financialAssessment.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
         return financialAssessment;
     }
+
+    public static FinancialAssessmentDTO getFinancialAssessmentDTO(String status, String newWorkReason, String reviewType) {
+        return FinancialAssessmentDTO.builder()
+                .id(TEST_FINANCIAL_ASSESSMENT_ID)
+                .cmuId(CMU_ID)
+                .initialAscrId(TEST_CRITERIA_ID)
+                .fullAscrId(TEST_CRITERIA_ID)
+                .initOtherBenefitNote(TEST_NOTE)
+                .initOtherIncomeNote(TEST_INCOME_NOTE)
+                .initTotAggregatedIncome(BigDecimal.valueOf(15600.00))
+                .initTotAggregatedIncome(BigDecimal.valueOf(15600.00))
+                .initNotes(TEST_NOTE)
+                .initResult(InitAssessmentResult.FULL.name())
+                .initResultReason(InitAssessmentResult.PASS.getReason())
+                .fassInitStatus(status)
+                .newWorkReason(newWorkReason)
+                .rtCode(reviewType)
+                .repId(TEST_REP_ID)
+                .userCreated(TEST_USER)
+                .assessmentType(AssessmentType.INIT.getType())
+                .dateCreated(TEST_DATE_CREATED)
+                .initialAssessmentDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .fullAssessmentDate(LocalDateTime.parse("2022-10-09T15:02:25"))
+                .fullAssessmentNotes(TEST_NOTE)
+                .fullAdjustedLivingAllowance(BigDecimal.valueOf(15600.00))
+                .fullOtherHousingNote(TEST_NOTE)
+                .fullTotalAggregatedExpenses(BigDecimal.valueOf(22000.00))
+                .fullTotalAnnualDisposableIncome(BigDecimal.valueOf(1000.00))
+                .fullResult(FullAssessmentResult.PASS.getResult())
+                .fullResultReason(FullAssessmentResult.PASS.getReason())
+                .fassFullStatus(status)
+                .initTotAggregatedIncome(BigDecimal.valueOf(15600.00))
+                .initAdjustedIncomeValue(BigDecimal.valueOf(15600.00))
+                .initResult(InitAssessmentResult.PASS.getResult())
+                .initApplicationEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .firstIncomeReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .secondIncomeReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .build();
+    }
+
+    public static ApiInitialMeansAssessment getApiInitialMeansAssessment(CurrentStatus currentStatus, NewWorkReason newWorkReason,
+                                                                         ReviewType reviewType) {
+        ApiInitialMeansAssessment apiInitialMeansAssessment = new ApiInitialMeansAssessment();
+        apiInitialMeansAssessment.setId(TEST_CRITERIA_ID);
+        apiInitialMeansAssessment.setAssessmentDate(LocalDateTime.parse("2021-10-09T15:02:25"));
+        apiInitialMeansAssessment.setOtherBenefitNote(TEST_NOTE);
+        apiInitialMeansAssessment.setOtherIncomeNote(TEST_INCOME_NOTE);
+        apiInitialMeansAssessment.setTotalAggregatedIncome(BigDecimal.valueOf(15600.00));
+        apiInitialMeansAssessment.setAdjustedIncomeValue(BigDecimal.valueOf(15600.00));
+        apiInitialMeansAssessment.setNotes(TEST_NOTE);
+        apiInitialMeansAssessment.setLowerThreshold(BigDecimal.valueOf(12500.0));
+        apiInitialMeansAssessment.setUpperThreshold(BigDecimal.valueOf(22500.0));
+        apiInitialMeansAssessment.setResult(InitAssessmentResult.PASS.getResult());
+        apiInitialMeansAssessment.setResultReason(InitAssessmentResult.PASS.getReason());
+        if (null !=currentStatus) {
+            ApiAssessmentStatus apiAssessmentStatus = new ApiAssessmentStatus();
+            apiAssessmentStatus.setStatus(currentStatus.getStatus());
+            apiAssessmentStatus.setDescription(currentStatus.getDescription());
+            apiInitialMeansAssessment.setAssessmentStatus(apiAssessmentStatus);
+        }
+
+        if (null != newWorkReason) {
+            ApiNewWorkReason apiNewWorkReason = new ApiNewWorkReason();
+            apiNewWorkReason.setCode(newWorkReason.getCode());
+            apiNewWorkReason.setDescription(newWorkReason.getDescription());
+            apiNewWorkReason.setType(newWorkReason.getType());
+            apiInitialMeansAssessment.setNewWorkReason(apiNewWorkReason);
+        }
+
+        if (null != reviewType) {
+            ApiReviewType rType = new ApiReviewType();
+            rType.setCode(reviewType.getCode());
+            rType.setDescription(reviewType.getDescription());
+            apiInitialMeansAssessment.setReviewType(rType);
+        }
+
+        return  apiInitialMeansAssessment;
+    }
+
+    public static ApiFullMeansAssessment getApiFullAssessment(CurrentStatus currentStatus) {
+        ApiFullMeansAssessment apiFullMeansAssessment = new ApiFullMeansAssessment();
+        apiFullMeansAssessment.setId(TEST_CRITERIA_ID);
+        apiFullMeansAssessment.setAssessmentDate(LocalDateTime.parse("2022-10-09T15:02:25"));
+        apiFullMeansAssessment.setAssessmentNotes(TEST_NOTE);
+        apiFullMeansAssessment.setAdjustedLivingAllowance(BigDecimal.valueOf(15600.00));
+        apiFullMeansAssessment.setOtherHousingNote(TEST_NOTE);
+        apiFullMeansAssessment.setTotalAggregatedExpense(BigDecimal.valueOf(22000.00));
+        apiFullMeansAssessment.setTotalAnnualDisposableIncome(BigDecimal.valueOf(1000.00));
+        apiFullMeansAssessment.setThreshold(BigDecimal.valueOf(5000.00));
+        apiFullMeansAssessment.setResult(FullAssessmentResult.PASS.getResult());
+        apiFullMeansAssessment.setResultReason(FullAssessmentResult.PASS.getReason());
+        if (null !=currentStatus) {
+            ApiAssessmentStatus apiAssessmentStatus = new ApiAssessmentStatus();
+            apiAssessmentStatus.setStatus(currentStatus.getStatus());
+            apiAssessmentStatus.setDescription(currentStatus.getDescription());
+            apiFullMeansAssessment.setAssessmentStatus(apiAssessmentStatus);
+        }
+        return apiFullMeansAssessment;
+    }
+
 }

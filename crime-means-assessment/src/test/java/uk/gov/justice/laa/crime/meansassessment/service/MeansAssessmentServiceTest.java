@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -8,24 +9,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentSectionSummaryBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeansAssessmentServiceTest {
@@ -339,14 +341,14 @@ public class MeansAssessmentServiceTest {
 
     @Test
     public void givenEmptyAssessmentDetails_whenGetAssessmentSectionSummaryInvoked_thenReturnEmptyAssessmentSectionSummaryList() {
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList =
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList =
                 meansAssessmentService.getAssessmentSectionSummary(TestModelDataBuilder.getFinancialAssessmentDTO());
         assertThat(true).isEqualTo(assessmentSectionSummaryList.isEmpty());
     }
 
     @Test
     public void givenEmptyAssessmentCriteriaDetail_whenGetAssessmentSectionSummaryInvoked_thenReturnEmptyAssessmentSectionSummaryList() {
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryList =
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList =
                 meansAssessmentService.getAssessmentSectionSummary(
                         TestModelDataBuilder.getFinancialAssessmentDTOWithDetails()
                 );
@@ -416,7 +418,7 @@ public class MeansAssessmentServiceTest {
     public void givenInvalidValidAssessmentId_whenGetOldAssessmentInvoked_thenReturnEmpty() {
 
         when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(null);
-        ApiMeansAssessmentResponse apiMeansAssessmentResponse = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
+        ApiGetMeansAssessmentResponse apiMeansAssessmentResponse = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
         verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
         assertThat(apiMeansAssessmentResponse).isNull();
 
@@ -430,36 +432,35 @@ public class MeansAssessmentServiceTest {
                 .getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT, TestModelDataBuilder.TEST_SEQ));
         when(maatCourtDataService.getFinancialAssessment(any(), any()))
                 .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTOWithDetails());
-        ApiMeansAssessmentResponse apiMeansAssessmentResponse = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
+        ApiGetMeansAssessmentResponse apiMeansAssessmentResponse = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
         verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
-        assertThat(apiMeansAssessmentResponse).isNotNull();
 
     }
 
     @Test
     public void givenEmptyChildWeightings_whenMapChildWeightingsInvoked_thenResponseIsPopulatedWithEmptyChildWeightingsList() {
-        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
-        meansAssessmentService.mapChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+        ApiInitialMeansAssessment apiInitialMeansAssessment = new ApiInitialMeansAssessment();
+        meansAssessmentService.mapChildWeightings(apiInitialMeansAssessment, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithDetails());
-        assertThat(true).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().isEmpty());
+        assertThat(true).isEqualTo(apiInitialMeansAssessment.getChildWeighting().isEmpty());
     }
 
     @Test
     public void givenChildWeightings_whenMapChildWeightingsInvoked_thenResponseIsPopulatedWithChildWeightingsList() {
-        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
+        ApiInitialMeansAssessment apiInitialMeansAssessment = new ApiInitialMeansAssessment();
         doReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaChildWeightingEntity()))
                 .when(assessmentCriteriaService).getAssessmentCriteriaChildWeightingsById(any());
-        meansAssessmentService.mapChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+        meansAssessmentService.mapChildWeightings(apiInitialMeansAssessment, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithChildWeightings());
-        assertThat(1).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().size());
+        assertThat(1).isEqualTo(apiInitialMeansAssessment.getChildWeighting().size());
     }
 
     @Test
     public void givenAssessmentCriteriaChildWeightingsEmpty_whenMapChildWeightingsInvoked_thenResponseIsPopulatedWithNoChildWeightingsList() {
-        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse();
-        meansAssessmentService.mapChildWeightings(apiMeansAssessmentResponse, TestModelDataBuilder
+        ApiInitialMeansAssessment apiInitialMeansAssessment = new ApiInitialMeansAssessment();
+        meansAssessmentService.mapChildWeightings(apiInitialMeansAssessment, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithChildWeightings());
-        assertThat(0).isEqualTo(apiMeansAssessmentResponse.getChildWeightings().size());
+        assertThat(0).isEqualTo(apiInitialMeansAssessment.getChildWeighting().size());
     }
 
     @Test
@@ -489,22 +490,22 @@ public class MeansAssessmentServiceTest {
 
     @Test
     public void givenEmptyFinAssIncomeEvidence_whenMapIncomeEvidenceInvoked_thenResponseIsPopulatedWithEmptyIncomeEvidenceList() {
-        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse()
+        ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse = new ApiGetMeansAssessmentResponse()
                 .withIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
-        meansAssessmentService.mapIncomeEvidence(apiMeansAssessmentResponse, TestModelDataBuilder
+        meansAssessmentService.mapIncomeEvidence(apiGetMeansAssessmentResponse, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithDetails());
-        assertThat(true).isEqualTo(apiMeansAssessmentResponse.getIncomeEvidenceSummary().getIncomeEvidence().isEmpty());
+        assertThat(true).isEqualTo(apiGetMeansAssessmentResponse.getIncomeEvidenceSummary().getIncomeEvidence().isEmpty());
     }
 
     @Test
     public void givenIncomeEvidences_whenMapIncomeEvidenceInvoked_thenResponseIsPopulatedWithIncomeEvidenceList() {
-        ApiMeansAssessmentResponse apiMeansAssessmentResponse = new ApiMeansAssessmentResponse()
+        ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse = new ApiGetMeansAssessmentResponse()
                 .withIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
         doReturn(Optional.of(TestModelDataBuilder.getIncomeEvidenceEntity()))
                 .when(incomeEvidenceService).getIncomeEvidenceById(any());
-        meansAssessmentService.mapIncomeEvidence(apiMeansAssessmentResponse, TestModelDataBuilder
+        meansAssessmentService.mapIncomeEvidence(apiGetMeansAssessmentResponse, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithIncomeEvidence());
-        assertThat(1).isEqualTo(apiMeansAssessmentResponse.getIncomeEvidenceSummary().getIncomeEvidence().size());
+        assertThat(1).isEqualTo(apiGetMeansAssessmentResponse.getIncomeEvidenceSummary().getIncomeEvidence().size());
     }
 
     @Test
@@ -513,5 +514,21 @@ public class MeansAssessmentServiceTest {
         ApiEvidenceType apiEvidenceType = meansAssessmentService.getEvidenceType(evidence);
         assertThat(evidence).isEqualTo(apiEvidenceType.getCode());
         assertThat(apiEvidenceType.getDescription()).isNull();
+    }
+
+    @Test
+    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldSuccessApiGetMeansAssessmentResponse() throws Exception {
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(),
+                NewWorkReason.HR.getCode(),ReviewType.NAFI.getCode());
+        financialAssessmentDTO.setAssessmentDetails(TestModelDataBuilder.getAssessmentDetails());
+        financialAssessmentDTO.setChildWeightings(TestModelDataBuilder.getChildWeightings());
+        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
+        finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
+        financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        meansAssessmentService.buildMeansAssessmentResponse(response, financialAssessmentDTO);
+        assertThat(response.getInitialAssessment()).isNotNull();
+        assertThat(response.getFullAssessment()).isNotNull();
+        assertThat(response.getIncomeEvidenceSummary()).isNotNull();
     }
 }
