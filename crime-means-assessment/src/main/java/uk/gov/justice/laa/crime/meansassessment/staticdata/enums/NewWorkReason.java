@@ -10,21 +10,23 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public enum NewWorkReason {
 
-    PBI("PBI", "Crown Court Section 51"),
-    PCI("PCI", "Crown Court either way offence"),
-    FMA("FMA", "First Means Assessment"),
-    PAI("PAI", "Previous Assessment was Incorrect"),
-    CFC("CFC", "Change in Financial Circumstances"),
-    CPS("CPS", "Change in Solicitor"),
-    HR("HR", "Hardship Review (NCT only)"),
-    NEW("NEW", "New"),
-    PRI("PRI", "Previous Record Incorrect"),
-    JR("JR", "Judicial Review"),
-    EVI("EVI", "Income Evidence Differs from Declaration"),
-    INF("INF", "Re-assessment Following New Information"),
-    CSP("CSP", "Change in Partner Status");
+
+    PBI("PBI", NewWorkReasonType.ASS, "Crown Court Section 51"),
+    PCI("PCI", NewWorkReasonType.ASS, "Crown Court either way offence"),
+    FMA("FMA", NewWorkReasonType.ASS, "First Means Assessment"),
+    PAI("PAI", NewWorkReasonType.ASS, "Previous Assessment was Incorrect"),
+    CFC("CFC", NewWorkReasonType.ASS, "Change in Financial Circumstances"),
+    CPS("CPS", NewWorkReasonType.ASS, "Change in Solicitor"),
+    HR("HR", NewWorkReasonType.ASS, "Hardship Review (NCT only)"),
+    NEW("NEW", NewWorkReasonType.HARDIOJ, "New"),
+    PRI("PRI", NewWorkReasonType.HARDIOJ, "Previous Record Incorrect"),
+    JR("JR", NewWorkReasonType.HARDIOJ, "Judicial Review"),
+    EVI("EVI", NewWorkReasonType.ASS, "Income Evidence Differs from Declaration"),
+    INF("INF", NewWorkReasonType.ASS, "Re-assessment Following New Information"),
+    CSP("CSP", NewWorkReasonType.ASS, "Change in Partner Status");
 
     private String code;
+    private String type;
     private String description;
 
     public static NewWorkReason getFrom(String code) {
@@ -34,5 +36,10 @@ public enum NewWorkReason {
                 .filter(newWorkReason -> newWorkReason.code.equals(code))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("New Work Reason with value: %s does not exist.", code)));
+    }
+
+    private static class NewWorkReasonType {
+        private static final String ASS = "ASS";
+        private static final String HARDIOJ = "HARDIOJ";
     }
 }

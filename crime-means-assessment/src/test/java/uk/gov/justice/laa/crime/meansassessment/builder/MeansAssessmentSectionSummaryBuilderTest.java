@@ -1,25 +1,42 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDetailDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
+
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
 public class MeansAssessmentSectionSummaryBuilderTest {
 
     private MeansAssessmentSectionSummaryBuilder  meansAssessmentSectionSummaryBuilder
             = new MeansAssessmentSectionSummaryBuilder();
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     @Test
@@ -27,7 +44,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_SECTION, TEST_SEQ));
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(0).isEqualTo(assessmentSectionSummaryDTOS.size());
     }
 
@@ -38,7 +55,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
@@ -55,7 +72,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
@@ -76,7 +93,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ+TEST_SEQ));
 
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
@@ -97,7 +114,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
@@ -118,7 +135,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ+TEST_SEQ));
 
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
@@ -139,7 +156,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ));
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ+TEST_SEQ));
 
-        List<AssessmentSectionSummaryDTO> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
@@ -153,14 +170,14 @@ public class MeansAssessmentSectionSummaryBuilderTest {
     @Test
     public void givenValidAssessment_whenGetAssessmentDetailInvoked_shouldReturnAssessmentDetails() {
 
-        AssessmentDetailDTO assessmentDetailDTO = meansAssessmentSectionSummaryBuilder.
+        ApiAssessmentDetail assessmentDetail = meansAssessmentSectionSummaryBuilder.
                 getAssessmentDetail(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
-        assertThat(assessmentDetailDTO.getApplicantFrequency()).isEqualTo(Frequency.MONTHLY);
-        assertThat(assessmentDetailDTO.getCriteriaDetailId()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_DETAILS_ID);
-        assertThat(assessmentDetailDTO.getAssessmentDescription()).isEqualTo(TestModelDataBuilder.TEST_DESCRIPTION);
-        assertThat(assessmentDetailDTO.getPartnerAmount()).isEqualTo(BigDecimal.valueOf(20.00));
-        assertThat(assessmentDetailDTO.getPartnerFrequency()).isEqualTo(Frequency.ANNUALLY);
-        assertThat(assessmentDetailDTO.getApplicantAmount()).isEqualTo(BigDecimal.valueOf(10.00));
+        assertThat(assessmentDetail.getApplicantFrequency()).isEqualTo(Frequency.MONTHLY);
+        assertThat(assessmentDetail.getCriteriaDetailId()).isEqualTo(TestModelDataBuilder.TEST_ASSESSMENT_DETAILS_ID);
+        assertThat(assessmentDetail.getAssessmentDescription()).isEqualTo(TestModelDataBuilder.TEST_DESCRIPTION);
+        assertThat(assessmentDetail.getPartnerAmount()).isEqualTo(BigDecimal.valueOf(20.00));
+        assertThat(assessmentDetail.getPartnerFrequency()).isEqualTo(Frequency.ANNUALLY);
+        assertThat(assessmentDetail.getApplicantAmount()).isEqualTo(BigDecimal.valueOf(10.00));
 
     }
 
@@ -193,11 +210,177 @@ public class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    public void givenInvalidFrequence_whenGetAssessmentSectionSummaryTotalInvoked_shouldReturnZero() {
+    public void givenInvalidFrequency_whenGetAssessmentSectionSummaryTotalInvoked_shouldReturnZero() {
 
         BigDecimal assessmentAmt = meansAssessmentSectionSummaryBuilder
                 .getAssessmentSectionSummaryTotal(TestModelDataBuilder.TEST_APPLICANT_VALUE, null);
         assertThat(assessmentAmt).isEqualTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    public void givenAValidFinancialAssessment_whenBuildInitialAssessmentInvoked_shouldBuildInitialAssessment() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+
+        var expectedInitAssessment = TestModelDataBuilder.getApiInitialMeansAssessment(CurrentStatus.IN_PROGRESS, NewWorkReason.HR, ReviewType.NAFI);
+        expectedInitAssessment.setAssessmentSectionSummary(new ArrayList<>(
+                List.of(
+                        TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT))
+        ));
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(objectMapper.writeValueAsString(response.getInitialAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedInitAssessment));
+    }
+
+    @Test
+    public void givenEmptyCurrentStatus_whenBuildInitialAssessmentInvoked_shouldNotReturnAssessmentStatus() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(null, NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getAssessmentStatus()).isNull();
+    }
+
+    @Test
+    public void givenEmptyWorkReason_whenBuildInitialAssessmentInvoked_shouldNotReturnNewWorkReason() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), null,
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getNewWorkReason()).isNull();
+    }
+
+    @Test
+    public void givenEmptyReview_whenBuildInitialAssessmentInvoked_shouldNotReturnReviewType() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                null);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getReviewType()).isNull();
+    }
+
+    @Test
+    public void givenEmptyAssessmentCriteriaEntity_whenBuildInitialAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setInitialAssessment(new ApiInitialMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getInitialAssessment().getLowerThreshold()).isNull();
+        assertThat(response.getInitialAssessment().getUpperThreshold()).isNull();
+    }
+
+    @Test
+    public void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+
+        var expectedFullAssessment = TestModelDataBuilder.getApiFullAssessment(CurrentStatus.IN_PROGRESS);
+        expectedFullAssessment.setAssessmentSectionSummary(new ArrayList<>(
+                List.of(
+                        TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL))
+        ));
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+    }
+
+    @Test
+    public void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+
+        var expectedFullAssessment = TestModelDataBuilder.getApiFullAssessment(null);
+        expectedFullAssessment.setAssessmentSectionSummary(new ArrayList<>(
+                List.of(
+                        TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL))
+        ));
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(null, NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+    }
+
+    @Test
+    public void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+
+        var expectedFullAssessment = TestModelDataBuilder.getApiFullAssessment(CurrentStatus.IN_PROGRESS);
+        expectedFullAssessment.setAssessmentSectionSummary(new ArrayList<>(
+                List.of(
+                        TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL))
+        ));
+        expectedFullAssessment.setThreshold(null);
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+    }
+    @Test
+    public void givenEmptyAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsFalse() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        financialAssessmentDTO.setFullAssessmentDate(null);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getFullAvailable()).isFalse();
+
+    }
+    @Test
+    public void givenAAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsTrue() throws Exception {
+
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        response.setFullAssessment(new ApiFullMeansAssessment());
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
+                ReviewType.NAFI.getCode());
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
+        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assertThat(response.getFullAvailable()).isTrue();
+
     }
 
 }

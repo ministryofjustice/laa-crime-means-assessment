@@ -32,10 +32,17 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -110,6 +117,18 @@ public class MeansAssessmentIntegrationTest {
         if (withAuth) {
             final String accessToken = obtainAccessToken();
             requestBuilder.header("Authorization", "Bearer " + accessToken);
+        }
+        return requestBuilder;
+    }
+
+    private MockHttpServletRequestBuilder buildRequestForGet(HttpMethod method, String url, boolean withAuth) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder =
+                MockMvcRequestBuilders.request(method, url)
+                        .contentType(MediaType.APPLICATION_JSON);
+        if (withAuth) {
+            final String accessToken = obtainAccessToken();
+            requestBuilder.header("Authorization", "Bearer " + accessToken);
+            requestBuilder.header("Laa-Transaction-Id", TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
         }
         return requestBuilder;
     }
@@ -227,6 +246,41 @@ public class MeansAssessmentIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         verify(maatCourtDataClient, timeout(1)).getApiResponseViaPUT(any(), any(), any(), any());
 
+    }
+
+    @Test
+    public void givenAInvalidContent_whenGetOldAssessmentInvoked_ShouldFailsBadRequest() throws Exception {
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, Boolean.TRUE))
+                .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldFailsUnauthorizedAccess() throws Exception {
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
+                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, Boolean.FALSE))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldSuccessApiGetMeansAssessmentResponse() throws Exception {
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(),
+                NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
+        financialAssessmentDTO.setAssessmentDetails(TestModelDataBuilder.getAssessmentDetails());
+        financialAssessmentDTO.setChildWeightings(TestModelDataBuilder.getChildWeightings());
+        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
+        finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
+        financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
+        when(maatCourtDataClient.getApiResponseViaGET(any(), any(), any(), any()))
+                .thenReturn(financialAssessmentDTO);
+        ResultActions result = mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
+                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
+                .andExpect(status().isOk());
+    }
+
+    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldReturn() throws Exception {
+        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
+                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
+                .andExpect(status().isOk());
     }
 
     private void assertErrorScenario(String expectedErrorMessage, MvcResult result) throws Exception {
