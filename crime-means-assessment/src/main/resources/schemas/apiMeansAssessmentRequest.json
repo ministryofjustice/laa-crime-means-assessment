@@ -94,6 +94,10 @@
       "type": "object",
       "description": "Magistrate Court Outcome",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome"
+    },
+    "newWorkReason": {
+      "description": "Work Reason Details",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason"
     }
   },
   "additionalProperties": false,
