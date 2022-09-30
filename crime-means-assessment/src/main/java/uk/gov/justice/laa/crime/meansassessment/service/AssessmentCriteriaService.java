@@ -81,13 +81,13 @@ public class AssessmentCriteriaService {
                     || detail.getApplicantAmount().compareTo(BigDecimal.ZERO) != 0) {
                 if ((criteriaDetailValue.getApplicantValue().compareTo(detail.getApplicantAmount()) != 0 ||
                         (applicantFrequency != null &&
-                                applicantFrequency.getCode().equals(
+                                !applicantFrequency.getCode().equals(
                                         criteriaDetailValue.getApplicantFrequency().getCode()
                                 )
                         )) ||
                         (criteriaDetailValue.getPartnerValue().compareTo(detail.getPartnerAmount()) != 0 ||
                                 (partnerFrequency != null &&
-                                        partnerFrequency.getCode().equals(
+                                        !partnerFrequency.getCode().equals(
                                                 criteriaDetailValue.getPartnerFrequency().getCode()
                                         )
                                 )
