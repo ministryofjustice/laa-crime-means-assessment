@@ -41,4 +41,5 @@ public class MeansAssessmentRequestDTO {
     private BigDecimal initTotalAggregatedIncome;
     private String fullAssessmentNotes;
     private Integer financialAssessmentId;
+    private LocalDateTime timeStamp;
 }

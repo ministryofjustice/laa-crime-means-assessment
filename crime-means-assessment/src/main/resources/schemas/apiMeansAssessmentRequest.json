@@ -94,6 +94,11 @@
       "type": "object",
       "description": "Magistrate Court Outcome",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Financial assessment timestamp",
+      "format": "date-time"
     }
   },
   "additionalProperties": false,

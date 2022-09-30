@@ -241,6 +241,9 @@ public class MeansAssessmentIntegrationTest {
         setUpWebClientMock();
         when(maatCourtDataClient.getApiResponseViaPUT(any(), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
