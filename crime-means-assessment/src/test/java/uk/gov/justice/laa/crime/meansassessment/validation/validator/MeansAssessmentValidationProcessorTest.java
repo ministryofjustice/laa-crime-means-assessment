@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
+import uk.gov.justice.laa.crime.meansassessment.service.MaatCourtDataService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
@@ -41,6 +42,9 @@ public class MeansAssessmentValidationProcessorTest {
     MeansAssessmentRequestDTO createMeansAssessmentRequest;
 
     MeansAssessmentRequestDTO fullAssessment;
+
+    @Mock
+    private MaatCourtDataService maatCourtDataService;
 
     @Before
     public void setup() {
@@ -163,5 +167,16 @@ public class MeansAssessmentValidationProcessorTest {
         ValidationException validationException = Assert.assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.CREATE));
         assertThat(validationException.getMessage()).isEqualTo(MSG_INCOMPLETE_ASSESSMENT_FOUND);
+    }
+
+    @Test
+    public void givenInvalidFinancialAssessmentTimeStamp_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+        when(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(
+                any(MeansAssessmentRequestDTO.class))
+        ).thenReturn(Boolean.TRUE);
+
+        ValidationException validationException = Assert.assertThrows(ValidationException.class,
+                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
+        assertThat(validationException.getMessage()).isEqualTo(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
     }
 }
