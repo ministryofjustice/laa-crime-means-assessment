@@ -62,11 +62,11 @@ public class MeansAssessmentValidationProcessor {
             }
         }
 
-        if (AssessmentRequestType.UPDATE.equals(requestType)) {
-            if (meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)) {
-                throw new ValidationException(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
-            }
+        if (AssessmentRequestType.UPDATE.equals(requestType) &&
+                meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)) {
+            throw new ValidationException(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
         }
+
         return Optional.empty();
     }
 
