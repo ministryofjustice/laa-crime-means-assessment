@@ -15,6 +15,7 @@ import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.CaseTypeAssessmentCriteriaDetailValueEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
@@ -25,10 +26,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AssessmentCriteriaServiceTest {
@@ -119,7 +119,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenValidFrequency_whenCheckFrequencyIsInvoked_thenDoesNothing() {
+    public void givenValidFrequency_whenCheckCriteriaDetailFrequencyIsInvoked_thenDoesNothing() {
         when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
                         any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
                 )
@@ -129,7 +129,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenInvalidFrequency_whenCheckFrequencyIsInvoked_thenExceptionIsThrown() {
+    public void givenInvalidFrequency_whenCheckCriteriaDetailFrequencyIsInvoked_thenExceptionIsThrown() {
         when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
                         any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
                 )
@@ -182,12 +182,13 @@ public class AssessmentCriteriaServiceTest {
     public void givenApplicantFrequency_whenCheckAssessmentDetailIsInvoked_thenValidateApplicantFrequency() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails().get(0);
-        doNothing().when(assessmentCriteriaService)
-                .checkCriteriaDetailFrequency(any(AssessmentCriteriaDetailEntity.class), any(Frequency.class));
+
+        when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
+                        any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
+                )
+        ).thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailFrequencyEntity()));
+
         assessmentCriteriaService.checkAssessmentDetail(CaseType.EITHER_WAY, section, assessmentCriteriaEntity, detail);
-        verify(assessmentCriteriaService).checkCriteriaDetailFrequency(
-                any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
-        );
     }
 
     @Test
@@ -196,14 +197,12 @@ public class AssessmentCriteriaServiceTest {
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails(true).get(0);
 
         detail.setApplicantFrequency(null);
+        when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
+                        any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
+                )
+        ).thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailFrequencyEntity()));
 
-        doNothing().when(assessmentCriteriaService).checkCriteriaDetailFrequency(
-                any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
-        );
         assessmentCriteriaService.checkAssessmentDetail(CaseType.EITHER_WAY, section, assessmentCriteriaEntity, detail);
-        verify(assessmentCriteriaService).checkCriteriaDetailFrequency(
-                any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
-        );
     }
 
     @Test
@@ -215,14 +214,12 @@ public class AssessmentCriteriaServiceTest {
                 any(AssessmentCriteriaDetailEntity.class), any(CaseType.class))
         ).thenReturn(Optional.empty());
 
-        doNothing().when(assessmentCriteriaService).checkCriteriaDetailFrequency(
-                any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
-        );
+        when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
+                        any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
+                )
+        ).thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailFrequencyEntity()));
 
         assessmentCriteriaService.checkAssessmentDetail(CaseType.EITHER_WAY, section, assessmentCriteriaEntity, detail);
-        verify(caseTypeAssessmentCriteriaDetailValueRepository).findByAssessmentCriteriaDetailAndCaseType(
-                any(AssessmentCriteriaDetailEntity.class), any(CaseType.class)
-        );
     }
 
     @Test
@@ -234,14 +231,12 @@ public class AssessmentCriteriaServiceTest {
                 any(AssessmentCriteriaDetailEntity.class), any(CaseType.class))
         ).thenReturn(Optional.of(TestModelDataBuilder.getCaseTypeAssessmentCriteriaDetailValueEntity()));
 
-        doNothing().when(assessmentCriteriaService).checkCriteriaDetailFrequency(
-                any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
-        );
+        when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
+                        any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
+                )
+        ).thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailFrequencyEntity()));
 
         assessmentCriteriaService.checkAssessmentDetail(CaseType.EITHER_WAY, section, assessmentCriteriaEntity, detail);
-        verify(caseTypeAssessmentCriteriaDetailValueRepository).findByAssessmentCriteriaDetailAndCaseType(
-                any(AssessmentCriteriaDetailEntity.class), any(CaseType.class)
-        );
     }
 
     @Test
@@ -249,22 +244,30 @@ public class AssessmentCriteriaServiceTest {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails(true).get(0);
 
+        CaseTypeAssessmentCriteriaDetailValueEntity criteriaDetailValueEntity =
+                TestModelDataBuilder.getCaseTypeAssessmentCriteriaDetailValueEntity();
         when(caseTypeAssessmentCriteriaDetailValueRepository.findByAssessmentCriteriaDetailAndCaseType(
                 any(AssessmentCriteriaDetailEntity.class), any(CaseType.class))
-        ).thenReturn(Optional.of(TestModelDataBuilder.getCaseTypeAssessmentCriteriaDetailValueEntity()));
+        ).thenReturn(Optional.of(criteriaDetailValueEntity));
 
-        doNothing().when(assessmentCriteriaService).checkCriteriaDetailFrequency(
-                any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
-        );
+        when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
+                        any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
+                )
+        ).thenReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailFrequencyEntity()));
 
         String expectedErrorMessage = "Incorrect amount entered for: " + TestModelDataBuilder.TEST_DESCRIPTION;
         ThrowableAssert.ThrowingCallable function =
                 () -> assessmentCriteriaService.checkAssessmentDetail(CaseType.EITHER_WAY, section, assessmentCriteriaEntity, detail);
 
         SoftAssertions.assertSoftly(softly -> {
+
             detail.setApplicantAmount(BigDecimal.ZERO);
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
             detail.setApplicantAmount(TestModelDataBuilder.TEST_APPLICANT_VALUE);
+
+            detail.setApplicantFrequency(null);
+            assertThatNoException().isThrownBy(function);
+            detail.setApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY);
 
             detail.setApplicantFrequency(Frequency.FOUR_WEEKLY);
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
@@ -273,6 +276,10 @@ public class AssessmentCriteriaServiceTest {
             detail.setPartnerAmount(BigDecimal.ZERO);
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
             detail.setPartnerAmount(TestModelDataBuilder.TEST_PARTNER_VALUE);
+
+            detail.setPartnerFrequency(null);
+            assertThatNoException().isThrownBy(function);
+            detail.setPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY);
 
             detail.setPartnerFrequency(Frequency.FOUR_WEEKLY);
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
