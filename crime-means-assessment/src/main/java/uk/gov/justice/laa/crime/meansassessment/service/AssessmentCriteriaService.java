@@ -77,8 +77,8 @@ public class AssessmentCriteriaService {
                 ).orElse(null);
 
         if (criteriaDetailValue != null) {
-            if (detail.getPartnerAmount().compareTo(BigDecimal.ZERO) != 0
-                    || detail.getApplicantAmount().compareTo(BigDecimal.ZERO) != 0) {
+            if (BigDecimal.ZERO.compareTo(detail.getPartnerAmount()) != 0
+                    || BigDecimal.ZERO.compareTo(detail.getApplicantAmount()) != 0) {
                 if ((criteriaDetailValue.getApplicantValue().compareTo(detail.getApplicantAmount()) != 0 ||
                         (applicantFrequency != null &&
                                 !applicantFrequency.getCode().equals(
