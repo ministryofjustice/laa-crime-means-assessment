@@ -31,6 +31,7 @@ public class MeansAssessmentRequestDTOBuilder {
                 .incomeEvidenceSummary(assessmentRequest.getIncomeEvidenceSummary())
                 .crownCourtOverview(assessmentRequest.getCrownCourtOverview())
                 .magCourtOutcome(assessmentRequest.getMagCourtOutcome())
+                .timeStamp(assessmentRequest.getTimestamp())
                 .build();
 
         if (assessmentRequest instanceof ApiCreateMeansAssessmentRequest) {
