@@ -12,6 +12,8 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentR
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -65,9 +67,5 @@ public class InitMeansAssessmentService implements AssessmentService {
         } else {
             return InitAssessmentResult.FULL;
         }
-    }
-
-    private BigDecimal setStandardScale(BigDecimal valueToScale) {
-        return valueToScale.setScale(2, RoundingMode.HALF_UP);
     }
 }

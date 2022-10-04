@@ -4,9 +4,9 @@ import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SortUtilsTest {
     @Test
@@ -15,5 +15,12 @@ public class SortUtilsTest {
                 SortUtils.class.getDeclaredConstructors().length);
         Constructor<SortUtils> constructor = SortUtils.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+    }
+
+    @Test
+    public void testSort_whenNullIsPassed_NullIsReturned() {
+        List<String> list = null;
+        SortUtils.sortListWithComparing(list, null, null, null);
+        assertNull(list);
     }
 }
