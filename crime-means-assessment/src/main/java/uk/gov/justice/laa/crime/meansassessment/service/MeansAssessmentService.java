@@ -8,7 +8,6 @@ import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseB
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentSectionSummaryBuilder;
 import uk.gov.justice.laa.crime.meansassessment.config.FeaturesConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentSectionSummaryDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
@@ -31,6 +30,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
 
 @Slf4j
 @Service
@@ -127,10 +128,10 @@ public class MeansAssessmentService {
                 );
 
                 applicantTotal = applicantTotal.add(
-                        getDetailTotal(assessmentDetail, false));
+                        calculateDetailTotal(assessmentDetail.getApplicantAmount(), assessmentDetail.getApplicantFrequency()));
 
                 partnerTotal = partnerTotal.add(
-                        getDetailTotal(assessmentDetail, true));
+                        calculateDetailTotal(assessmentDetail.getPartnerAmount(), assessmentDetail.getPartnerFrequency()));
 
             }
             summaryTotal = applicantTotal.add(partnerTotal);
@@ -143,27 +144,11 @@ public class MeansAssessmentService {
         return annualTotal;
     }
 
-    BigDecimal getDetailTotal(final ApiAssessmentDetail assessmentDetail, final boolean usePartner) {
-        BigDecimal detailTotal = BigDecimal.ZERO;
-
-        if (usePartner) {
-            BigDecimal partnerAmount = assessmentDetail.getPartnerAmount();
-            if (partnerAmount != null && !BigDecimal.ZERO.equals(partnerAmount)) {
-                Frequency partnerFrequency = assessmentDetail.getPartnerFrequency();
-                if (partnerFrequency != null) {
-                    detailTotal = detailTotal.add(partnerAmount.multiply(BigDecimal.valueOf(partnerFrequency.getWeighting())));
-                }
-            }
-        } else {
-            BigDecimal applicationAmount = assessmentDetail.getApplicantAmount();
-            if (applicationAmount != null && !BigDecimal.ZERO.equals(applicationAmount)) {
-                Frequency applicantFrequency = assessmentDetail.getApplicantFrequency();
-                if (applicantFrequency != null) {
-                    detailTotal = detailTotal.add(applicationAmount.multiply(BigDecimal.valueOf(applicantFrequency.getWeighting())));
-                }
-            }
-        }
-        return detailTotal;
+    BigDecimal calculateDetailTotal(BigDecimal amount, Frequency frequency) {
+        if (amount != null && frequency != null && !BigDecimal.ZERO.equals(amount)) {
+            return setStandardScale(setStandardScale(BigDecimal.valueOf(frequency.getWeighting()))
+                    .multiply(amount));
+        } else return setStandardScale(BigDecimal.ZERO);
     }
 
     public ApiGetMeansAssessmentResponse getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {

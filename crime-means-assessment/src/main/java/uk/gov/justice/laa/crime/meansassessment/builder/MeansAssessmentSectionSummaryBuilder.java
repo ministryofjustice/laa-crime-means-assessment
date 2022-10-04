@@ -2,9 +2,9 @@ package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.justice.laa.crime.meansassessment.dto.*;
+import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
@@ -13,8 +13,13 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
 
 @Slf4j
 @Component
@@ -72,7 +77,7 @@ public class MeansAssessmentSectionSummaryBuilder {
     }
 
     public void buildFullAssessment(ApiGetMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO,
-                                       List<ApiAssessmentSectionSummary> assessmentSectionSummaryList,
+                                    List<ApiAssessmentSectionSummary> assessmentSectionSummaryList,
                                     Optional<AssessmentCriteriaEntity> criteriaEntity) {
 
         ApiFullMeansAssessment apiFullMeansAssessment = assessmentResponse.getFullAssessment();
@@ -83,9 +88,7 @@ public class MeansAssessmentSectionSummaryBuilder {
         apiFullMeansAssessment.setOtherHousingNote(financialAssessmentDTO.getFullOtherHousingNote());
         apiFullMeansAssessment.setTotalAggregatedExpense(financialAssessmentDTO.getFullTotalAggregatedExpenses());
         apiFullMeansAssessment.setTotalAnnualDisposableIncome(financialAssessmentDTO.getFullTotalAnnualDisposableIncome());
-        if (criteriaEntity.isPresent()) {
-            apiFullMeansAssessment.setThreshold(criteriaEntity.get().getFullThreshold());
-        }
+        criteriaEntity.ifPresent(assessmentCriteriaEntity -> apiFullMeansAssessment.setThreshold(assessmentCriteriaEntity.getFullThreshold()));
         apiFullMeansAssessment.setResult(financialAssessmentDTO.getFullResult());
         apiFullMeansAssessment.setResultReason(financialAssessmentDTO.getFullResultReason());
 
@@ -123,7 +126,7 @@ public class MeansAssessmentSectionSummaryBuilder {
                 if (section.equals(Section.INITA) || section.equals(Section.INITB)) {
                     assessmentSectionSummary.setAssessmentType(AssessmentType.INIT);
                 } else if (section.equals(Section.FULLA) || section.equals(Section.FULLB)) {
-                   assessmentSectionSummary.setAssessmentType(AssessmentType.FULL);
+                    assessmentSectionSummary.setAssessmentType(AssessmentType.FULL);
                 }
                 assessmentSectionSummaryList.add(assessmentSectionSummary);
             }
@@ -167,7 +170,8 @@ public class MeansAssessmentSectionSummaryBuilder {
 
         BigDecimal detailTotal = BigDecimal.ZERO;
         if (assessmentAmt != null && !BigDecimal.ZERO.equals(assessmentAmt) && frequency != null) {
-            detailTotal = assessmentAmt.multiply(BigDecimal.valueOf(frequency.getWeighting()));
+            detailTotal = setStandardScale(assessmentAmt)
+                    .multiply(BigDecimal.valueOf(frequency.getWeighting()));
         }
         return detailTotal;
 
