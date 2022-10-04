@@ -76,15 +76,18 @@ public class AssessmentCriteriaService {
                         criteriaDetail, caseType
                 ).orElse(null);
 
-        if (criteriaDetailValue != null && (!criteriaDetailValue.getApplicantValue().equals(detail.getApplicantAmount()) ||
-                !criteriaDetailValue.getApplicantFrequency().getCode().equals(
-                        Optional.ofNullable(applicantFrequency).map(Frequency::getCode).orElse(null)) ||
-                !criteriaDetailValue.getPartnerValue().equals(detail.getPartnerAmount()) ||
-                !criteriaDetailValue.getPartnerFrequency().getCode().equals(
-                        Optional.ofNullable(partnerFrequency).map(Frequency::getCode).orElse(null)))) {
+        if (criteriaDetailValue != null &&
+                ((criteriaDetailValue.getApplicantValue().compareTo(detail.getApplicantAmount()) != 0 ||
+                        (applicantFrequency != null &&
+                                !applicantFrequency.getCode().equals(criteriaDetailValue.getApplicantFrequency().getCode())
+                        )) ||
+                        (criteriaDetailValue.getPartnerValue().compareTo(detail.getPartnerAmount()) != 0 ||
+                                (partnerFrequency != null &&
+                                        !partnerFrequency.getCode().equals(criteriaDetailValue.getPartnerFrequency().getCode())
+                                )
+                        ))) {
             throw new ValidationException("Incorrect amount entered for: " + criteriaDetail.getDescription());
         }
-
     }
 
     public Optional<AssessmentCriteriaChildWeightingEntity> getAssessmentCriteriaChildWeightingsById(Integer id) {
