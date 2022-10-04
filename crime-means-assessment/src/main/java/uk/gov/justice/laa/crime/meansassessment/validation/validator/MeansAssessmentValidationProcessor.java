@@ -42,16 +42,15 @@ public class MeansAssessmentValidationProcessor {
             throw new ValidationException(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
         }
 
-        if (AssessmentRequestType.CREATE.equals(requestType)) {
-            if (!meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)) {
-                throw new ValidationException(MSG_NEW_WORK_REASON_IS_NOT_VALID);
-            } else if (meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
-                throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
-            }
+        if (AssessmentRequestType.CREATE.equals(requestType) &&
+                meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
+            throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
         }
 
         if (AssessmentType.INIT.equals(requestDTO.getAssessmentType())) {
-            if (!initAssessmentValidator.validate(requestDTO)) {
+            if (!meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)) {
+                throw new ValidationException(MSG_NEW_WORK_REASON_IS_NOT_VALID);
+            } else if (!initAssessmentValidator.validate(requestDTO)) {
                 throw new ValidationException(MSG_INCORRECT_REVIEW_TYPE);
             }
         } else {
