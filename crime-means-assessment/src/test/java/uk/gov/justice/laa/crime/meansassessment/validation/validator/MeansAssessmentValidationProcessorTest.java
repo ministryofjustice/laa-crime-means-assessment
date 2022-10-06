@@ -175,8 +175,8 @@ public class MeansAssessmentValidationProcessorTest {
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
-        ValidationException validationException = Assert.assertThrows(ValidationException.class,
-                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
-        assertThat(validationException.getMessage()).isEqualTo(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
+        assertThatThrownBy(
+                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE)
+        ).isInstanceOf(ValidationException.class).hasMessageContaining(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
     }
 }
