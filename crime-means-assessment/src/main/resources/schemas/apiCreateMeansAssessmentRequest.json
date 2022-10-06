@@ -5,10 +5,6 @@
   "title": "Initial Means Assessment Request",
   "description": "Data contract for initial means assessment requests",
   "properties": {
-    "newWorkReason": {
-      "description": "Work Reason Details",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason"
-    },
     "reviewType": {
       "description": "Review Type Info",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType"
@@ -21,6 +17,5 @@
   "extends": {
     "$ref": "apiMeansAssessmentRequest.json"
   },
-  "additionalProperties": false,
-  "required": ["newWorkReason"]
+  "additionalProperties": false
 }
