@@ -96,8 +96,11 @@ public class MeansAssessmentValidationService {
     public boolean isAssessmentModifiedByAnotherUser(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         FinancialAssessmentDTO financialAssessmentDTO = maatCourtDataService.getFinancialAssessment(meansAssessmentRequest.getFinancialAssessmentId(),
                 meansAssessmentRequest.getLaaTransactionId());
-        LocalDateTime updateFinAssessmentTimeStamp = null != financialAssessmentDTO.getUpdated() ? financialAssessmentDTO.getUpdated()
-                : financialAssessmentDTO.getDateCreated();
-        return !updateFinAssessmentTimeStamp.equals(meansAssessmentRequest.getTimeStamp());
+        if (null != financialAssessmentDTO) {
+            LocalDateTime updateFinAssessmentTimeStamp = null != financialAssessmentDTO.getUpdated() ? financialAssessmentDTO.getUpdated()
+                    : financialAssessmentDTO.getDateCreated();
+            return !updateFinAssessmentTimeStamp.equals(meansAssessmentRequest.getTimeStamp());
+        }
+        return true;
     }
 }
