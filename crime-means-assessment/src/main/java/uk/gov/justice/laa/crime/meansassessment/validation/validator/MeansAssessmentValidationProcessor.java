@@ -50,6 +50,10 @@ public class MeansAssessmentValidationProcessor {
             } else if (meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
                 throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
             }
+        } else {
+            if (meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)) {
+                throw new ValidationException(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
+            }
         }
 
         if (AssessmentType.INIT.equals(requestDTO.getAssessmentType())) {
@@ -62,10 +66,7 @@ public class MeansAssessmentValidationProcessor {
             }
         }
 
-        if (AssessmentRequestType.UPDATE.equals(requestType) &&
-                meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)) {
-            throw new ValidationException(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
-        }
+
 
         return Optional.empty();
     }
