@@ -548,6 +548,7 @@ public class TestModelDataBuilder {
                 .withUserSession(getUserSession())
                 .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
                 .withUsn(TEST_USN)
+                .withTimestamp(TEST_DATE_CREATED)
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
