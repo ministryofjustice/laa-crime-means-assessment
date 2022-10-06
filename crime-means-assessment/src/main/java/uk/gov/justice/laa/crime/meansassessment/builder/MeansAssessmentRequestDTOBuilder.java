@@ -3,7 +3,9 @@ package uk.gov.justice.laa.crime.meansassessment.builder;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 
 @Component
 @AllArgsConstructor
@@ -31,6 +33,7 @@ public class MeansAssessmentRequestDTOBuilder {
                 .incomeEvidenceSummary(assessmentRequest.getIncomeEvidenceSummary())
                 .crownCourtOverview(assessmentRequest.getCrownCourtOverview())
                 .magCourtOutcome(assessmentRequest.getMagCourtOutcome())
+                .newWorkReason(assessmentRequest.getNewWorkReason())
                 .timeStamp(assessmentRequest.getTimestamp())
                 .build();
 
@@ -38,7 +41,6 @@ public class MeansAssessmentRequestDTOBuilder {
             ApiCreateMeansAssessmentRequest initMeansAssessmentRequest = (ApiCreateMeansAssessmentRequest) assessmentRequest;
             requestDTO.setUsn(initMeansAssessmentRequest.getUsn());
             requestDTO.setReviewType(initMeansAssessmentRequest.getReviewType());
-            requestDTO.setNewWorkReason(initMeansAssessmentRequest.getNewWorkReason());
         }
 
         if (assessmentRequest instanceof ApiUpdateMeansAssessmentRequest) {
