@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
@@ -60,8 +59,8 @@ public class TestModelDataBuilder {
     public static final Frequency TEST_FREQUENCY = Frequency.MONTHLY;
     public static final CaseType TEST_CASE_TYPE = CaseType.APPEAL_CC;
 
-    public static final BigDecimal TEST_APPLICANT_VALUE = BigDecimal.valueOf(10d);
-    public static final BigDecimal TEST_PARTNER_VALUE = BigDecimal.valueOf(1d);
+    public static final BigDecimal TEST_APPLICANT_VALUE = BigDecimal.valueOf(10);
+    public static final BigDecimal TEST_PARTNER_VALUE = BigDecimal.valueOf(1);
 
     public static final CurrentStatus TEST_ASSESSMENT_STATUS = CurrentStatus.COMPLETE;
 
@@ -837,7 +836,7 @@ public class TestModelDataBuilder {
         apiInitialMeansAssessment.setUpperThreshold(BigDecimal.valueOf(22500.0));
         apiInitialMeansAssessment.setResult(InitAssessmentResult.PASS.getResult());
         apiInitialMeansAssessment.setResultReason(InitAssessmentResult.PASS.getReason());
-        if (null !=currentStatus) {
+        if (null != currentStatus) {
             ApiAssessmentStatus apiAssessmentStatus = new ApiAssessmentStatus();
             apiAssessmentStatus.setStatus(currentStatus.getStatus());
             apiAssessmentStatus.setDescription(currentStatus.getDescription());
@@ -859,7 +858,7 @@ public class TestModelDataBuilder {
             apiInitialMeansAssessment.setReviewType(rType);
         }
 
-        return  apiInitialMeansAssessment;
+        return apiInitialMeansAssessment;
     }
 
     public static ApiFullMeansAssessment getApiFullAssessment(CurrentStatus currentStatus) {
@@ -874,7 +873,7 @@ public class TestModelDataBuilder {
         apiFullMeansAssessment.setThreshold(BigDecimal.valueOf(5000.00));
         apiFullMeansAssessment.setResult(FullAssessmentResult.PASS.getResult());
         apiFullMeansAssessment.setResultReason(FullAssessmentResult.PASS.getReason());
-        if (null !=currentStatus) {
+        if (null != currentStatus) {
             ApiAssessmentStatus apiAssessmentStatus = new ApiAssessmentStatus();
             apiAssessmentStatus.setStatus(currentStatus.getStatus());
             apiAssessmentStatus.setDescription(currentStatus.getDescription());
