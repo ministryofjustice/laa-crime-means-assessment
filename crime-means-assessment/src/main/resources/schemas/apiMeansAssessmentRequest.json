@@ -98,6 +98,11 @@
     "newWorkReason": {
       "description": "Work Reason Details",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "Financial assessment timestamp",
+      "format": "date-time"
     }
   },
   "additionalProperties": false,

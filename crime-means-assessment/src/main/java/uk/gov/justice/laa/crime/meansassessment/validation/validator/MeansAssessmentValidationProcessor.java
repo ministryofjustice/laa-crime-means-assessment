@@ -32,6 +32,8 @@ public class MeansAssessmentValidationProcessor {
             "Eligibility Review, Miscalculation Review or New Application Following Ineligibility.";
     public static final String MSG_FULL_ASSESSMENT_DATE_REQUIRED = "Full assessment date is required";
 
+    public static final String ASSESSMENT_MODIFIED_BY_ANOTHER_USER = "Data has been modified by another user";
+
     public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Validating means assessment request : {}", requestDTO);
         if (!isRepIdValid(requestDTO)) {
@@ -45,6 +47,10 @@ public class MeansAssessmentValidationProcessor {
         if (AssessmentRequestType.CREATE.equals(requestType) &&
                 meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
             throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
+        } else {
+            if (meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)) {
+                throw new ValidationException(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
+            }
         }
 
         if (AssessmentType.INIT.equals(requestDTO.getAssessmentType())) {
