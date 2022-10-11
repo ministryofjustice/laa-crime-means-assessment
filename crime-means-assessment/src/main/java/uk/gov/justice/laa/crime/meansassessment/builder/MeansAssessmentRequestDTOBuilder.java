@@ -34,6 +34,7 @@ public class MeansAssessmentRequestDTOBuilder {
                 .crownCourtOverview(assessmentRequest.getCrownCourtOverview())
                 .magCourtOutcome(assessmentRequest.getMagCourtOutcome())
                 .newWorkReason(assessmentRequest.getNewWorkReason())
+                .timeStamp(assessmentRequest.getTimestamp())
                 .build();
 
         if (assessmentRequest instanceof ApiCreateMeansAssessmentRequest) {

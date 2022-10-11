@@ -42,6 +42,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
             assertThat(resultDto.getIncomeEvidenceSummary()).isEqualTo(meansAssessment.getIncomeEvidenceSummary());
             assertThat(resultDto.getCrownCourtOverview()).isEqualTo(meansAssessment.getCrownCourtOverview());
             assertThat(resultDto.getMagCourtOutcome()).isEqualTo(meansAssessment.getMagCourtOutcome());
+            assertThat(resultDto.getTimeStamp()).isEqualTo(meansAssessment.getTimestamp());
         });
     }
 

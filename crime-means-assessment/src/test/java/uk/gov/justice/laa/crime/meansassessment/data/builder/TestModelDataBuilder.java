@@ -234,6 +234,7 @@ public class TestModelDataBuilder {
                 .withChildWeightings(getAssessmentChildWeightings())
                 .withUserSession(getUserSession())
                 .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
+                .withTimestamp(TEST_DATE_CREATED)
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
@@ -546,6 +547,7 @@ public class TestModelDataBuilder {
                 .withUserSession(getUserSession())
                 .withEmploymentStatus(TEST_EMPLOYMENT_STATUS)
                 .withUsn(TEST_USN)
+                .withTimestamp(TEST_DATE_CREATED)
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
@@ -576,6 +578,7 @@ public class TestModelDataBuilder {
                 .withAssessmentStatus(CurrentStatus.COMPLETE)
                 .withChildWeightings(getListOfAssessmentChildWeightings())
                 .withUserSession(getUserSession())
+                .withTimestamp(TEST_DATE_CREATED)
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
