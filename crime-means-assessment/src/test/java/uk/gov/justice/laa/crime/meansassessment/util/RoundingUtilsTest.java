@@ -5,15 +5,13 @@ import org.junit.Test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class RoundingUtilsTest {
     @Test
     public void testRoundingUtilConstructorIsPrivate() throws NoSuchMethodException {
-        assertEquals("There must be only one constructor", 1,
-                RoundingUtils.class.getDeclaredConstructors().length);
+        assertThat(RoundingUtils.class.getDeclaredConstructors()).hasSize(1);
         Constructor<RoundingUtils> constructor = RoundingUtils.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+        assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
     }
 }
