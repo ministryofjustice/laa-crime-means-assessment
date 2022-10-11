@@ -146,8 +146,7 @@ public class MeansAssessmentService {
 
     BigDecimal calculateDetailTotal(BigDecimal amount, Frequency frequency) {
         if (amount != null && frequency != null && !BigDecimal.ZERO.equals(amount)) {
-            return setStandardScale(setStandardScale(BigDecimal.valueOf(frequency.getWeighting()))
-                    .multiply(amount));
+            return setStandardScale(BigDecimal.valueOf(frequency.getWeighting()).multiply(amount));
         } else return setStandardScale(BigDecimal.ZERO);
     }
 
@@ -238,7 +237,7 @@ public class MeansAssessmentService {
 
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = getAssessmentSectionSummary(financialAssessmentDTO);
         Optional<AssessmentCriteriaEntity> initAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getInitialAscrId());
-        meansAssessmentBuilder.buildInitialAssessment(assessmentResponse,financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria);
+        meansAssessmentBuilder.buildInitialAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria);
         Optional<AssessmentCriteriaEntity> fullAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getFullAscrId());
         meansAssessmentBuilder.buildFullAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria);
         mapChildWeightings(assessmentResponse.getInitialAssessment(), financialAssessmentDTO);
