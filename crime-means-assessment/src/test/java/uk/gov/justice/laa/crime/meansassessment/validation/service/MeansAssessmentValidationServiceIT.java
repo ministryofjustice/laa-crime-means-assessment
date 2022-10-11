@@ -19,6 +19,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
+import uk.gov.justice.laa.crime.meansassessment.service.MaatCourtDataService;
 import uk.gov.justice.laa.crime.meansassessment.util.MaatWebClientIntegrationTestUtil;
 import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
@@ -48,6 +49,9 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
     @Mock
     private OAuth2AuthorizedClientRepository authorizedClients;
 
+    @Mock
+    private MaatCourtDataService maatCourtDataService;
+
     @Before
     public void initialize() throws IOException {
         startMockWebServer();
@@ -55,7 +59,7 @@ public class MeansAssessmentValidationServiceIT extends MaatWebClientIntegration
         RetryConfiguration retryConfiguration = generateRetryConfiguration(maxRetries, 1, 0.5);
         WebClient maatWebClient = buildWebClient(configuration, retryConfiguration, clientRegistrationRepository, authorizedClients);
         MaatCourtDataClient courtDataClient = new MaatCourtDataClient(maatWebClient);
-        meansAssessmentValidationService = new MeansAssessmentValidationService(configuration, courtDataClient);
+        meansAssessmentValidationService = new MeansAssessmentValidationService(configuration, courtDataClient, maatCourtDataService);
     }
 
     @After

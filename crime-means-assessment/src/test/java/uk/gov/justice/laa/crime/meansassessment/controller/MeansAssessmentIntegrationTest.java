@@ -196,6 +196,9 @@ public class MeansAssessmentIntegrationTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
         doThrow(new RuntimeException()).when(maatCourtDataClient).getApiResponseViaPOST(any(), any(), any(), any());
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
         setUpWebClientMock();
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
@@ -211,6 +214,9 @@ public class MeansAssessmentIntegrationTest {
 
         when(maatCourtDataClient.getApiResponseViaPOST(any(), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
         setUpWebClientMock();
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
@@ -241,6 +247,9 @@ public class MeansAssessmentIntegrationTest {
         setUpWebClientMock();
         when(maatCourtDataClient.getApiResponseViaPUT(any(), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
+        when(maatCourtDataClient.getApiResponseViaGET(
+                eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any())
+        ).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
