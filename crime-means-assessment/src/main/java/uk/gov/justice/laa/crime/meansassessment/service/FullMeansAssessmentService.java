@@ -11,6 +11,8 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentR
 
 import java.math.BigDecimal;
 
+import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,7 +40,7 @@ public class FullMeansAssessmentService implements AssessmentService {
     }
 
     BigDecimal getDisposableIncome(MeansAssessmentRequestDTO requestDTO, BigDecimal expenditureTotal, BigDecimal adjustedLivingAllowance) {
-        return requestDTO.getInitTotalAggregatedIncome()
+        return setStandardScale(requestDTO.getInitTotalAggregatedIncome())
                 .subtract(
                         expenditureTotal.add(
                                 adjustedLivingAllowance
@@ -48,15 +50,12 @@ public class FullMeansAssessmentService implements AssessmentService {
 
     BigDecimal getAdjustedLivingAllowance(MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         BigDecimal totalChildWeighting =
-                childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria);
+                setStandardScale(childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria));
 
-        return assessmentCriteria.getLivingAllowance().multiply(
-                assessmentCriteria.getApplicantWeightingFactor().add(
-                        assessmentCriteria.getPartnerWeightingFactor().add(
-                                totalChildWeighting
-                        )
-                )
-        );
+        return setStandardScale(assessmentCriteria.getLivingAllowance())
+                .multiply(setStandardScale(assessmentCriteria.getApplicantWeightingFactor())
+                        .add(setStandardScale(assessmentCriteria.getPartnerWeightingFactor()))
+                        .add(totalChildWeighting));
     }
 
     FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {

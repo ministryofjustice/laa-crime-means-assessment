@@ -6,45 +6,40 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
 public class MeansAssessmentSectionSummaryBuilderTest {
 
-    private MeansAssessmentSectionSummaryBuilder  meansAssessmentSectionSummaryBuilder
+    public static final BigDecimal EXPECTED_AMOUNT = new BigDecimal("280.00");
+    private final MeansAssessmentSectionSummaryBuilder meansAssessmentSectionSummaryBuilder
             = new MeansAssessmentSectionSummaryBuilder();
 
     @Autowired
     private ObjectMapper objectMapper;
-
 
     @Test
     public void givenInvalidASectionAssessment_whenBuildInvoked_shouldReturnEmpty() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_SECTION, TEST_SEQ));
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS = meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(0).isEqualTo(assessmentSectionSummaryDTOS.size());
     }
 
@@ -53,15 +48,15 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ + TEST_SEQ));
 
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS = meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_INITA);
-        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
     }
 
@@ -70,15 +65,15 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ + TEST_SEQ));
 
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS = meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_INITB);
-        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
     }
 
@@ -87,23 +82,23 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ + TEST_SEQ));
 
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ + TEST_SEQ));
 
 
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS = meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.INIT);
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_INITA);
-        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
         assertThat(assessmentSectionSummaryDTOS.get(1).getAssessmentType()).isEqualTo(AssessmentType.INIT);
         assertThat(assessmentSectionSummaryDTOS.get(1).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_INITB);
-        assertThat(assessmentSectionSummaryDTOS.get(1).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(1).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
     }
 
@@ -112,15 +107,15 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ + TEST_SEQ));
 
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS = meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_FULLA);
-        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
     }
 
@@ -129,23 +124,23 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ + TEST_SEQ));
 
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ + TEST_SEQ));
 
 
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS = meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_FULLA);
-        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
         assertThat(assessmentSectionSummaryDTOS.get(1).getAssessmentType()).isEqualTo(AssessmentType.FULL);
         assertThat(assessmentSectionSummaryDTOS.get(1).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_FULLB);
-        assertThat(assessmentSectionSummaryDTOS.get(1).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(1).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
     }
 
@@ -154,18 +149,17 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ));
-        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ+TEST_SEQ));
+        assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ + TEST_SEQ));
 
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS =  meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryDTOS = meansAssessmentSectionSummaryBuilder.buildAssessmentSectionSummary(assessmentDTOList);
         assertThat(assessmentSectionSummaryDTOS).isNotNull();
         assertThat(1).isEqualTo(assessmentSectionSummaryDTOS.size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getAssessmentType()).isEqualTo(AssessmentType.FULL);
         assertThat(2).isEqualTo(assessmentSectionSummaryDTOS.get(0).getAssessmentDetails().size());
         assertThat(assessmentSectionSummaryDTOS.get(0).getSection()).isEqualTo(TEST_ASSESSMENT_SECTION_FULLB);
-        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(BigDecimal.valueOf(280.00));
+        assertThat(assessmentSectionSummaryDTOS.get(0).getAnnualTotal()).isEqualTo(EXPECTED_AMOUNT);
 
     }
-
 
     @Test
     public void givenValidAssessment_whenGetAssessmentDetailInvoked_shouldReturnAssessmentDetails() {
@@ -206,7 +200,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
 
         BigDecimal assessmentAmt = meansAssessmentSectionSummaryBuilder
                 .getAssessmentSectionSummaryTotal(TestModelDataBuilder.TEST_APPLICANT_VALUE, TEST_FREQUENCY);
-        assertThat(assessmentAmt).isEqualTo(BigDecimal.valueOf(120.00));
+        assertThat(assessmentAmt).isEqualTo(new BigDecimal("120.00"));
     }
 
     @Test
@@ -239,7 +233,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    public void givenEmptyCurrentStatus_whenBuildInitialAssessmentInvoked_shouldNotReturnAssessmentStatus() throws Exception {
+    public void givenEmptyCurrentStatus_whenBuildInitialAssessmentInvoked_shouldNotReturnAssessmentStatus() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -252,7 +246,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    public void givenEmptyWorkReason_whenBuildInitialAssessmentInvoked_shouldNotReturnNewWorkReason() throws Exception {
+    public void givenEmptyWorkReason_whenBuildInitialAssessmentInvoked_shouldNotReturnNewWorkReason() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -265,7 +259,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    public void givenEmptyReview_whenBuildInitialAssessmentInvoked_shouldNotReturnReviewType() throws Exception {
+    public void givenEmptyReview_whenBuildInitialAssessmentInvoked_shouldNotReturnReviewType() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -278,7 +272,7 @@ public class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    public void givenEmptyAssessmentCriteriaEntity_whenBuildInitialAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+    public void givenEmptyAssessmentCriteriaEntity_whenBuildInitialAssessmentInvoked_shouldNotReturnThreshold() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -354,8 +348,9 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
         assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
     }
+
     @Test
-    public void givenEmptyAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsFalse() throws Exception {
+    public void givenEmptyAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsFalse() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -369,8 +364,9 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assertThat(response.getFullAvailable()).isFalse();
 
     }
+
     @Test
-    public void givenAAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsTrue() throws Exception {
+    public void givenAAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsTrue() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
