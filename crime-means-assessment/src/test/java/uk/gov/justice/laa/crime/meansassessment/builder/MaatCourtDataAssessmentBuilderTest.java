@@ -32,8 +32,6 @@ public class MaatCourtDataAssessmentBuilderTest {
                     .isEqualTo(assessmentDTO.getMeansAssessment().getInitAssessmentNotes());
             assertThat(resultDto.getAssessmentType())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getAssessmentType().getType());
-            assertThat(resultDto.getFassInitStatus())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getAssessmentStatus().getStatus());
             assertThat(resultDto.getInitialAscrId())
                     .isEqualTo(assessmentDTO.getAssessmentCriteria().getId());
             assertThat(resultDto.getInitialAssessmentDate())
@@ -88,29 +86,36 @@ public class MaatCourtDataAssessmentBuilderTest {
     }
 
     private void checkUpdateFields(MaatApiAssessmentRequest resultDto) {
-        Consumer<MaatApiUpdateAssessment> updateRequirements = updateRequest -> {
-            assertThat(updateRequest.getFullAscrId())
-                    .isEqualTo(assessmentDTO.getAssessmentCriteria().getId());
-            assertThat(updateRequest.getFullAssessmentDate())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getFullAssessmentDate());
-            assertThat(updateRequest.getFullResult())
-                    .isEqualTo(assessmentDTO.getFullAssessmentResult().getResult());
-            assertThat(updateRequest.getFullResultReason())
-                    .isEqualTo(assessmentDTO.getFullAssessmentResult().getReason());
-            assertThat(updateRequest.getFullAssessmentNotes())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getFullAssessmentNotes());
-            assertThat(updateRequest.getFullAdjustedLivingAllowance())
-                    .isEqualTo(assessmentDTO.getAdjustedLivingAllowance());
-            assertThat(updateRequest.getFullTotalAnnualDisposableIncome())
-                    .isEqualTo(assessmentDTO.getTotalAnnualDisposableIncome());
-            assertThat(updateRequest.getFullOtherHousingNote())
-                    .isEqualTo(assessmentDTO.getMeansAssessment().getOtherHousingNote());
-            assertThat(updateRequest.getFullTotalAggregatedExpenses())
-                    .isEqualTo(assessmentDTO.getTotalAggregatedExpense());
-            assertThat(updateRequest.getUserModified())
+        Consumer<MaatApiUpdateAssessment> updateRequirements;
+        if (AssessmentType.FULL.equals(AssessmentType.getFrom(resultDto.getAssessmentType()))) {
+            updateRequirements = updateRequest -> {
+                assertThat(updateRequest.getFullAscrId())
+                        .isEqualTo(assessmentDTO.getAssessmentCriteria().getId());
+                assertThat(updateRequest.getFullAssessmentDate())
+                        .isEqualTo(assessmentDTO.getMeansAssessment().getFullAssessmentDate());
+                assertThat(updateRequest.getFassFullStatus())
+                        .isEqualTo(assessmentDTO.getCurrentStatus().getStatus());
+                assertThat(updateRequest.getFullResult())
+                        .isEqualTo(assessmentDTO.getFullAssessmentResult().getResult());
+                assertThat(updateRequest.getFullResultReason())
+                        .isEqualTo(assessmentDTO.getFullAssessmentResult().getReason());
+                assertThat(updateRequest.getFullAssessmentNotes())
+                        .isEqualTo(assessmentDTO.getMeansAssessment().getFullAssessmentNotes());
+                assertThat(updateRequest.getFullAdjustedLivingAllowance())
+                        .isEqualTo(assessmentDTO.getAdjustedLivingAllowance());
+                assertThat(updateRequest.getFullTotalAnnualDisposableIncome())
+                        .isEqualTo(assessmentDTO.getTotalAnnualDisposableIncome());
+                assertThat(updateRequest.getFullOtherHousingNote())
+                        .isEqualTo(assessmentDTO.getMeansAssessment().getOtherHousingNote());
+                assertThat(updateRequest.getFullTotalAggregatedExpenses())
+                        .isEqualTo(assessmentDTO.getTotalAggregatedExpense());
+                assertThat(updateRequest.getUserModified())
+                        .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
+            };
+        } else {
+            updateRequirements = updateRequest -> assertThat(updateRequest.getUserModified())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
-        };
-
+        }
         assertThat(resultDto).isInstanceOfSatisfying(MaatApiUpdateAssessment.class, updateRequirements);
     }
 
@@ -121,6 +126,9 @@ public class MaatCourtDataAssessmentBuilderTest {
 
         checkCommonFields(resultDto);
         checkCreateFields(resultDto);
+
+        assertThat(resultDto.getFassInitStatus())
+                .isEqualTo(assessmentDTO.getCurrentStatus().getStatus());
         assertThat(resultDto.getChildWeightings())
                 .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
     }
@@ -132,6 +140,9 @@ public class MaatCourtDataAssessmentBuilderTest {
 
         checkCommonFields(resultDto);
         checkUpdateFields(resultDto);
+
+        assertThat(resultDto.getFassInitStatus())
+                .isEqualTo(assessmentDTO.getCurrentStatus().getStatus());
         assertThat(resultDto.getChildWeightings())
                 .isEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
     }
