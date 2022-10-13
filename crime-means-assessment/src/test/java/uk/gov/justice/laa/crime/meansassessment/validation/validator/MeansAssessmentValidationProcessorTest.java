@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.service.MaatCourtDataService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
@@ -20,7 +19,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor.*;
 
@@ -42,9 +42,6 @@ public class MeansAssessmentValidationProcessorTest {
     MeansAssessmentRequestDTO createMeansAssessmentRequest;
 
     MeansAssessmentRequestDTO fullAssessment;
-
-    @Mock
-    private MaatCourtDataService maatCourtDataService;
 
     @Before
     public void setup() {
@@ -74,16 +71,29 @@ public class MeansAssessmentValidationProcessorTest {
     }
 
     @Test
-    public void givenInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+    public void givenCreateInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
         Optional<Void> result =
-                meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE);
+                meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.CREATE);
+
+        verify(meansAssessmentValidationService).isRoleActionValid(eq(createMeansAssessmentRequest), anyString());
+        verify(meansAssessmentValidationService).isRepOrderReserved(createMeansAssessmentRequest);
+        verify(meansAssessmentValidationService).isOutstandingAssessment(createMeansAssessmentRequest);
+        verify(meansAssessmentValidationService).isNewWorkReasonValid(createMeansAssessmentRequest);
+        verify(initAssessmentValidator).validate(createMeansAssessmentRequest);
+
         assertThat(result).isEmpty();
     }
 
     @Test
-    public void givenFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+    public void givenUpdateFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
         fullAssessment.setFullAssessmentDate(LocalDateTime.now());
         Optional<Void> result = meansAssessmentValidationProcessor.validate(fullAssessment, AssessmentRequestType.UPDATE);
+
+        verify(meansAssessmentValidationService).isRoleActionValid(eq(fullAssessment), anyString());
+        verify(meansAssessmentValidationService).isRepOrderReserved(fullAssessment);
+        verify(meansAssessmentValidationService).isAssessmentModifiedByAnotherUser(fullAssessment);
+        verify(fullAssessmentValidator).validate(fullAssessment);
+
         assertThat(result).isEmpty();
     }
 
