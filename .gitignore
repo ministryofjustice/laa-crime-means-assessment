@@ -38,7 +38,6 @@ out/
 
 # Gradle
 /.gradle/
-.gradle
 
 .DS_Store
 
@@ -49,3 +48,4 @@ docker-compose-debug.yml
 
 **/bin
 **/pgdata
+*.java-version
