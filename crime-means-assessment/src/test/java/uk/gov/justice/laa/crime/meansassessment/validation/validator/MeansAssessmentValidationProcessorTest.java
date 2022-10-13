@@ -20,8 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -81,6 +80,9 @@ public class MeansAssessmentValidationProcessorTest {
         verify(meansAssessmentValidationService).isNewWorkReasonValid(createMeansAssessmentRequest);
         verify(initAssessmentValidator).validate(createMeansAssessmentRequest);
 
+        verify(fullAssessmentValidator, never()).validate(fullAssessment);
+        verify(meansAssessmentValidationService, never()).isAssessmentModifiedByAnotherUser(createMeansAssessmentRequest);
+
         assertThat(result).isEmpty();
     }
 
@@ -93,6 +95,9 @@ public class MeansAssessmentValidationProcessorTest {
         verify(meansAssessmentValidationService).isRepOrderReserved(fullAssessment);
         verify(meansAssessmentValidationService).isAssessmentModifiedByAnotherUser(fullAssessment);
         verify(fullAssessmentValidator).validate(fullAssessment);
+
+        verify(initAssessmentValidator, never()).validate(createMeansAssessmentRequest);
+        verify(meansAssessmentValidationService, never()).isOutstandingAssessment(createMeansAssessmentRequest);
 
         assertThat(result).isEmpty();
     }
