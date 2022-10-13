@@ -148,18 +148,6 @@ public class MaatCourtDataAssessmentBuilderTest {
     }
 
     @Test
-    public void givenCreateRequestType_whenBuildFullAssessmentRequestIsInvoked_thenChildWeightingsAreNotPopulated() {
-        assessmentDTO.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
-        MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.CREATE);
-
-        checkCommonFields(resultDto);
-        checkCreateFields(resultDto);
-        assertThat(resultDto.getChildWeightings())
-                .isNotEqualTo(assessmentDTO.getMeansAssessment().getChildWeightings());
-    }
-
-    @Test
     public void givenUpdateRequestType_whenBuildFullAssessmentRequestIsInvoked_thenChildWeightingsAreNotArePopulated() {
         assessmentDTO.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         MaatApiAssessmentRequest resultDto =
