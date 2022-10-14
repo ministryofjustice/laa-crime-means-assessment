@@ -35,10 +35,12 @@ public class MaatCourtDataAssessmentBuilder {
         } else {
             apiAssessmentRequest = buildCreate(requestDTO);
         }
+
         if (AssessmentType.INIT.equals(assessmentType)) {
             apiAssessmentRequest = apiAssessmentRequest.withChildWeightings(
                     requestDTO.getChildWeightings()
             );
+            apiAssessmentRequest.withFassInitStatus(assessmentStatus.getStatus());
         }
 
         return apiAssessmentRequest
@@ -46,7 +48,6 @@ public class MaatCourtDataAssessmentBuilder {
                 .withCmuId(requestDTO.getCmuId())
                 .withInitNotes(requestDTO.getInitAssessmentNotes())
                 .withAssessmentType(assessmentType.getType())
-                .withFassInitStatus(assessmentStatus.getStatus())
                 .withInitialAscrId(assessmentCriteria.getId())
                 .withInitialAssessmentDate(requestDTO.getInitialAssessmentDate())
                 .withInitOtherBenefitNote(requestDTO.getOtherBenefitNote())
@@ -85,19 +86,25 @@ public class MaatCourtDataAssessmentBuilder {
 
     private MaatApiUpdateAssessment buildUpdate(MeansAssessmentDTO assessment) {
         MeansAssessmentRequestDTO meansAssessment = assessment.getMeansAssessment();
-        return new MaatApiUpdateAssessment()
-                .withFullAscrId(assessment.getAssessmentCriteria().getId())
-                .withFullAssessmentDate(meansAssessment.getFullAssessmentDate())
-                .withFullResult(ofNullable(assessment.getFullAssessmentResult())
-                        .map(FullAssessmentResult::getResult).orElse(null))
-                .withFullResultReason(ofNullable(assessment.getFullAssessmentResult())
-                        .map(FullAssessmentResult::getReason).orElse(null))
-                .withFullAssessmentNotes(meansAssessment.getFullAssessmentNotes())
-                .withFullAdjustedLivingAllowance(assessment.getAdjustedLivingAllowance())
-                .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
-                .withFullOtherHousingNote(meansAssessment.getOtherHousingNote())
-                .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense())
-                .withUserModified(meansAssessment.getUserSession().getUserName())
-                .withFinancialAssessmentId(meansAssessment.getFinancialAssessmentId());
+
+        MaatApiUpdateAssessment updateAssessment = new MaatApiUpdateAssessment();
+
+        if (AssessmentType.FULL.equals(meansAssessment.getAssessmentType())) {
+            updateAssessment
+                    .withFullAscrId(assessment.getAssessmentCriteria().getId())
+                    .withFassFullStatus(assessment.getCurrentStatus().getStatus())
+                    .withFullAssessmentDate(meansAssessment.getFullAssessmentDate())
+                    .withFullResult(ofNullable(assessment.getFullAssessmentResult())
+                            .map(FullAssessmentResult::getResult).orElse(null))
+                    .withFullResultReason(ofNullable(assessment.getFullAssessmentResult())
+                            .map(FullAssessmentResult::getReason).orElse(null))
+                    .withFullAssessmentNotes(meansAssessment.getFullAssessmentNotes())
+                    .withFullAdjustedLivingAllowance(assessment.getAdjustedLivingAllowance())
+                    .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
+                    .withFullOtherHousingNote(meansAssessment.getOtherHousingNote())
+                    .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense())
+                    .withFinancialAssessmentId(meansAssessment.getFinancialAssessmentId());
+        }
+        return updateAssessment.withUserModified(meansAssessment.getUserSession().getUserName());
     }
 }
