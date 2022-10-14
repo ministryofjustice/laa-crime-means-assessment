@@ -89,7 +89,7 @@ public class MaatCourtDataAssessmentBuilder {
 
         MaatApiUpdateAssessment updateAssessment = new MaatApiUpdateAssessment();
 
-        if (AssessmentType.FULL.equals(assessment.getMeansAssessment().getAssessmentType())) {
+        if (AssessmentType.FULL.equals(meansAssessment.getAssessmentType())) {
             updateAssessment
                     .withFullAscrId(assessment.getAssessmentCriteria().getId())
                     .withFassFullStatus(assessment.getCurrentStatus().getStatus())
