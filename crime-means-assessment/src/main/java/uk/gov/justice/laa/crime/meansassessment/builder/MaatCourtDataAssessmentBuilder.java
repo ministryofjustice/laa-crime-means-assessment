@@ -102,9 +102,10 @@ public class MaatCourtDataAssessmentBuilder {
                     .withFullAdjustedLivingAllowance(assessment.getAdjustedLivingAllowance())
                     .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
                     .withFullOtherHousingNote(meansAssessment.getOtherHousingNote())
-                    .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense())
-                    .withFinancialAssessmentId(meansAssessment.getFinancialAssessmentId());
+                    .withFullTotalAggregatedExpenses(assessment.getTotalAggregatedExpense());
         }
-        return updateAssessment.withUserModified(meansAssessment.getUserSession().getUserName());
+        return updateAssessment
+                .withUserModified(meansAssessment.getUserSession().getUserName())
+                .withFinancialAssessmentId(meansAssessment.getFinancialAssessmentId());
     }
 }
