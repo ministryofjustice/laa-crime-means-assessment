@@ -34,22 +34,22 @@ public class MeansAssessmentRequestDTOBuilder {
                 .crownCourtOverview(assessmentRequest.getCrownCourtOverview())
                 .magCourtOutcome(assessmentRequest.getMagCourtOutcome())
                 .newWorkReason(assessmentRequest.getNewWorkReason())
-                .timeStamp(assessmentRequest.getTimestamp())
                 .build();
 
         if (assessmentRequest instanceof ApiCreateMeansAssessmentRequest) {
-            ApiCreateMeansAssessmentRequest initMeansAssessmentRequest = (ApiCreateMeansAssessmentRequest) assessmentRequest;
-            requestDTO.setUsn(initMeansAssessmentRequest.getUsn());
-            requestDTO.setReviewType(initMeansAssessmentRequest.getReviewType());
+            ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = (ApiCreateMeansAssessmentRequest) assessmentRequest;
+            requestDTO.setUsn(createMeansAssessmentRequest.getUsn());
+            requestDTO.setReviewType(createMeansAssessmentRequest.getReviewType());
         }
 
         if (assessmentRequest instanceof ApiUpdateMeansAssessmentRequest) {
-            ApiUpdateMeansAssessmentRequest fullMeansAssessmentRequest = (ApiUpdateMeansAssessmentRequest) assessmentRequest;
-            requestDTO.setFullAssessmentDate(fullMeansAssessmentRequest.getFullAssessmentDate());
-            requestDTO.setOtherHousingNote(fullMeansAssessmentRequest.getOtherHousingNote());
-            requestDTO.setInitTotalAggregatedIncome(fullMeansAssessmentRequest.getInitTotalAggregatedIncome());
-            requestDTO.setFullAssessmentNotes(fullMeansAssessmentRequest.getFullAssessmentNotes());
-            requestDTO.setFinancialAssessmentId(fullMeansAssessmentRequest.getFinancialAssessmentId());
+            ApiUpdateMeansAssessmentRequest updateMeansAssessmentRequest = (ApiUpdateMeansAssessmentRequest) assessmentRequest;
+            requestDTO.setTimeStamp(updateMeansAssessmentRequest.getTimestamp());
+            requestDTO.setFullAssessmentDate(updateMeansAssessmentRequest.getFullAssessmentDate());
+            requestDTO.setOtherHousingNote(updateMeansAssessmentRequest.getOtherHousingNote());
+            requestDTO.setInitTotalAggregatedIncome(updateMeansAssessmentRequest.getInitTotalAggregatedIncome());
+            requestDTO.setFullAssessmentNotes(updateMeansAssessmentRequest.getFullAssessmentNotes());
+            requestDTO.setFinancialAssessmentId(updateMeansAssessmentRequest.getFinancialAssessmentId());
         }
 
         return requestDTO;
