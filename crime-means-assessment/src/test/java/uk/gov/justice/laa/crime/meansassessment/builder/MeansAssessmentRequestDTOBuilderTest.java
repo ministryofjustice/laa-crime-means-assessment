@@ -42,36 +42,36 @@ public class MeansAssessmentRequestDTOBuilderTest {
             assertThat(resultDto.getIncomeEvidenceSummary()).isEqualTo(meansAssessment.getIncomeEvidenceSummary());
             assertThat(resultDto.getCrownCourtOverview()).isEqualTo(meansAssessment.getCrownCourtOverview());
             assertThat(resultDto.getMagCourtOutcome()).isEqualTo(meansAssessment.getMagCourtOutcome());
-            assertThat(resultDto.getTimeStamp()).isEqualTo(meansAssessment.getTimestamp());
         });
     }
 
     @Test
     public void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
-        ApiCreateMeansAssessmentRequest initMeansAssessment =
+        ApiCreateMeansAssessmentRequest createMeansAssessment =
                 TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
 
-        MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(initMeansAssessment);
+        MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(createMeansAssessment);
 
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(resultDto.getUsn()).isEqualTo(initMeansAssessment.getUsn());
-            assertThat(resultDto.getReviewType()).isEqualTo(initMeansAssessment.getReviewType());
-            assertThat(resultDto.getNewWorkReason()).isEqualTo(initMeansAssessment.getNewWorkReason());
+            assertThat(resultDto.getUsn()).isEqualTo(createMeansAssessment.getUsn());
+            assertThat(resultDto.getReviewType()).isEqualTo(createMeansAssessment.getReviewType());
+            assertThat(resultDto.getNewWorkReason()).isEqualTo(createMeansAssessment.getNewWorkReason());
         });
     }
 
     @Test
     public void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
-        ApiUpdateMeansAssessmentRequest fullMeansAssessment =
+        ApiUpdateMeansAssessmentRequest updateMeansAssessment =
                 TestModelDataBuilder.getApiUpdateMeansAssessmentRequest(true);
 
-        MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(fullMeansAssessment);
+        MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(updateMeansAssessment);
 
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(resultDto.getFullAssessmentDate()).isEqualTo(fullMeansAssessment.getFullAssessmentDate());
-            assertThat(resultDto.getOtherHousingNote()).isEqualTo(fullMeansAssessment.getOtherHousingNote());
-            assertThat(resultDto.getInitTotalAggregatedIncome()).isEqualTo(fullMeansAssessment.getInitTotalAggregatedIncome());
-            assertThat(resultDto.getFullAssessmentNotes()).isEqualTo(fullMeansAssessment.getFullAssessmentNotes());
+            assertThat(resultDto.getFullAssessmentDate()).isEqualTo(updateMeansAssessment.getFullAssessmentDate());
+            assertThat(resultDto.getOtherHousingNote()).isEqualTo(updateMeansAssessment.getOtherHousingNote());
+            assertThat(resultDto.getInitTotalAggregatedIncome()).isEqualTo(updateMeansAssessment.getInitTotalAggregatedIncome());
+            assertThat(resultDto.getFullAssessmentNotes()).isEqualTo(updateMeansAssessment.getFullAssessmentNotes());
+            assertThat(resultDto.getTimeStamp()).isEqualTo(updateMeansAssessment.getTimestamp());
         });
     }
 }
