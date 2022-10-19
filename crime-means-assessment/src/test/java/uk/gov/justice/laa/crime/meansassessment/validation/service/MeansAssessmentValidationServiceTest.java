@@ -199,10 +199,10 @@ public class MeansAssessmentValidationServiceTest {
     }
 
     @Test
-    public void givenAValidTimeStampInRequest_whenEmptyFinancialAssessmentDTO_theTrueIsReturned() {
+    public void givenAValidTimeStampInRequest_whenEmptyFinancialAssessmentDTO_theFalseIsReturned() {
         MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         requestDTO.setTimeStamp(TestModelDataBuilder.TEST_DATE_CREATED);
         when(maatCourtDataService.getFinancialAssessment(any(),any())).thenReturn(null);
-        assertThat(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)).isTrue();
+        assertThat(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)).isFalse();
     }
 }
