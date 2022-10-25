@@ -128,6 +128,11 @@
     "reviewType": {
       "description": "Review Type Info",
       "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType"
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date the assessment was last updated"
     }
   },
   "additionalProperties": false,

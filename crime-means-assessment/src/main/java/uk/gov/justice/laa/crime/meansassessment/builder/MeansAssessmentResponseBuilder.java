@@ -31,7 +31,8 @@ public class MeansAssessmentResponseBuilder {
                 .withInitResult(maatApiAssessmentResponse.getInitResult())
                 .withInitResultReason(maatApiAssessmentResponse.getInitResultReason())
                 .withAdjustedIncomeValue(completedAssessment.getAdjustedIncomeValue())
-                .withAssessmentSectionSummary(completedAssessment.getMeansAssessment().getSectionSummaries());
+                .withAssessmentSectionSummary(completedAssessment.getMeansAssessment().getSectionSummaries())
+                .withUpdated(maatApiAssessmentResponse.getUpdated());
 
         AssessmentType assessmentType = completedAssessment.getMeansAssessment().getAssessmentType();
         if (AssessmentType.FULL.equals(assessmentType)) {
