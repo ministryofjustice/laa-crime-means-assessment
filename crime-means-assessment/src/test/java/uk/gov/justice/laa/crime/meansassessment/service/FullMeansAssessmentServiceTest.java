@@ -56,14 +56,17 @@ public class FullMeansAssessmentServiceTest {
     public void givenCompletedAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
         setupEligibilityCheckStubbing(false);
         MeansAssessmentDTO result =
-                fullMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE, meansAssessment, assessmentCriteria);
+                fullMeansAssessmentService.execute(TestModelDataBuilder.TEST_TOTAL_EXPENDITURE, meansAssessment, assessmentCriteria);
 
         SoftAssertions.assertSoftly(softly -> {
             assertThat(result.getCurrentStatus()).isEqualTo(meansAssessment.getAssessmentStatus());
             assertThat(result.getFullAssessmentResult()).isEqualTo(FullAssessmentResult.PASS);
-            assertThat(result.getTotalAggregatedExpense()).isEqualByComparingTo(TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE);
-            assertThat(result.getTotalAnnualDisposableIncome()).isEqualByComparingTo(TestModelDataBuilder.TEST_DISPOSABLE_INCOME);
-            assertThat(result.getAdjustedLivingAllowance()).isEqualByComparingTo(TestModelDataBuilder.TEST_ADJUSTED_LIVING_ALLOWANCE);
+            assertThat(result.getTotalAggregatedExpense())
+                    .isEqualByComparingTo(TestModelDataBuilder.TEST_TOTAL_AGGREGATED_EXPENDITURE);
+            assertThat(result.getTotalAnnualDisposableIncome())
+                    .isEqualByComparingTo(TestModelDataBuilder.TEST_DISPOSABLE_INCOME);
+            assertThat(result.getAdjustedLivingAllowance())
+                    .isEqualByComparingTo(TestModelDataBuilder.TEST_ADJUSTED_LIVING_ALLOWANCE);
         });
     }
 
@@ -72,31 +75,44 @@ public class FullMeansAssessmentServiceTest {
 
         meansAssessment.setAssessmentStatus(CurrentStatus.IN_PROGRESS);
         MeansAssessmentDTO result =
-                fullMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE, meansAssessment, assessmentCriteria);
+                fullMeansAssessmentService.execute(
+                        TestModelDataBuilder.TEST_TOTAL_EXPENDITURE, meansAssessment, assessmentCriteria
+                );
 
         SoftAssertions.assertSoftly(softly -> {
             assertThat(result.getCurrentStatus()).isEqualTo(meansAssessment.getAssessmentStatus());
             assertThat(result.getFullAssessmentResult()).isNull();
-            assertThat(result.getTotalAggregatedExpense()).isEqualByComparingTo(TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE);
-            assertThat(result.getTotalAnnualDisposableIncome()).isEqualByComparingTo(TestModelDataBuilder.TEST_DISPOSABLE_INCOME);
-            assertThat(result.getAdjustedLivingAllowance()).isEqualByComparingTo(TestModelDataBuilder.TEST_ADJUSTED_LIVING_ALLOWANCE);
+            assertThat(result.getTotalAggregatedExpense())
+                    .isEqualByComparingTo(TestModelDataBuilder.TEST_TOTAL_AGGREGATED_EXPENDITURE);
+            assertThat(result.getTotalAnnualDisposableIncome())
+                    .isEqualByComparingTo(TestModelDataBuilder.TEST_DISPOSABLE_INCOME);
+            assertThat(result.getAdjustedLivingAllowance())
+                    .isEqualByComparingTo(TestModelDataBuilder.TEST_ADJUSTED_LIVING_ALLOWANCE);
         });
     }
 
     @Test
     public void givenCorrectParameters_whenGetDisposableIncomeIsInvoked_thenCalculationIsCorrect() {
-        meansAssessment.setInitTotalAggregatedIncome(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
         BigDecimal result = fullMeansAssessmentService.getDisposableIncome(
-                meansAssessment, TestModelDataBuilder.TEST_AGGREGATED_EXPENDITURE, TestModelDataBuilder.TEST_ADJUSTED_LIVING_ALLOWANCE
+                TestModelDataBuilder.TEST_AGGREGATED_INCOME,
+                TestModelDataBuilder.TEST_TOTAL_EXPENDITURE,
+                TestModelDataBuilder.TEST_ADJUSTED_LIVING_ALLOWANCE
         );
         assertThat(result).isEqualByComparingTo(TestModelDataBuilder.TEST_DISPOSABLE_INCOME);
     }
 
     @Test
-    public void givenCorrectParameters_whenGetAdjustedLivingAllowanceIsInvoked_thenCalculationIsCorrect() {
-        when(childWeightingService.getTotalChildWeighting(anyList(), any(AssessmentCriteriaEntity.class))).thenReturn(
-                TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING
+    public void givenAggregatedAndDisposableIncome_whenGetAnnualAggregatedExpenditureIsInvoked_thenResultIsCorrect() {
+        BigDecimal aggregatedExpenditure = fullMeansAssessmentService.getAnnualAggregatedExpenditure(
+                TestModelDataBuilder.TEST_AGGREGATED_INCOME, TestModelDataBuilder.TEST_DISPOSABLE_INCOME
         );
+        assertThat(aggregatedExpenditure).isEqualByComparingTo(TestModelDataBuilder.TEST_TOTAL_AGGREGATED_EXPENDITURE);
+    }
+
+    @Test
+    public void givenCorrectParameters_whenGetAdjustedLivingAllowanceIsInvoked_thenCalculationIsCorrect() {
+        when(childWeightingService.getTotalChildWeighting(anyList(), any(AssessmentCriteriaEntity.class)))
+                .thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
         BigDecimal result = fullMeansAssessmentService.getAdjustedLivingAllowance(meansAssessment, assessmentCriteria);
         assertThat(result).isEqualByComparingTo(EXPECTED_ADJUSTED_LIVING_ALLOWANCE);
     }
@@ -112,7 +128,8 @@ public class FullMeansAssessmentServiceTest {
         setupEligibilityCheckStubbing(false);
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().add(BigDecimal.valueOf(0.01));
-        FullAssessmentResult result = fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
+        FullAssessmentResult result =
+                fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
         assertThat(result).isEqualTo(FullAssessmentResult.FAIL);
     }
 
@@ -121,7 +138,8 @@ public class FullMeansAssessmentServiceTest {
         setupEligibilityCheckStubbing(false);
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().subtract(BigDecimal.valueOf(0.01));
-        FullAssessmentResult result = fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
+        FullAssessmentResult result =
+                fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
         assertThat(result).isEqualTo(FullAssessmentResult.PASS);
     }
 
