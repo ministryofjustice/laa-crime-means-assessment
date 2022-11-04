@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum FullAssessmentResult {
-    PASS("PASS", "Gross income below the threshold"),
-    FAIL("FAIL", "Gross income above the threshold"),
+    PASS("PASS", "Disposable income below the threshold"),
+    FAIL("FAIL", "Disposable income above the threshold"),
     INEL("INEL", "Refused - Ineligible");
 
     private String result;
