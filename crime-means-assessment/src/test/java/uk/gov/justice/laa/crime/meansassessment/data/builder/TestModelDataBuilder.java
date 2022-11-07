@@ -79,7 +79,8 @@ public class TestModelDataBuilder {
 
     public static final BigDecimal TEST_DISPOSABLE_INCOME = BigDecimal.valueOf(4000d);
     public static final BigDecimal TEST_ADJUSTED_LIVING_ALLOWANCE = BigDecimal.valueOf(6000d);
-    public static final BigDecimal TEST_AGGREGATED_EXPENDITURE = BigDecimal.valueOf(2000d);
+    public static final BigDecimal TEST_TOTAL_EXPENDITURE = BigDecimal.valueOf(2000d);
+    public static final BigDecimal TEST_TOTAL_AGGREGATED_EXPENDITURE = BigDecimal.valueOf(8000d);
     public static final BigDecimal TEST_AGGREGATED_INCOME = BigDecimal.valueOf(12000d);
     public static final BigDecimal TEST_ADJUSTED_INCOME = BigDecimal.valueOf(20000d);
 
@@ -353,7 +354,7 @@ public class TestModelDataBuilder {
                 .currentStatus(CurrentStatus.COMPLETE)
                 .adjustedIncomeValue(TEST_ADJUSTED_INCOME)
                 .totalAnnualDisposableIncome(TEST_DISPOSABLE_INCOME)
-                .totalAggregatedExpense(TEST_AGGREGATED_EXPENDITURE)
+                .totalAggregatedExpense(TEST_TOTAL_EXPENDITURE)
                 .adjustedLivingAllowance(TEST_ADJUSTED_LIVING_ALLOWANCE)
                 .initAssessmentResult(InitAssessmentResult.FULL)
                 .fullAssessmentResult(FullAssessmentResult.PASS)
@@ -483,7 +484,7 @@ public class TestModelDataBuilder {
                 .withFassFullStatus(isValid ? CurrentStatus.COMPLETE : null)
                 .withAdjustedIncomeValue(TEST_ADJUSTED_INCOME)
                 .withTotalAnnualDisposableIncome(TEST_DISPOSABLE_INCOME)
-                .withTotalAggregatedExpense(TEST_AGGREGATED_EXPENDITURE);
+                .withTotalAggregatedExpense(TEST_TOTAL_EXPENDITURE);
     }
 
     public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid) {

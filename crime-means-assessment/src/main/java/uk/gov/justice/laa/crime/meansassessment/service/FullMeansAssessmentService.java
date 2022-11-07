@@ -24,8 +24,9 @@ public class FullMeansAssessmentService implements AssessmentService {
     public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create full means assessment - Start");
         CurrentStatus status = requestDTO.getAssessmentStatus();
+        BigDecimal totalAggregatedIncome = requestDTO.getInitTotalAggregatedIncome();
         BigDecimal adjustedLivingAllowance = getAdjustedLivingAllowance(requestDTO, assessmentCriteria);
-        BigDecimal totalDisposableIncome = getDisposableIncome(requestDTO, expenditureTotal, adjustedLivingAllowance);
+        BigDecimal totalDisposableIncome = getDisposableIncome(totalAggregatedIncome, expenditureTotal, adjustedLivingAllowance);
         log.info("Full means assessment calculation complete for Rep ID: {}", requestDTO.getRepId());
         return MeansAssessmentDTO
                 .builder()
@@ -35,22 +36,27 @@ public class FullMeansAssessmentService implements AssessmentService {
                                 ? getResult(totalDisposableIncome, requestDTO, assessmentCriteria) : null
                 )
                 .adjustedLivingAllowance(adjustedLivingAllowance)
-                .totalAggregatedExpense(expenditureTotal)
+                .totalAggregatedExpense(
+                        getAnnualAggregatedExpenditure(totalAggregatedIncome, totalDisposableIncome)
+                )
                 .totalAnnualDisposableIncome(totalDisposableIncome).build();
     }
 
-    BigDecimal getDisposableIncome(MeansAssessmentRequestDTO requestDTO, BigDecimal expenditureTotal, BigDecimal adjustedLivingAllowance) {
-        return setStandardScale(requestDTO.getInitTotalAggregatedIncome())
-                .subtract(
-                        expenditureTotal.add(
-                                adjustedLivingAllowance
-                        )
-                );
+    BigDecimal getAnnualAggregatedExpenditure(BigDecimal totalAggregatedIncome, BigDecimal totalDisposableIncome) {
+        return setStandardScale(totalAggregatedIncome.subtract(totalDisposableIncome));
+    }
+
+    BigDecimal getDisposableIncome(BigDecimal totalAggregatedIncome, BigDecimal expenditureTotal, BigDecimal adjustedLivingAllowance) {
+        return setStandardScale(totalAggregatedIncome.subtract(expenditureTotal.add(adjustedLivingAllowance)));
     }
 
     BigDecimal getAdjustedLivingAllowance(MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         BigDecimal totalChildWeighting =
-                setStandardScale(childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria));
+                setStandardScale(
+                        childWeightingService.getTotalChildWeighting(
+                                requestDTO.getChildWeightings(), assessmentCriteria
+                        )
+                );
 
         return setStandardScale(assessmentCriteria.getLivingAllowance())
                 .multiply(setStandardScale(assessmentCriteria.getApplicantWeightingFactor())
