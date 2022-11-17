@@ -1,8 +1,14 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,6 +38,9 @@ public class CrownCourtEligibilityServiceTest {
     @InjectMocks
     private CrownCourtEligibilityService crownCourtEligibilityService;
 
+    @Rule
+    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
     private MeansAssessmentRequestDTO requestDTO;
 
     private FinancialAssessmentDTO financialAssessment = TestModelDataBuilder.getFinancialAssessmentDTO();
@@ -51,18 +60,6 @@ public class CrownCourtEligibilityServiceTest {
     public void tearDown() {
         financialAssessment = TestModelDataBuilder.getFinancialAssessmentDTO();
         repOrderDTO = TestModelDataBuilder.getRepOrderDTOWithAssessments(new ArrayList<>(List.of(financialAssessment)));
-    }
-
-    @Test
-    public void givenIndictableCaseType_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
-        requestDTO.setCaseType(CaseType.INDICTABLE);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
-    }
-
-    @Test
-    public void givenEWNotCommitted_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
-        requestDTO.setMagCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
@@ -151,5 +148,27 @@ public class CrownCourtEligibilityServiceTest {
                 PassportAssessmentDTO.builder().result(PassportAssessmentResult.PASS.getResult()).build();
         repOrderDTO.getPassportAssessments().add(previous);
         assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+    }
+
+    @Test
+    public void givenIncorrectCaseType_whenIsEligibilityCheckRequiredIsInvoked_thenReturnFalse() {
+        requestDTO.setCaseType(CaseType.APPEAL_CC);
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+
+        requestDTO.setCaseType(CaseType.SUMMARY_ONLY);
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+
+        requestDTO.setCaseType(CaseType.COMMITAL);
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+
+        requestDTO.setCaseType(CaseType.INDICTABLE);
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+
+        requestDTO.setCaseType(CaseType.CC_ALREADY);
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+
+        requestDTO.setCaseType(CaseType.EITHER_WAY);
+        requestDTO.setMagCourtOutcome(MagCourtOutcome.COMMITTED);
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 }
