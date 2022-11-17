@@ -63,6 +63,20 @@ public class CrownCourtEligibilityServiceTest {
     }
 
     @Test
+    public void givenIndictableSentForTrial_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
+        requestDTO.setCaseType(CaseType.INDICTABLE);
+        requestDTO.setMagCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL);
+        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+    }
+
+    @Test
+    public void givenCCAlreadySentForTrial_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
+        requestDTO.setCaseType(CaseType.CC_ALREADY);
+        requestDTO.setMagCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL);
+        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+    }
+
+    @Test
     public void givenEWCommittedAndFirstAssessment_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
         financialAssessment.setNewWorkReason(NewWorkReason.FMA.getCode());
         assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
