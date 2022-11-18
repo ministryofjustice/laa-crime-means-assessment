@@ -25,7 +25,11 @@ public class CrownCourtEligibilityService {
     private final MaatCourtDataService maatCourtDataService;
 
     public boolean isEligibilityCheckRequired(MeansAssessmentRequestDTO assessmentRequest) {
-        boolean isCheckRequired = true;
+
+        if (!hasRequiredCaseTypeAndOutcome(assessmentRequest)) {
+            return false;
+        }
+
         String laaTransactionId = assessmentRequest.getLaaTransactionId();
 
         boolean isEitherWayAndCommittedForTrial =
@@ -55,12 +59,20 @@ public class CrownCourtEligibilityService {
                 if (isInitResultPass || isDateCreatedAfterMagsOutcome) {
                     Assessment previousAssessment = getLatestAssessment(repOrder, financialAssessmentId);
                     if (previousAssessment != null) {
-                        isCheckRequired = !hasDisqualifyingResult(previousAssessment);
+                        return !hasDisqualifyingResult(previousAssessment);
                     }
                 }
             }
         }
-        return isCheckRequired;
+        return true;
+    }
+
+    boolean hasRequiredCaseTypeAndOutcome(MeansAssessmentRequestDTO assessmentRequest) {
+        CaseType caseType = assessmentRequest.getCaseType();
+        MagCourtOutcome magCourtOutcome = assessmentRequest.getMagCourtOutcome();
+        return ((caseType.equals(CaseType.INDICTABLE) || caseType.equals(CaseType.CC_ALREADY))
+                && magCourtOutcome.equals(MagCourtOutcome.SENT_FOR_TRIAL)) ||
+                caseType.equals(CaseType.EITHER_WAY) && magCourtOutcome.equals(MagCourtOutcome.COMMITTED_FOR_TRIAL);
     }
 
     Assessment getLatestAssessment(RepOrderDTO repOrder, Integer financialAssessmentId) {
