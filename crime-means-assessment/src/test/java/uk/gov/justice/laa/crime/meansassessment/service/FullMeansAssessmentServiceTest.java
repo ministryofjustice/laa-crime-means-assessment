@@ -122,7 +122,7 @@ public class FullMeansAssessmentServiceTest {
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().add(BigDecimal.valueOf(0.01));
         FullAssessmentResult result =
-                fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
+                fullMeansAssessmentService.getResult(disposableIncome, assessmentCriteria);
         assertThat(result).isEqualTo(FullAssessmentResult.FAIL);
     }
 
@@ -131,7 +131,7 @@ public class FullMeansAssessmentServiceTest {
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().subtract(BigDecimal.valueOf(0.01));
         FullAssessmentResult result =
-                fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria);
+                fullMeansAssessmentService.getResult(disposableIncome, assessmentCriteria);
         assertThat(result).isEqualTo(FullAssessmentResult.PASS);
     }
 
@@ -139,7 +139,7 @@ public class FullMeansAssessmentServiceTest {
     public void givenEligibilityCheckRequiredAndIncomeBelowThreshold_whenGetResultIsInvoked_thenResultIsPass() {
         BigDecimal disposableIncome =
                 assessmentCriteria.getEligibilityThreshold().subtract(BigDecimal.valueOf(0.01));
-        assertThat(fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria))
+        assertThat(fullMeansAssessmentService.getResult(disposableIncome, assessmentCriteria))
                 .isEqualTo(FullAssessmentResult.FAIL);
     }
 
