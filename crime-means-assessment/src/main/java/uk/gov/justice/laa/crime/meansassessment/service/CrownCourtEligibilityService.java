@@ -70,9 +70,9 @@ public class CrownCourtEligibilityService {
     boolean hasRequiredCaseTypeAndOutcome(MeansAssessmentRequestDTO assessmentRequest) {
         CaseType caseType = assessmentRequest.getCaseType();
         MagCourtOutcome magCourtOutcome = assessmentRequest.getMagCourtOutcome();
-        return ((caseType.equals(CaseType.INDICTABLE) || caseType.equals(CaseType.CC_ALREADY))
-                && magCourtOutcome.equals(MagCourtOutcome.SENT_FOR_TRIAL)) ||
-                caseType.equals(CaseType.EITHER_WAY) && magCourtOutcome.equals(MagCourtOutcome.COMMITTED_FOR_TRIAL);
+        return ((caseType == CaseType.INDICTABLE || caseType == CaseType.CC_ALREADY)
+                && magCourtOutcome == MagCourtOutcome.SENT_FOR_TRIAL) ||
+                caseType == CaseType.EITHER_WAY && magCourtOutcome == MagCourtOutcome.COMMITTED_FOR_TRIAL;
     }
 
     Assessment getLatestAssessment(RepOrderDTO repOrder, Integer financialAssessmentId) {
