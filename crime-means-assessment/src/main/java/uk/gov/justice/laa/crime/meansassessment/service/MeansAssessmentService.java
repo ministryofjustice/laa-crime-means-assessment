@@ -238,8 +238,10 @@ public class MeansAssessmentService {
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = getAssessmentSectionSummary(financialAssessmentDTO);
         Optional<AssessmentCriteriaEntity> initAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getInitialAscrId());
         meansAssessmentBuilder.buildInitialAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria);
-        Optional<AssessmentCriteriaEntity> fullAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getFullAscrId());
-        meansAssessmentBuilder.buildFullAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria);
+        if (AssessmentType.FULL.equals(AssessmentType.getFrom(financialAssessmentDTO.getAssessmentType()))) {
+            Optional<AssessmentCriteriaEntity> fullAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getFullAscrId());
+            meansAssessmentBuilder.buildFullAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria);
+        }
         mapChildWeightings(assessmentResponse.getInitialAssessment(), financialAssessmentDTO);
         mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
     }
