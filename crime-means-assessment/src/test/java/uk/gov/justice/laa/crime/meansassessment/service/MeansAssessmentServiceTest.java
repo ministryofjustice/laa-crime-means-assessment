@@ -1,12 +1,11 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -386,17 +385,20 @@ public class MeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenInvalidValidAssessmentId_whenGetOldAssessmentInvoked_thenReturnEmpty() {
+    public void givenInvalidAssessmentId_whenGetOldAssessmentInvoked_thenReturnEmpty() {
 
         when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(null);
-        ApiGetMeansAssessmentResponse apiMeansAssessmentResponse = meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
+        ApiGetMeansAssessmentResponse apiMeansAssessmentResponse =
+                meansAssessmentService.getOldAssessment(
+                        TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID
+                );
         verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
         assertThat(apiMeansAssessmentResponse).isNull();
 
     }
 
     @Test
-    public void givenValidParam_whenGetOldAssessmentInvoked_thenReturnAssessment() {
+    public void givenAssessmentId_whenGetOldAssessmentInvoked_thenReturnAssessment() {
         doReturn(Optional.of(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA)))
                 .when(assessmentCriteriaDetailService).getAssessmentCriteriaDetailById(any());
         when(meansAssessmentSectionSummaryBuilder.buildAssessmentDTO(any(), any())).thenReturn(TestModelDataBuilder
@@ -435,7 +437,7 @@ public class MeansAssessmentServiceTest {
     }
 
     @Test
-    public void testSortIncomeEvidenceInvoked_whenFound_thenReturnSortedByMandatoryAndEvidence() {
+    public void givenIncomeEvidenceList_whenSortFinAssIncomeEvidenceSummaryIsInvoked_thenReturnSortedList() {
 
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
         finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("N", "OTHER BUSINESS"));
@@ -487,19 +489,71 @@ public class MeansAssessmentServiceTest {
         assertThat(apiEvidenceType.getDescription()).isNull();
     }
 
+    private void checkGenericResponseFields(ApiGetMeansAssessmentResponse response,
+                                            FinancialAssessmentDTO financialAssessmentDTO) {
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(response.getId())
+                    .isEqualTo(financialAssessmentDTO.getId());
+            assertThat(response.getUsn())
+                    .isEqualTo(financialAssessmentDTO.getUsn());
+            assertThat(response.getInitialAssessment())
+                    .isNotNull();
+            assertThat(response.getFullAssessment())
+                    .isNotNull();
+            assertThat(response.getIncomeEvidenceSummary())
+                    .isNotNull();
+        });
+    }
+
     @Test
-    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldSuccessApiGetMeansAssessmentResponse() {
-        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(),
-                NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
-        financialAssessmentDTO.setAssessmentDetails(TestModelDataBuilder.getAssessmentDetails());
-        financialAssessmentDTO.setChildWeightings(TestModelDataBuilder.getChildWeightings());
-        List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
-        finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
-        financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
+    public void givenInitAssessment_whenBuildMeansAssessmentResponseIsInvoked_thenBuildFullAssessmentResponse() {
+        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO();
+        meansAssessmentService.buildMeansAssessmentResponse(response, financialAssessmentDTO);
+
+        verify(meansAssessmentSectionSummaryBuilder).buildInitialAssessment(
+                any(ApiGetMeansAssessmentResponse.class),
+                eq(financialAssessmentDTO),
+                anyList(),
+                ArgumentMatchers.<Optional<AssessmentCriteriaEntity>>any()
+        );
+
+        verify(meansAssessmentService)
+                .mapChildWeightings(any(ApiInitialMeansAssessment.class), eq(financialAssessmentDTO));
+        verify(meansAssessmentService)
+                .mapIncomeEvidence(any(ApiGetMeansAssessmentResponse.class), eq(financialAssessmentDTO));
+
+        checkGenericResponseFields(response, financialAssessmentDTO);
+    }
+
+    @Test
+    public void givenFullAssessment_whenBuildMeansAssessmentResponseIsInvoked_thenBuildFullAssessmentResponse() {
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO();
+        financialAssessmentDTO.setAssessmentType(AssessmentType.FULL.getType());
+        financialAssessmentDTO.setFullAscrId(TestModelDataBuilder.TEST_CRITERIA_ID);
+
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         meansAssessmentService.buildMeansAssessmentResponse(response, financialAssessmentDTO);
-        assertThat(response.getInitialAssessment()).isNotNull();
-        assertThat(response.getFullAssessment()).isNotNull();
-        assertThat(response.getIncomeEvidenceSummary()).isNotNull();
+
+        verify(meansAssessmentSectionSummaryBuilder).buildInitialAssessment(
+                any(ApiGetMeansAssessmentResponse.class),
+                eq(financialAssessmentDTO),
+                anyList(),
+                ArgumentMatchers.<Optional<AssessmentCriteriaEntity>>any()
+        );
+
+        verify(meansAssessmentSectionSummaryBuilder).buildFullAssessment(
+                any(ApiGetMeansAssessmentResponse.class),
+                eq(financialAssessmentDTO),
+                anyList(),
+                ArgumentMatchers.<Optional<AssessmentCriteriaEntity>>any()
+        );
+
+        verify(meansAssessmentService)
+                .mapChildWeightings(any(ApiInitialMeansAssessment.class), eq(financialAssessmentDTO));
+        verify(meansAssessmentService)
+                .mapIncomeEvidence(any(ApiGetMeansAssessmentResponse.class), eq(financialAssessmentDTO));
+
+        checkGenericResponseFields(response, financialAssessmentDTO);
     }
 }
