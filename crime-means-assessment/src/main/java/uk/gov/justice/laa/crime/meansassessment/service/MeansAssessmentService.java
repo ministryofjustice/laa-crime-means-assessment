@@ -153,7 +153,8 @@ public class MeansAssessmentService {
     public ApiGetMeansAssessmentResponse getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {
         log.info("Processing get old assessment request - Start");
         ApiGetMeansAssessmentResponse assessmentResponse = null;
-        FinancialAssessmentDTO financialAssessmentDTO = maatCourtDataService.getFinancialAssessment(financialAssessmentId, laaTransactionId);
+        FinancialAssessmentDTO financialAssessmentDTO =
+                maatCourtDataService.getFinancialAssessment(financialAssessmentId, laaTransactionId);
         if (null != financialAssessmentDTO) {
             assessmentResponse = new ApiGetMeansAssessmentResponse();
             buildMeansAssessmentResponse(assessmentResponse, financialAssessmentDTO);
@@ -202,17 +203,21 @@ public class MeansAssessmentService {
     }
 
     protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
-        SortUtils.sortListWithComparing(finAssIncomeEvidenceDTOList,
-                FinAssIncomeEvidenceDTO::getMandatory, FinAssIncomeEvidenceDTO::getIncomeEvidence, SortUtils.getReverseComparator());
+        SortUtils.sortListWithComparing(finAssIncomeEvidenceDTOList, FinAssIncomeEvidenceDTO::getMandatory,
+                FinAssIncomeEvidenceDTO::getIncomeEvidence, SortUtils.getReverseComparator()
+        );
     }
 
-    protected void mapChildWeightings(ApiInitialMeansAssessment initialMeansAssessment, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapChildWeightings(ApiInitialMeansAssessment assessment, FinancialAssessmentDTO financialAssessmentDTO) {
         List<ApiAssessmentChildWeighting> apiAssessmentChildWeightings = new ArrayList<>();
         financialAssessmentDTO.getChildWeightings().forEach(childWeightings -> {
-            Optional<AssessmentCriteriaChildWeightingEntity> assessmentCriteriaChildWeightingEntityO =
-                    assessmentCriteriaService.getAssessmentCriteriaChildWeightingsById(childWeightings.getChildWeightingId());
-            if (assessmentCriteriaChildWeightingEntityO.isPresent()) {
-                AssessmentCriteriaChildWeightingEntity assessmentCriteriaChildWeightingEntity = assessmentCriteriaChildWeightingEntityO.get();
+            Optional<AssessmentCriteriaChildWeightingEntity> criteriaChildWeighting =
+                    assessmentCriteriaService.getAssessmentCriteriaChildWeightingsById(
+                            childWeightings.getChildWeightingId()
+                    );
+            if (criteriaChildWeighting.isPresent()) {
+                AssessmentCriteriaChildWeightingEntity assessmentCriteriaChildWeightingEntity =
+                        criteriaChildWeighting.get();
                 ApiAssessmentChildWeighting apiAssessmentChildWeighting = new ApiAssessmentChildWeighting()
                         .withId(childWeightings.getId())
                         .withChildWeightingId(childWeightings.getChildWeightingId())
@@ -223,11 +228,11 @@ public class MeansAssessmentService {
                 apiAssessmentChildWeightings.add(apiAssessmentChildWeighting);
             }
         });
-        initialMeansAssessment.setChildWeighting(apiAssessmentChildWeightings);
+        assessment.setChildWeighting(apiAssessmentChildWeightings);
     }
 
-    public void buildMeansAssessmentResponse(ApiGetMeansAssessmentResponse assessmentResponse
-            , FinancialAssessmentDTO financialAssessmentDTO) {
+    public void buildMeansAssessmentResponse(ApiGetMeansAssessmentResponse assessmentResponse,
+                                             FinancialAssessmentDTO financialAssessmentDTO) {
 
         assessmentResponse.setId(financialAssessmentDTO.getId());
         assessmentResponse.setUsn(financialAssessmentDTO.getUsn());
@@ -236,11 +241,19 @@ public class MeansAssessmentService {
         assessmentResponse.setIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
 
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = getAssessmentSectionSummary(financialAssessmentDTO);
-        Optional<AssessmentCriteriaEntity> initAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getInitialAscrId());
-        meansAssessmentBuilder.buildInitialAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria);
+        Optional<AssessmentCriteriaEntity> initAssessmentCriteria =
+                assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getInitialAscrId());
+        meansAssessmentBuilder.buildInitialAssessment(
+                assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria
+        );
+
         if (AssessmentType.FULL.equals(AssessmentType.getFrom(financialAssessmentDTO.getAssessmentType()))) {
-            Optional<AssessmentCriteriaEntity> fullAssessmentCriteria = assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getFullAscrId());
-            meansAssessmentBuilder.buildFullAssessment(assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria);
+            Optional<AssessmentCriteriaEntity> fullAssessmentCriteria =
+                    assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getFullAscrId());
+
+            meansAssessmentBuilder.buildFullAssessment(
+                    assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria
+            );
         }
         mapChildWeightings(assessmentResponse.getInitialAssessment(), financialAssessmentDTO);
         mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
@@ -262,13 +275,18 @@ public class MeansAssessmentService {
     protected List<AssessmentDTO> getAssessmentDTO(List<FinancialAssessmentDetails> financialAssessmentDetailsList) {
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         financialAssessmentDetailsList.forEach(e -> {
-            Optional<AssessmentCriteriaDetailEntity> assessmentCriteriaDetailEntity = assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(e.getCriteriaDetailId());
-            assessmentCriteriaDetailEntity.ifPresent(criteriaDetailEntity -> assessmentDTOList.add(meansAssessmentBuilder.buildAssessmentDTO(criteriaDetailEntity, e)));
+            Optional<AssessmentCriteriaDetailEntity> assessmentCriteriaDetailEntity =
+                    assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(e.getCriteriaDetailId());
+            assessmentCriteriaDetailEntity.ifPresent(criteriaDetailEntity ->
+                    assessmentDTOList.add(meansAssessmentBuilder.buildAssessmentDTO(criteriaDetailEntity, e))
+            );
         });
         return assessmentDTOList;
     }
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
-        SortUtils.sortListWithComparing(assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator());
+        SortUtils.sortListWithComparing(
+                assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator()
+        );
     }
 }
