@@ -866,7 +866,7 @@ public class TestModelDataBuilder {
 
     public static ApiFullMeansAssessment getApiFullAssessment(CurrentStatus currentStatus) {
         ApiFullMeansAssessment apiFullMeansAssessment = new ApiFullMeansAssessment();
-        apiFullMeansAssessment.setId(TEST_CRITERIA_ID);
+        apiFullMeansAssessment.setCriteriaId(TEST_CRITERIA_ID);
         apiFullMeansAssessment.setAssessmentDate(LocalDateTime.parse("2022-10-09T15:02:25"));
         apiFullMeansAssessment.setAssessmentNotes(TEST_NOTE);
         apiFullMeansAssessment.setAdjustedLivingAllowance(BigDecimal.valueOf(15600.00));
