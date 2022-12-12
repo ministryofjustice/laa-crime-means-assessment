@@ -1,12 +1,12 @@
 package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,6 +15,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplicantDTO implements Serializable {
+
+    @JsonCreator
+    public ApplicantDTO(Integer id) {
+        this.id = id;
+    }
+
     private Integer id;
     private String firstName;
     private String lastName;
