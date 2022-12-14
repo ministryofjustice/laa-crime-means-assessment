@@ -81,7 +81,7 @@ public class MeansAssessmentSectionSummaryBuilder {
                                     Optional<AssessmentCriteriaEntity> criteriaEntity) {
 
         ApiFullMeansAssessment apiFullMeansAssessment = assessmentResponse.getFullAssessment();
-        apiFullMeansAssessment.setId(financialAssessmentDTO.getFullAscrId());
+        apiFullMeansAssessment.setCriteriaId(financialAssessmentDTO.getFullAscrId());
         apiFullMeansAssessment.setAssessmentDate(financialAssessmentDTO.getFullAssessmentDate());
         apiFullMeansAssessment.setAssessmentNotes(financialAssessmentDTO.getFullAssessmentNotes());
         apiFullMeansAssessment.setAdjustedLivingAllowance(financialAssessmentDTO.getFullAdjustedLivingAllowance());
