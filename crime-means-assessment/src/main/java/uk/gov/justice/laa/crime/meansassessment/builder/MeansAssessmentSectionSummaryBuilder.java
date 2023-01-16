@@ -92,12 +92,6 @@ public class MeansAssessmentSectionSummaryBuilder {
         apiFullMeansAssessment.setResult(financialAssessmentDTO.getFullResult());
         apiFullMeansAssessment.setResultReason(financialAssessmentDTO.getFullResultReason());
 
-        assessmentResponse.setFullAvailable(Boolean.FALSE);
-        if (null != financialAssessmentDTO.getFullAssessmentDate()) {
-            assessmentResponse.setFullAvailable(Boolean.TRUE);
-        }
-
-
         ApiAssessmentStatus assessmentStatus = new ApiAssessmentStatus();
         if (StringUtils.isNotBlank(financialAssessmentDTO.getFassFullStatus())) {
             assessmentStatus.setStatus(financialAssessmentDTO.getFassFullStatus());
@@ -105,13 +99,11 @@ public class MeansAssessmentSectionSummaryBuilder {
             apiFullMeansAssessment.setAssessmentStatus(assessmentStatus);
         }
 
-
         List<ApiAssessmentSectionSummary> fullAssessmentSectionSummaries = assessmentSectionSummaryList.stream()
                 .filter(e -> e.getAssessmentType().equals(AssessmentType.FULL)).collect(Collectors.toList());
 
         apiFullMeansAssessment.setAssessmentSectionSummary(fullAssessmentSectionSummaries);
         assessmentResponse.setFullAssessment(apiFullMeansAssessment);
-
     }
 
 

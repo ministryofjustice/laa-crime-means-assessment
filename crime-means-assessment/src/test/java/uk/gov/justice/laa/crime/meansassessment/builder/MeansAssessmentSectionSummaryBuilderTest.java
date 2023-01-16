@@ -349,34 +349,4 @@ public class MeansAssessmentSectionSummaryBuilderTest {
         assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
     }
 
-    @Test
-    public void givenEmptyAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsFalse() {
-
-        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
-        response.setFullAssessment(new ApiFullMeansAssessment());
-
-        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
-                ReviewType.NAFI.getCode());
-        financialAssessmentDTO.setFullAssessmentDate(null);
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
-        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
-        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(response.getFullAvailable()).isFalse();
-
-    }
-
-    @Test
-    public void givenAAssessmentDate_whenBuildFullAssessmentInvoked_shouldReturnFullAvailableAsTrue() {
-
-        ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
-        response.setFullAssessment(new ApiFullMeansAssessment());
-        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(),
-                ReviewType.NAFI.getCode());
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
-        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
-        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(response.getFullAvailable()).isTrue();
-
-    }
-
 }

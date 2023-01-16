@@ -255,6 +255,12 @@ public class MeansAssessmentService {
                     assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria
             );
         }
+
+        assessmentResponse.setFullAvailable(Boolean.FALSE);
+        if (null != financialAssessmentDTO.getFullAssessmentDate()) {
+            assessmentResponse.setFullAvailable(Boolean.TRUE);
+        }
+
         mapChildWeightings(assessmentResponse.getInitialAssessment(), financialAssessmentDTO);
         mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
     }
