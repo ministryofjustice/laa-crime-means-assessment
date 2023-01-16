@@ -500,6 +500,8 @@ public class MeansAssessmentServiceTest {
                     .isNotNull();
             assertThat(response.getFullAssessment())
                     .isNotNull();
+            assertThat(response.getFullAvailable())
+                    .isNotNull();
             assertThat(response.getIncomeEvidenceSummary())
                     .isNotNull();
         });
@@ -515,7 +517,7 @@ public class MeansAssessmentServiceTest {
                 any(ApiGetMeansAssessmentResponse.class),
                 eq(financialAssessmentDTO),
                 anyList(),
-                ArgumentMatchers.<Optional<AssessmentCriteriaEntity>>any()
+                ArgumentMatchers.any()
         );
 
         verify(meansAssessmentService)
@@ -531,6 +533,7 @@ public class MeansAssessmentServiceTest {
         FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO();
         financialAssessmentDTO.setAssessmentType(AssessmentType.FULL.getType());
         financialAssessmentDTO.setFullAscrId(TestModelDataBuilder.TEST_CRITERIA_ID);
+        financialAssessmentDTO.setFullAssessmentDate(TestModelDataBuilder.TEST_DATE_CREATED);
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         meansAssessmentService.buildMeansAssessmentResponse(response, financialAssessmentDTO);
@@ -539,14 +542,14 @@ public class MeansAssessmentServiceTest {
                 any(ApiGetMeansAssessmentResponse.class),
                 eq(financialAssessmentDTO),
                 anyList(),
-                ArgumentMatchers.<Optional<AssessmentCriteriaEntity>>any()
+                ArgumentMatchers.any()
         );
 
         verify(meansAssessmentSectionSummaryBuilder).buildFullAssessment(
                 any(ApiGetMeansAssessmentResponse.class),
                 eq(financialAssessmentDTO),
                 anyList(),
-                ArgumentMatchers.<Optional<AssessmentCriteriaEntity>>any()
+                ArgumentMatchers.any()
         );
 
         verify(meansAssessmentService)
@@ -555,5 +558,7 @@ public class MeansAssessmentServiceTest {
                 .mapIncomeEvidence(any(ApiGetMeansAssessmentResponse.class), eq(financialAssessmentDTO));
 
         checkGenericResponseFields(response, financialAssessmentDTO);
+        assertThat(response.getFullAvailable()).isTrue();
     }
+
 }
