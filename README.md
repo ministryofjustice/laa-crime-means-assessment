@@ -1,6 +1,6 @@
 ## Laa Crime Means Assessment
 
-This microservice implements the create and update assessment business rules migrated from the legacy PL/SQL Assessments package.
+This microservice implements the create/update assessment and get old assessment business rules migrated from the legacy PL/SQL Assessments package.
 This is a Java based Spring Boot application hosted on [MOJ Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/about-the-cloud-platform.html).
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/ministryofjustice/laa-crime-means-assessment/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/ministryofjustice/laa-crime-means-assessment/tree/main)
@@ -100,7 +100,7 @@ We have configured a CircleCI code pipelines. You can [log in](https://app.circl
 To make any changes,create a branch and submit the PR. Once the PR is submitted the branch deployment is kicked off under the new branch name. 
 On successful build, the image is pushed to AWS ECR and requires approval to deploy to dev.
 
-Once the PR is merged with main, the deployment is automatically triggered and requires approval to deploy to desired environment.
+Once the PR is merged with main, the build is automatically deployed to DEV. Deployment to higher environments requires approval.
 
 ## Debugging Application
 Please refer to the manual [here](https://dsdmoj.atlassian.net/wiki/spaces/~360899610/pages/3846439496/Debugging+crime-means-assessment)
