@@ -10,8 +10,8 @@ This is a Java based Spring Boot application hosted on [MOJ Cloud Platform](http
 ## Contents
 
 - [Getting started](#getting-started)
-    - [Developer setup](#developer-setup)
-    - [Decrypting docker-compose.override.yml](#decrypting-docker-composeoverrideyml)
+  - [Developer setup](#developer-setup)
+  - [Decrypting docker-compose.override.yml](#decrypting-docker-composeoverrideyml)
 - [Running locally](#running-locally)
 - [Database](#database)
 - [CI/CD](#cicd)
@@ -65,6 +65,7 @@ git clone git@github.com:ministryofjustice/laa-crime-means-assessment.git
 
 cd crime-means-assessment
 ```
+
 The project is build using [Gradle](https://gradle.org/). This also includes plugins for generating IntelliJ configuration.
 
 Make sure tests all testes are passed by running following ‘gradle’ Command
@@ -89,20 +90,23 @@ docker-compose up
 laa-crime-means-assessment application will be running on http://localhost:8080
 
 ## Database
+
 This application is run with PostgresSQL using docker compose. PostgresSQL is used solely for static data.
 For database changes, we are using [liquibase]() and all the sql scripts stored in the directory (resources/db/changelog/).
 
 All CRUD operations in the MAATDB are run via the [MAAT-API](https://github.com/ministryofjustice/laa-maat-court-data-api)
 
 ## CI/CD
+
 We have configured a CircleCI code pipelines. You can [log in](https://app.circleci.com/pipelines/github/ministryofjustice/laa-crime-means-assessment) from here to access the pipeline.
 
-To make any changes,create a branch and submit the PR. Once the PR is submitted the branch deployment is kicked off under the new branch name. 
+To make any changes,create a branch and submit the PR. Once the PR is submitted the branch deployment is kicked off under the new branch name.
 On successful build, the image is pushed to AWS ECR and requires approval to deploy to dev.
 
 Once the PR is merged with main, the build is automatically deployed to DEV. Deployment to higher environments requires approval.
 
 ## Debugging Application
+
 Please refer to the manual [here](https://dsdmoj.atlassian.net/wiki/spaces/~360899610/pages/3846439496/Debugging+crime-means-assessment)
 
 Speak to one of the team member and get the docker-compose-debug.yml which will have relevant credentials to run the application on remote Debug Mode.
@@ -123,7 +127,7 @@ Make sure Remote Debug Option is set up on your preferred Editor.
 
 ### Open API
 
-We have implemented the Open API standard (with Swagger 3). The web link provides a details Rest API with a schema definition. The link can only from local or from dev environment. 
+We have implemented the Open API standard (with Swagger 3). The web link provides a details Rest API with a schema definition. The link can only from local or from dev environment.
 The swagger link can be found from [here](http://localhost:8080/open-api/docs.html)
 
 ## Application Monitoring and Logs
