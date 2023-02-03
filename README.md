@@ -1,32 +1,39 @@
 ## Laa Crime Means Assessment
 
-This is a Java based Spring Boot Application which will be hosted on AWS Environment (Cloud Platform). The application is being deployed on to the AWS ECS container service. This is a Facade application to the existing LAA legacy Applications MAAT/MLRA.
-
-[High level design](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/3673751570/Means+Assessment+-+High+level+Design+Approach)
+This microservice implements the create/update assessment and get old assessment business rules migrated from the legacy PL/SQL Assessments package.
+This is a Java based Spring Boot application hosted on [MOJ Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/about-the-cloud-platform.html).
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/ministryofjustice/laa-crime-means-assessment/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/ministryofjustice/laa-crime-means-assessment/tree/main)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://laa-crime-means-assessment-dev.apps.live.cloud-platform.service.justice.gov.uk/open-api/swagger-ui/index.html)
 
-## Developer setup
+## Contents
+
+- [Getting started](#getting-started)
+  - [Developer setup](#developer-setup)
+  - [Decrypting docker-compose.override.yml](#decrypting-docker-composeoverrideyml)
+- [Running locally](#running-locally)
+- [Database](#database)
+- [CI/CD](#cicd)
+- [Documentation](#documentation)
+  - [CMA](#cma)
+  - [High level design](#high-level-design)
+  - [Open API](#open-api)
+- [Application Monitoring and Logs](#application-monitoring-and-logs)
+  - [Error Reporting](#error-reporting)
+- [Mutation PI testing](#mutation-pi-testing)
+- [JSON Schema to POJO](#json-schema-to-pojo)
+- [Further reading](#further-reading)
+
+## Getting started
+
+### Developer setup
 
 1. Go through with this [Java Developer On-boarding Check List](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3738468667/Java+Developer+Onboarding+Check+List/) and complete all tasks.
 2. Request a team member to be added to the repository.
 3. Create a GPG (more detail further down on the page) key and create a PR. Someone from the team will approve the PR.
 4. This is a document to outline the general guideline [Developer Guidelines](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3896049821/Developer+Guidelines).
 5. This project have its own dedicated Jira Scrum board, and you can access [from here](https://dsdmoj.atlassian.net/jira/software/projects/LCAM/boards/881) and [project backlog](https://dsdmoj.atlassian.net/jira/software/projects/LCAM/boards/881/backlog)
-
-### Pre-requisites
-
-1. Docker
-2. SSH
-3. An editor/IDE of some sort - preferably Intellij/Eclipse
-4. Gradle
-5. aws cli
-6. kubectl
-7. Helm
-8. CircleCI CLI (optional)
-
-We're using [Gradle](https://gradle.org/) to build the application. This also includes plugins for generating IntelliJ configuration.
 
 ### Decrypting docker-compose.override.yml
 
@@ -49,12 +56,7 @@ Once this has been merged you can decrypt your local copy of the repository by r
 
 \*`USER_ID` can be your key ID, a full fingerprint, an email address, or anything else that uniquely identifies a public key to GPG (see "HOW TO SPECIFY A USER ID" in the gpg man page).
 
-### DB Configuration
-
-For database changes, we are using [liquibase]() and all the sql scripts stored in the directory (resources/db/changelog/).
-This project does not direct access to any of the database (togdata or mla) and all the database calls should be made through the [MAAT-API](https://github.com/ministryofjustice/laa-maat-court-data-api) project.
-
-### Application Set up
+## Running locally
 
 Clone Repository
 
@@ -64,7 +66,9 @@ git clone git@github.com:ministryofjustice/laa-crime-means-assessment.git
 cd crime-means-assessment
 ```
 
-Makesure tests all testes are passed by running following ‘gradle’ Command
+The project is build using [Gradle](https://gradle.org/). This also includes plugins for generating IntelliJ configuration.
+
+Make sure tests all testes are passed by running following ‘gradle’ Command
 
 ```sh
 ./gradlew clean test
@@ -83,29 +87,27 @@ docker-compose build
 docker-compose up
 ```
 
-laa-crime-means-assessment application will be running on http://localhost:8090
+laa-crime-means-assessment application will be running on http://localhost:8080
 
-### Cloud Platform Set Up
+## Database
 
-It is advisable to have the cloud platform set up locally.
+This application is run with PostgresSQL using docker compose. PostgresSQL is used solely for static data.
+For database changes, we are using [liquibase]() and all the sql scripts stored in the directory (resources/db/changelog/).
 
-Follow this link to on board yourself with the LAA cloud platform environment. - https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html#how-to-use-kubectl-to-connect-to-the-cluster
+All CRUD operations in the MAATDB are run via the [MAAT-API](https://github.com/ministryofjustice/laa-maat-court-data-api)
 
-Configure AWS details using aws cli (command - `aws configure`) Set up AWS Access Key ID & AWS Secret Access Key. All other values can be default.
-
-More detail can be found on https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/edit-v2/1756201359.
-
-The terraform scripts for the SQS can be found on https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/live-1.cloud-platform.service.justice.gov.uk/laa-court-data-adaptor-dev
-
-### Deployment
+## CI/CD
 
 We have configured a CircleCI code pipelines. You can [log in](https://app.circleci.com/pipelines/github/ministryofjustice/laa-crime-means-assessment) from here to access the pipeline.
 
-### Open API
+To make any changes,create a branch and submit the PR. Once the PR is submitted the branch deployment is kicked off under the new branch name.
+On successful build, the image is pushed to AWS ECR and requires approval to deploy to dev.
 
-We have implemented the Open API standard (with Swagger 3). The web link provides a details Rest API with a schema definition. The link can only from local or from dev environment. The swagger link can be found from [here](http://localhost:8090/open-api/docs.html)
+Once the PR is merged with main, the build is automatically deployed to DEV. Deployment to higher environments requires approval.
 
-### Debugging Application
+## Debugging Application
+
+Please refer to the manual [here](https://dsdmoj.atlassian.net/wiki/spaces/~360899610/pages/3846439496/Debugging+crime-means-assessment)
 
 Speak to one of the team member and get the docker-compose-debug.yml which will have relevant credentials to run the application on remote Debug Mode.
 
@@ -117,19 +119,31 @@ Run the following command
 
 Make sure Remote Debug Option is set up on your preferred Editor.
 
-### Application Monitoring and Logs
+##Documentation
 
-The LAA Crime Means Assessment API has been configured to send the application logs to both AWS Cloud Watch and Sentry.
+###[CMA Documentation](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3917447206/Crime+Means+Assessment+Service+CMA)
 
-####Cloud Watch Logs:
-To see the Cloud watch logs, you need to have the right user groups and permission. More details about this available here. (link) The application logs are configured with the followings log groups (names).
-The application deployed as a Docker container, and the logs can also be found from the AWS ECS logs.
+###[High level design](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/3673751570/Means+Assessment+-+High+level+Design+Approach)
 
-####Sentry
-Sentry is a 3rd party application logging and monitoring platform. The platform provides easier searching based on meta-data as well as application monitoring. You can learn more about ['how we have integrated Sentry to improve application logging and monitoring'](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/2139914261/Integrate+Sentry+to+improve+application+logging+and+monitoring)
-There are several alert rules configured on Sentry that will push notification to both email and Slack channel. We have created a dedicated slack channel (named 'laa-crime-apps-logs-alert'). Sentry will push the alert to this channel for a specific type of exceptions. The configuration for Slack alert can be change from a [Sentry dashboard](https://sentry.io/settings/ministryofjustice/projects/laa-crime-means-assessment/alerts/).
+### Open API
 
-### Mutation PI testing
+We have implemented the Open API standard (with Swagger 3). The web link provides a details Rest API with a schema definition. The link can only from local or from dev environment.
+The swagger link can be found from [here](http://localhost:8080/open-api/docs.html)
+
+## Application Monitoring and Logs
+
+[Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk)
+[Thanos](https://thanos.live.cloud-platform.service.justice.gov.uk)
+[AlertManager](https://alertmanager.cloud-platform.service.justice.gov.uk)
+[Grafana](https://grafana.cloud-platform.service.justice.gov.uk)
+[Kibana](https://kibana.cloud-platform.service.justice.gov.uk)
+
+###Error Reporting
+Sentry sentry-java/sentry-spring-boot-starter at main · getsentry/sentry-java
+
+https://sentry.io/organizations/ministryofjustice/projects/laa-crime-means-assessment/?project=6212907
+
+## Mutation PI testing
 
 Mutation testing providing test coverage for Java applications.
 Faults (or mutations) are automatically seeded into the code, then your tests are run. If your tests fail then the mutation is killed, if your tests pass then the mutation lived.
@@ -145,13 +159,6 @@ We want to make sure that the Mutation Coverage for new classes are covered prop
 ```sh
 ./gradlew pitest
 ```
-
-### Further reading
-
-- [Diagrams for LAA and the common platform](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/1513128006/Diagrams)
-- [New Starter Guild](https://dsdmoj.atlassian.net/wiki/spaces/LAA/pages/1391460702/New+Hire+Check+List)
-- [Cloud Platform user guide](https://user-guide.cloud-platform.service.justice.gov.uk/#application-logging)
-- [Modernisation Platform Team Information](https://user-guide.modernisation-platform.service.justice.gov.uk/#modernisation-platform-team-information)
 
 ## JSON Schema to POJO
 
@@ -172,3 +179,10 @@ been set and are documented inside that section.:
 - targetPackage: what package the POJOs should belong to
 - includeJsr303Annotations: JSR-303/349 annotations (for schema rules like minimum, maximum, etc)
 - dateTimeType: What type to use instead of string
+
+### Further reading
+
+- [Diagrams for LAA and the common platform](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/1513128006/Diagrams)
+- [New Starter Guild](https://dsdmoj.atlassian.net/wiki/spaces/LAA/pages/1391460702/New+Hire+Check+List)
+- [Cloud Platform user guide](https://user-guide.cloud-platform.service.justice.gov.uk/#application-logging)
+- [Modernisation Platform Team Information](https://user-guide.modernisation-platform.service.justice.gov.uk/#modernisation-platform-team-information)
