@@ -107,23 +107,13 @@ Once the PR is merged with main, the build is automatically deployed to DEV. Dep
 
 ## Debugging Application
 
-Please refer to the manual [here](https://dsdmoj.atlassian.net/wiki/spaces/~360899610/pages/3846439496/Debugging+crime-means-assessment)
+Please refer to the debugging manual [here](https://dsdmoj.atlassian.net/wiki/spaces/~360899610/pages/3846439496/Debugging+crime-means-assessment)
 
-Speak to one of the team member and get the docker-compose-debug.yml which will have relevant credentials to run the application on remote Debug Mode.
+## Documentation
 
-Run the following command
+### [CMA](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3917447206/Crime+Means+Assessment+Service+CMA)
 
-```sh
- docker-compose -f docker-compose-debug.yml up
-```
-
-Make sure Remote Debug Option is set up on your preferred Editor.
-
-##Documentation
-
-###[CMA Documentation](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3917447206/Crime+Means+Assessment+Service+CMA)
-
-###[High level design](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/3673751570/Means+Assessment+-+High+level+Design+Approach)
+### [High level design](https://dsdmoj.atlassian.net/wiki/spaces/LAACP/pages/3673751570/Means+Assessment+-+High+level+Design+Approach)
 
 ### Open API
 
@@ -133,15 +123,19 @@ The swagger link can be found from [here](http://localhost:8080/open-api/docs.ht
 ## Application Monitoring and Logs
 
 [Prometheus](https://prometheus.cloud-platform.service.justice.gov.uk)
+
 [Thanos](https://thanos.live.cloud-platform.service.justice.gov.uk)
+
 [AlertManager](https://alertmanager.cloud-platform.service.justice.gov.uk)
+
 [Grafana](https://grafana.cloud-platform.service.justice.gov.uk)
+
 [Kibana](https://kibana.cloud-platform.service.justice.gov.uk)
 
-###Error Reporting
-Sentry sentry-java/sentry-spring-boot-starter at main · getsentry/sentry-java
+### Error Reporting
+[MOJ Sentry](https://sentry.io/organizations/ministryofjustice/projects/laa-crime-means-assessment/?project=6212907)
 
-https://sentry.io/organizations/ministryofjustice/projects/laa-crime-means-assessment/?project=6212907
+[sentry-spring-boot-starter](https://github.com/getsentry/sentry-java/tree/main/sentry-spring-boot-starter)
 
 ## Mutation PI testing
 
