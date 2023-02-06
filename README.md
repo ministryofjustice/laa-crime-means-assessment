@@ -133,6 +133,7 @@ The swagger link can be found from [here](http://localhost:8080/open-api/docs.ht
 [Kibana](https://kibana.cloud-platform.service.justice.gov.uk)
 
 ### Error Reporting
+
 [MOJ Sentry](https://sentry.io/organizations/ministryofjustice/projects/laa-crime-means-assessment/?project=6212907)
 
 [sentry-spring-boot-starter](https://github.com/getsentry/sentry-java/tree/main/sentry-spring-boot-starter)
