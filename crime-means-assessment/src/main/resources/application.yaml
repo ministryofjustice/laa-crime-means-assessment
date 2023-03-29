@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8085
 
 logging:
   level:
@@ -112,6 +112,6 @@ retry-config:
   jitter-value: 0.75
 
 features:
-  date-completion-enabled: false
+  date-completion-enabled: true
 
 version: 0.0.1
