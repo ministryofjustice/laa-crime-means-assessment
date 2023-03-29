@@ -133,6 +133,11 @@
       "type": "string",
       "format": "date-time",
       "description": "The date the assessment was last updated"
+    },
+    "applicationTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The application modification timestamp"
     }
   },
   "additionalProperties": false,
