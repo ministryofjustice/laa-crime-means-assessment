@@ -111,7 +111,4 @@ retry-config:
   min-back-off-period: 5
   jitter-value: 0.75
 
-features:
-  date-completion-enabled: true
-
 version: 0.0.1

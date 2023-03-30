@@ -73,10 +73,11 @@ public class AssessmentCompletionServiceTest {
 
     @Test
     public void givenAssessment_whenUpdateApplicationCompletionDateIsInvoked_thenCompletionDateIsPersisted() {
-        assessmentCompletionService.updateApplicationCompletionDate(assessment, LAA_TRANSACTION_ID);
+        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
+                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
 
+        assessmentCompletionService.updateApplicationCompletionDate(assessment, LAA_TRANSACTION_ID);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
-        verify(maatCourtDataService).updateCompletionDate(any(DateCompletionRequestDTO.class), anyString());
     }
 
     @Test
@@ -140,10 +141,12 @@ public class AssessmentCompletionServiceTest {
     public void givenCompleteInitAssessment_whenExecuteIsInvoked_thenCompletionDateIsUpdated() {
         doReturn(true)
                 .when(assessmentCompletionService).isInitAssessmentComplete(any(MeansAssessmentDTO.class));
+
+        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
+                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
+
         assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
-        verify(maatCourtDataService)
-                .updateCompletionDate(any(DateCompletionRequestDTO.class), anyString());
     }
 
     @Test
@@ -151,10 +154,12 @@ public class AssessmentCompletionServiceTest {
         assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         doReturn(true)
                 .when(assessmentCompletionService).isFullUpdateRequired(any(MeansAssessmentDTO.class), anyString());
+
+        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
+                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
+
         assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
-        verify(maatCourtDataService)
-                .updateCompletionDate(any(DateCompletionRequestDTO.class), anyString());
     }
 
 }
