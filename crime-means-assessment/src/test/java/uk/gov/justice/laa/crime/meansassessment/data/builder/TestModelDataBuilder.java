@@ -743,7 +743,7 @@ public class TestModelDataBuilder {
                 .magsOutcomeDate(TEST_MAGS_OUTCOME_DATE.toString())
                 .magsOutcomeDateSet(TEST_MAGS_OUTCOME_DATE)
                 .committalDate(TEST_MAGS_OUTCOME_DATE)
-                .repOrderDecisionReasonCode("rder-code")
+                .decisionReasonCode("rder-code")
                 .crownRepOrderDecision("cc-rep-doc")
                 .crownRepOrderType("cc-rep-type")
                 .build();
