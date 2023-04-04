@@ -22,18 +22,6 @@ public class IncomeEvidenceEntity {
     @Column(name = "DESCRIPTION", nullable = false, length = 100)
     private String description;
 
-    @Column(name = "DATE_CREATED", nullable = false)
-    private LocalDateTime dateCreated;
-
-    @Column(name = "USER_CREATED", nullable = false, length = 100)
-    private String userCreated;
-
-    @Column(name = "DATE_MODIFIED")
-    private LocalDateTime dateModified;
-
-    @Column(name = "USER_MODIFIED", length = 100)
-    private String userModified;
-
     @Column(name = "LETTER_DESCRIPTION", length = 500)
     private String letterDescription;
 
