@@ -206,12 +206,8 @@ public class TestModelDataBuilder {
     public static IncomeEvidenceEntity getIncomeEvidenceEntity() {
         return IncomeEvidenceEntity.builder()
                 .adhoc("Y")
-                .dateCreated(LocalDateTime.now())
-                .dateModified(LocalDateTime.now())
                 .description("Signature")
                 .id("SIGNATURE")
-                .userModified(null)
-                .userCreated(TEST_USER)
                 .letterDescription("Signature")
                 .welshLetterDescription("Llofnod")
                 .build();
