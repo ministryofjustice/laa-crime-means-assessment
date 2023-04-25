@@ -40,7 +40,7 @@ def versions = [
 dependencyManagement {
     imports {
         mavenBom "com.amazonaws:aws-java-sdk-bom:1.12.454"
-        mavenBom "org.springframework.security:spring-security-bom:5.6.4"
+        mavenBom "org.springframework.security:spring-security-bom:6.0.3"
     }
     dependencies {
         dependencySet(group: 'org.mapstruct', version: versions.mapstructVersion) {
