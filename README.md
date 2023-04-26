@@ -68,7 +68,14 @@ cd crime-means-assessment
 
 The project is build using [Gradle](https://gradle.org/). This also includes plugins for generating IntelliJ configuration.
 
-Make sure tests all testes are passed by running following ‘gradle’ Command
+Install Java - use the major version specified in the .circleci/config.yaml and Dockerfile:
+
+```sh
+brew install openjdk@11
+export PATH="/opt/homebrew/Cellar/openjdk@11/11.0.19/bin:$PATH"
+```
+
+Make sure all tests are passed by running following ‘gradle’ Command
 
 ```sh
 ./gradlew clean test
