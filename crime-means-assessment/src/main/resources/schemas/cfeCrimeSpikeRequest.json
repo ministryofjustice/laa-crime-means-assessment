@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "cfeCrimeSpikeRequest.json",
+  "type": "object",
+  "title": "CFE Crime request",
+  "description": "Perform (initial) crime assessment only",
+  "properties": {
+    "submission_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Submission date"
+    },
+    "total_income": {
+      "type": "number",
+      "description": "Total income"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "submission_date",
+    "totalIncome"
+  ]
+}

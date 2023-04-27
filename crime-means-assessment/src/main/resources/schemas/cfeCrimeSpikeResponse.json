@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "cfeCrimeSpikeResponse.json",
+  "type": "object",
+  "title": "assessment response",
+  "description": "response to spike assessment request",
+  "properties": {
+    "result": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "FULL"],
+      "description": "Initial assessment result"
+    }
+  },
+  "additionalProperties": false
+}

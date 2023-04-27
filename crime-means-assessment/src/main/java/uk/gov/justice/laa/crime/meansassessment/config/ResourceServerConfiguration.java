@@ -43,6 +43,7 @@ public class ResourceServerConfiguration {
                         .antMatchers("/oauth2/**").permitAll()
                         .antMatchers("/open-api/**").permitAll()
                         .antMatchers("/actuator/**").permitAll()
+                        .antMatchers("/api/internal/v1/lep-crime").permitAll()
                         .antMatchers("/error").permitAll()
                         .antMatchers(HttpMethod.GET, API_PATH).hasAnyAuthority(SCOPE_READ, SCOPE_READ_WRITE)
                         .antMatchers(HttpMethod.POST, API_PATH).hasAuthority(SCOPE_READ_WRITE)
