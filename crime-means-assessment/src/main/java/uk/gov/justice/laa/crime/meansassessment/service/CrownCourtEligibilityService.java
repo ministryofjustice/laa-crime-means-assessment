@@ -11,8 +11,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
@@ -35,11 +33,10 @@ public class CrownCourtEligibilityService {
         boolean isEitherWayAndCommittedForTrial =
                 CaseType.EITHER_WAY.equals(assessmentRequest.getCaseType())
                         && MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(assessmentRequest.getMagCourtOutcome());
+        RepOrderDTO repOrder = maatCourtDataService.getRepOrder(assessmentRequest.getRepId(), laaTransactionId);
 
         if (isEitherWayAndCommittedForTrial) {
-
             Integer financialAssessmentId = assessmentRequest.getFinancialAssessmentId();
-            RepOrderDTO repOrder = maatCourtDataService.getRepOrder(assessmentRequest.getRepId(), laaTransactionId);
             FinancialAssessmentDTO initialAssessment = repOrder.getFinancialAssessments().stream()
                     .filter(assessment -> assessment.getId().equals(financialAssessmentId)
                     ).findFirst().orElseThrow(
@@ -64,7 +61,11 @@ public class CrownCourtEligibilityService {
                 }
             }
         }
-        return true;
+        Stream<Assessment> previousAssessments = getPreviousAssessments(repOrder);
+        boolean hasDisqualifyingResult = previousAssessments
+                .anyMatch(this::hasDisqualifyingResult);
+
+        return !hasDisqualifyingResult;
     }
 
     boolean hasRequiredCaseTypeAndOutcome(MeansAssessmentRequestDTO assessmentRequest) {
@@ -75,14 +76,14 @@ public class CrownCourtEligibilityService {
                 caseType == CaseType.EITHER_WAY && magCourtOutcome == MagCourtOutcome.COMMITTED_FOR_TRIAL;
     }
 
-    Assessment getLatestAssessment(RepOrderDTO repOrder, Integer financialAssessmentId) {
-        List<Assessment> previousAssessments = Stream.of(
-                        repOrder.getPassportAssessments(), repOrder.getFinancialAssessments()
-                ).flatMap(Collection::stream)
-                .filter(assessment -> !financialAssessmentId.equals(assessment.getId()))
-                .collect(Collectors.toList());
+    Stream<Assessment> getPreviousAssessments(RepOrderDTO repOrder) {
+        return Stream.of(repOrder.getPassportAssessments(), repOrder.getFinancialAssessments())
+                .flatMap(Collection::stream);
+    }
 
-        return previousAssessments.stream()
+    Assessment getLatestAssessment(RepOrderDTO repOrder, Integer financialAssessmentId) {
+        return getPreviousAssessments(repOrder)
+                .filter(assessment -> !financialAssessmentId.equals(assessment.getId()))
                 .max(comparing(Assessment::getDateCreated)).orElse(null);
     }
 
