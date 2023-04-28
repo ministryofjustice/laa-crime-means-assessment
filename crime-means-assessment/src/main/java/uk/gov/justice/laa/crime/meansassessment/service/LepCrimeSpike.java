@@ -1,5 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import com.google.common.collect.Sets;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentChildWeighting;
@@ -11,7 +12,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 
 public class LepCrimeSpike {
     static public String execute(Date submissionDate, int annualIncome) {
@@ -25,7 +25,7 @@ public class LepCrimeSpike {
                 .id(27)
                 .weightingFactor(new BigDecimal(0.1))
                 .build();
-        var weightingSet = new HashSet<>(Arrays.asList(childWeighting));
+        var weightingSet = Sets.newHashSet(childWeighting);
         // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
         MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO
                 .builder()
