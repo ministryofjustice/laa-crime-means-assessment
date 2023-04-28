@@ -58,6 +58,7 @@ public class CrownCourtEligibilityService {
                     if (previousAssessment != null) {
                         return !hasDisqualifyingResult(previousAssessment);
                     }
+                    return true;
                 }
             }
         }

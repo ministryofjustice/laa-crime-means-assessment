@@ -1,14 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.assertj.core.api.SoftAssertions;
-import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
-import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,13 +40,13 @@ public class CrownCourtEligibilityServiceTest {
     private MeansAssessmentRequestDTO requestDTO;
 
     private FinancialAssessmentDTO financialAssessment = TestModelDataBuilder.getFinancialAssessmentDTO();
-    private RepOrderDTO repOrderDTO = TestModelDataBuilder.getRepOrderDTOWithAssessments(
-            new ArrayList<>(List.of(financialAssessment))
-    );
+
+    private RepOrderDTO repOrderDTO;
 
     @Before
     public void setup() {
         requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
+        repOrderDTO = TestModelDataBuilder.getRepOrderDTOWithAssessments(new ArrayList<>(List.of(financialAssessment)));
 
         when(maatCourtDataService.getRepOrder(anyInt(), anyString()))
                 .thenReturn(repOrderDTO);
@@ -63,23 +59,29 @@ public class CrownCourtEligibilityServiceTest {
     }
 
     @Test
-    public void givenIndictableSentForTrial_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
+    public void givenIndictableSentForTrialAndNoPreviousAssessments_whenIsEligibilityCheckRequiredIsInvoked_thenCorrectResultIsReturned() {
         requestDTO.setCaseType(CaseType.INDICTABLE);
         requestDTO.setMagCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+
+        repOrderDTO.getFinancialAssessments().clear();
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
-    public void givenCCAlreadySentForTrial_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
+    public void givenCCAlreadySentForTrialAndNoPreviousAssessments_whenIsEligibilityCheckRequiredIsInvoked_thenCorrectResultIsReturned() {
         requestDTO.setCaseType(CaseType.CC_ALREADY);
         requestDTO.setMagCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+
+        repOrderDTO.getFinancialAssessments().clear();
+        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
-    public void givenEWCommittedAndFirstAssessment_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
+    public void givenEWCommittedAndFirstAssessment_whenIsEligibilityCheckRequiredIsInvoked_thenCorrectResultIsReturned() {
         financialAssessment.setNewWorkReason(NewWorkReason.FMA.getCode());
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 
     @Test
