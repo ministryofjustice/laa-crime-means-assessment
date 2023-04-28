@@ -9,7 +9,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
