@@ -1,7 +1,6 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@7.3.0
   snyk: snyk/snyk@1.4.0
 
 _snyk_options: &snyk_options
@@ -24,7 +23,7 @@ executors:
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
   build-executor:
     docker:
-      - image: cimg/openjdk:17.0.4
+      - image: cimg/openjdk:11.0.13
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
 
 # ------------------
@@ -70,14 +69,8 @@ commands:
 # JOBS
 # ------------------
 jobs:
-  build:
-    environment:
-      # Configure the JVM and Gradle to avoid OOM errors
-      _JAVA_OPTIONS: "-Xmx3g"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
-    docker:
-      - image: cimg/openjdk:11.0.13
-    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
+  build_and_scan:
+    executor: build-executor
     steps:
       - checkout:
           path: ~/laa-crime-means-assessment
@@ -86,8 +79,8 @@ jobs:
       - restore_cache:
           key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - run:
-          name: Install Dependencies
-          command: ./gradlew build -x test
+          name: Build
+          command: ./gradlew clean build
       - run:
           name: Run SonarQube
           command: ./gradlew sonarqube -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.organization=${SONAR_ORG}
@@ -103,52 +96,16 @@ jobs:
           root: .
           paths:
             - build
-
-  scan_app:
-    docker:
-      - image: cimg/openjdk:11.0.13
-    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
-    steps:
-      - checkout:
-          path: ~/laa-crime-means-assessment
-      - attach_workspace:
-          at: .
-      - snyk/scan:
-          <<: *snyk_options
-
-  test_and_assemble:
-    environment:
-      _JAVA_OPTIONS: "-Xmx3g"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2"
-    docker:
-      - image: cimg/openjdk:11.0.13
-    working_directory: ~/laa-crime-means-assessment/crime-means-assessment
-    steps:
-      - checkout:
-          path: ~/laa-crime-means-assessment
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      - restore_cache:
-          key: v1-gradle-cache-{{ checksum "build.gradle" }}
-      - run:
-          name: Run tests
-          command: ./gradlew test
-      - run:
-          name: Generate code coverage report
-          command: ./gradlew jacocoTestReport
       - store_test_results:
           path: build/test-results/test
       - store_artifacts:
           path: build/test-results/test
       - store_artifacts:
           path: build/reports/jacoco/test/html
-      - run:
-          name: Assemble JAR
-          command: ./gradlew assemble
       - store_artifacts:
           path: build/libs
+      - snyk/scan:
+          <<: *snyk_options
 
   build_scan_and_push_image:
     executor: build-executor
@@ -223,23 +180,15 @@ workflows:
 
   build-deploy-master:
     jobs:
-      - build:
+      - build_and_scan:
           filters:
             branches:
               only:
                 - main
 
-      - scan_app:
-          requires:
-            - build
-
-      - test_and_assemble:
-          requires:
-            - scan_app
-
       - build_scan_and_push_image:
           requires:
-            - test_and_assemble
+            - build_and_scan
 
       - deploy-dev:
           requires:
@@ -283,23 +232,15 @@ workflows:
 
   build-deploy-branch:
     jobs:
-      - build:
+      - build_and_scan:
           filters:
             branches:
               ignore:
                 - main
 
-      - scan_app:
-          requires:
-            - build
-
-      - test_and_assemble:
-          requires:
-            - scan_app
-
       - build_scan_and_push_image:
           requires:
-            - test_and_assemble
+            - build_and_scan
 
       - hold_install_on_dev:
           type: approval
