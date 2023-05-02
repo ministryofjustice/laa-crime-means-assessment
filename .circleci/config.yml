@@ -2,9 +2,7 @@ version: 2.1
 
 orbs:
   aws-ecr: circleci/aws-ecr@7.3.0
-  kubernetes: circleci/kubernetes@1.3.0
-  helm: circleci/helm@1.2.0
-  snyk: snyk/snyk@1.1.2
+  snyk: snyk/snyk@1.4.0
 
 _snyk_options: &snyk_options
   project: "${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}"
@@ -28,12 +26,6 @@ executors:
 # COMMANDS
 # ------------------
 commands:
-  checkout_and_decrypt:
-    steps:
-      - checkout
-      - run: echo "${GIT_CRYPT_KEY}" | base64 -d > git-crypt.key
-      - run: git-crypt unlock git-crypt.key
-
   deploy-to:
     description: >
       Deploy image to the specified environment
@@ -45,7 +37,12 @@ commands:
         description: CircleCI Service account token
         type: string
     steps:
-      - checkout_and_decrypt
+      - checkout
+      - run:
+          name: Decrypt secrets
+          command: |
+            echo "${GIT_CRYPT_KEY}" | base64 -d > git-crypt.key
+            git-crypt unlock git-crypt.key
       - run:
           name: Authenticate with cluster
           command: |
@@ -55,13 +52,14 @@ commands:
             kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=laa-crime-means-assessment-<< parameters.environment >>
             kubectl config use-context ${K8S_CLUSTER_NAME}
             kubectl --namespace=laa-crime-means-assessment-<< parameters.environment >> get pods
-      - helm/upgrade-helm-chart:
-          namespace: laa-crime-means-assessment-<< parameters.environment >>
-          update-repositories: false
-          chart: ./helm_deploy/laa-crime-means-assessment/
-          release-name: laa-crime-means-assessment
-          values: ./helm_deploy/laa-crime-means-assessment/values-<< parameters.environment >>.yaml
-          values-to-override: image.tag=${CIRCLE_SHA1}
+      - run:
+          name: Upgrade helm chart
+          command: |
+            helm upgrade laa-crime-means-assessment ./helm_deploy/laa-crime-means-assessment/. \
+                          --install --wait \
+                          --namespace=laa-crime-means-assessment-<< parameters.environment >> \
+                          --values ./helm_deploy/laa-crime-means-assessment/values-<< parameters.environment >>.yaml \
+                          --set image.tag="${CIRCLE_SHA1}"
 
 # ------------------
 # JOBS
