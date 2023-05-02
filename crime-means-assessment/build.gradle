@@ -139,6 +139,7 @@ dependencies {
     testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: versions.okhttpVersion
     testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: versions.mockwebserverVersion
     testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+    testImplementation 'io.cucumber:cucumber-java:6.10.4'
 }
 
 jar {
