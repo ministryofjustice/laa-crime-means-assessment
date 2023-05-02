@@ -5,7 +5,7 @@ ignore:
   SNYK-JAVA-COMH2DATABASE-2348247:
     - '*':
         reason: supported version for liquibase
-        expires: 2023-05-01T00:00:00.000Z
+        expires: 2024-05-01T00:00:00.000Z
         created: 2022-06-06T09:17:44.052Z
   SNYK-JAVA-COMH2DATABASE-2331071:
     - '*':
