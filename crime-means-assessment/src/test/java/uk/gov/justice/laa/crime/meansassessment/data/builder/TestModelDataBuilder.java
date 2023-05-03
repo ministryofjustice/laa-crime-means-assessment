@@ -206,12 +206,8 @@ public class TestModelDataBuilder {
     public static IncomeEvidenceEntity getIncomeEvidenceEntity() {
         return IncomeEvidenceEntity.builder()
                 .adhoc("Y")
-                .dateCreated(LocalDateTime.now())
-                .dateModified(LocalDateTime.now())
                 .description("Signature")
                 .id("SIGNATURE")
-                .userModified(null)
-                .userCreated(TEST_USER)
                 .letterDescription("Signature")
                 .welshLetterDescription("Llofnod")
                 .build();
@@ -743,7 +739,7 @@ public class TestModelDataBuilder {
                 .magsOutcomeDate(TEST_MAGS_OUTCOME_DATE.toString())
                 .magsOutcomeDateSet(TEST_MAGS_OUTCOME_DATE)
                 .committalDate(TEST_MAGS_OUTCOME_DATE)
-                .repOrderDecisionReasonCode("rder-code")
+                .decisionReasonCode("rder-code")
                 .crownRepOrderDecision("cc-rep-doc")
                 .crownRepOrderType("cc-rep-type")
                 .build();

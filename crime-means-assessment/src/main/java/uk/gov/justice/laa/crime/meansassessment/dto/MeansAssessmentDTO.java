@@ -25,4 +25,5 @@ public class MeansAssessmentDTO {
     private InitAssessmentResult initAssessmentResult;
     private FullAssessmentResult fullAssessmentResult;
     private LocalDateTime dateCompleted;
+    private LocalDateTime applicationTimestamp;
 }

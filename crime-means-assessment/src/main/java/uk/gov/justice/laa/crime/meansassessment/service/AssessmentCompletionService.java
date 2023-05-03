@@ -7,6 +7,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.time.LocalDateTime;
@@ -43,7 +44,8 @@ public class AssessmentCompletionService {
                 .repId(assessment.getMeansAssessment().getRepId())
                 .assessmentDateCompleted(assessment.getDateCompleted())
                 .build();
-        maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO, laaTransactionId);
+        RepOrderDTO response = maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO, laaTransactionId);
+        assessment.setApplicationTimestamp(response.getDateModified());
     }
 
     boolean isFullUpdateRequired(MeansAssessmentDTO assessment, String laaTransactionId) {

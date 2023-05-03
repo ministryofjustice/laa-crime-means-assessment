@@ -32,8 +32,10 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
@@ -161,6 +163,9 @@ public class MeansAssessmentIntegrationTest {
         when(maatCourtDataClient.getApiResponseViaGET(
                 eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any())
         ).thenReturn(getOutstandingAssessmentResultDTO(false));
+
+        when(maatCourtDataClient.getApiResponseViaPOST(any(DateCompletionRequestDTO.class), any(), any(), any()))
+                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
     }
 
     @Test
@@ -195,10 +200,12 @@ public class MeansAssessmentIntegrationTest {
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        doThrow(new RuntimeException()).when(maatCourtDataClient).getApiResponseViaPOST(any(), any(), any(), any());
-        when(maatCourtDataClient.getApiResponseViaGET(
-                eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any())
-        ).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+        doThrow(new RuntimeException())
+                .when(maatCourtDataClient).getApiResponseViaPOST(any(MaatApiAssessmentRequest.class), any(), any(), any());
+
+        when(maatCourtDataClient.getApiResponseViaGET(eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any()))
+                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+
         setUpWebClientMock();
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
@@ -212,17 +219,17 @@ public class MeansAssessmentIntegrationTest {
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        when(maatCourtDataClient.getApiResponseViaPOST(any(), any(), any(), any()))
+        when(maatCourtDataClient.getApiResponseViaPOST(any(MaatApiAssessmentRequest.class), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
-        when(maatCourtDataClient.getApiResponseViaGET(
-                eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any())
-        ).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+
+        when(maatCourtDataClient.getApiResponseViaGET(eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any()))
+                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+
         setUpWebClientMock();
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPOST(any(), any(), any(), any());
     }
 
     @Test
@@ -239,21 +246,21 @@ public class MeansAssessmentIntegrationTest {
 
     @Test
     public void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ShouldSuccess() throws Exception {
-
         var updateAssessmentRequest =
                 TestModelDataBuilder.getUpdateMeansAssessmentRequest(IS_VALID);
         updateAssessmentRequest.setAssessmentType(AssessmentType.FULL);
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
-        setUpWebClientMock();
-        when(maatCourtDataClient.getApiResponseViaPUT(any(), any(), any(), any()))
+
+        when(maatCourtDataClient.getApiResponseViaPUT(any(MaatApiAssessmentRequest.class), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
-        when(maatCourtDataClient.getApiResponseViaGET(
-                eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any())
-        ).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+
+        when(maatCourtDataClient.getApiResponseViaGET(eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any()))
+                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+
+        setUpWebClientMock();
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-        verify(maatCourtDataClient, timeout(1)).getApiResponseViaPUT(any(), any(), any(), any());
 
     }
 

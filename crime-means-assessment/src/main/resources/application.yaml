@@ -87,14 +87,11 @@ spring:
 
 springdoc:
   packagesToScan: uk.gov.justice.laa.crime.meansassessment
-  show-actuator: true
   api-docs:
-    path: /crime-means-assessment
-    enabled: true
+    path: /open-api/api-docs
 
   swagger-ui:
-    path: /open-api/docs.html
-    enabled: true
+    path: /open-api/swagger-ui/index.html
     operationsSorter: method
 
 sentry:
@@ -110,8 +107,5 @@ retry-config:
   max-retries: 3
   min-back-off-period: 5
   jitter-value: 0.75
-
-features:
-  date-completion-enabled: false
 
 version: 0.0.1
