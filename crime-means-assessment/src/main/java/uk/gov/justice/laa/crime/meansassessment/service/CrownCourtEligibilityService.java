@@ -63,10 +63,8 @@ public class CrownCourtEligibilityService {
             }
         }
         Stream<Assessment> previousAssessments = getPreviousAssessments(repOrder);
-        boolean hasDisqualifyingResult = previousAssessments
-                .anyMatch(this::hasDisqualifyingResult);
-
-        return !hasDisqualifyingResult;
+        return previousAssessments
+                .noneMatch(this::hasDisqualifyingResult);
     }
 
     boolean hasRequiredCaseTypeAndOutcome(MeansAssessmentRequestDTO assessmentRequest) {
