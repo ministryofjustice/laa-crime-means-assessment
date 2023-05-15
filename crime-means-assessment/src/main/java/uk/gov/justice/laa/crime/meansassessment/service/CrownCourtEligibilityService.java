@@ -67,7 +67,7 @@ public class CrownCourtEligibilityService {
                 .noneMatch(this::hasDisqualifyingResult);
     }
 
-    boolean hasRequiredCaseTypeAndOutcome(MeansAssessmentRequestDTO assessmentRequest) {
+    private boolean hasRequiredCaseTypeAndOutcome(MeansAssessmentRequestDTO assessmentRequest) {
         CaseType caseType = assessmentRequest.getCaseType();
         MagCourtOutcome magCourtOutcome = assessmentRequest.getMagCourtOutcome();
         return ((caseType == CaseType.INDICTABLE || caseType == CaseType.CC_ALREADY)
@@ -75,18 +75,18 @@ public class CrownCourtEligibilityService {
                 caseType == CaseType.EITHER_WAY && magCourtOutcome == MagCourtOutcome.COMMITTED_FOR_TRIAL;
     }
 
-    Stream<Assessment> getPreviousAssessments(RepOrderDTO repOrder) {
+    private Stream<Assessment> getPreviousAssessments(RepOrderDTO repOrder) {
         return Stream.of(repOrder.getPassportAssessments(), repOrder.getFinancialAssessments())
                 .flatMap(Collection::stream);
     }
 
-    Assessment getLatestAssessment(RepOrderDTO repOrder, Integer financialAssessmentId) {
+    private Assessment getLatestAssessment(RepOrderDTO repOrder, Integer financialAssessmentId) {
         return getPreviousAssessments(repOrder)
                 .filter(assessment -> !financialAssessmentId.equals(assessment.getId()))
                 .max(comparing(Assessment::getDateCreated)).orElse(null);
     }
 
-    boolean hasDisqualifyingResult(Assessment assessment) {
+    private boolean hasDisqualifyingResult(Assessment assessment) {
         if (assessment instanceof FinancialAssessmentDTO) {
             FinancialAssessmentDTO means = (FinancialAssessmentDTO) assessment;
             return InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(means.getInitResult()))
