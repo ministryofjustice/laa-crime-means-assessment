@@ -17,7 +17,8 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setSta
 @Service
 @RequiredArgsConstructor
 public class FullMeansAssessmentService implements AssessmentService {
-    
+
+    private final CrownCourtEligibilityService crownCourtEligibilityService;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
@@ -32,7 +33,7 @@ public class FullMeansAssessmentService implements AssessmentService {
                 .currentStatus(status)
                 .fullAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE)
-                                ? getResult(totalDisposableIncome, assessmentCriteria) : null
+                                ? getResult(totalDisposableIncome, requestDTO, assessmentCriteria) : null
                 )
                 .adjustedLivingAllowance(adjustedLivingAllowance)
                 .totalAggregatedExpense(
@@ -63,8 +64,11 @@ public class FullMeansAssessmentService implements AssessmentService {
                         .add(totalChildWeighting));
     }
 
-    FullAssessmentResult getResult(BigDecimal disposableIncome, AssessmentCriteriaEntity assessmentCriteria) {
-        if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {
+    FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
+        if (crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
+                && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
+            return FullAssessmentResult.INEL;
+        } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {
             return FullAssessmentResult.PASS;
         } else {
             return FullAssessmentResult.FAIL;
