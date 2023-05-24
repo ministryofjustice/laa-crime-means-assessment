@@ -48,12 +48,12 @@ public class CrownCourtEligibilityService {
                     NewWorkReason.FMA.equals(NewWorkReason.getFrom(initialAssessment.getNewWorkReason()));
 
             if (!isFirstMeansAssessment) {
-                boolean isInitResultFail =
-                        InitAssessmentResult.FAIL.equals(InitAssessmentResult.getFrom(initialAssessment.getInitResult()));
-                boolean isDateCreatedBeforeMagsOutcome =
-                        initialAssessment.getDateCreated().isBefore(repOrder.getMagsOutcomeDateSet());
+                boolean isInitResultPass =
+                        InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(initialAssessment.getInitResult()));
+                boolean isDateCreatedAfterMagsOutcome =
+                        initialAssessment.getDateCreated().isAfter(repOrder.getMagsOutcomeDateSet());
 
-                if (!isInitResultFail || !isDateCreatedBeforeMagsOutcome) {
+                if (isInitResultPass || isDateCreatedAfterMagsOutcome) {
                     Assessment previousAssessment = getLatestAssessment(repOrder, financialAssessmentId);
                     if (previousAssessment != null) {
                         return !hasDisqualifyingResult(previousAssessment);
