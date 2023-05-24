@@ -73,7 +73,7 @@ public class TestModelDataBuilder {
     public static final LocalDateTime TEST_INCOME_EVIDENCE_DUE_DATE =
             LocalDateTime.of(2020, 10, 5, 0, 0, 0);
 
-    public static final LocalDate TEST_MAGS_OUTCOME_DATE = LocalDate.of(2022, 6, 5);
+    public static final LocalDateTime TEST_MAGS_OUTCOME_DATE = LocalDateTime.of(2022, 6, 5, 0, 0);
     public static final LocalDateTime TEST_DATE_CREATED =
             LocalDateTime.of(2021, 10, 9, 15, 1, 25);
 
@@ -738,7 +738,7 @@ public class TestModelDataBuilder {
                 .magsOutcome(MagCourtOutcome.COMMITTED.getOutcome())
                 .magsOutcomeDate(TEST_MAGS_OUTCOME_DATE.toString())
                 .magsOutcomeDateSet(TEST_MAGS_OUTCOME_DATE)
-                .committalDate(TEST_MAGS_OUTCOME_DATE)
+                .committalDate(TEST_MAGS_OUTCOME_DATE.toLocalDate())
                 .decisionReasonCode("rder-code")
                 .crownRepOrderDecision("cc-rep-doc")
                 .crownRepOrderType("cc-rep-type")
