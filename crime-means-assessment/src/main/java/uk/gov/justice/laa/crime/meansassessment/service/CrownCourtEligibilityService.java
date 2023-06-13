@@ -51,15 +51,15 @@ public class CrownCourtEligibilityService {
                 boolean isInitResultPass =
                         InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(initialAssessment.getInitResult()));
                 boolean isDateCreatedAfterMagsOutcome =
-                        initialAssessment.getDateCreated().toLocalDate().isBefore(repOrder.getMagsOutcomeDateSet());
+                        initialAssessment.getDateCreated().isAfter(repOrder.getMagsOutcomeDateSet());
 
                 if (isInitResultPass || isDateCreatedAfterMagsOutcome) {
                     Assessment previousAssessment = getLatestAssessment(repOrder, financialAssessmentId);
                     if (previousAssessment != null) {
                         return !hasDisqualifyingResult(previousAssessment);
                     }
-                    return true;
                 }
+                return true;
             }
         }
         Stream<Assessment> previousAssessments = getPreviousAssessments(repOrder);
