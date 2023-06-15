@@ -11,7 +11,7 @@ plugins {
 
 def versions = [
         pitest                             : "1.4.10",
-        springdocVersion                   : "1.6.15",
+        springdocVersion                   : "2.0.4",
         okhttpVersion                      : "4.9.3",
         mockwebserverVersion               : "4.9.3",
         springauthserverVersion            : "1.0.1",
@@ -49,7 +49,7 @@ dependencies {
     implementation "org.postgresql:postgresql"
     implementation "org.liquibase:liquibase-core"
     implementation "org.apache.commons:commons-lang3"
-    implementation "org.springdoc:springdoc-openapi-ui:$versions.springdocVersion"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
     implementation "org.springframework.security:spring-security-oauth2-authorization-server:$versions.springauthserverVersion"
 
     compileOnly "org.projectlombok:lombok"

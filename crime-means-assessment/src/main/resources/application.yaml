@@ -90,7 +90,6 @@ springdoc:
     path: /open-api/api-docs
 
   swagger-ui:
-    path: /open-api/swagger-ui/index.html
     operationsSorter: method
 
 sentry:
