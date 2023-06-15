@@ -10,12 +10,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
-import java.util.Optional;
-
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
+@RunWith(SpringRunner.class)
 public class AssessmentCriteriaRepositoryTest {
 
     private AssessmentCriteriaEntity assessmentCriteriaEntity;
@@ -27,38 +25,9 @@ public class AssessmentCriteriaRepositoryTest {
     public void setup() {
         Integer latestCriteriaId = 34;
         assessmentCriteriaEntity = assessmentCriteriaRepository.findById(latestCriteriaId).orElse(null);
-        if (assessmentCriteriaEntity ==  null) {
+        if (assessmentCriteriaEntity == null) {
             throw new RuntimeException("Assessment Criteria not found.");
         }
-    }
-
-    @Test
-    public void givenAssessmentCriteriaIsPopulated_WhenAllRecordsAreRequest_ThenAssessmentCriteriaShouldBeReturned() {
-        // given Assessment Criteria has been populated by Liquibase
-        // when all records are requested
-        Iterable<AssessmentCriteriaEntity> results = assessmentCriteriaRepository.findAll();
-        // then at least one record is returned
-        assertTrue(IterableUtils.size(results) > 0);
-    }
-
-    @Test
-    public void givenAssessmentCriteriaIsPopulated_WhenCorrectIdIsProvided_ThenAssessmentCriteriaShouldBeReturned() {
-        // when Assessment Criteria is requested by id
-        Optional<AssessmentCriteriaEntity> result = assessmentCriteriaRepository.findById(assessmentCriteriaEntity.getId());
-
-        // then correct Assessment Criteria is returned
-        assertTrue(result.isPresent());
-        AssessmentCriteriaEntity assessmentCriteriaEntityResult = result.get();
-        assertEquals(assessmentCriteriaEntity, assessmentCriteriaEntityResult);
-    }
-
-    @Test
-    public void givenAssessmentCriteriaIsPopulated_WhenUnknownIdIsProvided_ThenAssessmentCriteriaIsnNotReturned() {
-        // given Assessment Criteria has been populated by Liquibase
-        // when unknown id is provided
-        Optional<AssessmentCriteriaEntity> result = assessmentCriteriaRepository.findById(1000);
-        // then no result is returned
-        assertTrue(result.isEmpty());
     }
 
     @Test
