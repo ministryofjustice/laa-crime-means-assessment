@@ -24,14 +24,14 @@ spring:
     oauth2:
       client:
         provider:
-          maatapi:
+          maat-api:
             token-uri: http://dummyserver:9999
         registration:
-          maatapi:
+          maat-api:
             client-id: dummy-client
             client-secret: dummy-secret
             authorization-grant-type: client_credentials
-      resourceserver:
+      resource-server:
         jwt:
           issuer-uri: ${means-assessment.security.issuer-uri}
 
