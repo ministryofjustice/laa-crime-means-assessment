@@ -8,7 +8,6 @@ spring:
     password: sa
     driver-class-name: org.h2.Driver
 
-
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
