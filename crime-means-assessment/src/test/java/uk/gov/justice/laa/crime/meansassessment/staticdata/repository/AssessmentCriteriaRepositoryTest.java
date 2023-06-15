@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.repository;
 
-import liquibase.repackaged.org.apache.commons.collections4.IterableUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
