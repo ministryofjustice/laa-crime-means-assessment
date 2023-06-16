@@ -31,7 +31,7 @@ public class MaatApiOAuth2Client {
 
     private final MaatApiConfiguration config;
     private final RetryConfiguration retryConfiguration;
-    private static final String REGISTERED_ID = "maatapi";
+    private static final String REGISTERED_ID = "maat-api";
 
     public MaatApiOAuth2Client(MaatApiConfiguration config, RetryConfiguration retryConfiguration) {
         this.config = config;
