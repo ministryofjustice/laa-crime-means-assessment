@@ -10,9 +10,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Mono;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.APIClientException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
@@ -22,9 +22,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -50,10 +48,17 @@ public class MaatCourtDataClientTest {
                 .builder()
                 .baseUrl("http://localhost:1234")
                 .filter(ExchangeFilterFunctions.statusError(
-                                HttpStatus::is4xxClientError,
-                                r -> WebClientResponseException.create(
-                                        r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null
-                                )
+                                HttpStatusCode::is4xxClientError,
+                                r -> {
+                                    HttpStatus status = HttpStatus.valueOf(r.statusCode().value());
+                                    return WebClientResponseException.create(
+                                            status.value(),
+                                            status.getReasonPhrase(),
+                                            null,
+                                            null,
+                                            null
+                                    );
+                                }
                         )
                 )
                 .exchangeFunction(shortCircuitExchangeFunction)

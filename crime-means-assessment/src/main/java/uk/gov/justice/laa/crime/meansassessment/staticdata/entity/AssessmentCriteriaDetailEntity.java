@@ -4,7 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -41,7 +41,6 @@ public class AssessmentCriteriaDetailEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    // TODO Check if this is ok or if we need to update data
     @Column(name = "use_frequency", nullable = true)
     private Boolean useFrequency;
 

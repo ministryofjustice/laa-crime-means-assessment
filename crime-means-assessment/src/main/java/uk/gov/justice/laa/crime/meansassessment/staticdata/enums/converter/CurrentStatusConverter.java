@@ -3,7 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.staticdata.enums.converter;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 
 public class CurrentStatusConverter implements AttributeConverter<CurrentStatus, String> {
 
