@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @ConfigurationProperties(prefix = "maat-api")

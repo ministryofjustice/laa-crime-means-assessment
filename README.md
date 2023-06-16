@@ -118,7 +118,7 @@ Please refer to the debugging manual [here](https://dsdmoj.atlassian.net/wiki/sp
 ### Open API
 
 We have implemented the Open API standard (with Swagger 3). The web link provides a details Rest API with a schema definition. The link can only from local or from dev environment.
-The swagger link can be found from [here](http://localhost:8080/open-api/docs.html)
+The swagger link can be found from [here](http://localhost:8080/swagger-ui/index.html)
 
 ## Application Monitoring and Logs
 

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -93,9 +94,10 @@ public class MaatApiOAuth2Client {
 
     private ExchangeFilterFunction errorResponse() {
         return ExchangeFilterFunctions.statusError(
-                HttpStatus::isError, r -> {
+                HttpStatusCode::isError, r -> {
+                    HttpStatus status = HttpStatus.valueOf(r.statusCode().value());
                     String errorMessage =
-                            String.format("Received error %s due to %s", r.statusCode().value(), r.statusCode().getReasonPhrase());
+                            String.format("Received error %s due to %s", r.statusCode().value(), status.getReasonPhrase());
                     if (r.statusCode().is5xxServerError()) {
                         return new HttpServerErrorException(
                                 r.statusCode(),
@@ -103,7 +105,7 @@ public class MaatApiOAuth2Client {
                         );
                     }
                     if (r.statusCode().equals(HttpStatus.NOT_FOUND)) {
-                        return WebClientResponseException.create(r.rawStatusCode(), r.statusCode().getReasonPhrase(), null, null, null);
+                        return WebClientResponseException.create(status.value(), status.getReasonPhrase(), null, null, null);
                     }
                     return new APIClientException(errorMessage);
                 });

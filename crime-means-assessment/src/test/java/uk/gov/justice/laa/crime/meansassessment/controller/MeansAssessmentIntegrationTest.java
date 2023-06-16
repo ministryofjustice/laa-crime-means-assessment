@@ -58,10 +58,10 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.getOutstandingAssessmentResultDTO;
 
 
+@DirtiesContext
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
         CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class}, webEnvironment = DEFINED_PORT)
-@RunWith(SpringRunner.class)
-@DirtiesContext
 public class MeansAssessmentIntegrationTest {
 
     private static final boolean IS_VALID = true;

@@ -5,7 +5,7 @@ logging:
   level:
     root: INFO
     org.springframework.web: INFO
-    org.springframework.security: DEBUG
+    org.springframework.security: INFO
 
 management:
   server:
@@ -60,15 +60,15 @@ spring:
     oauth2:
       client:
         provider:
-          maatapi:
+          maat-api:
             token-uri: ${MAAT_API_OAUTH_URL}
         registration:
-          maatapi:
+          maat-api:
             client-id: ${MAAT_API_OAUTH_CLIENT_ID}
             client-secret: ${MAAT_API_OAUTH_CLIENT_SECRET}
             authorization-grant-type: client_credentials
 
-      resourceserver:
+      resource-server:
         jwt:
           issuer-uri: ${means-assessment.security.issuer-uri}
 
@@ -76,7 +76,7 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     generate-ddl: false
     hibernate:
@@ -90,7 +90,6 @@ springdoc:
     path: /open-api/api-docs
 
   swagger-ui:
-    path: /open-api/swagger-ui/index.html
     operationsSorter: method
 
 sentry:

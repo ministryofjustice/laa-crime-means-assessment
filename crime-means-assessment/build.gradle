@@ -1,153 +1,73 @@
-plugins {
-    id 'java'
-    id 'jacoco'
-    id 'org.springframework.boot' version '2.7.10'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id "org.sonarqube" version "4.0.0.2929"
-    id 'info.solidsoft.pitest' version '1.7.4'
-    id 'org.jsonschema2dataclass' version '4.2.0'
-}
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
+plugins {
+    id "java"
+    id "jacoco"
+    id "org.springframework.boot" version "3.0.5"
+    id "org.sonarqube" version "4.0.0.2929"
+    id "info.solidsoft.pitest" version "1.9.11"
+    id "org.jsonschema2dataclass" version "6.0.0"
+}
 
 def versions = [
-        mapstructVersion                   : '1.3.1.Final',
-        sentryVersion                      : '5.6.1',
-        springdocVersion                   : '1.7.0',
-        postgresqlVersion                  : '42.3.3',
-        gsonVersion                        : '2.8.9',
-        commonsLang3Version                : '3.10',
-        lombokVersion                      : '1.18.6',
-        sonarVersion                       : '2.7',
-        h2DBVersion                        : '1.4.200',
-        mockitoVersion                     : '3.3.3',
-        junitVersion                       : '4.13',
-        harmcrestVersion                   : '1.3',
-        testngVersion                      : '6.10',
-        festVersion                        : '1.4',
-        gradlePitest                       : '1.4.6',
-        pitest                             : '1.4.10',
-        sonarPitest                        : '0.5',
-        liquibase                          : '4.11.0',
-        commonsCollections4Version         : '4.4',
-        springConfigurationProcessorVersion: '2.6.3',
-        reactorTestVersion                 : '3.4.11',
-        okhttpVersion                      : '4.9.3',
-        mockwebserverVersion               : '4.9.3',
-        springauthserverVersion            : '0.2.2',
-        amazonSQSVersion                   : '1.0.8'
+        pitest                             : "1.4.10",
+        springdocVersion                   : "2.0.4",
+        okhttpVersion                      : "4.9.3",
+        mockwebserverVersion               : "4.9.3",
+        springauthserverVersion            : "1.0.1",
 ]
 
-dependencyManagement {
-    imports {
-        mavenBom "com.amazonaws:aws-java-sdk-bom:1.12.454"
-        mavenBom "org.springframework.security:spring-security-bom:5.6.4"
-    }
-    dependencies {
-        dependencySet(group: 'org.mapstruct', version: versions.mapstructVersion) {
-            entry 'mapstruct'
-            entry 'mapstruct-processor'
-        }
-    }
-}
-group = 'uk.gov.justice.laa.crime'
+group = "uk.gov.justice.laa.crime"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
 
 dependencies {
-    implementation platform('io.sentry:sentry-bom:6.17.0')
-    implementation('io.sentry:sentry-spring-boot-starter')
-    implementation('io.sentry:sentry-logback')
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    annotationProcessor platform(SpringBootPlugin.BOM_COORDINATES)
 
-    // Spring
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
-    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-    implementation group: 'org.springframework.security', name: 'spring-security-cas'
-    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-authorization-server', version: versions.springauthserverVersion
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springdocVersion
-    implementation group: 'org.springframework', name: 'spring-jms'
+    implementation platform("io.sentry:sentry-bom:6.17.0")
+    implementation("io.sentry:sentry-spring-boot-starter")
+    implementation("io.sentry:sentry-logback")
 
-    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: versions.springConfigurationProcessorVersion
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
-    implementation group: 'io.projectreactor.netty', name: 'reactor-netty'
+    implementation "org.postgresql:postgresql"
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.apache.commons:commons-lang3"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
+    implementation "org.springframework.security:spring-security-oauth2-authorization-server:$versions.springauthserverVersion"
 
-    // AWS
-
-    implementation group: 'com.amazonaws', name: 'amazon-sqs-java-messaging-lib', version: versions.amazonSQSVersion
-
-    implementation group: 'org.mapstruct', name: 'mapstruct'
-    annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor'
-
-    implementation group: 'io.sentry', name: 'sentry-spring-boot-starter'
-    implementation group: 'io.sentry', name: 'sentry-logback'
-
-
-    // DB Dependencies
-    implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresqlVersion
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-
-    // Utility Libraries
-    implementation group: 'org.apache.commons', name: 'commons-collections4', version: versions.commonsCollections4Version
-
-    // Metrics
-    runtimeOnly group: 'io.micrometer', name: 'micrometer-registry-prometheus'
-
-    //liquibase - DB versioning and change tracking
-    implementation group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
-
-    implementation group: 'com.google.code.gson', name: 'gson', version: versions.gsonVersion
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3Version
-
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombokVersion
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombokVersion
-
-
-    implementation group: 'org.sonarsource.scanner.gradle', name: 'sonarqube-gradle-plugin', version: versions.sonarVersion
-
-    implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
-    implementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
-    implementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-
-    // Test Only
-    testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation group: 'com.h2database', name: 'h2', version: versions.h2DBVersion
-    testImplementation group: 'org.mockito', name: 'mockito-inline', version: versions.mockitoVersion
-    testImplementation group: 'junit', name: 'junit', version: versions.junitVersion
-    testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: versions.harmcrestVersion
-    testImplementation group: 'org.testng', name: 'testng', version: versions.testngVersion
-    testImplementation group: 'org.easytesting', name: 'fest-assert', version: versions.festVersion
-    testImplementation group: 'io.projectreactor', name: 'reactor-test', version: versions.reactorTestVersion
-    testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: versions.okhttpVersion
-    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: versions.mockwebserverVersion
-    testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    
+    // Replace this when upgrading to Spring Boot 3.x
+    testImplementation "com.h2database:h2"
+    testImplementation "org.mockito:mockito-inline"
+    testImplementation "org.pitest:pitest:$versions.pitest"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "com.squareup.okhttp3:okhttp:$versions.okhttpVersion"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$versions.mockwebserverVersion"
 }
-
-jar {
-    enabled = false
-}
-
 
 test {
-    dependsOn 'cleanTest'
+    dependsOn "cleanTest"
     finalizedBy jacocoTestReport
 }
 
@@ -160,9 +80,9 @@ jacocoTestReport {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it,
                     exclude: [
-                            '**/entity/**',
-                            '**/dto/**',
-                            '**/config/**'
+                            "**/entity/**",
+                            "**/dto/**",
+                            "**/config/**"
                     ])
         }))
     }
@@ -170,17 +90,17 @@ jacocoTestReport {
 }
 
 pitest {
-    targetClasses = ['uk.gov.justice.laa.crime.meansassessment.service.*','uk.gov.justice.laa.crime.meansassessment.controller.*','uk.gov.justice.laa.crime.meansassessment.validation.*']
-    excludedClasses = ['uk.gov.justice.laa.crime.meansassessment.dto.*', 'uk.gov.justice.laa.crime.meansassessment.mapper.*', 'uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication']
+    targetClasses = ["uk.gov.justice.laa.crime.meansassessment.service.*","uk.gov.justice.laa.crime.meansassessment.controller.*","uk.gov.justice.laa.crime.meansassessment.validation.*"]
+    excludedClasses = ["uk.gov.justice.laa.crime.meansassessment.dto.*", "uk.gov.justice.laa.crime.meansassessment.mapper.*", "uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication"]
     threads = 5
-    outputFormats = ['XML', 'HTML']
+    outputFormats = ["XML", "HTML"]
     timestampedReports = false
     mutationThreshold = 60
 }
 
-tasks['sonarqube'].dependsOn test
+tasks["sonar"].dependsOn test
 
-sonarqube {
+sonar {
     properties {
         property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java"
@@ -196,31 +116,15 @@ sonarqube {
 }
 
 jsonSchema2Pojo {
-    // Location of the JSON Schema file(s). This may refer to a single file or a directory of files.
-    source.setFrom files("${project.rootDir}/src/main/resources/schemas")
-    // Target directory for generated Java source files. The plugin will add this directory to the
-    // java source set so the compiler will find and compile the newly generated source files.
-//    targetDirectoryPrefix = file("${project.buildDir}/temporaryJsonToPojo/sources/js2d")
-
-    // Package name used for generated Java classes (for types where a fully qualified name has not
-    // been supplied in the schema using the 'javaType' property).
-    targetPackage = 'uk.gov.justice.laa.crime.meansassessment.model.common'
-
-    // Whether to include JSR-303/349 annotations (for schema rules like minimum, maximum, etc) in
-    // generated Java types. Schema rules and the annotation they produce:
-    //  - maximum = @DecimalMax
-    //  - minimum = @DecimalMin
-    //  - minItems,maxItems = @Size
-    //  - minLength,maxLength = @Size
-    //  - pattern = @Pattern
-    //  - required = @NotNull
-    // Any Java fields which are an object or array of objects will be annotated with @Valid to
-    // support validation of an entire document tree.
-    generateBuilders = true
-    useInnerClassBuilders = true
-    includeJsr303Annotations = true
-    useBigDecimals = true
-    includeDynamicBuilders = true
-    // What type to use instead of string when adding string properties of format "date-time" to Java types
-    dateTimeType = "java.time.LocalDateTime"
+    executions {
+        main {
+            methods.builders = true
+            methods.buildersDynamic = true
+            methods.annotateJsr303Jakarta = true
+            fields.floatUseBigDecimal = true
+            dateTime.dateTimeType = "java.time.LocalDateTime"
+            klass.targetPackage = "uk.gov.justice.laa.crime.meansassessment.model.common"
+            io.source.setFrom files("${project.rootDir}/src/main/resources/schemas")
+        }
+    }
 }

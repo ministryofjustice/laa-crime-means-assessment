@@ -6,7 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -26,7 +26,6 @@ public class CaseTypeAssessmentCriteriaDetailValueEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // TODO Check if nullable is ok here, dev data suggests that it is
     @Column(name = "caty_case_type")
     private CaseType caseType;
 
