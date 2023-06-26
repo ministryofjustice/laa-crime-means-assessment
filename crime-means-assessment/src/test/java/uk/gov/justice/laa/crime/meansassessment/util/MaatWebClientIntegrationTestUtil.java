@@ -2,24 +2,20 @@ package uk.gov.justice.laa.crime.meansassessment.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.web.reactive.function.client.WebClient;
-import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.config.MaatApiOAuth2Client;
-import uk.gov.justice.laa.crime.meansassessment.config.RetryConfiguration;
+import okhttp3.mockwebserver.*;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.Map;
+import java.util.UUID;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
-import static io.netty.handler.codec.http.HttpResponseStatus.SERVICE_UNAVAILABLE;
+import static io.netty.handler.codec.http.HttpResponseStatus.*;
 
 public abstract class MaatWebClientIntegrationTestUtil {
 
-    public static MockWebServer mockMaatCourtDataApi;
-
+    public static MockWebServer mockMaatCourtDataApi = new MockWebServer();
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static final String INVALID_RESPONSE_ERROR_MSG = "Call to Court Data API failed, invalid response.";
@@ -28,29 +24,51 @@ public abstract class MaatWebClientIntegrationTestUtil {
 
     protected void startMockWebServer() throws IOException {
         mockMaatCourtDataApi = new MockWebServer();
-        mockMaatCourtDataApi.start();
+        mockMaatCourtDataApi.start(9999);
     }
 
     protected void shutdownMockWebServer() throws IOException {
         mockMaatCourtDataApi.shutdown();
     }
 
-    protected WebClient buildWebClient(
-            MaatApiConfiguration maatConfig,
-            RetryConfiguration retryConfiguration,
-            ClientRegistrationRepository clientRegistrations,
-            OAuth2AuthorizedClientRepository authorizedClients
-    ) {
-        MaatApiOAuth2Client client = new MaatApiOAuth2Client(maatConfig, retryConfiguration);
-        return client.webClient(clientRegistrations, authorizedClients);
+    protected void setOAuthDispatcher() {
+        final Dispatcher dispatcher = new QueueDispatcher() {
+            @NotNull
+            @Override
+            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
+
+                if ("/oauth2/token".equals(request.getPath())) {
+                    return getOauthResponse();
+                }
+
+                var requestLine = request.getRequestLine();
+                if ("GET /favicon.ico HTTP/1.1".equals(requestLine)) {
+                    return new MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_FOUND);
+                }
+
+                return getResponseQueue().take();
+            }
+        };
+        mockMaatCourtDataApi.setDispatcher(dispatcher);
     }
 
-    protected RetryConfiguration generateRetryConfiguration(Integer maxRetries, Integer minBackOff, Double jitterValue) {
-        RetryConfiguration retryConfiguration = new RetryConfiguration();
-        retryConfiguration.setMaxRetries(maxRetries);
-        retryConfiguration.setMinBackOffPeriod(minBackOff);
-        retryConfiguration.setJitterValue(jitterValue);
-        return retryConfiguration;
+    protected MockResponse getOauthResponse() {
+        Map<String, Object> token = Map.of(
+                "expires_in", 3600,
+                "token_type", "Bearer",
+                "access_token", UUID.randomUUID()
+        );
+        String responseBody;
+        MockResponse response = new MockResponse();
+        response.setResponseCode(OK.code());
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON);
+
+        try {
+            responseBody = OBJECT_MAPPER.writeValueAsString(token);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return response.setBody(responseBody);
     }
 
     protected <T> String setupMockApiResponses(T responseObject, Integer attemptsBeforeSuccess) throws JsonProcessingException {

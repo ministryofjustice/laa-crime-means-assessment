@@ -98,6 +98,8 @@ public class TestModelDataBuilder {
     public static final int CMU_ID = 30;
     private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
 
+    public static final String MAAT_API_REGISTRATION_ID = "maat-api";
+
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
         var weighting1 = getAssessmentCriteriaChildWeightingEntityWithId(37);
