@@ -9,7 +9,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.Incom
 
 @AllArgsConstructor
 @Getter
-public class Income {
+public class Income implements Amount {
 
     @JsonProperty("income_type")
     @Valid

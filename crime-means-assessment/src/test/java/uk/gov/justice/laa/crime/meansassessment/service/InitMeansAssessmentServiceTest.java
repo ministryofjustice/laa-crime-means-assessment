@@ -14,6 +14,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -82,7 +83,7 @@ public class InitMeansAssessmentServiceTest {
     public void givenIncomeBelowLowerThreshold_whenGetAssessmentResultIsInvoked_thenResultIsPass() {
         BigDecimal adjustedIncome = lowerThreshold.subtract(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
-                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "FMA");
+                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
         SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.PASS));
     }
 
@@ -90,7 +91,7 @@ public class InitMeansAssessmentServiceTest {
     public void givenIncomeBetweenThresholds_whenGetAssessmentResultIsInvoked_thenResultIsFull() {
         BigDecimal adjustedIncome = lowerThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
-                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "FMA");
+                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
         SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.FULL));
     }
 
@@ -98,7 +99,7 @@ public class InitMeansAssessmentServiceTest {
     public void givenIncomeAboveUpperThreshold_whenGetAssessmentResultIsInvoked_thenResultIsFail() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
-                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "FMA");
+                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
         SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.FAIL));
     }
 
@@ -106,7 +107,7 @@ public class InitMeansAssessmentServiceTest {
     public void givenIncomeAboveUpperThresholdAndHardshipApplication_whenGetAssessmentResultIsInvoked_thenResultIsHardship() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
-                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, "HR");
+                initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.HR);
         SoftAssertions.assertSoftly(softly -> assertThat(result).isEqualTo(InitAssessmentResult.HARDSHIP));
     }
 
