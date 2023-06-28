@@ -122,7 +122,7 @@ jobs:
       - run: |
           aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin ${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com
       - aws-ecr/build-image:
-          push-image: true
+          push-image: false
           path: ~/laa-crime-means-assessment/crime-means-assessment
           tag: ${CIRCLE_SHA1}
           region: $ECR_REGION
@@ -130,6 +130,10 @@ jobs:
       - snyk/scan:
           docker-image-name: "$AWS_ECR_ACCOUNT_URL/crime-apps/laa-crime-means-assessment-dev-ecr:${CIRCLE_SHA1}"
           <<: *snyk_options
+      - run:
+          name: Push to ECR
+          command: |
+            docker push "$AWS_ECR_ACCOUNT_URL/crime-apps/laa-crime-means-assessment-dev-ecr:${CIRCLE_SHA1}"
 
   deploy-dev:
     executor: cloud-platform-executor
