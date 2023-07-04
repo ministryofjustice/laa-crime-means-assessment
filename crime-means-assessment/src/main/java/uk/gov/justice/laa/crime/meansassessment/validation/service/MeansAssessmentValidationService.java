@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
+import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -28,8 +30,9 @@ import static uk.gov.justice.laa.crime.meansassessment.common.Constants.LAA_TRAN
 public class MeansAssessmentValidationService {
 
     private final MaatApiConfiguration configuration;
-    private final MaatCourtDataClient maatCourtDataClient;
     private final MaatCourtDataService maatCourtDataService;
+    @Qualifier("maatApiClient")
+    private final RestAPIClient maatAPIClient;
 
     String getUserIdFromRequest(MeansAssessmentRequestDTO meansAssessmentRequest) {
         return meansAssessmentRequest.getUserSession().getUserName();
@@ -37,8 +40,7 @@ public class MeansAssessmentValidationService {
 
     public boolean isRoleActionValid(final MeansAssessmentRequestDTO meansAssessmentRequest, String action) {
         if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest)) && StringUtils.isNotBlank(action)) {
-            AuthorizationResponseDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    AuthorizationResponseDTO.class,
+            AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getRoleActionUrl(),
                     Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     getUserIdFromRequest(meansAssessmentRequest),
@@ -51,8 +53,7 @@ public class MeansAssessmentValidationService {
 
     public boolean isNewWorkReasonValid(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         if (meansAssessmentRequest.getNewWorkReason() != null) {
-            AuthorizationResponseDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    AuthorizationResponseDTO.class,
+            AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getNewWorkReasonUrl(),
                     Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     getUserIdFromRequest(meansAssessmentRequest),
@@ -65,8 +66,7 @@ public class MeansAssessmentValidationService {
 
     public boolean isOutstandingAssessment(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         if (meansAssessmentRequest.getRepId() != null) {
-            OutstandingAssessmentResultDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    OutstandingAssessmentResultDTO.class,
+            OutstandingAssessmentResultDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getOutstandingAssessmentsUrl(),
                     Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     meansAssessmentRequest.getRepId()
@@ -80,8 +80,7 @@ public class MeansAssessmentValidationService {
         if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest))
                 && StringUtils.isNotBlank(meansAssessmentRequest.getUserSession().getSessionId())
                 && meansAssessmentRequest.getRepId() != null) {
-            AuthorizationResponseDTO apiResponse = maatCourtDataClient.getApiResponseViaGET(
-                    AuthorizationResponseDTO.class,
+            AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getReservationsUrl(),
                     Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     getUserIdFromRequest(meansAssessmentRequest),

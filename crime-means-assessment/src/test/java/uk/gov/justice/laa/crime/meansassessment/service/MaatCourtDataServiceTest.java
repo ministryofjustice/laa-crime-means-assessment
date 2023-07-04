@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
+import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
@@ -26,7 +26,7 @@ public class MaatCourtDataServiceTest {
     private static final String LAA_TRANSACTION_ID = "laaTransactionId";
 
     @Mock
-    MaatCourtDataClient maatCourtDataClient;
+    RestAPIClient maatAPIClient;
 
     @InjectMocks
     private MaatCourtDataService maatCourtDataService;
@@ -38,33 +38,29 @@ public class MaatCourtDataServiceTest {
     public void givenCreateRequest_whenPersistMeansAssessmentIsInvoked_thenPostRequestIsSentToCourtDataApi() {
         MaatApiAssessmentResponse expected = new MaatApiAssessmentResponse().withId(1234);
 
-        when(maatCourtDataClient.getApiResponseViaPOST(
-                any(MaatApiAssessmentRequest.class), any(), anyString(), anyMap()
-        )).thenReturn(expected);
+        when(maatAPIClient.post(any(MaatApiAssessmentRequest.class), any(), anyString(), anyMap()))
+                .thenReturn(expected);
 
         MaatApiAssessmentResponse response = maatCourtDataService.persistMeansAssessment(
-                new MaatApiAssessmentRequest(), LAA_TRANSACTION_ID, AssessmentRequestType.CREATE
-        );
+                new MaatApiAssessmentRequest(), LAA_TRANSACTION_ID, AssessmentRequestType.CREATE);
         assertThat(response).isEqualTo(expected);
     }
 
     @Test
     public void givenUpdateRequest_whenPersistMeansAssessmentIsInvoked_thenPutRequestIsSentToCourtDataApi() {
         MaatApiAssessmentResponse expected = new MaatApiAssessmentResponse().withId(5678);
-        when(maatCourtDataClient.getApiResponseViaPUT(
-                any(MaatApiAssessmentRequest.class), any(), anyString(), anyMap()
-        )).thenReturn(expected);
+        when(maatAPIClient.put(any(MaatApiAssessmentRequest.class), any(), anyString(), anyMap()))
+                .thenReturn(expected);
 
         MaatApiAssessmentResponse response = maatCourtDataService.persistMeansAssessment(
-                new MaatApiAssessmentRequest(), LAA_TRANSACTION_ID, AssessmentRequestType.UPDATE
-        );
+                new MaatApiAssessmentRequest(), LAA_TRANSACTION_ID, AssessmentRequestType.UPDATE);
         assertThat(response).isEqualTo(expected);
     }
 
     @Test
     public void givenRepId_whenGetPassportAssessmentFromRepIdIsInvoked_thenResponseIsReturned() {
         PassportAssessmentDTO expected = new PassportAssessmentDTO();
-        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
+        when(maatAPIClient.get(any(), anyString(), anyMap(), any()))
                 .thenReturn(expected);
 
         PassportAssessmentDTO response =
@@ -76,7 +72,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenRepId_whenGetHardshipReviewFromRepIdIsInvoked_thenResponseIsReturned() {
         HardshipReviewDTO expected = new HardshipReviewDTO();
-        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
+        when(maatAPIClient.get(any(), anyString(), anyMap(), any()))
                 .thenReturn(expected);
 
         HardshipReviewDTO response =
@@ -88,7 +84,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenRepId_whenGetIojAppealFromRepIdIsInvoked_thenResponseIsReturned() {
         IOJAppealDTO expected = new IOJAppealDTO();
-        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
+        when(maatAPIClient.get(any(), anyString(), anyMap(), any()))
                 .thenReturn(expected);
 
         IOJAppealDTO response =
@@ -100,7 +96,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenRepId_whenGetFinancialAssessmentIsInvoked_thenResponseIsReturned() {
         FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
-        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
+        when(maatAPIClient.get(any(), anyString(), anyMap(), any()))
                 .thenReturn(expected);
 
         FinancialAssessmentDTO response =
@@ -112,7 +108,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenRepId_whenGetRepOrderIsInvoked_thenResponseIsReturned() {
         RepOrderDTO expected = new RepOrderDTO();
-        when(maatCourtDataClient.getApiResponseViaGET(any(), anyString(), anyMap(), any()))
+        when(maatAPIClient.get(any(), anyString(), anyMap(), any()))
                 .thenReturn(expected);
 
         RepOrderDTO response =
@@ -124,7 +120,7 @@ public class MaatCourtDataServiceTest {
     @Test
     public void givenDateCompletionRequest_whenUpdateCompletionDateIsInvoked_thenResponseIsReturned() {
         maatCourtDataService.updateCompletionDate(DateCompletionRequestDTO.builder().build(), LAA_TRANSACTION_ID);
-        verify(maatCourtDataClient).getApiResponseViaPOST(
+        verify(maatAPIClient).post(
                 any(DateCompletionRequestDTO.class),
                 any(),
                 anyString(),
