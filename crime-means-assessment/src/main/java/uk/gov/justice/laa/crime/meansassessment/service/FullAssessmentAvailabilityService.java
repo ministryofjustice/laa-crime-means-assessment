@@ -2,11 +2,10 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
-
-import java.util.Objects;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome.COMMITTED_FOR_TRIAL;
 import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason.HR;
@@ -15,65 +14,51 @@ import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkR
 @Service
 public class FullAssessmentAvailabilityService {
 
-    public void processFullAssessmentAvailable(final MeansAssessmentRequestDTO requestDTO,
-                                               final ApiMeansAssessmentResponse meansAssessmentResponse) {
+    public boolean isFullAssessmentAvailable(final CaseType caseType,
+                                             final MagCourtOutcome magCourtOutcome,
+                                             final NewWorkReason newWorkReason,
+                                             final InitAssessmentResult initAssessmentResult) {
+        var returnValue = false;
 
-        log.debug("Start full assessment available check for create means assessment request {} and response {}",
-                requestDTO, meansAssessmentResponse);
-
-        meansAssessmentResponse.setFullAssessmentAvailable(false);
-
-        if (!Objects.isNull(meansAssessmentResponse.getFullAssessmentDate())) {
-            meansAssessmentResponse.setFullAssessmentAvailable(true);
-        } else {
-            InitAssessmentResult initAssessmentResult = InitAssessmentResult.getFrom(meansAssessmentResponse.getInitResult());
-            if (initAssessmentResult != null) {
-                switch (initAssessmentResult) {
-                    case PASS:
-                        break;
-                    case FULL:
-                        meansAssessmentResponse.setFullAssessmentAvailable(true);
-                        break;
-                    case FAIL:
-                        processFullAssessmentAvailableOnResultFail(requestDTO, meansAssessmentResponse);
-                        break;
-                    case HARDSHIP:
-                        checkNewWorkReason(requestDTO, meansAssessmentResponse);
-                }
+        if (initAssessmentResult != null) {
+            switch (initAssessmentResult) {
+                case PASS:
+                    break;
+                case FULL:
+                    returnValue = true;
+                    break;
+                case FAIL:
+                    returnValue = isFullAssessmentAvailableOnResultFail(caseType, magCourtOutcome);
+                    break;
+                case HARDSHIP:
+                    returnValue = checkNewWorkReason(newWorkReason);
             }
         }
-        log.info("fullAssessmentAvailable set to {}", meansAssessmentResponse.getFullAssessmentAvailable());
+
+        return returnValue;
     }
 
-    private void checkNewWorkReason(MeansAssessmentRequestDTO requestDTO, ApiMeansAssessmentResponse meansAssessmentResponse) {
-        if (requestDTO.getNewWorkReason() == HR) {
-            meansAssessmentResponse.setFullAssessmentAvailable(true);
-        }
+    private static boolean checkNewWorkReason(NewWorkReason newWorkReason) {
+        return (newWorkReason == HR);
     }
 
-
-    private void processFullAssessmentAvailableOnResultFail(final MeansAssessmentRequestDTO requestDTO,
-                                                            final ApiMeansAssessmentResponse meansAssessmentResponse) {
-        switch (requestDTO.getCaseType()) {
+    private static boolean isFullAssessmentAvailableOnResultFail(CaseType caseType, MagCourtOutcome magCourtOutcome) {
+        switch (caseType) {
             case COMMITAL:
             case SUMMARY_ONLY:
-                meansAssessmentResponse.setFullAssessmentAvailable(false);
-                break;
+                return false;
             case INDICTABLE:
             case CC_ALREADY:
             case APPEAL_CC:
-                meansAssessmentResponse.setFullAssessmentAvailable(true);
-                break;
+                return true;
             case EITHER_WAY:
-                checkMagCourtOutcome(requestDTO, meansAssessmentResponse);
+                return checkMagCourtOutcome(magCourtOutcome);
+            default:
+                return false;
         }
     }
 
-    private void checkMagCourtOutcome(MeansAssessmentRequestDTO requestDTO, ApiMeansAssessmentResponse meansAssessmentResponse) {
-        if (requestDTO.getMagCourtOutcome() == COMMITTED_FOR_TRIAL) {
-            meansAssessmentResponse.setFullAssessmentAvailable(true);
-        }
+    private static boolean checkMagCourtOutcome(MagCourtOutcome magCourtOutcome) {
+        return (magCourtOutcome == COMMITTED_FOR_TRIAL);
     }
 }
-
-

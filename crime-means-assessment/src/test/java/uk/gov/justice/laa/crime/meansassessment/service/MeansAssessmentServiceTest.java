@@ -5,7 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -21,7 +24,10 @@ import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingEx
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -245,6 +251,9 @@ public class MeansAssessmentServiceTest {
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
+        when(meansAssessmentResponseBuilder.build(any(MaatApiAssessmentResponse.class),
+                        any(AssessmentCriteriaEntity.class),
+                        any(MeansAssessmentDTO.class))).thenReturn(new ApiMeansAssessmentResponse());
     }
 
     //    TODO: Remove this test once the dateCompletion feature is enabled
@@ -264,7 +273,10 @@ public class MeansAssessmentServiceTest {
         verify(initMeansAssessmentService).execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
-        verify(fullAssessmentAvailabilityService).processFullAssessmentAvailable(meansAssessment, result);
+        verify(fullAssessmentAvailabilityService).isFullAssessmentAvailable(meansAssessment.getCaseType(),
+                meansAssessment.getMagCourtOutcome(),
+                meansAssessment.getNewWorkReason(),
+                InitAssessmentResult.FULL);
         verify(meansAssessmentResponseBuilder).build(
                 any(MaatApiAssessmentResponse.class), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
         );
