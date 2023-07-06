@@ -85,7 +85,12 @@ public class MeansAssessmentService {
                     responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
 
             if (AssessmentType.INIT.equals(assessmentType)) {
-                fullAssessmentAvailabilityService.processFullAssessmentAvailable(requestDTO, assessmentResponse);
+                boolean fullAssessmentAvailable = fullAssessmentAvailabilityService
+                        .isFullAssessmentAvailable(requestDTO.getCaseType(),
+                                requestDTO.getMagCourtOutcome(),
+                                requestDTO.getNewWorkReason(),
+                                completedAssessment.getInitAssessmentResult());
+                assessmentResponse.setFullAssessmentAvailable(fullAssessmentAvailable);
             }
 
             return assessmentResponse;

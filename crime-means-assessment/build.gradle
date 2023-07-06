@@ -51,6 +51,7 @@ dependencies {
     implementation "org.apache.commons:commons-lang3"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
     implementation "org.springframework.security:spring-security-oauth2-authorization-server:$versions.springauthserverVersion"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:2.0.0"
 
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"

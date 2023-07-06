@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.reactive.function.client.WebClient;
+import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
-import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataClient;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
@@ -35,6 +35,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultD
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -43,7 +44,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -70,36 +70,19 @@ public class MeansAssessmentIntegrationTest {
     private static final String CLIENT_ID = "test-client";
     private static final String SCOPE_READ_WRITE = "READ_WRITE";
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v1/assessment/means";
-
+    @MockBean
+    RestAPIClient maatAPIClient;
     private MockMvc mvc;
-
     @Autowired
     private WebApplicationContext webApplicationContext;
-
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private Environment env;
-
-    @MockBean
-    private WebClient webClient;
-
-    @MockBean
-    private MaatCourtDataClient maatCourtDataClient;
-
     @MockBean
     private CrownCourtEligibilityService crownCourtEligibilityService;
-
-    private final WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
-    private final WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
-    private final WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
-    private final WebClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
-
-    private final WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
 
     @Before
     public void setup() {
@@ -150,24 +133,6 @@ public class MeansAssessmentIntegrationTest {
         return jsonParser.parseMap(resultString).get("access_token").toString();
     }
 
-    private void setUpWebClientMock() {
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(any(String.class), any(HashMap.class));
-        doReturn(requestHeadersSpec).when(requestHeadersUriSpec).uri(any(String.class), any(HashMap.class));
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-
-        when(maatCourtDataClient.getApiResponseViaGET(
-                eq(AuthorizationResponseDTO.class), anyString(), anyMap(), any())
-        ).thenReturn(getAuthorizationResponseDTO(true));
-
-        when(maatCourtDataClient.getApiResponseViaGET(
-                eq(OutstandingAssessmentResultDTO.class), anyString(), anyMap(), any())
-        ).thenReturn(getOutstandingAssessmentResultDTO(false));
-
-        when(maatCourtDataClient.getApiResponseViaPOST(any(DateCompletionRequestDTO.class), any(), any(), any()))
-                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
-    }
-
     @Test
     public void givenAInvalidContent_whenCreateAssessmentInvoked_ShouldFailsBadRequest() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}"))
@@ -201,12 +166,11 @@ public class MeansAssessmentIntegrationTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
         doThrow(new RuntimeException())
-                .when(maatCourtDataClient).getApiResponseViaPOST(any(MaatApiAssessmentRequest.class), any(), any(), any());
+                .when(maatAPIClient).post(any(MaatApiAssessmentRequest.class), any(), any(), any());
 
-        when(maatCourtDataClient.getApiResponseViaGET(eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any()))
+        when(maatAPIClient.get(eq(new ParameterizedTypeReference<FinancialAssessmentDTO>() {
+        }), anyString(), anyMap(), any()))
                 .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
-
-        setUpWebClientMock();
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().is5xxServerError())
@@ -219,13 +183,20 @@ public class MeansAssessmentIntegrationTest {
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        when(maatCourtDataClient.getApiResponseViaPOST(any(MaatApiAssessmentRequest.class), any(), any(), any()))
+        when(maatAPIClient.post(any(MaatApiAssessmentRequest.class), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
 
-        when(maatCourtDataClient.getApiResponseViaGET(eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any()))
+        when(maatAPIClient.get(eq(new ParameterizedTypeReference<FinancialAssessmentDTO>() {}), anyString(), anyMap(), any()))
                 .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
 
-        setUpWebClientMock();
+        when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {}), anyString(), anyMap(), any()))
+                .thenReturn(getAuthorizationResponseDTO(true));
+
+        when(maatAPIClient.get(eq(new ParameterizedTypeReference<OutstandingAssessmentResultDTO>() {
+        }), anyString(), anyMap(), any())).thenReturn(getOutstandingAssessmentResultDTO(false));
+
+        when(maatAPIClient.post(any(DateCompletionRequestDTO.class), eq(new ParameterizedTypeReference<RepOrderDTO>() {}), anyString(), anyMap()))
+                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
                 .andExpect(status().isOk())
@@ -251,13 +222,22 @@ public class MeansAssessmentIntegrationTest {
         updateAssessmentRequest.setAssessmentType(AssessmentType.FULL);
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
 
-        when(maatCourtDataClient.getApiResponseViaPUT(any(MaatApiAssessmentRequest.class), any(), any(), any()))
+        when(maatAPIClient.put(any(MaatApiAssessmentRequest.class), any(), any(), any()))
                 .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
 
-        when(maatCourtDataClient.getApiResponseViaGET(eq(FinancialAssessmentDTO.class), anyString(), anyMap(), any()))
-                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+        when(maatAPIClient.get(eq(new ParameterizedTypeReference<FinancialAssessmentDTO>() {
+        }), anyString(), anyMap(), any())).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
 
-        setUpWebClientMock();
+
+        when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {}), anyString(), anyMap(), any()))
+                .thenReturn(getAuthorizationResponseDTO(true));
+
+        when(maatAPIClient.get(eq(new ParameterizedTypeReference<OutstandingAssessmentResultDTO>() {
+        }), anyString(), anyMap(), any())).thenReturn(getOutstandingAssessmentResultDTO(false));
+
+        when(maatAPIClient.post(any(DateCompletionRequestDTO.class), eq(new ParameterizedTypeReference<RepOrderDTO>() {}), anyString(), anyMap()))
+                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
+
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -286,7 +266,7 @@ public class MeansAssessmentIntegrationTest {
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
         finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
         financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
-        when(maatCourtDataClient.getApiResponseViaGET(any(), any(), any(), any()))
+        when(maatAPIClient.get(any(), any(), any(), any()))
                 .thenReturn(financialAssessmentDTO);
         ResultActions result = mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
                         + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))

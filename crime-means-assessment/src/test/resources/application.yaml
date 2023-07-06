@@ -25,7 +25,7 @@ spring:
       client:
         provider:
           maat-api:
-            token-uri: http://dummyserver:9999
+            token-uri: http://localhost:9999/oauth2/token
         registration:
           maat-api:
             client-id: dummy-client
@@ -48,7 +48,7 @@ swagger-ui:
 maatApi:
   oAuthEnabled: false
   baseUrl: http://localhost:8090
-  assessments-domain: /api/internal/v1/assessment
+  assessments-domain: ${maatApi.baseUrl}/api/internal/v1/assessment
   post-processing-url: ${maatApi.assessments-domain}/post-processing/{repId}
 
   validation-endpoints:
