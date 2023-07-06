@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     id "java"
     id "jacoco"
-    id "org.springframework.boot" version "3.0.4"
+    id "org.springframework.boot" version "3.0.5"
     id "org.sonarqube" version "4.0.0.2929"
     id "info.solidsoft.pitest" version "1.9.11"
     id "org.jsonschema2dataclass" version "6.0.0"
@@ -11,9 +11,10 @@ plugins {
 
 def versions = [
         pitest                             : "1.4.10",
-        springdocVersion                   : "2.0.4",
+        springdocVersion                   : "2.1.0",
         okhttpVersion                      : "4.9.3",
-        mockwebserverVersion               : "4.9.3"
+        mockwebserverVersion               : "4.9.3",
+        liquibase                          : "4.20.0"
 ]
 
 group = "uk.gov.justice.laa.crime"
@@ -46,8 +47,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
     implementation "org.postgresql:postgresql"
-    implementation "org.liquibase:liquibase-core"
     implementation "org.apache.commons:commons-lang3"
+    implementation "org.liquibase:liquibase-core:$versions.liquibase"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:2.0.0"
 
