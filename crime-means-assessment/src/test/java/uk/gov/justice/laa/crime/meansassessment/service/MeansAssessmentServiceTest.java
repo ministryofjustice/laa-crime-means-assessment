@@ -315,10 +315,10 @@ public class MeansAssessmentServiceTest {
     public void givenMaatApiAssessmentResponse_whenUpdateDetailIdsIsInvoked_thenDetailIdsAreUpdated() {
         MeansAssessmentDTO meansAssessmentDTO = TestModelDataBuilder.getMeansAssessmentDTO();
         meansAssessmentService.updateDetailIds(
-                meansAssessmentDTO, TestModelDataBuilder.getMaatApiAssessmentResponse()
+                meansAssessmentDTO, TestModelDataBuilder.getMaatApiInitAssessmentResponse()
         );
         assertThat(meansAssessmentDTO.getMeansAssessment().getSectionSummaries().get(0).getAssessmentDetails().get(0).getId())
-                .isEqualTo(TestModelDataBuilder.getMaatApiAssessmentResponse().getAssessmentDetails().get(0).getId());
+                .isEqualTo(TestModelDataBuilder.getMaatApiInitAssessmentResponse().getAssessmentDetails().get(0).getId());
     }
 
     @Test

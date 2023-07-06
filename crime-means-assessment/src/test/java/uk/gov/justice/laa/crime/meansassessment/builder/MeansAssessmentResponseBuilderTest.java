@@ -24,7 +24,7 @@ public class MeansAssessmentResponseBuilderTest {
     @Before
     public void setup() {
         completedAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
-        maatApiAssessmentResponse = TestModelDataBuilder.getMaatApiAssessmentResponse();
+        maatApiAssessmentResponse = TestModelDataBuilder.getMaatApiInitAssessmentResponse();
     }
 
     private void checkCommonFieldsPopulated(ApiMeansAssessmentResponse response) {
