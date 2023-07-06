@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     id "java"
     id "jacoco"
-    id "org.springframework.boot" version "3.0.5"
+    id "org.springframework.boot" version "3.0.4"
     id "org.sonarqube" version "4.0.0.2929"
     id "info.solidsoft.pitest" version "1.9.11"
     id "org.jsonschema2dataclass" version "6.0.0"
@@ -13,8 +13,7 @@ def versions = [
         pitest                             : "1.4.10",
         springdocVersion                   : "2.0.4",
         okhttpVersion                      : "4.9.3",
-        mockwebserverVersion               : "4.9.3",
-        springauthserverVersion            : "1.0.1",
+        mockwebserverVersion               : "4.9.3"
 ]
 
 group = "uk.gov.justice.laa.crime"
@@ -50,7 +49,6 @@ dependencies {
     implementation "org.liquibase:liquibase-core"
     implementation "org.apache.commons:commons-lang3"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
-    implementation "org.springframework.security:spring-security-oauth2-authorization-server:$versions.springauthserverVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:2.0.0"
 
     compileOnly "org.projectlombok:lombok"

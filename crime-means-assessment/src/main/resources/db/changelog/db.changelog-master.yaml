@@ -43,3 +43,5 @@ databaseChangeLog:
       file: db/changelog/changeset/21-income-evidence-table-data-insert.sql
   - include:
       file: db/changelog/changeset/22-spring-security-oauth2-table-update.sql
+  - include:
+      file: db/changelog/changeset/23-drop-spring-security-oauth2-tables.sql
