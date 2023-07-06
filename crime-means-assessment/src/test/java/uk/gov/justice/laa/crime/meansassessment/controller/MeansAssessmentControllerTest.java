@@ -5,30 +5,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
@@ -37,24 +29,18 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
+import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
 
+@DirtiesContext
 @RunWith(SpringRunner.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
-@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class}, webEnvironment = DEFINED_PORT)
-@DirtiesContext
+@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
 public class MeansAssessmentControllerTest {
 
     private static final boolean IS_VALID = true;
-    private static final String CLIENT_SECRET = "secret";
-    private static final String CLIENT_CREDENTIALS = "client_credentials";
-    private static final String CLIENT_ID = "test-client";
-    private static final String SCOPE_READ_WRITE = "READ_WRITE";
-    private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v1/assessment/means";
+    private static final String ENDPOINT_URL = "/api/internal/v1/assessment/means";
 
     private MockMvc mvc;
 
@@ -67,9 +53,6 @@ public class MeansAssessmentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private Environment env;
-
     @MockBean
     private MeansAssessmentService meansAssessmentService;
 
@@ -80,49 +63,6 @@ public class MeansAssessmentControllerTest {
     public void setup() {
         this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
                 .addFilter(springSecurityFilterChain).build();
-    }
-
-    private MockHttpServletRequestBuilder buildRequestGivenContent(HttpMethod method, String content) throws Exception {
-        return buildRequestGivenContent(method, content, true);
-    }
-
-    private MockHttpServletRequestBuilder buildRequestGivenContent(HttpMethod method, String content, boolean withAuth) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder =
-                MockMvcRequestBuilders.request(method, MEANS_ASSESSMENT_ENDPOINT_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content);
-        if (withAuth) {
-            final String accessToken = obtainAccessToken();
-            requestBuilder.header("Authorization", "Bearer " + accessToken);
-        }
-        return requestBuilder;
-    }
-
-    private MockHttpServletRequestBuilder buildRequestForGet(HttpMethod method, String url, boolean withAuth) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder =
-                MockMvcRequestBuilders.request(method, url)
-                        .contentType(MediaType.APPLICATION_JSON);
-        if (withAuth) {
-            final String accessToken = obtainAccessToken();
-            requestBuilder.header("Authorization", "Bearer " + accessToken);
-            requestBuilder.header("Laa-Transaction-Id", TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
-        }
-        return requestBuilder;
-    }
-
-    private String obtainAccessToken() throws Exception {
-        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", CLIENT_CREDENTIALS);
-        params.add("scope", SCOPE_READ_WRITE);
-
-        ResultActions result = mvc.perform(post("/oauth2/token")
-                        .params(params)
-                        .with(httpBasic(CLIENT_ID, CLIENT_SECRET)))
-                .andExpect(status().isOk());
-        String resultString = result.andReturn().getResponse().getContentAsString();
-
-        JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(resultString).get("access_token").toString();
     }
 
     @Test
@@ -139,7 +79,7 @@ public class MeansAssessmentControllerTest {
         when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(Optional.empty());
 
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
+        mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.assessmentId").value(MEANS_ASSESSMENT_ID));
@@ -159,7 +99,7 @@ public class MeansAssessmentControllerTest {
         when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(Optional.empty());
 
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
+        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.assessmentId").value(MEANS_ASSESSMENT_ID));
@@ -171,7 +111,7 @@ public class MeansAssessmentControllerTest {
                 TestModelDataBuilder.getApiCreateMeansAssessmentRequest(!IS_VALID);
         var createAssessmentRequestJson = objectMapper.writeValueAsString(createAssessmentRequest);
 
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, createAssessmentRequestJson))
+        mvc.perform(buildRequestGivenContent(HttpMethod.POST, createAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().is4xxClientError());
     }
 
@@ -181,63 +121,67 @@ public class MeansAssessmentControllerTest {
                 TestModelDataBuilder.getApiUpdateMeansAssessmentRequest(!IS_VALID);
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
 
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
+        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void createAssessment_ServerError_RequestBodyIsMissing() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, ""))
+        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "", ENDPOINT_URL))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void createAssessment_BadRequest_RequestEmptyBody() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}"))
+        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}", ENDPOINT_URL))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void createAssessment_Unauthorized_NoAccessToken() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}", false))
+        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}", ENDPOINT_URL, false))
                 .andExpect(status().isUnauthorized());
     }
 
 
     @Test
     public void updateAssessment_ServerError_RequestBodyIsMissing() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, ""))
+        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "", ENDPOINT_URL))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void updateAssessment_BadRequest_RequestEmptyBody() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}"))
+        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", ENDPOINT_URL))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void updateAssessment_Unauthorized_NoAccessToken() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", false))
+        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", ENDPOINT_URL, false))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void getOldAssessment_Unauthorized_NoAccessToken() throws Exception {
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, false))
+        mvc.perform(buildRequestGivenContent(HttpMethod.GET, "", ENDPOINT_URL, false))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void givenInvalidPram_whenGetOldAssessmentInvoked_shouldFailBadRequest() throws Exception {
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, true))
+        mvc.perform(buildRequestGivenContent(HttpMethod.GET, "", ENDPOINT_URL, true))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void givenValidPram_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
         when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(new ApiGetMeansAssessmentResponse());
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID , true))
-                .andExpect(status().isOk());
+        mvc.perform(buildRequestGivenContent(
+                HttpMethod.GET,
+                "",
+                ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID,
+                true)
+        ).andExpect(status().isOk());
     }
 }

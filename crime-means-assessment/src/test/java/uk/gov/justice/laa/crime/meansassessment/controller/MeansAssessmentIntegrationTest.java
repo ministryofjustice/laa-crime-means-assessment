@@ -1,15 +1,17 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,72 +19,60 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
+import uk.gov.justice.laa.crime.meansassessment.common.Constants;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
+import uk.gov.justice.laa.crime.meansassessment.util.MockWebServerStubs;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.getAuthorizationResponseDTO;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.getOutstandingAssessmentResultDTO;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @DirtiesContext
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {
-        CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class}, webEnvironment = DEFINED_PORT)
+@Import(CrimeMeansAssessmentTestConfiguration.class)
+@SpringBootTest(
+        classes = {
+                CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class
+        }, webEnvironment = DEFINED_PORT)
 public class MeansAssessmentIntegrationTest {
 
     private static final boolean IS_VALID = true;
-    private static final String CLIENT_SECRET = "secret";
-    private static final String CLIENT_CREDENTIALS = "client_credentials";
-    private static final String CLIENT_ID = "test-client";
-    private static final String SCOPE_READ_WRITE = "READ_WRITE";
-    private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v1/assessment/means";
-    @MockBean
-    RestAPIClient maatAPIClient;
+    private static final String ENDPOINT_URL = "/api/internal/v1/assessment/means";
+
     private MockMvc mvc;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-    @Autowired
-    private FilterChainProxy springSecurityFilterChain;
+
+    private static MockWebServer mockMaatCourtDataApi;
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
-    private Environment env;
-    @MockBean
-    private CrownCourtEligibilityService crownCourtEligibilityService;
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private FilterChainProxy springSecurityFilterChain;
 
     @Before
     public void setup() {
@@ -90,198 +80,215 @@ public class MeansAssessmentIntegrationTest {
                 .addFilter(springSecurityFilterChain).build();
     }
 
-    private MockHttpServletRequestBuilder buildRequestGivenContent(HttpMethod method, String content) throws Exception {
-        return buildRequestGivenContent(method, content, true);
+    @BeforeClass
+    public static void initialiseMockWebServer() throws IOException {
+        mockMaatCourtDataApi = new MockWebServer();
+        mockMaatCourtDataApi.start(9999);
+        mockMaatCourtDataApi.setDispatcher(MockWebServerStubs.getDispatcher());
     }
 
-    private MockHttpServletRequestBuilder buildRequestGivenContent(HttpMethod method, String content, boolean withAuth) throws Exception {
+    @AfterClass
+    public static void shutdownMockWebServer() throws IOException {
+        mockMaatCourtDataApi.shutdown();
+    }
+
+    private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String endpointUrl, boolean withAuth) {
+        return buildRequest(method, null, endpointUrl, withAuth);
+    }
+
+    private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String content, String endpointUrl) {
+        return buildRequest(method, content, endpointUrl, true);
+    }
+
+    private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String content,
+                                                       String endpointUrl, boolean withAuth) {
         MockHttpServletRequestBuilder requestBuilder =
-                MockMvcRequestBuilders.request(method, MEANS_ASSESSMENT_ENDPOINT_URL)
+                MockMvcRequestBuilders.request(method, endpointUrl)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(content);
+                        .header(Constants.LAA_TRANSACTION_ID, UUID.randomUUID());
+        if (content != null) {
+            requestBuilder.content(content);
+        }
         if (withAuth) {
-            final String accessToken = obtainAccessToken();
-            requestBuilder.header("Authorization", "Bearer " + accessToken);
+            requestBuilder.header("Authorization", "Bearer " + "token");
         }
         return requestBuilder;
-    }
-
-    private MockHttpServletRequestBuilder buildRequestForGet(HttpMethod method, String url, boolean withAuth) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder =
-                MockMvcRequestBuilders.request(method, url)
-                        .contentType(MediaType.APPLICATION_JSON);
-        if (withAuth) {
-            final String accessToken = obtainAccessToken();
-            requestBuilder.header("Authorization", "Bearer " + accessToken);
-            requestBuilder.header("Laa-Transaction-Id", TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
-        }
-        return requestBuilder;
-    }
-
-    private String obtainAccessToken() throws Exception {
-        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", CLIENT_CREDENTIALS);
-        params.add("scope", SCOPE_READ_WRITE);
-
-        ResultActions result = mvc.perform(post("/oauth2/token")
-                        .params(params)
-                        .with(httpBasic(CLIENT_ID, CLIENT_SECRET)))
-                .andExpect(status().isOk());
-        String resultString = result.andReturn().getResponse().getContentAsString();
-
-        JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(resultString).get("access_token").toString();
     }
 
     @Test
-    public void givenAInvalidContent_whenCreateAssessmentInvoked_ShouldFailsBadRequest() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}"))
+    public void givenAInvalidContent_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
+        mvc.perform(buildRequest(HttpMethod.POST, "{}", ENDPOINT_URL))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenNoOAuthToken_whenCreateAssessmentInvoked_shouldFailsUnauthorizedAccess() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}", Boolean.FALSE))
+    public void givenNoOAuthToken_whenCreateAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
+        mvc.perform(buildRequest(HttpMethod.POST, "{}", ENDPOINT_URL, Boolean.FALSE))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void givenAInvalidRepId_whenCreateAssessmentInvoked_ShouldFailsValidation() throws Exception {
+    public void givenAnInvalidRepId_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
         var initialMeansAssessmentRequest =
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         initialMeansAssessmentRequest.setRepId(-1000);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        MvcResult result = mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
-                .andExpect(status().is4xxClientError())
-                .andReturn();
-        assertErrorScenario("Rep Id is missing from request and is required", result);
-
+        String expectedErrorMessage = "Rep Id is missing from request and is required";
+        mvc.perform(buildRequest(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(expectedErrorMessage));
     }
 
     @Test
-    public void givenAValidCreateMeansAssessmentRequest_whenMaatCourtApiCallFails_ShouldFailsCreateMeanAssessment() throws Exception {
+    public void givenAValidCreateMeansAssessmentRequest_whenDateCompletionCallFails_thenServerErrorResponseIsReturned()
+            throws Exception {
+
         var initialMeansAssessmentRequest =
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        doThrow(new RuntimeException())
-                .when(maatAPIClient).post(any(MaatApiAssessmentRequest.class), any(), any(), any());
+        enqueueAuthorizationResponse(true);
+        enqueueAuthorizationResponse(true);
+        enqueueAuthorizationResponse(false);
+        enqueueAuthorizationResponse(true);
 
-        when(maatAPIClient.get(eq(new ParameterizedTypeReference<FinancialAssessmentDTO>() {
-        }), anyString(), anyMap(), any()))
-                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+        // DateCompletionService - retrieve rep order
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(HttpStatus.GATEWAY_TIMEOUT.value())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+        );
 
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
+        mvc.perform(buildRequest(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().is5xxServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
-    public void givenAValidCreateMeansAssessmentRequest_WhenCreateAssessmentInvoked_success() throws Exception {
+    public void givenAValidCreateMeansAssessmentRequest_WhenCreateAssessmentInvoked_ThenSuccessResponseIsReturned()
+            throws Exception {
+
         var initialMeansAssessmentRequest =
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
-        when(maatAPIClient.post(any(MaatApiAssessmentRequest.class), any(), any(), any()))
-                .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
+        enqueueAuthorizationResponse(true);
+        enqueueAuthorizationResponse(true);
+        enqueueAuthorizationResponse(false);
+        enqueueAuthorizationResponse(true);
 
-        when(maatAPIClient.get(eq(new ParameterizedTypeReference<FinancialAssessmentDTO>() {}), anyString(), anyMap(), any()))
-                .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+        // DateCompletionService - retrieve rep order
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))
+        );
+        // MaatCourtDataService - Persist means assessment
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiInitAssessmentResponse()))
+        );
 
-        when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {}), anyString(), anyMap(), any()))
-                .thenReturn(getAuthorizationResponseDTO(true));
-
-        when(maatAPIClient.get(eq(new ParameterizedTypeReference<OutstandingAssessmentResultDTO>() {
-        }), anyString(), anyMap(), any())).thenReturn(getOutstandingAssessmentResultDTO(false));
-
-        when(maatAPIClient.post(any(DateCompletionRequestDTO.class), eq(new ParameterizedTypeReference<RepOrderDTO>() {}), anyString(), anyMap()))
-                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
-
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson))
+        mvc.perform(buildRequest(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
-    public void givenAInvalidContent_whenUpdateAssessmentInvoked_ShouldFailsBadRequest() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}"))
+    public void givenAInvalidContent_whenUpdateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
+        mvc.perform(buildRequest(HttpMethod.PUT, "{}", ENDPOINT_URL))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenNoOAuthToken_whenUpdateAssessmentInvoked_shouldFailsUnauthorizedAccess() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", Boolean.FALSE))
+    public void givenNoOAuthToken_whenUpdateAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
+        mvc.perform(buildRequest(HttpMethod.PUT, "{}", ENDPOINT_URL, Boolean.FALSE))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ShouldSuccess() throws Exception {
+    public void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ThenSuccessResponseIsReturned() throws Exception {
         var updateAssessmentRequest =
                 TestModelDataBuilder.getUpdateMeansAssessmentRequest(IS_VALID);
         updateAssessmentRequest.setAssessmentType(AssessmentType.FULL);
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
 
-        when(maatAPIClient.put(any(MaatApiAssessmentRequest.class), any(), any(), any()))
-                .thenReturn(TestModelDataBuilder.getMaatApiAssessmentResponse());
+        enqueueAuthorizationResponse(true);
+        enqueueAuthorizationResponse(true);
 
-        when(maatAPIClient.get(eq(new ParameterizedTypeReference<FinancialAssessmentDTO>() {
-        }), anyString(), anyMap(), any())).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
+        // MeansAssessmentValidationService - isAssessmentModifiedByAnotherUser
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(TestModelDataBuilder.getFinancialAssessmentDTO()))
+        );
 
+        // DateCompletionService - retrieve rep order
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))
+        );
+        // MaatCourtDataService - Persist means assessment
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiFullAssessmentResponse()))
+        );
 
-        when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {}), anyString(), anyMap(), any()))
-                .thenReturn(getAuthorizationResponseDTO(true));
-
-        when(maatAPIClient.get(eq(new ParameterizedTypeReference<OutstandingAssessmentResultDTO>() {
-        }), anyString(), anyMap(), any())).thenReturn(getOutstandingAssessmentResultDTO(false));
-
-        when(maatAPIClient.post(any(DateCompletionRequestDTO.class), eq(new ParameterizedTypeReference<RepOrderDTO>() {}), anyString(), anyMap()))
-                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
-
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson))
+        mvc.perform(buildRequest(HttpMethod.PUT, updateAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
     }
 
     @Test
-    public void givenAInvalidContent_whenGetOldAssessmentInvoked_ShouldFailsBadRequest() throws Exception {
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL, Boolean.TRUE))
+    public void givenAInvalidContent_whenGetOldAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
+        mvc.perform(buildRequest(HttpMethod.GET, ENDPOINT_URL, ENDPOINT_URL, Boolean.TRUE))
                 .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
-    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldFailsUnauthorizedAccess() throws Exception {
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
-                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, Boolean.FALSE))
+    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
+        mvc.perform(buildRequest(HttpMethod.GET, ENDPOINT_URL + "/"
+                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/" +
+                        TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, Boolean.FALSE))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldSuccessApiGetMeansAssessmentResponse() throws Exception {
-        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(),
-                NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
+    public void givenAValidFinancialAssessmentId_whenGetOldAssessmentInvoked_thenAssessmentIsReturned() throws Exception {
+        FinancialAssessmentDTO financialAssessmentDTO =
+                TestModelDataBuilder.getFinancialAssessmentDTO(
+                        CurrentStatus.IN_PROGRESS.getStatus(),
+                        NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode()
+                );
+
         financialAssessmentDTO.setAssessmentDetails(TestModelDataBuilder.getAssessmentDetails());
         financialAssessmentDTO.setChildWeightings(TestModelDataBuilder.getChildWeightings());
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
-        finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
+        finAssIncomeEvidenceDTOList.add(
+                TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE")
+        );
         financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
-        when(maatAPIClient.get(any(), any(), any(), any()))
-                .thenReturn(financialAssessmentDTO);
-        ResultActions result = mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
+
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(financialAssessmentDTO))
+        );
+
+        mvc.perform(buildRequest(HttpMethod.GET, ENDPOINT_URL + "/"
                         + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
                 .andExpect(status().isOk());
     }
 
-    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_shouldReturn() throws Exception {
-        mvc.perform(buildRequestForGet(HttpMethod.GET, MEANS_ASSESSMENT_ENDPOINT_URL + "/"
-                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
-                .andExpect(status().isOk());
-    }
-
-    private void assertErrorScenario(String expectedErrorMessage, MvcResult result) throws Exception {
-        ErrorDTO expectedError = ErrorDTO.builder().code(HttpStatus.BAD_REQUEST.value() + " " + HttpStatus.BAD_REQUEST.name()).message(expectedErrorMessage).build();
-        assertThat(result.getResponse().getContentAsString())
-                .isEqualTo(objectMapper.writeValueAsString(expectedError));
+    private void enqueueAuthorizationResponse(boolean result) throws JsonProcessingException {
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(AuthorizationResponseDTO.builder().result(result).build()))
+        );
     }
 }

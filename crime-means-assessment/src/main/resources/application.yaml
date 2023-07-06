@@ -41,10 +41,6 @@ maatApi:
     find-url: ${maatApi.assessments-domain}/rep-orders/{repId}
     date-completion-url: ${maatApi.assessments-domain}/rep-orders/update-date-completed
 
-means-assessment:
-  security:
-    issuer-uri: http://localhost:${server.port}
-
 spring:
   datasource:
     url: jdbc:postgresql://${DATASOURCE_HOST_PORT}/${DATASOURCE_DBNAME}
@@ -70,7 +66,7 @@ spring:
 
       resource-server:
         jwt:
-          issuer-uri: ${means-assessment.security.issuer-uri}
+          issuer-uri: ${JWT_ISSUER_URI}
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml

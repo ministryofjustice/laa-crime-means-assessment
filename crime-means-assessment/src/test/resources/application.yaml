@@ -1,6 +1,12 @@
 server:
   port: 52314
 
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: TRACE
+
 spring:
   datasource:
     url: jdbc:h2:mem:crime_means_assessment;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;
@@ -47,7 +53,7 @@ swagger-ui:
 
 maatApi:
   oAuthEnabled: false
-  baseUrl: http://localhost:8090
+  baseUrl: http://localhost:9999
   assessments-domain: ${maatApi.baseUrl}/api/internal/v1/assessment
   post-processing-url: ${maatApi.assessments-domain}/post-processing/{repId}
 
