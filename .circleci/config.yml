@@ -179,120 +179,99 @@ workflows:
   build-deploy-master:
     jobs:
       - build_and_scan:
-          context: build-deploy-master-workflow
           filters:
             branches:
               only:
                 - main
 
       - build_scan_and_push_image:
-          context: build-deploy-master-workflow
           requires:
             - build_and_scan
 
       - deploy-dev:
-          context: build-deploy-master-workflow
           requires:
             - build_scan_and_push_image
 
       - hold_install_on_test:
-          context: build-deploy-master-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-test:
-          context: build-deploy-master-workflow
           requires:
             - hold_install_on_test
 
       - hold_install_on_uat:
-          context: build-deploy-master-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-uat:
-          context: build-deploy-master-workflow
           requires:
             - hold_install_on_uat
 
       - hold_install_on_staging:
-          context: build-deploy-master-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-staging:
-          context: build-deploy-master-workflow
           requires:
             - hold_install_on_staging
 
       - hold_install_on_prod:
-          context: build-deploy-master-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-prod:
-          context: build-deploy-master-workflow
           requires:
             - hold_install_on_prod
 
   build-deploy-branch:
     jobs:
       - build_and_scan:
-          context: build-deploy-branch-workflow
           filters:
             branches:
               ignore:
                 - main
 
       - build_scan_and_push_image:
-          context: build-deploy-branch-workflow
           requires:
             - build_and_scan
 
       - hold_install_on_dev:
-          context: build-deploy-branch-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-dev:
-          context: build-deploy-branch-workflow
           requires:
             - hold_install_on_dev
 
       - hold_install_on_test:
-          context: build-deploy-branch-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-test:
-          context: build-deploy-branch-workflow
           requires:
             - hold_install_on_test
 
       - hold_install_on_uat:
-          context: build-deploy-branch-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-uat:
-          context: build-deploy-branch-workflow
           requires:
             - hold_install_on_uat
 
       - hold_install_on_staging:
-          context: build-deploy-branch-workflow
           type: approval
           requires:
             - build_scan_and_push_image
 
       - deploy-staging:
-          context: build-deploy-branch-workflow
           requires:
             - hold_install_on_staging
