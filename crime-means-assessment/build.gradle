@@ -11,10 +11,10 @@ plugins {
 
 def versions = [
         pitest                             : "1.4.10",
-        springdocVersion                   : "2.0.4",
+        springdocVersion                   : "2.1.0",
         okhttpVersion                      : "4.9.3",
         mockwebserverVersion               : "4.9.3",
-        springauthserverVersion            : "1.0.1",
+        liquibase                          : "4.20.0"
 ]
 
 group = "uk.gov.justice.laa.crime"
@@ -47,10 +47,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
     implementation "org.postgresql:postgresql"
-    implementation "org.liquibase:liquibase-core"
     implementation "org.apache.commons:commons-lang3"
+    implementation "org.liquibase:liquibase-core:$versions.liquibase"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
-    implementation "org.springframework.security:spring-security-oauth2-authorization-server:$versions.springauthserverVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:2.0.0"
 
     compileOnly "org.projectlombok:lombok"

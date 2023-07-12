@@ -520,10 +520,18 @@ public class TestModelDataBuilder {
         return getApiAssessmentDetails(false);
     }
 
-    public static MaatApiAssessmentResponse getMaatApiAssessmentResponse() {
+    public static MaatApiAssessmentResponse getMaatApiInitAssessmentResponse() {
         return new MaatApiAssessmentResponse()
                 .withInitResult("PASS")
                 .withInitResultReason("Gross income below the lower threshold")
+                .withAssessmentDetails(getApiAssessmentDetails())
+                .withChildWeightings(getAssessmentChildWeightings());
+    }
+
+    public static MaatApiAssessmentResponse getMaatApiFullAssessmentResponse() {
+        return new MaatApiAssessmentResponse()
+                .withFullResult("PASS")
+                .withFullResultReason("Gross income below the lower threshold")
                 .withAssessmentDetails(getApiAssessmentDetails())
                 .withChildWeightings(getAssessmentChildWeightings());
     }
