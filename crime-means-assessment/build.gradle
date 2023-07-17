@@ -34,7 +34,7 @@ dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
     annotationProcessor platform(SpringBootPlugin.BOM_COORDINATES)
 
-    implementation platform("io.sentry:sentry-bom:6.17.0")
+    implementation platform("io.sentry:sentry-bom:6.25.2")
     implementation("io.sentry:sentry-spring-boot-starter")
     implementation("io.sentry:sentry-logback")
 
