@@ -113,7 +113,7 @@ jobs:
     executor: aws-ecr/default
     steps:
       - checkout:
-          path: ~/laa-crime-means-assessment
+          path: ~/laa-crime-means-assessment/crime-means-assessment
       - attach_workspace:
           at: .
       - aws-cli/setup:
@@ -123,7 +123,7 @@ jobs:
           aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin ${AWS_ECR_REGISTRY_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com
       - aws-ecr/build-image:
           push-image: false
-          path: ~/laa-crime-means-assessment/crime-means-assessment
+          path: ~/crime-means-assessment
           tag: ${CIRCLE_SHA1}
           region: $ECR_REGION
           repo: $ECR_REPOSITORY
