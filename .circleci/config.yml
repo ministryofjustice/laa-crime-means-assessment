@@ -111,7 +111,6 @@ jobs:
 
   build_scan_and_push_image:
     executor: build-executor
-
     steps:
       - checkout:
           path: ~/laa-crime-means-assessment
