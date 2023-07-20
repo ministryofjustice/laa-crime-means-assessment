@@ -18,16 +18,11 @@ import static java.util.Comparator.comparing;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CrownCourtEligibilityService {
+public class CrownCourtEligibilityService implements EligibilityChecker {
 
     private final MaatCourtDataService maatCourtDataService;
 
     public boolean isEligibilityCheckRequired(MeansAssessmentRequestDTO assessmentRequest) {
-
-        if (!hasRequiredCaseTypeAndOutcome(assessmentRequest)) {
-            return false;
-        }
-
         String laaTransactionId = assessmentRequest.getLaaTransactionId();
 
         boolean isEitherWayAndCommittedForTrial =
@@ -67,9 +62,7 @@ public class CrownCourtEligibilityService {
                 .noneMatch(this::hasDisqualifyingResult);
     }
 
-    private boolean hasRequiredCaseTypeAndOutcome(MeansAssessmentRequestDTO assessmentRequest) {
-        CaseType caseType = assessmentRequest.getCaseType();
-        MagCourtOutcome magCourtOutcome = assessmentRequest.getMagCourtOutcome();
+    public static boolean isCrownCourtCase(CaseType caseType, MagCourtOutcome magCourtOutcome) {
         return ((caseType == CaseType.INDICTABLE || caseType == CaseType.CC_ALREADY)
                 && magCourtOutcome == MagCourtOutcome.SENT_FOR_TRIAL) ||
                 caseType == CaseType.EITHER_WAY && magCourtOutcome == MagCourtOutcome.COMMITTED_FOR_TRIAL;

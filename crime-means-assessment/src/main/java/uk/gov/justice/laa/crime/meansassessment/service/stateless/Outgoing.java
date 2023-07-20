@@ -9,7 +9,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.Outgo
 
 @Getter
 @AllArgsConstructor
-public class Outgoing {
+public class Outgoing implements Amount {
     @Valid
     @NotNull
     @JsonProperty("outgoing_type")

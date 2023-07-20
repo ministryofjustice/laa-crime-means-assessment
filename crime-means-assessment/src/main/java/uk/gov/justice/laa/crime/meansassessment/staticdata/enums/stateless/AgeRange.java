@@ -20,4 +20,3 @@ public enum AgeRange {
     private final int lowerLimit;
     private final int upperLimit;
 }
-

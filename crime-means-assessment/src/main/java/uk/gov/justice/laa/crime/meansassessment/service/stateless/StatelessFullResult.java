@@ -15,6 +15,7 @@ public class StatelessFullResult {
     private final BigDecimal totalAggregatedIncome;
     private final BigDecimal adjustedLivingAllowance;
     private final BigDecimal totalAnnualAggregatedExpenditure;
+    private final BigDecimal eligibilityThreshold;
 
     public String getResultReason() {
         return result.getReason();

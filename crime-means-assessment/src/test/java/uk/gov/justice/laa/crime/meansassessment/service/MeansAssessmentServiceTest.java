@@ -119,7 +119,7 @@ public class MeansAssessmentServiceTest {
 
     @Test
     public void givenSingleSectionSingleDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(assessmentCriteriaService, meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(
                 TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                         BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
@@ -136,7 +136,7 @@ public class MeansAssessmentServiceTest {
                         .withApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY)
         );
 
-        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(assessmentCriteriaService, meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(
                 TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                         BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
@@ -159,7 +159,7 @@ public class MeansAssessmentServiceTest {
                         )
                 );
         meansAssessment.setSectionSummaries(List.of(section));
-        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(assessmentCriteriaService, meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(EXPECTED_TOTAL_AMOUNT);
     }
 
@@ -174,7 +174,7 @@ public class MeansAssessmentServiceTest {
                         .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY)
         );
 
-        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(assessmentCriteriaService, meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(
                 TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                         BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
@@ -188,7 +188,7 @@ public class MeansAssessmentServiceTest {
     @Test
     public void givenTwoSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         meansAssessment.setSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
-        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal annualTotal = meansAssessmentService.calculateSummariesTotal(assessmentCriteriaService, meansAssessment, assessmentCriteria);
         BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                 BigDecimal.valueOf(
                         TestModelDataBuilder.TEST_FREQUENCY.getWeighting()
@@ -206,7 +206,7 @@ public class MeansAssessmentServiceTest {
         section.get(0).setPartnerAmount(TestModelDataBuilder.TEST_APPLICANT_VALUE);
 
         BigDecimal summariesTotal =
-                meansAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+                meansAssessmentService.calculateSummariesTotal(assessmentCriteriaService, meansAssessment, assessmentCriteria);
 
         BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
                         BigDecimal.valueOf(
