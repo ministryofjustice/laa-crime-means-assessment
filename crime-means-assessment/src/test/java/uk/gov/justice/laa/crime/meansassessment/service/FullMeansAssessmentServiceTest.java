@@ -38,7 +38,7 @@ public class FullMeansAssessmentServiceTest {
     private FullMeansAssessmentService fullMeansAssessmentService;
 
     @Mock
-    private CrownCourtEligibilityService crownCourtEligibilityService;
+    private MaatEligibilityService maatEligibilityService;
 
     @Mock
     private AssessmentCriteriaChildWeightingService childWeightingService;
@@ -118,7 +118,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     private void setupEligibilityCheckStubbing(boolean returnValue) {
-        when(crownCourtEligibilityService.isEligibilityCheckRequired(
+        when(maatEligibilityService.isEligibilityCheckRequired(
                 any(MeansAssessmentRequestDTO.class)
         )).thenReturn(returnValue);
     }

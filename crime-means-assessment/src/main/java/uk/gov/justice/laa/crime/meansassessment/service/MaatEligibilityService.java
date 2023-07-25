@@ -18,7 +18,7 @@ import static java.util.Comparator.comparing;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CrownCourtEligibilityService implements EligibilityChecker {
+public class MaatEligibilityService implements EligibilityChecker {
 
     private final MaatCourtDataService maatCourtDataService;
 
@@ -62,10 +62,9 @@ public class CrownCourtEligibilityService implements EligibilityChecker {
                 .noneMatch(this::hasDisqualifyingResult);
     }
 
-    public static boolean isCrownCourtCase(CaseType caseType, MagCourtOutcome magCourtOutcome) {
-        return ((caseType == CaseType.INDICTABLE || caseType == CaseType.CC_ALREADY)
-                && magCourtOutcome == MagCourtOutcome.SENT_FOR_TRIAL) ||
-                caseType == CaseType.EITHER_WAY && magCourtOutcome == MagCourtOutcome.COMMITTED_FOR_TRIAL;
+    @Override
+    public Client getCheckerByClientName() {
+        return Client.MAAT;
     }
 
     private Stream<Assessment> getPreviousAssessments(RepOrderDTO repOrder) {
@@ -80,8 +79,7 @@ public class CrownCourtEligibilityService implements EligibilityChecker {
     }
 
     private boolean hasDisqualifyingResult(Assessment assessment) {
-        if (assessment instanceof FinancialAssessmentDTO) {
-            FinancialAssessmentDTO means = (FinancialAssessmentDTO) assessment;
+        if (assessment instanceof FinancialAssessmentDTO means) {
             return InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(means.getInitResult()))
                     || FullAssessmentResult.PASS.equals(FullAssessmentResult.getFrom(means.getFullResult()))
                     || FullAssessmentResult.FAIL.equals(FullAssessmentResult.getFrom(means.getFullResult()));

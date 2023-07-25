@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.factory.EligibilityServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
 
 import java.math.BigDecimal;
 
-import static uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService.isCrownCourtCase;
 import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
 
 @Slf4j
@@ -19,7 +19,7 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setSta
 @RequiredArgsConstructor
 public class FullMeansAssessmentService implements AssessmentService {
 
-    private final EligibilityChecker crownCourtEligibilityService;
+    private final EligibilityServiceFactory eligibilityServiceFactory;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
@@ -66,9 +66,12 @@ public class FullMeansAssessmentService implements AssessmentService {
     }
 
     FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
-        if (isCrownCourtCase(requestDTO.getCaseType(), requestDTO.getMagCourtOutcome()) &&
-                crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
-                && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
+
+        EligibilityChecker eligibilityChecker = eligibilityServiceFactory.getChecker(requestDTO.getClient());
+        boolean isCheckRequired = eligibilityChecker.isEligibilityCheckRequired(requestDTO);
+
+        if (EligibilityChecker.isCrownCourtCase(requestDTO.getCaseType(), requestDTO.getMagCourtOutcome())
+                && isCheckRequired && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
             return FullAssessmentResult.INEL;
         } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {
             return FullAssessmentResult.PASS;

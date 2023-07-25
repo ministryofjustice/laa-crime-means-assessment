@@ -4,13 +4,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.service.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
 
@@ -25,9 +24,9 @@ import static uk.gov.justice.laa.crime.meansassessment.service.stateless.DataAda
 @Service
 public class StatelessAssessmentService extends BaseMeansAssessmentService {
     private final AssessmentCriteriaService assessmentCriteriaService;
-    private final AssessmentCriteriaChildWeightingService childWeightingService;
+    private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
-    public StatelessResult invoke(Assessment assessment,  Map<AgeRange, Integer> childGroupings, List<Income> income, List<Outgoing> outgoings) {
+    public StatelessResult invoke(Assessment assessment,  Map<AgeRange, Integer> childGroupings, List<Income> income, List<Outgoing> outgoings, Client client) {
         if (assessment.getAssessmentType() == StatelessRequestType.INITIAL) {
             return initialOnly(assessment.getAssessmentDate(), assessment.getHasPartner(),
                     assessment.getCaseType(), assessment.getMagistrateCourtOutcome(),
@@ -36,7 +35,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
             return initialAndFull(
                     assessment.getAssessmentDate(), assessment.getHasPartner(),
                     assessment.getCaseType(), assessment.getMagistrateCourtOutcome(), childGroupings,
-                    income, outgoings);
+                    income, outgoings, client);
         }
     }
 
@@ -46,7 +45,8 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                                           MagCourtOutcome magCourtOutcome,
                                           @NotNull Map<AgeRange, Integer> childGroupings,
                                           @NotNull List<Income> incomes,
-                                          @NotNull List<Outgoing> outgoings) {
+                                          @NotNull List<Outgoing> outgoings,
+                                          @NotNull Client client) {
         final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(date, hasPartner, false);
 
         final var totalIncome = incomeTotals(assessmentCriteriaService, criteriaEntry, caseType, incomes);
@@ -54,7 +54,6 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
         var initialAnswer = initialResult(date, hasPartner, caseType, magCourtOutcome, totalIncome, childGroupings);
 
         if (initialAnswer.isFullAssessmentPossible()) {
-            EligibilityChecker eligibilityChecker = requestDTO -> true;
 
             final var children = convertChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 
@@ -64,9 +63,10 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                     .assessmentStatus(CurrentStatus.COMPLETE)
                     .childWeightings(children)
                     .initTotalAggregatedIncome(totalIncome)
+                    .client(client)
                     .build();
             final var totalOutgoings = outgoingTotals(assessmentCriteriaService, criteriaEntry, caseType, outgoings);
-            final var service = new FullMeansAssessmentService(eligibilityChecker, childWeightingService);
+            final var service = meansAssessmentServiceFactory.getService(AssessmentType.FULL);
             final var result = service.execute(totalOutgoings, requestDTO, criteriaEntry);
 
             return new StatelessResult(
@@ -112,7 +112,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                 .assessmentStatus(CurrentStatus.COMPLETE)
                 .build();
 
-        final var service = new InitMeansAssessmentService(childWeightingService);
+        final var service = meansAssessmentServiceFactory.getService(AssessmentType.INIT);
         final var result = service.execute(totalIncome, requestDTO, criteriaEntry);
         final var fullAssessmentPossible = new FullAssessmentAvailabilityService()
                 .isFullAssessmentAvailable(caseType, magCourtOutcome, null, result.getInitAssessmentResult());
