@@ -51,7 +51,7 @@ dependencies {
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "org.liquibase:liquibase-core:$versions.liquibase"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
-    implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:2.0.0"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:2.1.0"
 
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
