@@ -8,6 +8,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,7 +32,7 @@ public class InitMeansAssessmentService implements AssessmentService {
                 .currentStatus(status)
                 .initAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE) ? getResult(
-                                adjustedIncomeValue, assessmentCriteria, requestDTO.getNewWorkReason().getCode()
+                                adjustedIncomeValue, assessmentCriteria, requestDTO.getNewWorkReason()
                         ) : null
                 )
                 .adjustedIncomeValue(adjustedIncomeValue)
@@ -52,14 +53,14 @@ public class InitMeansAssessmentService implements AssessmentService {
         return BigDecimal.ZERO;
     }
 
-    InitAssessmentResult getResult(BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, String newWorkReasonCode) {
+    InitAssessmentResult getResult(BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, NewWorkReason newWorkReason) {
         BigDecimal lowerThreshold = assessmentCriteria.getInitialLowerThreshold();
         BigDecimal upperThreshold = assessmentCriteria.getInitialUpperThreshold();
         if (adjustedIncomeValue.compareTo(lowerThreshold) <= 0) {
             return InitAssessmentResult.PASS;
         } else if (adjustedIncomeValue.compareTo(upperThreshold) >= 0) {
             // Comment in PL/SQL suggests this should also apply to crown court cases
-            if (newWorkReasonCode.equalsIgnoreCase("HR")) {
+            if (newWorkReason == NewWorkReason.HR) {
                 return InitAssessmentResult.HARDSHIP;
             } else {
                 return InitAssessmentResult.FAIL;

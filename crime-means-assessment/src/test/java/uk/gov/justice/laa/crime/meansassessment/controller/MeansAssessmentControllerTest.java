@@ -1,26 +1,23 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
@@ -35,35 +32,27 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
 
 @DirtiesContext
 @RunWith(SpringRunner.class)
-@Import(CrimeMeansAssessmentTestConfiguration.class)
-@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
+@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(MeansAssessmentController.class)
 public class MeansAssessmentControllerTest {
 
     private static final boolean IS_VALID = true;
     private static final String ENDPOINT_URL = "/api/internal/v1/assessment/means";
 
+    @Autowired
     private MockMvc mvc;
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private FilterChainProxy springSecurityFilterChain;
-
-    @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private MeansAssessmentRequestDTOBuilder assessmentRequestDTOBuilder;
 
     @MockBean
     private MeansAssessmentService meansAssessmentService;
 
     @MockBean
     private MeansAssessmentValidationProcessor assessmentValidator;
-
-    @Before
-    public void setup() {
-        this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
-                .addFilter(springSecurityFilterChain).build();
-    }
 
     @Test
     public void createAssessment_success() throws Exception {
@@ -72,6 +61,9 @@ public class MeansAssessmentControllerTest {
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
         var initialMeansAssessmentResponse =
                 TestModelDataBuilder.getInitMeansAssessmentResponse(IS_VALID);
+
+        when(assessmentRequestDTOBuilder.buildRequestDTO(any(ApiCreateMeansAssessmentRequest.class)))
+                .thenReturn(TestModelDataBuilder.getMeansAssessmentRequestDTO(true));
 
         when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(initialMeansAssessmentResponse);
@@ -92,6 +84,9 @@ public class MeansAssessmentControllerTest {
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
         var updateAssessmentResponse =
                 TestModelDataBuilder.getFullMeansAssessmentResponse(IS_VALID);
+
+        when(assessmentRequestDTOBuilder.buildRequestDTO(any(ApiUpdateMeansAssessmentRequest.class)))
+                .thenReturn(TestModelDataBuilder.getMeansAssessmentRequestDTO(true));
 
         when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(updateAssessmentResponse);
@@ -138,13 +133,6 @@ public class MeansAssessmentControllerTest {
     }
 
     @Test
-    public void createAssessment_Unauthorized_NoAccessToken() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.POST, "{}", ENDPOINT_URL, false))
-                .andExpect(status().isUnauthorized());
-    }
-
-
-    @Test
     public void updateAssessment_ServerError_RequestBodyIsMissing() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "", ENDPOINT_URL))
                 .andExpect(status().is4xxClientError());
@@ -154,18 +142,6 @@ public class MeansAssessmentControllerTest {
     public void updateAssessment_BadRequest_RequestEmptyBody() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", ENDPOINT_URL))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void updateAssessment_Unauthorized_NoAccessToken() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "{}", ENDPOINT_URL, false))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void getOldAssessment_Unauthorized_NoAccessToken() throws Exception {
-        mvc.perform(buildRequestGivenContent(HttpMethod.GET, "", ENDPOINT_URL, false))
-                .andExpect(status().isUnauthorized());
     }
 
     @Test

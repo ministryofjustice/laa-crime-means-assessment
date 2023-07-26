@@ -11,6 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentR
 
 import java.math.BigDecimal;
 
+import static uk.gov.justice.laa.crime.meansassessment.service.CrownCourtEligibilityService.isCrownCourtCase;
 import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
 
 @Slf4j
@@ -18,7 +19,7 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setSta
 @RequiredArgsConstructor
 public class FullMeansAssessmentService implements AssessmentService {
 
-    private final CrownCourtEligibilityService crownCourtEligibilityService;
+    private final EligibilityChecker crownCourtEligibilityService;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
@@ -65,7 +66,8 @@ public class FullMeansAssessmentService implements AssessmentService {
     }
 
     FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
-        if (crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
+        if (isCrownCourtCase(requestDTO.getCaseType(), requestDTO.getMagCourtOutcome()) &&
+                crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
                 && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
             return FullAssessmentResult.INEL;
         } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {

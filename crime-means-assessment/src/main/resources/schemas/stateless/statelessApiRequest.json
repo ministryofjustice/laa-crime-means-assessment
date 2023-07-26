@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "statelessApiRequest.json",
+  "type": "object",
+  "title": "Stateless CMA Request",
+  "$defs": {
+    "frequency_amount": {
+      "type": "object",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.service.stateless.FrequencyAmount"
+    }
+  },
+  "properties": {
+    "assessment": {
+      "type": "object",
+      "properties": {
+        "assessment_type": {
+          "type": "object",
+          "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType"
+        },
+        "assessment_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "case_type": {
+          "type": "object",
+          "description": "The case type",
+          "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType"
+        },
+        "magistrate_court_outcome": {
+          "type": "object",
+          "description": "The magistrates court outcome",
+          "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome"
+        },
+        "has_partner": {
+          "type": "boolean",
+          "description": "Set true if client has a partner without a contrary interest in the case (so their income with also be part of the assessment)"
+        },
+        "dependant_children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "age_range": {
+                "type": "object",
+                "description": "Age Range of children",
+                "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange"
+              },
+              "count": {
+                "type": "integer"
+              }
+            },
+            "required": ["age_range", "count"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["assessment_date", "assessment_type", "case_type", "magistrates_court_outcome", "has_partner", "dependant_children"],
+      "additionalProperties": false
+    },
+    "income": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.service.stateless.Income"
+      }
+    },
+    "outgoings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.service.stateless.Outgoing"
+      }
+    }
+  },
+  "required": ["assessment", "income", "outgoings"],
+  "additionalProperties": false
+}

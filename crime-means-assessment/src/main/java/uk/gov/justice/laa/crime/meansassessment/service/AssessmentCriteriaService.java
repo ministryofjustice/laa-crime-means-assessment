@@ -28,7 +28,7 @@ public class AssessmentCriteriaService {
     private final CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
     private final AssessmentCriteriaChildWeightingRepository assessmentCriteriaChildWeightingRepository;
 
-    AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
+    public AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
         log.info("Retrieving assessment criteria for date: {}", assessmentDate);
         AssessmentCriteriaEntity assessmentCriteriaForDate = assessmentCriteriaRepository.findAssessmentCriteriaForDate(assessmentDate);
         if (assessmentCriteriaForDate != null) {
@@ -43,6 +43,7 @@ public class AssessmentCriteriaService {
         }
     }
 
+    // Check for Council Tax not being submitted anything other than 'ANNUALLY'
     void checkCriteriaDetailFrequency(AssessmentCriteriaDetailEntity criteriaDetail, Frequency frequency) {
         Optional<AssessmentCriteriaDetailFrequencyEntity> detailFrequency =
                 assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(criteriaDetail, frequency);
@@ -61,6 +62,7 @@ public class AssessmentCriteriaService {
                                         section, detail.getCriteriaDetailId(), assessmentCriteria.getId()))
                 );
 
+        // These two checks are for Council Tax not being submitted anything other than 'ANNUALLY'
         Frequency applicantFrequency = detail.getApplicantFrequency();
         if (applicantFrequency != null) {
             checkCriteriaDetailFrequency(criteriaDetail, applicantFrequency);
@@ -76,6 +78,8 @@ public class AssessmentCriteriaService {
                         criteriaDetail, caseType
                 ).orElse(null);
 
+        // This checks that appeal costs have been submitted as exactly £500 for applicant and £0 for partner.
+        // Think this is meant to be an 'allowance', but is currently implemented as an input.
         if (criteriaDetailValue != null &&
                 ((criteriaDetailValue.getApplicantValue().compareTo(detail.getApplicantAmount()) != 0 ||
                         (applicantFrequency != null &&
