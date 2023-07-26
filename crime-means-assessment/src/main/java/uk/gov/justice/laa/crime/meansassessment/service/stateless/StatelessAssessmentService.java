@@ -26,16 +26,34 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
-    public StatelessResult invoke(Assessment assessment,  Map<AgeRange, Integer> childGroupings, List<Income> income, List<Outgoing> outgoings, Client client) {
+    public StatelessResult invoke(Assessment assessment,
+                                  Map<AgeRange, Integer> childGroupings,
+                                  List<Income> income,
+                                  List<Outgoing> outgoings,
+                                  Client client,
+                                  boolean eligibilityCheckRequired) {
+
         if (assessment.getAssessmentType() == StatelessRequestType.INITIAL) {
-            return initialOnly(assessment.getAssessmentDate(), assessment.getHasPartner(),
-                    assessment.getCaseType(), assessment.getMagistrateCourtOutcome(),
-                    childGroupings, income);
+            return initialOnly(
+                    assessment.getAssessmentDate(),
+                    assessment.getHasPartner(),
+                    assessment.getCaseType(),
+                    assessment.getMagistrateCourtOutcome(),
+                    childGroupings,
+                    income
+            );
         } else {
             return initialAndFull(
-                    assessment.getAssessmentDate(), assessment.getHasPartner(),
-                    assessment.getCaseType(), assessment.getMagistrateCourtOutcome(), childGroupings,
-                    income, outgoings, client);
+                    assessment.getAssessmentDate(),
+                    assessment.getHasPartner(),
+                    assessment.getCaseType(),
+                    assessment.getMagistrateCourtOutcome(),
+                    childGroupings,
+                    income,
+                    outgoings,
+                    client,
+                    eligibilityCheckRequired
+            );
         }
     }
 
@@ -46,7 +64,9 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                                           @NotNull Map<AgeRange, Integer> childGroupings,
                                           @NotNull List<Income> incomes,
                                           @NotNull List<Outgoing> outgoings,
-                                          @NotNull Client client) {
+                                          @NotNull Client client,
+                                          @NotNull boolean eligibilityCheckRequired) {
+
         final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(date, hasPartner, false);
 
         final var totalIncome = incomeTotals(assessmentCriteriaService, criteriaEntry, caseType, incomes);
@@ -64,6 +84,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                     .childWeightings(children)
                     .initTotalAggregatedIncome(totalIncome)
                     .client(client)
+                    .eligibilityCheckRequired(eligibilityCheckRequired)
                     .build();
             final var totalOutgoings = outgoingTotals(assessmentCriteriaService, criteriaEntry, caseType, outgoings);
             final var service = meansAssessmentServiceFactory.getService(AssessmentType.FULL);

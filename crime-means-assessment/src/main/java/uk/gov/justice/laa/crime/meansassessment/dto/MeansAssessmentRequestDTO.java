@@ -43,4 +43,5 @@ public class MeansAssessmentRequestDTO {
     private Integer financialAssessmentId;
     private LocalDateTime timeStamp;
     private Client client;
+    private boolean eligibilityCheckRequired;
 }

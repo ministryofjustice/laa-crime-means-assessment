@@ -11,7 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Client;
 public class DefaultEligibilityService implements EligibilityChecker {
     @Override
     public boolean isEligibilityCheckRequired(MeansAssessmentRequestDTO requestDTO) {
-        return true;
+        return requestDTO.isEligibilityCheckRequired();
     }
 
     @Override
