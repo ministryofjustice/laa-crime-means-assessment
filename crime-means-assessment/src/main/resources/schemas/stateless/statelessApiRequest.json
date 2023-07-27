@@ -52,8 +52,15 @@
           }
         }
       },
-      "required": ["assessment_date", "assessment_type", "case_type", "magistrates_court_outcome",
-        "has_partner", "eligibility_check_required","dependant_children"],
+      "required": [
+        "assessment_date",
+        "assessment_type",
+        "case_type",
+        "magistrates_court_outcome",
+        "has_partner",
+        "eligibility_check_required",
+        "dependant_children"
+      ],
       "additionalProperties": false
     },
     "income": {
