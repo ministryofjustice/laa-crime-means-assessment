@@ -48,7 +48,6 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @DirtiesContext
 @RunWith(SpringRunner.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
@@ -228,8 +227,16 @@ public class MeansAssessmentIntegrationTest {
         mockMaatCourtDataApi.enqueue(new MockResponse()
                 .setResponseCode(OK.code())
                 .setHeader("Content-Type", MediaType.APPLICATION_JSON)
-                .setBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))
+                .setBody(objectMapper.writeValueAsString(RepOrderDTO.builder().caseId("caseId").dateModified(LocalDateTime.now()).build()))
         );
+
+        // update completion date api
+        mockMaatCourtDataApi.enqueue(new MockResponse()
+                .setResponseCode(OK.code())
+                .setHeader("Content-Type", MediaType.APPLICATION_JSON)
+                .setBody(objectMapper.writeValueAsString(RepOrderDTO.builder().caseId("update caseId").dateModified(LocalDateTime.now()).build()))
+        );
+
         // MaatCourtDataService - Persist means assessment
         mockMaatCourtDataApi.enqueue(new MockResponse()
                 .setResponseCode(OK.code())
@@ -272,6 +279,7 @@ public class MeansAssessmentIntegrationTest {
                 TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE")
         );
         financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
+        financialAssessmentDTO.setUpdated(TestModelDataBuilder.TEST_DATE_CREATED);
 
         mockMaatCourtDataApi.enqueue(new MockResponse()
                 .setResponseCode(OK.code())

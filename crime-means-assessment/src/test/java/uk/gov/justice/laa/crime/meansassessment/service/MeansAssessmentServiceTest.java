@@ -80,6 +80,8 @@ public class MeansAssessmentServiceTest {
     private MeansAssessmentSectionSummaryBuilder meansAssessmentSectionSummaryBuilder;
     @Mock
     private IncomeEvidenceService incomeEvidenceService;
+    @Mock
+    private CrownCourtEligibilityService crownCourtEligibilityService;
 
     @Before
     public void setup() {
@@ -230,12 +232,12 @@ public class MeansAssessmentServiceTest {
                 );
 
         when(initMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class), anyBoolean())
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
 
         when(fullMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class), anyBoolean())
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         MaatApiAssessmentResponse maatApiAssessmentResponse =
@@ -271,7 +273,7 @@ public class MeansAssessmentServiceTest {
         ApiMeansAssessmentResponse result = meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class), anyBoolean()
         );
         verify(fullAssessmentAvailabilityService).isFullAssessmentAvailable(meansAssessment.getCaseType(),
                 meansAssessment.getMagCourtOutcome(),
@@ -290,7 +292,7 @@ public class MeansAssessmentServiceTest {
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
 
         verify(fullMeansAssessmentService).execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class), anyBoolean()
         );
         verify(meansAssessmentResponseBuilder).build(
                 any(MaatApiAssessmentResponse.class), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)

@@ -96,7 +96,8 @@ public class StatelessAssessmentServiceTest {
         var result = statelessAssessmentService
                 .invoke(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
                                 .withAssessmentDate(LocalDateTime.now())
-                        .withHasPartner(true).withCaseType(CaseType.APPEAL_CC).
+                                .withEligibilityCheckRequired(true)
+                                .withHasPartner(true).withCaseType(CaseType.APPEAL_CC).
                         withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
                         childFactors,
                         List.of(employmentIncome), Collections.emptyList()
@@ -117,6 +118,7 @@ public class StatelessAssessmentServiceTest {
         var result = statelessAssessmentService
                 .invoke(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
                                 .withAssessmentDate(LocalDateTime.now())
+                                .withEligibilityCheckRequired(true)
                                 .withHasPartner(false).withCaseType(CaseType.APPEAL_CC).
                                 withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
                         childFactors,
@@ -136,6 +138,7 @@ public class StatelessAssessmentServiceTest {
         var result = statelessAssessmentService
                 .invoke(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
                                 .withAssessmentDate(LocalDateTime.now())
+                                .withEligibilityCheckRequired(true)
                                 .withHasPartner(true).withCaseType(CaseType.APPEAL_CC).
                                 withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
                         childFactors,
@@ -152,6 +155,7 @@ public class StatelessAssessmentServiceTest {
         var result = statelessAssessmentService
                 .invoke(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
                                 .withAssessmentDate(LocalDateTime.now())
+                                .withEligibilityCheckRequired(true)
                                 .withHasPartner(true).withCaseType(CaseType.INDICTABLE).
                                 withMagistrateCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL),
                         childFactors,
@@ -167,7 +171,9 @@ public class StatelessAssessmentServiceTest {
         var result = statelessAssessmentService
                 .invoke(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
                                 .withAssessmentDate(LocalDateTime.now())
-                                .withHasPartner(false).withCaseType(CaseType.APPEAL_CC).
+                                .withHasPartner(false)
+                        .withEligibilityCheckRequired(true)
+                                        .withCaseType(CaseType.APPEAL_CC).
                                 withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
                         childFactor11,
                         List.of(employmentIncome), Collections.emptyList()

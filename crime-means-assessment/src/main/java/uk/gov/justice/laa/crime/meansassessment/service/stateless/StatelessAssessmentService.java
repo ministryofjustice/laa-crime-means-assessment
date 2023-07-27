@@ -34,7 +34,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                     childGroupings, income);
         } else {
             return initialAndFull(
-                    assessment.getAssessmentDate(), assessment.getHasPartner(),
+                    assessment.getAssessmentDate(), assessment.getHasPartner(), assessment.getEligibilityCheckRequired(),
                     assessment.getCaseType(), assessment.getMagistrateCourtOutcome(), childGroupings,
                     income, outgoings);
         }
@@ -42,6 +42,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
 
     private StatelessResult initialAndFull(@NotNull LocalDateTime date,
                                           boolean hasPartner,
+                                          boolean isEligibilityCheckRequired,
                                           CaseType caseType,
                                           MagCourtOutcome magCourtOutcome,
                                           @NotNull Map<AgeRange, Integer> childGroupings,
@@ -54,8 +55,6 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
         var initialAnswer = initialResult(date, hasPartner, caseType, magCourtOutcome, totalIncome, childGroupings);
 
         if (initialAnswer.isFullAssessmentPossible()) {
-            EligibilityChecker eligibilityChecker = requestDTO -> true;
-
             final var children = convertChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 
             // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
@@ -66,8 +65,8 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                     .initTotalAggregatedIncome(totalIncome)
                     .build();
             final var totalOutgoings = outgoingTotals(assessmentCriteriaService, criteriaEntry, caseType, outgoings);
-            final var service = new FullMeansAssessmentService(eligibilityChecker, childWeightingService);
-            final var result = service.execute(totalOutgoings, requestDTO, criteriaEntry);
+            final var service = new FullMeansAssessmentService(childWeightingService);
+            final var result = service.execute(totalOutgoings, requestDTO, criteriaEntry, isEligibilityCheckRequired);
 
             return new StatelessResult(
             new StatelessFullResult(result.getFullAssessmentResult(), result.getTotalAnnualDisposableIncome(),
@@ -113,7 +112,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                 .build();
 
         final var service = new InitMeansAssessmentService(childWeightingService);
-        final var result = service.execute(totalIncome, requestDTO, criteriaEntry);
+        final var result = service.execute(totalIncome, requestDTO, criteriaEntry, false);
         final var fullAssessmentPossible = new FullAssessmentAvailabilityService()
                 .isFullAssessmentAvailable(caseType, magCourtOutcome, null, result.getInitAssessmentResult());
 

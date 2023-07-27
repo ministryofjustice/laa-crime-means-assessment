@@ -19,10 +19,10 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setSta
 @RequiredArgsConstructor
 public class FullMeansAssessmentService implements AssessmentService {
 
-    private final EligibilityChecker crownCourtEligibilityService;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
-    public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
+    @Override
+    public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, boolean isEligibilityCheckRequired) {
         log.info("Create full means assessment - Start");
         CurrentStatus status = requestDTO.getAssessmentStatus();
         BigDecimal totalAggregatedIncome = requestDTO.getInitTotalAggregatedIncome();
@@ -34,7 +34,7 @@ public class FullMeansAssessmentService implements AssessmentService {
                 .currentStatus(status)
                 .fullAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE)
-                                ? getResult(totalDisposableIncome, requestDTO, assessmentCriteria) : null
+                                ? getResult(totalDisposableIncome, requestDTO, assessmentCriteria, isEligibilityCheckRequired) : null
                 )
                 .adjustedLivingAllowance(adjustedLivingAllowance)
                 .totalAggregatedExpense(
@@ -65,9 +65,9 @@ public class FullMeansAssessmentService implements AssessmentService {
                         .add(totalChildWeighting));
     }
 
-    FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
+    FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, boolean isEligibilityCheckRequired) {
         if (isCrownCourtCase(requestDTO.getCaseType(), requestDTO.getMagCourtOutcome()) &&
-                crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
+                isEligibilityCheckRequired
                 && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
             return FullAssessmentResult.INEL;
         } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {

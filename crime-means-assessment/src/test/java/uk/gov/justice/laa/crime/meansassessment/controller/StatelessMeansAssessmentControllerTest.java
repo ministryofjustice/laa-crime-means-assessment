@@ -117,6 +117,7 @@ public class StatelessMeansAssessmentControllerTest {
                 .withCaseType(testRequest.getCaseType())
                 .withMagistrateCourtOutcome(testRequest.getMagCourtOutcome())
                 .withHasPartner(false)
+                .withEligibilityCheckRequired(true)
                 .withDependantChildren(Arrays.asList(childOne, childTwo));
     }
 

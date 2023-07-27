@@ -44,6 +44,7 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
     private final IncomeEvidenceService incomeEvidenceService;
+    private final EligibilityChecker crownCourtEligibilityService;
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -61,8 +62,9 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
 
             BigDecimal summariesTotal = calculateSummariesTotal(assessmentCriteriaService, requestDTO, assessmentCriteria);
 
+            final boolean isEligibilityCheckRequired = AssessmentType.FULL == assessmentType && crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO);
             MeansAssessmentDTO completedAssessment =
-                    assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
+                    assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria, isEligibilityCheckRequired);
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
