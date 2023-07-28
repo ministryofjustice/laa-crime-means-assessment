@@ -1,183 +1,183 @@
 package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
-import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaChildWeightingService;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
+import uk.gov.justice.laa.crime.meansassessment.service.FullAssessmentAvailabilityService;
+import uk.gov.justice.laa.crime.meansassessment.service.FullMeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.service.InitMeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaChildWeightingRepository;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.CaseTypeAssessmentCriteriaDetailValueRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
 @RunWith(SpringRunner.class)
 public class StatelessAssessmentServiceTest {
 
-    @Autowired
-    private AssessmentCriteriaRepository assessmentCriteriaRepository;
-    @Autowired
-    private AssessmentCriteriaDetailFrequencyRepository assessmentCriteriaDetailFrequencyRepository;
-    @Autowired
-    private CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
-    @Autowired
-    private AssessmentCriteriaChildWeightingRepository assessmentCriteriaChildWeightingRepository;
-
-    private AssessmentCriteriaService assessmentCriteriaService;
-
-    private AssessmentCriteriaChildWeightingService childWeightingService;
-
+    @InjectMocks
     private StatelessAssessmentService statelessAssessmentService;
 
-    //  These age ranges give a child weighting of 1.1 - so 2.1 overall
-    private static final Map<AgeRange, Integer> childFactor11 = Map.of(
-            AgeRange.FIVE_TO_SEVEN, 1,
-            AgeRange.EIGHT_TO_TEN, 2
-    );
+    @Mock
+    private InitMeansAssessmentService initMeansAssessmentService;
 
-    private static final Map<AgeRange, Integer> childFactors =  Map.of(
-            AgeRange.ZERO_TO_ONE, 1,
-            AgeRange.EIGHT_TO_TEN, 4);
+    @Mock
+    private FullMeansAssessmentService fullMeansAssessmentService;
 
-    @Before
-    public void setUp() {
-        assessmentCriteriaService = new AssessmentCriteriaService(assessmentCriteriaRepository,
-                assessmentCriteriaDetailFrequencyRepository, caseTypeAssessmentCriteriaDetailValueRepository,
-                assessmentCriteriaChildWeightingRepository);
+    @Mock
+    private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
-        childWeightingService = new AssessmentCriteriaChildWeightingService();
+    @Mock
+    private AssessmentCriteriaService assessmentCriteriaService;
 
-        statelessAssessmentService = new StatelessAssessmentService(assessmentCriteriaService, childWeightingService);
+    @Mock
+    private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
+
+    private static final AssessmentCriteriaEntity mockAssessmentCriteria =
+            TestModelDataBuilder.getAssessmentCriteriaEntity();
+
+    private void setupStubs() {
+        when(meansAssessmentServiceFactory.getService(AssessmentType.INIT))
+                .thenReturn(initMeansAssessmentService);
+        when(meansAssessmentServiceFactory.getService(AssessmentType.FULL))
+                .thenReturn(fullMeansAssessmentService);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(mockAssessmentCriteria);
     }
 
     @Test
-    public void initialOnlyProducesEligibleWhenAtLowerThreshold() {
-        assertThat(initialOutcomeForIncome(BigDecimal.valueOf(12475))).isEqualTo(InitAssessmentResult.PASS);
+    public void givenInitRequestType_whenExecuteIsInvoked_thenInitAssessmentIsPerformed() {
+
+        setupStubs();
+
+        when(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
+                any(CaseType.class), any(MagCourtOutcome.class), any(NewWorkReason.class), any(InitAssessmentResult.class))
+        ).thenReturn(false);
+
+        when(initMeansAssessmentService.execute(
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(MeansAssessmentDTO.builder().initAssessmentResult(InitAssessmentResult.PASS).build());
+
+        try (MockedStatic<DataAdapter> adapter = Mockito.mockStatic(DataAdapter.class)) {
+
+            adapter.when(() -> DataAdapter.incomeSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+                    .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
+
+            adapter.when(() -> DataAdapter.convertChildGroupings(anyMap(), anySet()))
+                    .thenReturn(TestModelDataBuilder.getAssessmentChildWeightings());
+
+            var overallResult = getAssessmentOutcome(StatelessRequestType.INITIAL);
+            validateInitialResult(overallResult.getInitialResult(), InitAssessmentResult.PASS);
+            assertThat(overallResult.getInitialResult().isFullAssessmentPossible()).isFalse();
+            assertThat(overallResult.getFullResult()).isNull();
+        }
     }
 
     @Test
-    public void initialOnlyProducesFullWhenAboveLowerThreshold() {
-        assertThat(initialOutcomeForIncome(BigDecimal.valueOf(12476))).isEqualTo(InitAssessmentResult.FULL);
+    public void givenBothRequestType_whenExecuteIsInvoked_thenFullAssessmentIsPerformed() {
+
+        setupStubs();
+
+        when(initMeansAssessmentService.execute(
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(MeansAssessmentDTO.builder().initAssessmentResult(InitAssessmentResult.FULL).build());
+
+        when(fullMeansAssessmentService.execute(
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(MeansAssessmentDTO.builder().fullAssessmentResult(FullAssessmentResult.PASS).build());
+
+        when(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
+                any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class))
+        ).thenReturn(true);
+
+        try (MockedStatic<DataAdapter> adapter = Mockito.mockStatic(DataAdapter.class)) {
+
+            adapter.when(() -> DataAdapter.incomeSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+                    .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
+
+            adapter.when(() -> DataAdapter.outgoingSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+                    .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
+
+            adapter.when(() -> DataAdapter.convertChildGroupings(anyMap(), anySet()))
+                    .thenReturn(TestModelDataBuilder.getAssessmentChildWeightings());
+
+            var overallResult = getAssessmentOutcome(StatelessRequestType.BOTH);
+            validateFullResult(overallResult.getFullResult(), FullAssessmentResult.PASS);
+            validateInitialResult(overallResult.getInitialResult(), InitAssessmentResult.FULL);
+        }
     }
 
     @Test
-    public void initialOnlyProducesUnknownWhenBelowUpperThreshold() {
-        assertThat(initialOutcomeForIncome(BigDecimal.valueOf(22324))).isEqualTo(InitAssessmentResult.FULL);
+    public void givenBothRequestTypeAndInitAssessmentFails_whenExecuteIsInvoked_thenOnlyInitAssessmentIsPerformed() {
+        setupStubs();
+
+        when(initMeansAssessmentService.execute(
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(MeansAssessmentDTO.builder().initAssessmentResult(InitAssessmentResult.FAIL).build());
+
+        when(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
+                any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class))
+        ).thenReturn(false);
+
+        try (MockedStatic<DataAdapter> adapter = Mockito.mockStatic(DataAdapter.class)) {
+
+            adapter.when(() -> DataAdapter.incomeSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+                    .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
+
+            adapter.when(() -> DataAdapter.convertChildGroupings(anyMap(), anySet()))
+                    .thenReturn(TestModelDataBuilder.getAssessmentChildWeightings());
+
+            var overallResult = getAssessmentOutcome(StatelessRequestType.BOTH);
+            validateInitialResult(overallResult.getInitialResult(), InitAssessmentResult.FAIL);
+            assertThat(overallResult.getInitialResult().isFullAssessmentPossible()).isFalse();
+            assertThat(overallResult.getFullResult()).isNull();
+        }
     }
 
-    @Test
-    public void initialOnlyProducesInEligibleWhenAtUpperThreshold() {
-        assertThat(initialOutcomeForIncome(BigDecimal.valueOf(22325))).isEqualTo(InitAssessmentResult.FAIL);
+    private void validateInitialResult(StatelessInitialResult initialResult, InitAssessmentResult expected) {
+        assertThat(initialResult.getResult()).isEqualTo(expected);
+        assertThat(initialResult.getLowerThreshold()).isEqualTo(mockAssessmentCriteria.getInitialLowerThreshold());
+        assertThat(initialResult.getUpperThreshold()).isEqualTo(mockAssessmentCriteria.getInitialUpperThreshold());
     }
 
-    @Test
-    public void initalCountsPartnerIncome() {
+    private void validateFullResult(StatelessFullResult fullResult, FullAssessmentResult expected) {
+        assertThat(fullResult.getResult()).isEqualTo(expected);
+        assertThat(fullResult.getAdjustedLivingAllowance()).isEqualTo(mockAssessmentCriteria.getLivingAllowance());
+        assertThat(fullResult.getEligibilityThreshold()).isEqualTo(mockAssessmentCriteria.getEligibilityThreshold());
+    }
+
+    private StatelessResult getAssessmentOutcome(StatelessRequestType requestType) {
         var employmentIncome = new Income(IncomeType.EMPLOYMENT_INCOME,
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)),
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)));
-        var result = statelessAssessmentService
-                .execute(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
-                                .withAssessmentDate(LocalDateTime.now())
-                                .withEligibilityCheckRequired(true)
-                                .withHasPartner(true).withCaseType(CaseType.APPEAL_CC).
-                        withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
-                        childFactors,
-                        List.of(employmentIncome), Collections.emptyList()
-                );
-        assertThat(result.getInitialResult().getLowerThreshold().intValue()).isEqualTo(12475);
-        assertThat(result.getInitialResult().getUpperThreshold().intValue()).isEqualTo(22325);
-        assertThat(result.getInitialResult().getResult()).isEqualTo(InitAssessmentResult.FULL);
-    }
-
-    @Test
-    public void initWithFullCanBeCalledSuccessfully() {
-        var employmentIncome = new Income(IncomeType.EMPLOYMENT_INCOME,
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)),
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)));
-        var outgoing = new Outgoing(OutgoingType.TAX,
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)),
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)));
-        var result = statelessAssessmentService
-                .execute(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
-                                .withAssessmentDate(LocalDateTime.now())
-                                .withEligibilityCheckRequired(true)
-                                .withHasPartner(false).withCaseType(CaseType.APPEAL_CC).
-                                withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
-                        childFactors,
-                        List.of(employmentIncome),
-                        List.of((outgoing)));
-        assertThat(result.getFullResult().getResult()).isEqualTo(FullAssessmentResult.FAIL);
-    }
-
-    @Test
-    public void initWithFullConsidersPartner() {
-        var employmentIncome = new Income(IncomeType.EMPLOYMENT_INCOME,
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)),
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)));
-        var outgoing = new Outgoing(OutgoingType.TAX,
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)),
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)));
-        var result = statelessAssessmentService
-                .execute(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
-                                .withAssessmentDate(LocalDateTime.now())
-                                .withEligibilityCheckRequired(true)
-                                .withHasPartner(true).withCaseType(CaseType.APPEAL_CC).
-                                withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
-                        childFactors,
-                        List.of(employmentIncome),
-                        List.of((outgoing)));
-        assertThat(result.getFullResult().getResult()).isEqualTo(FullAssessmentResult.PASS);
-    }
-
-    @Test
-    public void overInelThresholdMagistratesCourtIsAFail() {
-        var employmentIncome = new Income(IncomeType.EMPLOYMENT_INCOME,
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(7800)),
-                new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)));
-        var result = statelessAssessmentService
-                .execute(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
-                                .withAssessmentDate(LocalDateTime.now())
-                                .withEligibilityCheckRequired(true)
-                                .withHasPartner(true).withCaseType(CaseType.INDICTABLE).
-                                withMagistrateCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL),
-                        childFactors,
-                        Arrays.asList(employmentIncome),
-                        Collections.emptyList());
-        assertThat(result.getFullResult().getResult()).isEqualTo(FullAssessmentResult.FAIL);
-    }
-
-    private InitAssessmentResult initialOutcomeForIncome(BigDecimal income) {
-        var employmentIncome = new Income(IncomeType.EMPLOYMENT_INCOME,
-                new FrequencyAmount(Frequency.ANNUALLY, income.multiply(BigDecimal.valueOf(2.1))),
-                null);
-        var result = statelessAssessmentService
-                .execute(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
+                new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.TEN), null);
+        return statelessAssessmentService
+                .execute(new Assessment().withAssessmentType(requestType)
                                 .withAssessmentDate(LocalDateTime.now())
                                 .withHasPartner(false)
-                        .withEligibilityCheckRequired(true)
-                                        .withCaseType(CaseType.APPEAL_CC).
-                                withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
-                        childFactor11,
+                                .withEligibilityCheckRequired(true)
+                                .withCaseType(CaseType.APPEAL_CC)
+                                .withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
+                        Map.of(AgeRange.ZERO_TO_ONE, 1, AgeRange.EIGHT_TO_TEN, 4),
                         List.of(employmentIncome), Collections.emptyList()
                 );
-        return result.getInitialResult().getResult();
     }
 }
