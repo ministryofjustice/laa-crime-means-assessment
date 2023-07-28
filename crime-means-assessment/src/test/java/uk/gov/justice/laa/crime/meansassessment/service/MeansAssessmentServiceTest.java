@@ -258,15 +258,6 @@ public class MeansAssessmentServiceTest {
                         any(MeansAssessmentDTO.class))).thenReturn(new ApiMeansAssessmentResponse());
     }
 
-    //    TODO: Remove this test once the dateCompletion feature is enabled
-    @Test
-    public void givenDateCompletionFlagEnabled__whenDoAssessmentIsInvoked_thenAssessmentCompletionServiceIsCalled() {
-        setupDoAssessmentStubbing(AssessmentType.INIT);
-        featuresConfiguration.setDateCompletionEnabled(true);
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
-        verify(assessmentCompletionService).execute(any(MeansAssessmentDTO.class), anyString());
-    }
-
     @Test
     public void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenCreateAssessmentIsPerformed() {
         setupDoAssessmentStubbing(AssessmentType.INIT);
