@@ -52,7 +52,7 @@ public class AssessmentCriteriaService {
         }
     }
 
-    void checkAssessmentDetail(CaseType caseType, String section, AssessmentCriteriaEntity assessmentCriteria, ApiAssessmentDetail detail) {
+    public void checkAssessmentDetail(CaseType caseType, String section, AssessmentCriteriaEntity assessmentCriteria, ApiAssessmentDetail detail) {
         AssessmentCriteriaDetailEntity criteriaDetail =
                 assessmentCriteria.getAssessmentCriteriaDetails().stream().filter(
                         d -> d.getSection().equals(section) && d.getId().equals(detail.getCriteriaDetailId())

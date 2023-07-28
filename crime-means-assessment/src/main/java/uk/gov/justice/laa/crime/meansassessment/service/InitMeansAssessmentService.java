@@ -23,7 +23,7 @@ public class InitMeansAssessmentService implements AssessmentService {
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     @Override
-    public MeansAssessmentDTO execute(BigDecimal annualTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, boolean isMeansAssessmentRequired) {
+    public MeansAssessmentDTO execute(BigDecimal annualTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create initial means assessment - Start");
         BigDecimal adjustedIncomeValue = getAdjustedIncome(requestDTO, assessmentCriteria, annualTotal);
         CurrentStatus status = requestDTO.getAssessmentStatus();

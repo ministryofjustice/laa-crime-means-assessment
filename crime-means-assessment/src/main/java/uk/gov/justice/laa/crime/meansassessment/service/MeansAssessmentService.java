@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
@@ -31,7 +30,6 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MeansAssessmentService extends BaseMeansAssessmentService {
 
     private final MaatCourtDataService maatCourtDataService;
@@ -45,6 +43,32 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
     private final IncomeEvidenceService incomeEvidenceService;
     private final EligibilityChecker crownCourtEligibilityService;
+
+    public MeansAssessmentService(MaatCourtDataService maatCourtDataService,
+                                  AssessmentCriteriaService assessmentCriteriaService,
+                                  MeansAssessmentResponseBuilder responseBuilder,
+                                  MaatCourtDataAssessmentBuilder assessmentBuilder,
+                                  FullAssessmentAvailabilityService fullAssessmentAvailabilityService,
+                                  MeansAssessmentServiceFactory meansAssessmentServiceFactory,
+                                  AssessmentCompletionService assessmentCompletionService,
+                                  MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder,
+                                  AssessmentCriteriaDetailService assessmentCriteriaDetailService,
+                                  IncomeEvidenceService incomeEvidenceService,
+                                  EligibilityChecker crownCourtEligibilityService) {
+
+        super(assessmentCriteriaService);
+        this.maatCourtDataService = maatCourtDataService;
+        this.assessmentCriteriaService = assessmentCriteriaService;
+        this.responseBuilder = responseBuilder;
+        this.assessmentBuilder = assessmentBuilder;
+        this.fullAssessmentAvailabilityService = fullAssessmentAvailabilityService;
+        this.meansAssessmentServiceFactory = meansAssessmentServiceFactory;
+        this.assessmentCompletionService = assessmentCompletionService;
+        this.meansAssessmentBuilder = meansAssessmentBuilder;
+        this.assessmentCriteriaDetailService = assessmentCriteriaDetailService;
+        this.incomeEvidenceService = incomeEvidenceService;
+        this.crownCourtEligibilityService = crownCourtEligibilityService;
+    }
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -60,7 +84,7 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             AssessmentCriteriaEntity assessmentCriteria = assessmentCriteriaService.getAssessmentCriteria(
                     assessmentDate, requestDTO.getHasPartner(), requestDTO.getPartnerContraryInterest());
 
-            BigDecimal summariesTotal = calculateSummariesTotal(assessmentCriteriaService, requestDTO, assessmentCriteria);
+            BigDecimal summariesTotal = calculateSummariesTotal(requestDTO, assessmentCriteria);
 
             if (AssessmentType.FULL == assessmentType) {
                 requestDTO.setEligibilityCheckRequired(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO));
@@ -128,7 +152,9 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         return assessmentResponse;
     }
 
-    protected void mapIncomeEvidence(ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapIncomeEvidence(ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse,
+                                     FinancialAssessmentDTO financialAssessmentDTO) {
+
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
         ApiIncomeEvidenceSummary apiIncomeEvidenceSummary = new ApiIncomeEvidenceSummary();

@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
@@ -13,17 +14,21 @@ import java.util.List;
 
 import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public abstract class BaseMeansAssessmentService {
-    protected static BigDecimal calculateDetailTotal(BigDecimal amount, Frequency frequency) {
+
+    private final AssessmentCriteriaService assessmentCriteriaService;
+
+    protected BigDecimal calculateDetailTotal(BigDecimal amount, Frequency frequency) {
         if (amount != null && frequency != null && !BigDecimal.ZERO.equals(amount)) {
             return setStandardScale(BigDecimal.valueOf(frequency.getWeighting()).multiply(amount));
         } else return setStandardScale(BigDecimal.ZERO);
     }
 
-    protected static BigDecimal calculateSummariesTotal(final AssessmentCriteriaService assessmentCriteriaService,
-                                                        final MeansAssessmentRequestDTO requestDTO,
-                                                        final AssessmentCriteriaEntity assessmentCriteria) {
+    protected BigDecimal calculateSummariesTotal(final MeansAssessmentRequestDTO requestDTO,
+                                                 final AssessmentCriteriaEntity assessmentCriteria) {
+
         List<ApiAssessmentSectionSummary> sectionSummaries = requestDTO.getSectionSummaries();
         BigDecimal annualTotal = BigDecimal.ZERO;
         for (ApiAssessmentSectionSummary sectionSummary : sectionSummaries) {
