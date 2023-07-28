@@ -11,7 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRa
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +67,7 @@ public class DataAdapter {
             var detail = createAssessmentDetail(income, assessmentCriteria, detailCode);
             return new ApiAssessmentSectionSummary().
                     withSection(incomeSection(income.getIncomeType())).
-                    withAssessmentDetails(Arrays.asList(detail));
+                    withAssessmentDetails(Collections.singletonList(detail));
         }).toList();
     }
 
@@ -78,7 +78,7 @@ public class DataAdapter {
             var detail = createAssessmentDetail(outgoing, assessmentCriteria, detailCode);
             return new ApiAssessmentSectionSummary().
                     withSection(outgoingSection(outgoing.getOutgoingType())).
-                    withAssessmentDetails(Arrays.asList(detail));
+                    withAssessmentDetails(Collections.singletonList(detail));
         }).toList();
     }
 
