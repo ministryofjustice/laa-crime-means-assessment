@@ -94,7 +94,7 @@ public class StatelessAssessmentServiceTest {
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)),
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)));
         var result = statelessAssessmentService
-                .invoke(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
+                .execute(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
                                 .withAssessmentDate(LocalDateTime.now())
                                 .withEligibilityCheckRequired(true)
                                 .withHasPartner(true).withCaseType(CaseType.APPEAL_CC).
@@ -116,7 +116,7 @@ public class StatelessAssessmentServiceTest {
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)),
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)));
         var result = statelessAssessmentService
-                .invoke(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
+                .execute(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
                                 .withAssessmentDate(LocalDateTime.now())
                                 .withEligibilityCheckRequired(true)
                                 .withHasPartner(false).withCaseType(CaseType.APPEAL_CC).
@@ -136,7 +136,7 @@ public class StatelessAssessmentServiceTest {
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)),
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(1200)));
         var result = statelessAssessmentService
-                .invoke(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
+                .execute(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
                                 .withAssessmentDate(LocalDateTime.now())
                                 .withEligibilityCheckRequired(true)
                                 .withHasPartner(true).withCaseType(CaseType.APPEAL_CC).
@@ -153,7 +153,7 @@ public class StatelessAssessmentServiceTest {
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(7800)),
                 new FrequencyAmount(Frequency.MONTHLY, BigDecimal.valueOf(2000)));
         var result = statelessAssessmentService
-                .invoke(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
+                .execute(new Assessment().withAssessmentType(StatelessRequestType.BOTH)
                                 .withAssessmentDate(LocalDateTime.now())
                                 .withEligibilityCheckRequired(true)
                                 .withHasPartner(true).withCaseType(CaseType.INDICTABLE).
@@ -169,7 +169,7 @@ public class StatelessAssessmentServiceTest {
                 new FrequencyAmount(Frequency.ANNUALLY, income.multiply(BigDecimal.valueOf(2.1))),
                 null);
         var result = statelessAssessmentService
-                .invoke(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
+                .execute(new Assessment().withAssessmentType(StatelessRequestType.INITIAL)
                                 .withAssessmentDate(LocalDateTime.now())
                                 .withHasPartner(false)
                         .withEligibilityCheckRequired(true)

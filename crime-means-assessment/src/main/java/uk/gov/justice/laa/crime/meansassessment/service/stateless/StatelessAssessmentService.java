@@ -30,7 +30,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
-    public StatelessResult invoke(Assessment assessment,  Map<AgeRange, Integer> childGroupings, List<Income> income, List<Outgoing> outgoings) {
+    public StatelessResult execute(Assessment assessment, Map<AgeRange, Integer> childGroupings, List<Income> income, List<Outgoing> outgoings) {
         if (assessment.getAssessmentType() == StatelessRequestType.INITIAL) {
             return initialOnly(assessment.getAssessmentDate(), assessment.getHasPartner(),
                     assessment.getCaseType(), assessment.getMagistrateCourtOutcome(),
