@@ -7,5 +7,5 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import java.math.BigDecimal;
 
 public interface AssessmentService {
-    MeansAssessmentDTO execute(BigDecimal summariesTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, boolean isEligibilityCheckRequired);
+    MeansAssessmentDTO execute(BigDecimal summariesTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria);
 }

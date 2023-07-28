@@ -62,9 +62,11 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
 
             BigDecimal summariesTotal = calculateSummariesTotal(assessmentCriteriaService, requestDTO, assessmentCriteria);
 
-            final boolean isEligibilityCheckRequired = AssessmentType.FULL == assessmentType && crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO);
+            if (AssessmentType.FULL == assessmentType) {
+                requestDTO.setEligibilityCheckRequired(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO));
+            }
             MeansAssessmentDTO completedAssessment =
-                    assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria, isEligibilityCheckRequired);
+                    assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 

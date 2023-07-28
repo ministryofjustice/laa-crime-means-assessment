@@ -22,7 +22,7 @@ public class FullMeansAssessmentService implements AssessmentService {
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     @Override
-    public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, boolean isEligibilityCheckRequired) {
+    public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create full means assessment - Start");
         CurrentStatus status = requestDTO.getAssessmentStatus();
         BigDecimal totalAggregatedIncome = requestDTO.getInitTotalAggregatedIncome();
@@ -34,7 +34,7 @@ public class FullMeansAssessmentService implements AssessmentService {
                 .currentStatus(status)
                 .fullAssessmentResult(
                         status.equals(CurrentStatus.COMPLETE)
-                                ? getResult(totalDisposableIncome, requestDTO, assessmentCriteria, isEligibilityCheckRequired) : null
+                                ? getResult(totalDisposableIncome, requestDTO, assessmentCriteria) : null
                 )
                 .adjustedLivingAllowance(adjustedLivingAllowance)
                 .totalAggregatedExpense(
@@ -65,9 +65,9 @@ public class FullMeansAssessmentService implements AssessmentService {
                         .add(totalChildWeighting));
     }
 
-    FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, boolean isEligibilityCheckRequired) {
+    FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         if (isCrownCourtCase(requestDTO.getCaseType(), requestDTO.getMagCourtOutcome()) &&
-                isEligibilityCheckRequired
+                requestDTO.isEligibilityCheckRequired()
                 && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
             return FullAssessmentResult.INEL;
         } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {

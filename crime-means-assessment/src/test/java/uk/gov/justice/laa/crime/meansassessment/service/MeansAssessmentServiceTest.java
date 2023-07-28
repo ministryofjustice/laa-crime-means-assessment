@@ -237,7 +237,7 @@ public class MeansAssessmentServiceTest {
 
 
         when(fullMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class), anyBoolean())
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         MaatApiAssessmentResponse maatApiAssessmentResponse =
@@ -283,7 +283,7 @@ public class MeansAssessmentServiceTest {
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
 
         verify(fullMeansAssessmentService).execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class), anyBoolean()
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
         );
         verify(meansAssessmentResponseBuilder).build(
                 any(MaatApiAssessmentResponse.class), any(AssessmentCriteriaEntity.class), any(MeansAssessmentDTO.class)
