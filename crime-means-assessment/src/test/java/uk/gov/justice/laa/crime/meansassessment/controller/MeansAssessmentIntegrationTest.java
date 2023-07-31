@@ -255,7 +255,7 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Flaky test")
     public void givenAValidFinancialAssessmentId_whenGetOldAssessmentInvoked_thenAssessmentIsReturned() throws Exception {
         FinancialAssessmentDTO financialAssessmentDTO =
                 TestModelDataBuilder.getFinancialAssessmentDTO(

@@ -2,7 +2,6 @@ package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -184,15 +183,4 @@ public class MeansAssessmentValidationProcessorTest {
         assertThat(validationException.getMessage()).isEqualTo(MSG_INCOMPLETE_ASSESSMENT_FOUND);
     }
 
-    @Test
-    @Ignore
-    public void givenInvalidFinancialAssessmentTimeStamp_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
-        when(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(
-                any(MeansAssessmentRequestDTO.class))
-        ).thenReturn(Boolean.TRUE);
-
-        assertThatThrownBy(
-                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE)
-        ).isInstanceOf(ValidationException.class).hasMessageContaining(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
-    }
 }
