@@ -47,9 +47,6 @@ public class MeansAssessmentValidationProcessor {
         if (AssessmentRequestType.CREATE.equals(requestType) &&
                 meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
             throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
-//        } else if (AssessmentRequestType.UPDATE.equals(requestType) &&
-//                meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)) {
-//            throw new ValidationException(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
         }
 
         if (AssessmentType.INIT.equals(requestDTO.getAssessmentType())) {
