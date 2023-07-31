@@ -70,8 +70,17 @@
         "type": "object",
         "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.service.stateless.Outgoing"
       }
+    },
+    "client": {
+      "type": "object",
+      "description": "The name of the client sending the request",
+      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Client"
+    },
+    "eligibility_check_required": {
+      "type": "boolean",
+      "description": "Indicates whether a crown court eligibility check is required"
     }
   },
-  "required": ["assessment", "income", "outgoings"],
+  "required": ["assessment", "income", "outgoings", "client"],
   "additionalProperties": false
 }

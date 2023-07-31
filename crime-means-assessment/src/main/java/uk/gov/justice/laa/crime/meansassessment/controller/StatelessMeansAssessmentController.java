@@ -44,8 +44,13 @@ public class StatelessMeansAssessmentController {
     ) @Valid @RequestBody StatelessApiRequest meansAssessment) {
         var apiAssessment = meansAssessment.getAssessment();
         Map<AgeRange, Integer> childGroupings = getChildGroupings(apiAssessment.getDependantChildren());
-        var result = statelessAssessmentService.invoke(apiAssessment, childGroupings,
-                meansAssessment.getIncome(), meansAssessment.getOutgoings());
+        var result = statelessAssessmentService.invoke(
+                apiAssessment, childGroupings,
+                meansAssessment.getIncome(),
+                meansAssessment.getOutgoings(),
+                meansAssessment.getClient(),
+                meansAssessment.getEligibilityCheckRequired()
+        );
         var initialResult = result.getInitialResult();
         var fullResult = result.getFullResult();
         var response = new StatelessApiResponse()

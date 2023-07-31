@@ -26,13 +26,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CrownCourtEligibilityServiceTest {
+public class MaatEligibilityServiceTest {
 
     @Mock
     private MaatCourtDataService maatCourtDataService;
 
     @InjectMocks
-    private CrownCourtEligibilityService crownCourtEligibilityService;
+    private MaatEligibilityService maatEligibilityService;
 
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
@@ -62,33 +62,33 @@ public class CrownCourtEligibilityServiceTest {
     public void givenIndictableSentForTrialAndNoPreviousAssessments_whenIsEligibilityCheckRequiredIsInvoked_thenCorrectResultIsReturned() {
         requestDTO.setCaseType(CaseType.INDICTABLE);
         requestDTO.setMagCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
 
         repOrderDTO.getFinancialAssessments().clear();
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
     public void givenCCAlreadySentForTrialAndNoPreviousAssessments_whenIsEligibilityCheckRequiredIsInvoked_thenCorrectResultIsReturned() {
         requestDTO.setCaseType(CaseType.CC_ALREADY);
         requestDTO.setMagCourtOutcome(MagCourtOutcome.SENT_FOR_TRIAL);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
 
         repOrderDTO.getFinancialAssessments().clear();
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
     public void givenEWCommittedAndFirstAssessment_whenIsEligibilityCheckRequiredIsInvoked_thenCorrectResultIsReturned() {
         financialAssessment.setNewWorkReason(NewWorkReason.FMA.getCode());
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 
     @Test
     public void givenRepOrderWithNoAssessment_whenIsEligibilityCheckRequiredIsInvoked_thenExceptionIsThrown() {
         requestDTO.setFinancialAssessmentId(8234);
         assertThatThrownBy(
-                () -> crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
+                () -> maatEligibilityService.isEligibilityCheckRequired(requestDTO)
         ).isInstanceOf(RuntimeException.class).hasMessage("Cannot find initial assessment with id: 8234");
     }
 
@@ -96,26 +96,26 @@ public class CrownCourtEligibilityServiceTest {
     public void givenEWCommittedReassessmentInitFailedAndDateCreatedOnMagsOutcomeDateSet_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
         financialAssessment.setInitResult(InitAssessmentResult.FAIL.getResult());
         financialAssessment.setDateCreated(TestModelDataBuilder.TEST_MAGS_OUTCOME_DATE);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
     public void givenEWCommittedReassessmentInitFailedAndDateCreatedAfterMagsOutcomeDateSet_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
         financialAssessment.setInitResult(InitAssessmentResult.FAIL.getResult());
         financialAssessment.setDateCreated(TestModelDataBuilder.TEST_MAGS_OUTCOME_DATE.plusDays(1));
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
     public void givenEWCommittedReassessmentInitFailedAndDateCreatedBeforeMagsOutcomeDateSet_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
         financialAssessment.setInitResult(InitAssessmentResult.FAIL.getResult());
         financialAssessment.setDateCreated(TestModelDataBuilder.TEST_MAGS_OUTCOME_DATE.minusDays(1));
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
     public void givenNoPreviousAssessmentResults_whenIsEligibilityCheckRequiredIsInvoked_thenTrueIsReturned() {
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
@@ -123,7 +123,7 @@ public class CrownCourtEligibilityServiceTest {
             FinancialAssessmentDTO previous =
                     FinancialAssessmentDTO.builder().initResult(InitAssessmentResult.PASS.getResult()).build();
             repOrderDTO.getFinancialAssessments().add(previous);
-            assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+            assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 
     @Test
@@ -131,7 +131,7 @@ public class CrownCourtEligibilityServiceTest {
         FinancialAssessmentDTO previous =
                 FinancialAssessmentDTO.builder().initResult(InitAssessmentResult.FAIL.getResult()).build();
         repOrderDTO.getFinancialAssessments().add(previous);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
@@ -139,7 +139,7 @@ public class CrownCourtEligibilityServiceTest {
         FinancialAssessmentDTO previous =
                 FinancialAssessmentDTO.builder().fullResult(FullAssessmentResult.FAIL.getResult()).build();
         repOrderDTO.getFinancialAssessments().add(previous);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 
     @Test
@@ -147,7 +147,7 @@ public class CrownCourtEligibilityServiceTest {
         FinancialAssessmentDTO previous =
                 FinancialAssessmentDTO.builder().fullResult(FullAssessmentResult.PASS.getResult()).build();
         repOrderDTO.getFinancialAssessments().add(previous);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 
     @Test
@@ -155,7 +155,7 @@ public class CrownCourtEligibilityServiceTest {
         PassportAssessmentDTO previous =
                 PassportAssessmentDTO.builder().result(PassportAssessmentResult.FAIL.getResult()).build();
         repOrderDTO.getPassportAssessments().add(previous);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 
     @Test
@@ -163,28 +163,28 @@ public class CrownCourtEligibilityServiceTest {
         PassportAssessmentDTO previous =
                 PassportAssessmentDTO.builder().result(PassportAssessmentResult.PASS.getResult()).build();
         repOrderDTO.getPassportAssessments().add(previous);
-        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 
     @Test
     public void givenIncorrectCaseType_whenIsEligibilityCheckRequiredIsInvoked_thenReturnFalse() {
         requestDTO.setCaseType(CaseType.APPEAL_CC);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
 
         requestDTO.setCaseType(CaseType.SUMMARY_ONLY);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
 
         requestDTO.setCaseType(CaseType.COMMITAL);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
 
         requestDTO.setCaseType(CaseType.INDICTABLE);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
 
         requestDTO.setCaseType(CaseType.CC_ALREADY);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
 
         requestDTO.setCaseType(CaseType.EITHER_WAY);
         requestDTO.setMagCourtOutcome(MagCourtOutcome.COMMITTED);
-        softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+        softly.assertThat(maatEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
 }

@@ -91,12 +91,14 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             }
 
             return assessmentResponse;
-        } catch (Exception exception) {
+        } catch (
+                Exception exception) {
             throw new AssessmentProcessingException(
                     String.format("An error occurred whilst processing the assessment request with RepID: %d",
                             requestDTO.getRepId()), exception
             );
         }
+
     }
 
     void updateDetailIds(MeansAssessmentDTO completedAssessment, MaatApiAssessmentResponse maatApiAssessmentResponse) {
