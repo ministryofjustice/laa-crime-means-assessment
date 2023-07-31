@@ -94,7 +94,6 @@ public class MeansAssessmentValidationProcessorTest {
 
         verify(meansAssessmentValidationService).isRoleActionValid(eq(fullAssessment), anyString());
         verify(meansAssessmentValidationService).isRepOrderReserved(fullAssessment);
-//        verify(meansAssessmentValidationService).isAssessmentModifiedByAnotherUser(fullAssessment);
         verify(fullAssessmentValidator).validate(fullAssessment);
 
         verify(initAssessmentValidator, never()).validate(createMeansAssessmentRequest);
