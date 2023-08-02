@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.justice.laa.crime.meansassessment.service.stateless.DataAdapter.convertChildGroupings;
+import static uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessDataAdapter.mapChildGroupings;
 
 @Service
 public class StatelessAssessmentService extends BaseMeansAssessmentService {
@@ -63,7 +63,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
         var initialAnswer = initialResult(assessment, totalIncome, childGroupings);
 
         if (initialAnswer.isFullAssessmentPossible()) {
-            final var children = convertChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
+            final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 
             // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
             final MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO
@@ -96,8 +96,8 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
 
     private StatelessResult initialOnly(@NotNull Assessment assessment,
                                         @NotNull Map<AgeRange, Integer> childGroupings,
-                                        @NotNull List<Income> incomes
-    ) {
+                                        @NotNull List<Income> incomes) {
+
         final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(
                 assessment.getAssessmentDate(), assessment.getHasPartner(), false
         );
@@ -113,7 +113,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
         final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(
                 assessment.getAssessmentDate(), assessment.getHasPartner(), false
         );
-        final var children = convertChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
+        final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 
         // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
         final MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO
@@ -144,7 +144,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
         return calcTotalFromSummaries(
                 assessmentCriteria,
                 caseType,
-                DataAdapter.incomeSectionSummaries(assessmentCriteria, incomes)
+                StatelessDataAdapter.mapIncomesToSectionSummaries(assessmentCriteria, incomes)
         );
     }
 
@@ -154,7 +154,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
         return calcTotalFromSummaries(
                 assessmentCriteria,
                 caseType,
-                DataAdapter.outgoingSectionSummaries(assessmentCriteria, outgoings)
+                StatelessDataAdapter.mapOutgoingsToSectionSummaries(assessmentCriteria, outgoings)
         );
     }
 

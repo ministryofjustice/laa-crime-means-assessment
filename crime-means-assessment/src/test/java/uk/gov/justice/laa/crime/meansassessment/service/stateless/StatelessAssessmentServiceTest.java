@@ -78,12 +78,12 @@ public class StatelessAssessmentServiceTest {
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(MeansAssessmentDTO.builder().initAssessmentResult(InitAssessmentResult.PASS).build());
 
-        try (MockedStatic<DataAdapter> adapter = Mockito.mockStatic(DataAdapter.class)) {
+        try (MockedStatic<StatelessDataAdapter> adapter = Mockito.mockStatic(StatelessDataAdapter.class)) {
 
-            adapter.when(() -> DataAdapter.incomeSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
-            adapter.when(() -> DataAdapter.convertChildGroupings(anyMap(), anySet()))
+            adapter.when(() -> StatelessDataAdapter.mapChildGroupings(anyMap(), anySet()))
                     .thenReturn(TestModelDataBuilder.getAssessmentChildWeightings());
 
             var overallResult = getAssessmentOutcome(StatelessRequestType.INITIAL);
@@ -110,15 +110,15 @@ public class StatelessAssessmentServiceTest {
                 any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class))
         ).thenReturn(true);
 
-        try (MockedStatic<DataAdapter> adapter = Mockito.mockStatic(DataAdapter.class)) {
+        try (MockedStatic<StatelessDataAdapter> adapter = Mockito.mockStatic(StatelessDataAdapter.class)) {
 
-            adapter.when(() -> DataAdapter.incomeSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
-            adapter.when(() -> DataAdapter.outgoingSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapOutgoingsToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
-            adapter.when(() -> DataAdapter.convertChildGroupings(anyMap(), anySet()))
+            adapter.when(() -> StatelessDataAdapter.mapChildGroupings(anyMap(), anySet()))
                     .thenReturn(TestModelDataBuilder.getAssessmentChildWeightings());
 
             var overallResult = getAssessmentOutcome(StatelessRequestType.BOTH);
@@ -139,12 +139,12 @@ public class StatelessAssessmentServiceTest {
                 any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class))
         ).thenReturn(false);
 
-        try (MockedStatic<DataAdapter> adapter = Mockito.mockStatic(DataAdapter.class)) {
+        try (MockedStatic<StatelessDataAdapter> adapter = Mockito.mockStatic(StatelessDataAdapter.class)) {
 
-            adapter.when(() -> DataAdapter.incomeSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
-            adapter.when(() -> DataAdapter.convertChildGroupings(anyMap(), anySet()))
+            adapter.when(() -> StatelessDataAdapter.mapChildGroupings(anyMap(), anySet()))
                     .thenReturn(TestModelDataBuilder.getAssessmentChildWeightings());
 
             var overallResult = getAssessmentOutcome(StatelessRequestType.BOTH);
