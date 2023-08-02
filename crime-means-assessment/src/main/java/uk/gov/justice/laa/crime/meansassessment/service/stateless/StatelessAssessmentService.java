@@ -100,13 +100,18 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
             final var result = service.execute(totalOutgoings, requestDTO, criteriaEntry);
 
             return new StatelessResult(
-                    new StatelessFullResult(result.getFullAssessmentResult(), result.getTotalAnnualDisposableIncome(),
-                            result.getAdjustedIncomeValue(), result.getTotalAggregatedIncome(), criteriaEntry.getLivingAllowance(),
-                            result.getTotalAggregatedExpense(), criteriaEntry.getEligibilityThreshold()),
-                    initialAnswer);
+                    new StatelessFullResult(result.getFullAssessmentResult(),
+                            result.getTotalAnnualDisposableIncome(),
+                            result.getAdjustedIncomeValue(),
+                            result.getTotalAggregatedIncome(),
+                            criteriaEntry.getLivingAllowance(),
+                            result.getTotalAggregatedExpense(),
+                            criteriaEntry.getEligibilityThreshold()
+                    ),
+                    initialAnswer
+            );
         } else {
-            return new StatelessResult(
-                    null, initialAnswer);
+            return new StatelessResult(null, initialAnswer);
         }
     }
 
@@ -155,8 +160,8 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     }
 
     private BigDecimal incomeTotals(AssessmentCriteriaEntity assessmentCriteria,
-                                           CaseType caseType,
-                                           @NotNull List<Income> incomes) {
+                                    CaseType caseType,
+                                    @NotNull List<Income> incomes) {
         return totalFromSummaries(
                 assessmentCriteria,
                 caseType,
@@ -165,8 +170,8 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     }
 
     private BigDecimal outgoingTotals(AssessmentCriteriaEntity assessmentCriteria,
-                                             CaseType caseType,
-                                             @NotNull List<Outgoing> outgoings) {
+                                      CaseType caseType,
+                                      @NotNull List<Outgoing> outgoings) {
         return totalFromSummaries(
                 assessmentCriteria,
                 caseType,
@@ -175,8 +180,8 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     }
 
     private BigDecimal totalFromSummaries(AssessmentCriteriaEntity assessmentCriteria,
-                                                 CaseType caseType,
-                                                 List<ApiAssessmentSectionSummary> sectionSummaries) {
+                                          CaseType caseType,
+                                          List<ApiAssessmentSectionSummary> sectionSummaries) {
         var requestDTO = MeansAssessmentRequestDTO
                 .builder()
                 .sectionSummaries(sectionSummaries)
