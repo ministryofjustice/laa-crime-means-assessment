@@ -12,8 +12,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpda
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
-import java.util.stream.Collectors;
-
 import static java.util.Optional.ofNullable;
 
 @Component
@@ -66,7 +64,7 @@ public class MaatCourtDataAssessmentBuilder {
                 .withAssessmentDetails(
                         requestDTO.getSectionSummaries().stream()
                                 .flatMap(section -> section.getAssessmentDetails().stream())
-                                .collect(Collectors.toList())
+                                .toList()
                 )
                 .withDateCompleted(assessment.getDateCompleted());
     }
