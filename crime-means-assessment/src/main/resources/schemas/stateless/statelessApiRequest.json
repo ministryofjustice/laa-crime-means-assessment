@@ -3,12 +3,6 @@
   "id": "statelessApiRequest.json",
   "type": "object",
   "title": "Stateless CMA Request",
-  "$defs": {
-    "frequency_amount": {
-      "type": "object",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.service.stateless.FrequencyAmount"
-    }
-  },
   "properties": {
     "assessment": {
       "type": "object",
@@ -35,6 +29,10 @@
           "type": "boolean",
           "description": "Set true if client has a partner without a contrary interest in the case (so their income with also be part of the assessment)"
         },
+        "eligibility_check_required": {
+          "type": "boolean",
+          "description": "could this check possibily result in an INEL result"
+        },
         "dependant_children": {
           "type": "array",
           "items": {
@@ -54,7 +52,15 @@
           }
         }
       },
-      "required": ["assessment_date", "assessment_type", "case_type", "magistrates_court_outcome", "has_partner", "dependant_children"],
+      "required": [
+        "assessment_date",
+        "assessment_type",
+        "case_type",
+        "magistrates_court_outcome",
+        "has_partner",
+        "eligibility_check_required",
+        "dependant_children"
+      ],
       "additionalProperties": false
     },
     "income": {

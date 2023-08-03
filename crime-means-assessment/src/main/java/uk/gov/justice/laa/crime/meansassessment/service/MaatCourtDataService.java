@@ -9,8 +9,8 @@ import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
 import uk.gov.justice.laa.crime.meansassessment.common.Constants;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
 import java.util.Map;

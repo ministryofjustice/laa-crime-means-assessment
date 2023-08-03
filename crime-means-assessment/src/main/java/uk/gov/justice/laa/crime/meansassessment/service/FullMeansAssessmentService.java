@@ -19,9 +19,9 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setSta
 @RequiredArgsConstructor
 public class FullMeansAssessmentService implements AssessmentService {
 
-    private final EligibilityChecker crownCourtEligibilityService;
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
+    @Override
     public MeansAssessmentDTO execute(BigDecimal expenditureTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create full means assessment - Start");
         CurrentStatus status = requestDTO.getAssessmentStatus();
@@ -67,7 +67,7 @@ public class FullMeansAssessmentService implements AssessmentService {
 
     FullAssessmentResult getResult(BigDecimal disposableIncome, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         if (isCrownCourtCase(requestDTO.getCaseType(), requestDTO.getMagCourtOutcome()) &&
-                crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)
+                requestDTO.isEligibilityCheckRequired()
                 && disposableIncome.compareTo(assessmentCriteria.getEligibilityThreshold()) >= 0) {
             return FullAssessmentResult.INEL;
         } else if (disposableIncome.compareTo(assessmentCriteria.getFullThreshold()) <= 0) {

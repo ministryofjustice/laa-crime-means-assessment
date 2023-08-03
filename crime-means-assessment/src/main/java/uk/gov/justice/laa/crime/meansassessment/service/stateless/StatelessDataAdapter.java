@@ -11,7 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRa
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @UtilityClass
-public class DataAdapter {
+public class StatelessDataAdapter {
     private static final Map<IncomeType, String> inputToDetailCodeMap = Map.ofEntries(
             Map.entry(IncomeType.EMPLOYMENT_INCOME, "EMP_INC"),
             Map.entry(IncomeType.HOUSING_BENEFIT, "HOUSE_BEN"),
@@ -60,25 +60,25 @@ public class DataAdapter {
             "FULLB", List.of(OutgoingType.TAX, OutgoingType.NATIONAL_INSURANCE, OutgoingType.CHILDCARE_COSTS, OutgoingType.MAINTENANCE_COSTS)
     );
 
-    public static List<ApiAssessmentSectionSummary> incomeSectionSummaries(AssessmentCriteriaEntity assessmentCriteria,
-                                                                           @NotNull List<Income> incomes) {
+    public static List<ApiAssessmentSectionSummary> mapIncomesToSectionSummaries(AssessmentCriteriaEntity assessmentCriteria,
+                                                                                 @NotNull List<Income> incomes) {
         return incomes.stream().map(income -> {
             var detailCode = inputToDetailCodeMap.get(income.getIncomeType());
             var detail = createAssessmentDetail(income, assessmentCriteria, detailCode);
             return new ApiAssessmentSectionSummary().
-                    withSection(incomeSection(income.getIncomeType())).
-                    withAssessmentDetails(Arrays.asList(detail));
+                    withSection(getSectionByIncomeType(income.getIncomeType())).
+                    withAssessmentDetails(Collections.singletonList(detail));
         }).toList();
     }
 
-    public static List<ApiAssessmentSectionSummary> outgoingSectionSummaries(AssessmentCriteriaEntity assessmentCriteria,
-                                                                             @NotNull List<Outgoing> outgoings) {
+    public static List<ApiAssessmentSectionSummary> mapOutgoingsToSectionSummaries(AssessmentCriteriaEntity assessmentCriteria,
+                                                                                   @NotNull List<Outgoing> outgoings) {
         return outgoings.stream().map(outgoing -> {
             var detailCode = outgoingToDetailCodeMap.get(outgoing.getOutgoingType());
             var detail = createAssessmentDetail(outgoing, assessmentCriteria, detailCode);
             return new ApiAssessmentSectionSummary().
-                    withSection(outgoingSection(outgoing.getOutgoingType())).
-                    withAssessmentDetails(Arrays.asList(detail));
+                    withSection(getSectionByOutgoingType(outgoing.getOutgoingType())).
+                    withAssessmentDetails(Collections.singletonList(detail));
         }).toList();
     }
 
@@ -102,8 +102,8 @@ public class DataAdapter {
         return detail;
     }
 
-    public static List<ApiAssessmentChildWeighting> convertChildGroupings(Map<AgeRange, Integer> childGroupings,
-                                                                          Set<AssessmentCriteriaChildWeightingEntity> childWeightings) {
+    public static List<ApiAssessmentChildWeighting> mapChildGroupings(Map<AgeRange, Integer> childGroupings,
+                                                                      Set<AssessmentCriteriaChildWeightingEntity> childWeightings) {
         final var children = childGroupings
                 .entrySet()
                 .stream().map(childGroup -> {
@@ -132,22 +132,26 @@ public class DataAdapter {
     }
 
     // find section name from IncomeType
-    private static String incomeSection(IncomeType incomeType) {
+    private static String getSectionByIncomeType(IncomeType incomeType) {
         var section = initSectionMapping
                 .entrySet()
                 .stream()
                 .filter(sectionMap -> sectionMap.getValue().contains(incomeType))
                 .findFirst();
-        return section.map(Map.Entry::getKey).orElseThrow(() -> new RuntimeException(String.format("Section with value: %s does not exist.", incomeType)));
+        return section.map(Map.Entry::getKey).orElseThrow(() ->
+                new RuntimeException(String.format("Section with value: %s does not exist.", incomeType))
+        );
     }
 
     // find section name from OutgoingType
-    private static String outgoingSection(OutgoingType outgoingType) {
+    private static String getSectionByOutgoingType(OutgoingType outgoingType) {
         var section = fullSectionMapping
                 .entrySet()
                 .stream()
                 .filter(sectionMap -> sectionMap.getValue().contains(outgoingType))
                 .findFirst();
-        return section.map(Map.Entry::getKey).orElseThrow(() -> new RuntimeException(String.format("Section with value: %s does not exist.", outgoingType)));
+        return section.map(Map.Entry::getKey).orElseThrow(() ->
+                new RuntimeException(String.format("Section with value: %s does not exist.", outgoingType))
+        );
     }
 }

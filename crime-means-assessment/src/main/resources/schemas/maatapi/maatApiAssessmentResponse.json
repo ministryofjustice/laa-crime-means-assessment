@@ -165,14 +165,14 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "common/apiAssessmentDetail.json"
+        "$ref": "../common/apiAssessmentDetail.json"
       }
     },
     "childWeightings": {
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "common/apiAssessmentChildWeighting.json"
+        "$ref": "../common/apiAssessmentChildWeighting.json"
       }
     }
   }

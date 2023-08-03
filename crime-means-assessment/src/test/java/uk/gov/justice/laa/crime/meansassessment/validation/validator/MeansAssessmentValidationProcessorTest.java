@@ -81,7 +81,6 @@ public class MeansAssessmentValidationProcessorTest {
         verify(initAssessmentValidator).validate(createMeansAssessmentRequest);
 
         verify(fullAssessmentValidator, never()).validate(fullAssessment);
-        verify(meansAssessmentValidationService, never()).isAssessmentModifiedByAnotherUser(createMeansAssessmentRequest);
 
         assertThat(result).isEmpty();
     }
@@ -93,7 +92,6 @@ public class MeansAssessmentValidationProcessorTest {
 
         verify(meansAssessmentValidationService).isRoleActionValid(eq(fullAssessment), anyString());
         verify(meansAssessmentValidationService).isRepOrderReserved(fullAssessment);
-        verify(meansAssessmentValidationService).isAssessmentModifiedByAnotherUser(fullAssessment);
         verify(fullAssessmentValidator).validate(fullAssessment);
 
         verify(initAssessmentValidator, never()).validate(createMeansAssessmentRequest);
@@ -184,14 +182,4 @@ public class MeansAssessmentValidationProcessorTest {
         assertThat(validationException.getMessage()).isEqualTo(MSG_INCOMPLETE_ASSESSMENT_FOUND);
     }
 
-    @Test
-    public void givenInvalidFinancialAssessmentTimeStamp_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
-        when(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(
-                any(MeansAssessmentRequestDTO.class))
-        ).thenReturn(Boolean.TRUE);
-
-        assertThatThrownBy(
-                () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE)
-        ).isInstanceOf(ValidationException.class).hasMessageContaining(ASSESSMENT_MODIFIED_BY_ANOTHER_USER);
-    }
 }

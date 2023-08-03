@@ -3,13 +3,6 @@
   "id": "statelessApiResponse.json",
   "type": "object",
   "title": "Stateless CMA Response",
-  "$defs": {
-    "value": {
-      "type": "number",
-      "format": "decimal",
-      "minimum": 0
-    }
-  },
   "properties": {
     "initial_means_assessment": {
       "type": "object",

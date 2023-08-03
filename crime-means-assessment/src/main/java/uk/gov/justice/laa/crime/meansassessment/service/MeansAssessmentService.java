@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
@@ -15,6 +14,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAsses
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingException;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
@@ -31,7 +31,6 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MeansAssessmentService extends BaseMeansAssessmentService {
 
     private final MaatCourtDataService maatCourtDataService;
@@ -44,6 +43,33 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
     private final IncomeEvidenceService incomeEvidenceService;
+    private final EligibilityChecker crownCourtEligibilityService;
+
+    public MeansAssessmentService(MaatCourtDataService maatCourtDataService,
+                                  AssessmentCriteriaService assessmentCriteriaService,
+                                  MeansAssessmentResponseBuilder responseBuilder,
+                                  MaatCourtDataAssessmentBuilder assessmentBuilder,
+                                  FullAssessmentAvailabilityService fullAssessmentAvailabilityService,
+                                  MeansAssessmentServiceFactory meansAssessmentServiceFactory,
+                                  AssessmentCompletionService assessmentCompletionService,
+                                  MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder,
+                                  AssessmentCriteriaDetailService assessmentCriteriaDetailService,
+                                  IncomeEvidenceService incomeEvidenceService,
+                                  EligibilityChecker crownCourtEligibilityService) {
+
+        super(assessmentCriteriaService);
+        this.maatCourtDataService = maatCourtDataService;
+        this.assessmentCriteriaService = assessmentCriteriaService;
+        this.responseBuilder = responseBuilder;
+        this.assessmentBuilder = assessmentBuilder;
+        this.fullAssessmentAvailabilityService = fullAssessmentAvailabilityService;
+        this.meansAssessmentServiceFactory = meansAssessmentServiceFactory;
+        this.assessmentCompletionService = assessmentCompletionService;
+        this.meansAssessmentBuilder = meansAssessmentBuilder;
+        this.assessmentCriteriaDetailService = assessmentCriteriaDetailService;
+        this.incomeEvidenceService = incomeEvidenceService;
+        this.crownCourtEligibilityService = crownCourtEligibilityService;
+    }
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
         log.info("Processing assessment request - Start");
@@ -59,8 +85,11 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             AssessmentCriteriaEntity assessmentCriteria = assessmentCriteriaService.getAssessmentCriteria(
                     assessmentDate, requestDTO.getHasPartner(), requestDTO.getPartnerContraryInterest());
 
-            BigDecimal summariesTotal = calculateSummariesTotal(assessmentCriteriaService, requestDTO, assessmentCriteria);
+            BigDecimal summariesTotal = calculateSummariesTotal(requestDTO, assessmentCriteria);
 
+            if (AssessmentType.FULL == assessmentType) {
+                requestDTO.setEligibilityCheckRequired(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO));
+            }
             MeansAssessmentDTO completedAssessment =
                     assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
             completedAssessment.setMeansAssessment(requestDTO);
@@ -124,7 +153,9 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         return assessmentResponse;
     }
 
-    protected void mapIncomeEvidence(ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapIncomeEvidence(ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse,
+                                     FinancialAssessmentDTO financialAssessmentDTO) {
+
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
         ApiIncomeEvidenceSummary apiIncomeEvidenceSummary = new ApiIncomeEvidenceSummary();

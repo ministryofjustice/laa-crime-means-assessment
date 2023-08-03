@@ -69,7 +69,7 @@ public class StatelessMeansAssessmentControllerTest {
         var initialResult = new StatelessResult(
                 null, new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, false));
 
-        when(statelessAssessmentService.invoke(any(Assessment.class), anyMap(), anyList(), anyList()))
+        when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(initialResult);
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
@@ -91,7 +91,7 @@ public class StatelessMeansAssessmentControllerTest {
                         BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ONE),
                 new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true));
 
-        when(statelessAssessmentService.invoke(any(Assessment.class), anyMap(), anyList(), anyList()))
+        when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(fullResult);
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
@@ -117,6 +117,7 @@ public class StatelessMeansAssessmentControllerTest {
                 .withCaseType(testRequest.getCaseType())
                 .withMagistrateCourtOutcome(testRequest.getMagCourtOutcome())
                 .withHasPartner(false)
+                .withEligibilityCheckRequired(true)
                 .withDependantChildren(Arrays.asList(childOne, childTwo));
     }
 

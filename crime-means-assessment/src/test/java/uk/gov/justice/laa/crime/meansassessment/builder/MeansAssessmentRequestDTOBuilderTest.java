@@ -71,7 +71,6 @@ public class MeansAssessmentRequestDTOBuilderTest {
             assertThat(resultDto.getOtherHousingNote()).isEqualTo(updateMeansAssessment.getOtherHousingNote());
             assertThat(resultDto.getInitTotalAggregatedIncome()).isEqualTo(updateMeansAssessment.getInitTotalAggregatedIncome());
             assertThat(resultDto.getFullAssessmentNotes()).isEqualTo(updateMeansAssessment.getFullAssessmentNotes());
-            assertThat(resultDto.getTimeStamp()).isEqualTo(updateMeansAssessment.getTimestamp());
         });
     }
 }
