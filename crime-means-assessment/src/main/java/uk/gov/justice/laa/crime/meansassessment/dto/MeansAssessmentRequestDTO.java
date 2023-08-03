@@ -31,6 +31,7 @@ public class MeansAssessmentRequestDTO {
     private ApiIncomeEvidenceSummary incomeEvidenceSummary;
     private ApiCrownCourtOverview crownCourtOverview;
     private MagCourtOutcome magCourtOutcome;
+    private boolean eligibilityCheckRequired;
     // CREATE specific fields
     private Integer usn;
     private ReviewType reviewType;

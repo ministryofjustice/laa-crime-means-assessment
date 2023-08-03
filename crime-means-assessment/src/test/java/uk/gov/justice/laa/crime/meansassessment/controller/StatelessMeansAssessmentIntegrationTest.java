@@ -117,6 +117,7 @@ public class StatelessMeansAssessmentIntegrationTest {
                 .withCaseType(testRequest.getCaseType())
                 .withMagistrateCourtOutcome(testRequest.getMagCourtOutcome())
                 .withHasPartner(false)
+                .withEligibilityCheckRequired(false)
                 .withDependantChildren(Arrays.asList(childOne, childTwo));
     }
 

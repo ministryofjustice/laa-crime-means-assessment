@@ -323,6 +323,7 @@ public class TestModelDataBuilder {
                 .newWorkReason(NewWorkReason.PBI)
                 .fullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .financialAssessmentId(TEST_FINANCIAL_ASSESSMENT_ID)
+                .eligibilityCheckRequired(false)
                 .build();
     }
 
