@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
@@ -298,7 +299,6 @@ public class TestModelDataBuilder {
                                         .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
                         )
                 )
-                .withTimestamp(TEST_DATE_CREATED)
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
@@ -584,7 +584,6 @@ public class TestModelDataBuilder {
                 .withAssessmentStatus(CurrentStatus.COMPLETE)
                 .withChildWeightings(getListOfAssessmentChildWeightings())
                 .withUserSession(getUserSession())
-                .withTimestamp(TEST_DATE_CREATED)
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(

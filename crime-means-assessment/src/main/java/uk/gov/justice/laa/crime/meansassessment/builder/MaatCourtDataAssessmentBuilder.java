@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiIncomeEvidenceSummary;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiCreateAssessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiUpdateAssessment;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiCreateAssessment;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
