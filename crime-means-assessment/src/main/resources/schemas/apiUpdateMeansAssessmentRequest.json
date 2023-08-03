@@ -25,16 +25,11 @@
     "fullAssessmentNotes": {
       "type": "string",
       "description": "Full assessment notes field."
-    },
-    "timestamp": {
-      "type": "string",
-      "description": "Financial assessment timestamp",
-      "format": "date-time"
     }
   },
   "extends": {
     "$ref": "apiMeansAssessmentRequest.json"
   },
   "additionalProperties": false,
-  "required": ["initTotalAggregatedIncome", "timestamp"]
+  "required": ["initTotalAggregatedIncome"]
 }
