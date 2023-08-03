@@ -1,10 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentChildWeighting;
@@ -17,16 +17,16 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AssessmentCriteriaChildWeightingServiceTest {
+@ExtendWith(MockitoExtension.class)
+class AssessmentCriteriaChildWeightingServiceTest {
 
     @InjectMocks
     private AssessmentCriteriaChildWeightingService criteriaChildWeightingService;
 
     private AssessmentCriteriaEntity assessmentCriteria;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithChildWeightings(
                 new BigDecimal[]{
                         BigDecimal.valueOf(0.15), BigDecimal.valueOf(0.35)
@@ -36,7 +36,7 @@ public class AssessmentCriteriaChildWeightingServiceTest {
     }
 
     @Test
-    public void givenIncorrectNumberOfChildWeightings_whenGetTotalChildWeightingIsInvoked_thenThrowsException() {
+    void givenIncorrectNumberOfChildWeightings_whenGetTotalChildWeightingIsInvoked_thenThrowsException() {
         List<ApiAssessmentChildWeighting> childWeightings = new ArrayList<>();
         assertThatThrownBy(
                 () -> criteriaChildWeightingService.getTotalChildWeighting(childWeightings, assessmentCriteria)
@@ -46,7 +46,7 @@ public class AssessmentCriteriaChildWeightingServiceTest {
     }
 
     @Test
-    public void givenMissingChildWeighting_whenGetTotalChildWeightingIsInvoked_thenThrowsException() {
+    void givenMissingChildWeighting_whenGetTotalChildWeightingIsInvoked_thenThrowsException() {
         List<ApiAssessmentChildWeighting> childWeightings = TestModelDataBuilder.getAssessmentChildWeightings();
         childWeightings.get(0).setChildWeightingId(0);
         assertThatThrownBy(
@@ -55,7 +55,7 @@ public class AssessmentCriteriaChildWeightingServiceTest {
     }
 
     @Test
-    public void givenValidChildWeightings_whenGetTotalChildWeightingIsInvoked_thenReturnTotalWeighting() {
+    void givenValidChildWeightings_whenGetTotalChildWeightingIsInvoked_thenReturnTotalWeighting() {
         BigDecimal expectedWeighting = BigDecimal.valueOf(0.85);
         List<ApiAssessmentChildWeighting> childWeightings = TestModelDataBuilder.getAssessmentChildWeightings();
         assertThat(criteriaChildWeightingService.getTotalChildWeighting(childWeightings, assessmentCriteria)).isEqualTo(expectedWeighting);

@@ -1,11 +1,11 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-public class PassportAssessmentResultTest {
+class PassportAssessmentResultTest {
 
     @Test
     public void givenValidResultString_whenGetFromIsInvoked_thenCorrectEnumIsReturned() {
@@ -14,12 +14,12 @@ public class PassportAssessmentResultTest {
     }
 
     @Test
-    public void givenBlankString_whenGetFromIsInvoked_thenNullIsReturned() {
+    void givenBlankString_whenGetFromIsInvoked_thenNullIsReturned() {
         assertThat(PassportAssessmentResult.getFrom(null)).isNull();
     }
 
     @Test
-    public void givenInvalidResultString_whenGetFromIsInvoked_thenExceptionIsThrown() {
+    void givenInvalidResultString_whenGetFromIsInvoked_thenExceptionIsThrown() {
         assertThatThrownBy(
                 () -> PassportAssessmentResult.getFrom("MOCK_RESULT_STRING")
         ).isInstanceOf(IllegalArgumentException.class);
