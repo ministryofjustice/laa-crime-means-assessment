@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
 
@@ -69,7 +68,7 @@ public class MeansAssessmentSectionSummaryBuilder {
         }
 
         List<ApiAssessmentSectionSummary> initAssessmentSectionSummaries = assessmentSectionSummaryList.stream()
-                .filter(e -> e.getAssessmentType().equals(AssessmentType.INIT)).collect(Collectors.toList());
+                .filter(e -> e.getAssessmentType().equals(AssessmentType.INIT)).toList();
 
         initialMeansAssessment.setAssessmentSectionSummary(initAssessmentSectionSummaries);
         assessmentResponse.setInitialAssessment(initialMeansAssessment);
@@ -100,7 +99,7 @@ public class MeansAssessmentSectionSummaryBuilder {
         }
 
         List<ApiAssessmentSectionSummary> fullAssessmentSectionSummaries = assessmentSectionSummaryList.stream()
-                .filter(e -> e.getAssessmentType().equals(AssessmentType.FULL)).collect(Collectors.toList());
+                .filter(e -> e.getAssessmentType().equals(AssessmentType.FULL)).toList();
 
         apiFullMeansAssessment.setAssessmentSectionSummary(fullAssessmentSectionSummaries);
         assessmentResponse.setFullAssessment(apiFullMeansAssessment);
@@ -112,7 +111,7 @@ public class MeansAssessmentSectionSummaryBuilder {
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
         Arrays.stream(Section.values()).forEach(section -> {
             List<AssessmentDTO> assessmentDTOS = assessmentDTOList.stream().filter(e -> e.getSection().equals(section.name()))
-                    .collect(Collectors.toList());
+                    .toList();
             if (!assessmentDTOS.isEmpty()) {
                 ApiAssessmentSectionSummary assessmentSectionSummary = getAssessmentSectionSummary(section.name(), assessmentDTOS);
                 if (section.equals(Section.INITA) || section.equals(Section.INITB)) {

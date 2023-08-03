@@ -36,15 +36,12 @@ public class MeansAssessmentRequestDTOBuilder {
                 .newWorkReason(assessmentRequest.getNewWorkReason())
                 .build();
 
-        if (assessmentRequest instanceof ApiCreateMeansAssessmentRequest) {
-            ApiCreateMeansAssessmentRequest createMeansAssessmentRequest = (ApiCreateMeansAssessmentRequest) assessmentRequest;
+        if (assessmentRequest instanceof ApiCreateMeansAssessmentRequest createMeansAssessmentRequest) {
             requestDTO.setUsn(createMeansAssessmentRequest.getUsn());
             requestDTO.setReviewType(createMeansAssessmentRequest.getReviewType());
         }
 
-        if (assessmentRequest instanceof ApiUpdateMeansAssessmentRequest) {
-            ApiUpdateMeansAssessmentRequest updateMeansAssessmentRequest = (ApiUpdateMeansAssessmentRequest) assessmentRequest;
-            requestDTO.setTimeStamp(updateMeansAssessmentRequest.getTimestamp());
+        if (assessmentRequest instanceof ApiUpdateMeansAssessmentRequest updateMeansAssessmentRequest) {
             requestDTO.setFullAssessmentDate(updateMeansAssessmentRequest.getFullAssessmentDate());
             requestDTO.setOtherHousingNote(updateMeansAssessmentRequest.getOtherHousingNote());
             requestDTO.setInitTotalAggregatedIncome(updateMeansAssessmentRequest.getInitTotalAggregatedIncome());

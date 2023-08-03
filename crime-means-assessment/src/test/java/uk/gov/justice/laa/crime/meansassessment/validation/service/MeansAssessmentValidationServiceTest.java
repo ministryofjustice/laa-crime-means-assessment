@@ -14,7 +14,6 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.MaatCourtDataService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
@@ -150,46 +149,5 @@ public class MeansAssessmentValidationServiceTest {
     public void givenNoRepId_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
         requestDTO.setRepId(null);
         assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
-    }
-
-    @Test
-    public void givenNoTimeStamp_whenIsFinAssessmentModifiedByOtherUserInvoked_thenTrueIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
-        assertThat(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)).isTrue();
-    }
-
-    @Test
-    public void givenMisMatchedTimeStamp_whenIsAssessmentModifiedByAnotherUserIsInvoked_thenTrueIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        requestDTO.setTimeStamp(TestModelDataBuilder.TEST_DATE_CREATED.plusDays(1));
-        when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
-        assertThat(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)).isTrue();
-    }
-
-    @Test
-    public void givenAValidTimeStampInRequest_whenSameDateCreatedInFinancialAssessmentDTO_thenFalseIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        requestDTO.setTimeStamp(TestModelDataBuilder.TEST_DATE_CREATED);
-        when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(TestModelDataBuilder.getFinancialAssessmentDTO());
-        assertThat(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)).isFalse();
-    }
-
-    @Test
-    public void givenAValidTimeStampInRequest_whenSameTimeStampInFinancialAssessmentDTO_thenFalseIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        requestDTO.setTimeStamp(TestModelDataBuilder.TEST_DATE_CREATED);
-        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO();
-        financialAssessmentDTO.setUpdated(TestModelDataBuilder.TEST_DATE_CREATED);
-        when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(financialAssessmentDTO);
-        assertThat(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)).isFalse();
-    }
-
-    @Test
-    public void givenAValidTimeStampInRequest_whenEmptyFinancialAssessmentDTO_theFalseIsReturned() {
-        MeansAssessmentRequestDTO requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
-        requestDTO.setTimeStamp(TestModelDataBuilder.TEST_DATE_CREATED);
-        when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(null);
-        assertThat(meansAssessmentValidationService.isAssessmentModifiedByAnotherUser(requestDTO)).isFalse();
     }
 }

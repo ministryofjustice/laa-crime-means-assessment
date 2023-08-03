@@ -4,9 +4,9 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiCreateAssessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.MaatApiUpdateAssessment;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiCreateAssessment;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 

@@ -81,7 +81,6 @@ public class MeansAssessmentValidationProcessorTest {
         verify(initAssessmentValidator).validate(createMeansAssessmentRequest);
 
         verify(fullAssessmentValidator, never()).validate(fullAssessment);
-        verify(meansAssessmentValidationService, never()).isAssessmentModifiedByAnotherUser(createMeansAssessmentRequest);
 
         assertThat(result).isEmpty();
     }
