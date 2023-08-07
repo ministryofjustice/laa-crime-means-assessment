@@ -11,11 +11,12 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum PassportAssessmentResult {
-    PASS("PASS", "Gross income below the threshold"),
-    FAIL("FAIL", "Gross income above the threshold");
+    PASS("PASS"),
+    FAIL("FAIL"),
+    TEMP("TEMP"),
+    FAIL_CONTINUE("FAIL CONTINUE");
 
     private String result;
-    private String reason;
 
     public static PassportAssessmentResult getFrom(String result) {
         if (StringUtils.isBlank(result)) return null;
