@@ -68,13 +68,6 @@ dependencies {
     testImplementation "com.squareup.okhttp3:mockwebserver:$versions.mockwebserverVersion"
 }
 
-//excluding junit 4 as only junit.jupiter (junit 5) should be used
-configurations {
-    testImplementation {
-        exclude group: 'junit', module: 'junit'
-    }
-}
-
 test {
     dependsOn "cleanTest"
     finalizedBy jacocoTestReport

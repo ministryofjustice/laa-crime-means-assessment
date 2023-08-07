@@ -2,7 +2,6 @@ package uk.gov.justice.laa.crime.meansassessment.staticdata.enums.converter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import static org.junit.jupiter.api.Assertions.*;

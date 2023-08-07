@@ -8,7 +8,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 class PassportAssessmentResultTest {
 
     @Test
-    public void givenValidResultString_whenGetFromIsInvoked_thenCorrectEnumIsReturned() {
+    void givenValidResultString_whenGetFromIsInvoked_thenCorrectEnumIsReturned() {
         assertThat(PassportAssessmentResult.getFrom("PASS"))
                 .isEqualTo(PassportAssessmentResult.PASS);
     }

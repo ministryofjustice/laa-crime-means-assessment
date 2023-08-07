@@ -20,9 +20,9 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(MockitoExtension.class)
- class BaseMeansAssessmentServiceTest {
+class BaseMeansAssessmentServiceTest {
 
-     static final BigDecimal EXPECTED_TOTAL_AMOUNT = new BigDecimal("120.00");
+    static final BigDecimal EXPECTED_TOTAL_AMOUNT = new BigDecimal("120.00");
     private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
     @Mock
@@ -31,37 +31,37 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     private MeansAssessmentRequestDTO meansAssessment;
 
     @BeforeEach
-     void setup() {
+    void setup() {
         mockAssessmentService = new MockConcreteClass(assessmentCriteriaService);
         meansAssessment = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
     }
 
     @Test
-     void givenNullAmount_whenCalculateDetailTotalIsInvoked_thenTotalIsZero() {
+    void givenNullAmount_whenCalculateDetailTotalIsInvoked_thenTotalIsZero() {
         BigDecimal total = mockAssessmentService.calculateDetailTotal(null, Frequency.FOUR_WEEKLY);
         assertThat(total).isEqualTo(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test
-     void givenFrequencyIsNull_whenCalculateDetailTotalIsInvoked_thenTotalIsZero() {
+    void givenFrequencyIsNull_whenCalculateDetailTotalIsInvoked_thenTotalIsZero() {
         BigDecimal total = mockAssessmentService.calculateDetailTotal(BigDecimal.TEN, null);
         assertThat(total).isEqualTo(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test
-     void givenZeroAmount_whenCalculateDetailTotalIsInvoked_thenTotalIsZero() {
+    void givenZeroAmount_whenCalculateDetailTotalIsInvoked_thenTotalIsZero() {
         BigDecimal total = mockAssessmentService.calculateDetailTotal(BigDecimal.ZERO, Frequency.FOUR_WEEKLY);
         assertThat(total).isEqualTo(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test
-     void givenValidAmountAndFrequency_whenCalculateDetailTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    void givenValidAmountAndFrequency_whenCalculateDetailTotalIsInvoked_thenCorrectTotalIsCalculated() {
         BigDecimal total = mockAssessmentService.calculateDetailTotal(BigDecimal.TEN, Frequency.MONTHLY);
         assertThat(total).isEqualTo(EXPECTED_TOTAL_AMOUNT);
     }
 
     @Test
-     void givenSingleSectionSingleDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    void givenSingleSectionSingleDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         BigDecimal annualTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(
                 TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
@@ -71,7 +71,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenSingleSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    void givenSingleSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentSectionSummary section = meansAssessment.getSectionSummaries().get(0);
         section.getAssessmentDetails().add(
                 new ApiAssessmentDetail()
@@ -91,7 +91,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenSingleSectionSingleDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    void givenSingleSectionSingleDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentSectionSummary section = new ApiAssessmentSectionSummary()
                 .withAssessmentDetails(
                         new ArrayList<>(
@@ -107,7 +107,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenSingleSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    void givenSingleSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentSectionSummary section = meansAssessment.getSectionSummaries().get(0);
         section.getAssessmentDetails().add(
                 new ApiAssessmentDetail()
@@ -129,7 +129,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenTwoSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    void givenTwoSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         meansAssessment.setSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
         BigDecimal annualTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
@@ -140,7 +140,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenTwoSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
+    void givenTwoSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         meansAssessment.setSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
 
         List<ApiAssessmentDetail> section =
@@ -161,7 +161,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     private class MockConcreteClass extends BaseMeansAssessmentService {
-         MockConcreteClass(AssessmentCriteriaService assessmentCriteriaService) {
+        MockConcreteClass(AssessmentCriteriaService assessmentCriteriaService) {
             super(assessmentCriteriaService);
         }
     }

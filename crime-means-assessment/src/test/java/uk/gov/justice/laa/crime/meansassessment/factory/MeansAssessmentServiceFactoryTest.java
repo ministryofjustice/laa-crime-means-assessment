@@ -13,19 +13,19 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest()
 @ExtendWith(SpringExtension.class)
- class MeansAssessmentServiceFactoryTest {
+class MeansAssessmentServiceFactoryTest {
 
     @Autowired
     private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
 
     @Test
-     void givenInitAssessmentType_whenGetServiceIsInvoked_thenInitAssessmentServiceIsReturned() {
+    void givenInitAssessmentType_whenGetServiceIsInvoked_thenInitAssessmentServiceIsReturned() {
         assertThat(meansAssessmentServiceFactory.getService(AssessmentType.INIT))
                 .isInstanceOf(InitMeansAssessmentService.class);
     }
 
     @Test
-     void givenFullAssessmentType_whenGetServiceIsInvoked_thenFullAssessmentServiceIsReturned() {
+    void givenFullAssessmentType_whenGetServiceIsInvoked_thenFullAssessmentServiceIsReturned() {
         assertThat(meansAssessmentServiceFactory.getService(AssessmentType.FULL))
                 .isInstanceOf(FullMeansAssessmentService.class);
     }

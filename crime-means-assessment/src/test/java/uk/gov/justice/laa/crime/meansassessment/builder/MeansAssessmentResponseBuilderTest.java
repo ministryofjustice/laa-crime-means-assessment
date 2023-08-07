@@ -12,7 +12,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
- class MeansAssessmentResponseBuilderTest {
+class MeansAssessmentResponseBuilderTest {
 
     private final MeansAssessmentResponseBuilder responseBuilder =
             new MeansAssessmentResponseBuilder();
@@ -22,7 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     private MaatApiAssessmentResponse maatApiAssessmentResponse;
 
     @BeforeEach
-     void setup() {
+    void setup() {
         completedAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
         maatApiAssessmentResponse = TestModelDataBuilder.getMaatApiInitAssessmentResponse();
     }
@@ -53,7 +53,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenInitAssessmentType_whenBuildIsInvoked_thenCommonFieldsArePopulated() {
+    void givenInitAssessmentType_whenBuildIsInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentResponse response =
                 responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
         checkCommonFieldsPopulated(response);
@@ -62,7 +62,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenFullAssessmentType_whenBuildIsInvoked_thenFullFieldsArePopulated() {
+    void givenFullAssessmentType_whenBuildIsInvoked_thenFullFieldsArePopulated() {
         completedAssessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         ApiMeansAssessmentResponse response =
                 responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);

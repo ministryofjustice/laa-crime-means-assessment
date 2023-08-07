@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
- class InitMeansAssessmentServiceTest {
+class InitMeansAssessmentServiceTest {
 
     private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
@@ -44,14 +44,14 @@ import static org.mockito.Mockito.when;
     private AssessmentCriteriaChildWeightingService childWeightingService;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
     }
 
     @Test
-     void givenCompletedAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+    void givenCompletedAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
         MeansAssessmentDTO result =
                 initMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_INCOME, meansAssessment, assessmentCriteria);
 
@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenIncompleteAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+    void givenIncompleteAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
         meansAssessment.setAssessmentStatus(CurrentStatus.IN_PROGRESS);
         MeansAssessmentDTO result =
                 initMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_INCOME, meansAssessment, assessmentCriteria);
@@ -80,7 +80,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenIncomeBelowLowerThreshold_whenGetAssessmentResultIsInvoked_thenResultIsPass() {
+    void givenIncomeBelowLowerThreshold_whenGetAssessmentResultIsInvoked_thenResultIsPass() {
         BigDecimal adjustedIncome = lowerThreshold.subtract(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
@@ -88,7 +88,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenIncomeBetweenThresholds_whenGetAssessmentResultIsInvoked_thenResultIsFull() {
+    void givenIncomeBetweenThresholds_whenGetAssessmentResultIsInvoked_thenResultIsFull() {
         BigDecimal adjustedIncome = lowerThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
@@ -96,7 +96,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenIncomeAboveUpperThreshold_whenGetAssessmentResultIsInvoked_thenResultIsFail() {
+    void givenIncomeAboveUpperThreshold_whenGetAssessmentResultIsInvoked_thenResultIsFail() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
@@ -104,7 +104,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenIncomeAboveUpperThresholdAndHardshipApplication_whenGetAssessmentResultIsInvoked_thenResultIsHardship() {
+    void givenIncomeAboveUpperThresholdAndHardshipApplication_whenGetAssessmentResultIsInvoked_thenResultIsHardship() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.HR);
@@ -112,7 +112,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenPositiveAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
+    void givenPositiveAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
         BigDecimal annualTotal = BigDecimal.valueOf(11000.00);
         BigDecimal totalChildWeighting = BigDecimal.valueOf(0.50);
         BigDecimal applicantWeightingFactor = TestModelDataBuilder.TEST_APPLICANT_WEIGHTING_FACTOR;
@@ -123,7 +123,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenPositiveAnnualTotalRequiringRounding_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
+    void givenPositiveAnnualTotalRequiringRounding_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
         BigDecimal annualTotal = BigDecimal.valueOf(36613.02);
         BigDecimal totalChildWeighting = BigDecimal.valueOf(0);
         BigDecimal applicantWeightingFactor = BigDecimal.valueOf(1.0);
@@ -134,7 +134,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenPositiveAnnualTotalChildWeightingRoundingError_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
+    void givenPositiveAnnualTotalChildWeightingRoundingError_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
         BigDecimal annualTotal = BigDecimal.valueOf(37506.00);
         BigDecimal totalChildWeighting = BigDecimal.valueOf(0.68);
         BigDecimal applicantWeightingFactor = BigDecimal.valueOf(1.00);
@@ -145,7 +145,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenZeroAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenReturnsZero() {
+    void givenZeroAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenReturnsZero() {
         BigDecimal annualTotal = BigDecimal.ZERO;
         when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))

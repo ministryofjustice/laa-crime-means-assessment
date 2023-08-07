@@ -10,13 +10,13 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAsses
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
- class MeansAssessmentRequestDTOBuilderTest {
+class MeansAssessmentRequestDTOBuilderTest {
 
     private final MeansAssessmentRequestDTOBuilder requestDTOBuilder =
             new MeansAssessmentRequestDTOBuilder();
 
     @Test
-     void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
+    void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentRequest meansAssessment =
                 TestModelDataBuilder.getApiMeansAssessmentRequest(true);
 
@@ -46,7 +46,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
+    void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
         ApiCreateMeansAssessmentRequest createMeansAssessment =
                 TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
 
@@ -60,7 +60,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
+    void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
         ApiUpdateMeansAssessmentRequest updateMeansAssessment =
                 TestModelDataBuilder.getApiUpdateMeansAssessmentRequest(true);
 

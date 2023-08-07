@@ -12,7 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
- class AssessmentCriteriaDetailServiceTest {
+class AssessmentCriteriaDetailServiceTest {
 
     @InjectMocks
     private AssessmentCriteriaDetailService assessmentCriteriaDetailService;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
     private AssessmentCriteriaDetailRepository assessmentCriteriaDetailRepository;
 
     @Test
-     void testAssessmentCriteriaDetailService_whenGetAssessmentCriteriaDetailByIdInvoked_shouldSuccess() {
+    void testAssessmentCriteriaDetailService_whenGetAssessmentCriteriaDetailByIdInvoked_shouldSuccess() {
         assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(41681827);
         verify(assessmentCriteriaDetailRepository, times(1)).findById(any());
     }

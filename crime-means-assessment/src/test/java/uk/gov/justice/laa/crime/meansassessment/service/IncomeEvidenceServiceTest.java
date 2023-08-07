@@ -12,7 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
- class IncomeEvidenceServiceTest {
+class IncomeEvidenceServiceTest {
 
     @InjectMocks
     private IncomeEvidenceService incomeEvidenceService;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
     private IncomeEvidenceRepository incomeEvidenceRepository;
 
     @Test
-     void testIncomeEvidenceService_whenGetIncomeEvidenceByIdInvoked_shouldSuccess() {
+    void testIncomeEvidenceService_whenGetIncomeEvidenceByIdInvoked_shouldSuccess() {
         incomeEvidenceService.getIncomeEvidenceById("NINO");
         verify(incomeEvidenceRepository, times(1)).findById(any());
     }

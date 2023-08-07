@@ -10,10 +10,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class InitAssessmentValidatorTest {
 
-    private MeansAssessmentRequestDTO meansAssessment;
     private final InitAssessmentValidator initAssessmentValidator = new InitAssessmentValidator();
-
     String REFUSED_REP_ORDER_DECISION = "Refused - Ineligible";
+    private MeansAssessmentRequestDTO meansAssessment;
 
     @BeforeEach
     void setup() {

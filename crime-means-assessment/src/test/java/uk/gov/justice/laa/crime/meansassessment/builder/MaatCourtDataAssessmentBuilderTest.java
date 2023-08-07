@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
- class MaatCourtDataAssessmentBuilderTest {
+class MaatCourtDataAssessmentBuilderTest {
 
     private final MaatCourtDataAssessmentBuilder requestDTOBuilder =
             new MaatCourtDataAssessmentBuilder();
@@ -120,7 +120,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenCreateRequestType_whenBuildAssessmentRequestIsInvoked_thenCreateFieldsArePopulated() {
+    void givenCreateRequestType_whenBuildAssessmentRequestIsInvoked_thenCreateFieldsArePopulated() {
         MaatApiAssessmentRequest resultDto =
                 requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.CREATE);
 
@@ -134,7 +134,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenUpdateRequestType_whenBuildAssessmentRequestIsInvoked_thenUpdateFieldsArePopulated() {
+    void givenUpdateRequestType_whenBuildAssessmentRequestIsInvoked_thenUpdateFieldsArePopulated() {
         MaatApiAssessmentRequest resultDto =
                 requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);
 
@@ -148,7 +148,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenUpdateRequestType_whenBuildFullAssessmentRequestIsInvoked_thenChildWeightingsAreNotArePopulated() {
+    void givenUpdateRequestType_whenBuildFullAssessmentRequestIsInvoked_thenChildWeightingsAreNotArePopulated() {
         assessmentDTO.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         MaatApiAssessmentRequest resultDto =
                 requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);

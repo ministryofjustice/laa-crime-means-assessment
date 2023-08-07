@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor.*;
 
 @ExtendWith(MockitoExtension.class)
- class MeansAssessmentValidationProcessorTest {
+class MeansAssessmentValidationProcessorTest {
 
     MeansAssessmentRequestDTO createMeansAssessmentRequest;
     MeansAssessmentRequestDTO fullAssessment;
@@ -38,7 +38,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     private MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
     @BeforeEach
-     void setup() {
+    void setup() {
 
         when(meansAssessmentValidationService.isNewWorkReasonValid(
                 any(MeansAssessmentRequestDTO.class))
@@ -65,7 +65,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenCreateInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+    void givenCreateInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
         Optional<Void> result =
                 meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.CREATE);
 
@@ -81,7 +81,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenUpdateFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+    void givenUpdateFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
         fullAssessment.setFullAssessmentDate(LocalDateTime.now());
         Optional<Void> result = meansAssessmentValidationProcessor.validate(fullAssessment, AssessmentRequestType.UPDATE);
 
@@ -96,7 +96,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenInitAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenInitAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(initAssessmentValidator.validate(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
@@ -107,7 +107,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenFullAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenFullAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(fullAssessmentValidator.validate(
                 any(MeansAssessmentRequestDTO.class)
         )).thenReturn(Boolean.FALSE);
@@ -118,7 +118,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenInvalidNewWorkReason_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenInvalidNewWorkReason_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(meansAssessmentValidationService.isNewWorkReasonValid(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
@@ -129,7 +129,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenNullRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenNullRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         createMeansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(false);
         ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
@@ -137,7 +137,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenNegativeRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenNegativeRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         createMeansAssessmentRequest.setRepId(-1000);
         ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
@@ -145,7 +145,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenInvalidRoleReservation_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenInvalidRoleReservation_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(meansAssessmentValidationService.isRepOrderReserved(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
@@ -156,7 +156,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenInvalidRoleAction_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenInvalidRoleAction_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(meansAssessmentValidationService.isRoleActionValid(
                 any(MeansAssessmentRequestDTO.class), any(String.class))
         ).thenReturn(Boolean.FALSE);
@@ -167,7 +167,7 @@ import static uk.gov.justice.laa.crime.meansassessment.validation.validator.Mean
     }
 
     @Test
-     void givenOutstandingAssessment_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenOutstandingAssessment_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(meansAssessmentValidationService.isOutstandingAssessment(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);

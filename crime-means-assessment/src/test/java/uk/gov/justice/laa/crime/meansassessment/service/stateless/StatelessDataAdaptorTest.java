@@ -23,14 +23,14 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
- class StatelessDataAdaptorTest {
+class StatelessDataAdaptorTest {
 
 
     private final AssessmentCriteriaEntity assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntity();
     private Set<AssessmentCriteriaChildWeightingEntity> childWeightingEntities;
 
     @BeforeEach
-     void setup() {
+    void setup() {
         assessmentCriteria.setAssessmentCriteriaDetails(
                 Set.of(
                         AssessmentCriteriaDetailEntity.builder()
@@ -92,7 +92,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenValidApplicantIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Income> incomes = List.of(
                 buildIncome(IncomeType.EMPLOYMENT_INCOME, BigDecimal.valueOf(1500), Frequency.MONTHLY),
                 buildIncome(IncomeType.SELF_EMPLOYMENT_INCOME, BigDecimal.valueOf(500), Frequency.ANNUALLY)
@@ -126,7 +126,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenValidApplicantAndPartnerIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantAndPartnerIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Income> incomes = List.of(
                 buildIncome(IncomeType.EMPLOYMENT_INCOME,
                         BigDecimal.valueOf(1500),
@@ -174,7 +174,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenValidApplicantOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Outgoing> outgoings = List.of(
                 buildOutgoing(OutgoingType.COUNCIL_TAX, BigDecimal.valueOf(500), Frequency.ANNUALLY),
                 buildOutgoing(OutgoingType.NATIONAL_INSURANCE, BigDecimal.valueOf(1500), Frequency.MONTHLY)
@@ -208,7 +208,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenValidApplicantAndPartnerOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantAndPartnerOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Outgoing> outgoings = List.of(
                 buildOutgoing(OutgoingType.COUNCIL_TAX,
                         BigDecimal.valueOf(500),
@@ -257,7 +257,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenValidWeightsAndNoGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
+    void givenValidWeightsAndNoGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
 
         List<ApiAssessmentChildWeighting> expected = List.of(
                 new ApiAssessmentChildWeighting()
@@ -276,7 +276,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
     }
 
     @Test
-     void givenValidWeightsAndGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
+    void givenValidWeightsAndGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
 
         Map<AgeRange, Integer> childGroupings = Map.of(
                 AgeRange.ZERO_TO_ONE, 1,

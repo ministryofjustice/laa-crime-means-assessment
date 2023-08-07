@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
- class StatelessAssessmentServiceTest {
+class StatelessAssessmentServiceTest {
 
     private static final AssessmentCriteriaEntity mockAssessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntity();
@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenInitRequestType_whenExecuteIsInvoked_thenInitAssessmentIsPerformed() {
+    void givenInitRequestType_whenExecuteIsInvoked_thenInitAssessmentIsPerformed() {
 
         setupStubs();
 
@@ -88,7 +88,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenBothRequestType_whenExecuteIsInvoked_thenFullAssessmentIsPerformed() {
+    void givenBothRequestType_whenExecuteIsInvoked_thenFullAssessmentIsPerformed() {
 
         setupStubs();
 
@@ -122,7 +122,7 @@ import static org.mockito.Mockito.when;
     }
 
     @Test
-     void givenBothRequestTypeAndInitAssessmentFails_whenExecuteIsInvoked_thenOnlyInitAssessmentIsPerformed() {
+    void givenBothRequestTypeAndInitAssessmentFails_whenExecuteIsInvoked_thenOnlyInitAssessmentIsPerformed() {
         setupStubs();
 
         when(initMeansAssessmentService.execute(

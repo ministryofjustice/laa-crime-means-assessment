@@ -25,9 +25,9 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
- class MeansAssessmentSectionSummaryBuilderTest {
+class MeansAssessmentSectionSummaryBuilderTest {
 
-     static final BigDecimal EXPECTED_AMOUNT = new BigDecimal("280.00");
+    static final BigDecimal EXPECTED_AMOUNT = new BigDecimal("280.00");
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentSectionSummaryBuilder
             = new MeansAssessmentSectionSummaryBuilder();
 
@@ -35,7 +35,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     private ObjectMapper objectMapper;
 
     @Test
-     void givenInvalidASectionAssessment_whenBuildInvoked_shouldReturnEmpty() {
+    void givenInvalidASectionAssessment_whenBuildInvoked_shouldReturnEmpty() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_SECTION, TEST_SEQ));
@@ -44,7 +44,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenInitASectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
+    void givenInitASectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
@@ -61,7 +61,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenInitBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
+    void givenInitBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITB, TEST_SEQ));
@@ -78,7 +78,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenBothInitAAndIntBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
+    void givenBothInitAAndIntBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
@@ -103,7 +103,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenFullASectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
+    void givenFullASectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ));
@@ -120,7 +120,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenBothFullAAndFullBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
+    void givenBothFullAAndFullBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLA, TEST_SEQ));
@@ -145,7 +145,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenFullBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
+    void givenFullBSectionAssessment_whenBuildInvoked_shouldReturnInitialAssessmentSummary() {
 
         List<AssessmentDTO> assessmentDTOList = new ArrayList<>();
         assessmentDTOList.add(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_FULLB, TEST_SEQ));
@@ -162,7 +162,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenValidAssessment_whenGetAssessmentDetailInvoked_shouldReturnAssessmentDetails() {
+    void givenValidAssessment_whenGetAssessmentDetailInvoked_shouldReturnAssessmentDetails() {
 
         ApiAssessmentDetail assessmentDetail = meansAssessmentSectionSummaryBuilder.
                 getAssessmentDetail(TestModelDataBuilder.getAssessmentDTO(TEST_ASSESSMENT_SECTION_INITA, TEST_SEQ));
@@ -176,7 +176,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenValidAssessmentCriteriaDetail_whenBuildAssessmentDTOInvoked_shouldReturnAssessment() {
+    void givenValidAssessmentCriteriaDetail_whenBuildAssessmentDTOInvoked_shouldReturnAssessment() {
 
         AssessmentDTO assessmentDTO = meansAssessmentSectionSummaryBuilder.
                 buildAssessmentDTO(TestModelDataBuilder.getAssessmentCriteriaDetailEntity(TestModelDataBuilder.TEST_SECTION),
@@ -196,7 +196,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenValidAssessmentAmt_whenGetAssessmentSectionSummaryTotalInvoked_shouldReturnAssessmentAmt() {
+    void givenValidAssessmentAmt_whenGetAssessmentSectionSummaryTotalInvoked_shouldReturnAssessmentAmt() {
 
         BigDecimal assessmentAmt = meansAssessmentSectionSummaryBuilder
                 .getAssessmentSectionSummaryTotal(TestModelDataBuilder.TEST_APPLICANT_VALUE, TEST_FREQUENCY);
@@ -204,7 +204,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenInvalidFrequency_whenGetAssessmentSectionSummaryTotalInvoked_shouldReturnZero() {
+    void givenInvalidFrequency_whenGetAssessmentSectionSummaryTotalInvoked_shouldReturnZero() {
 
         BigDecimal assessmentAmt = meansAssessmentSectionSummaryBuilder
                 .getAssessmentSectionSummaryTotal(TestModelDataBuilder.TEST_APPLICANT_VALUE, null);
@@ -212,7 +212,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenAValidFinancialAssessment_whenBuildInitialAssessmentInvoked_shouldBuildInitialAssessment() throws Exception {
+    void givenAValidFinancialAssessment_whenBuildInitialAssessmentInvoked_shouldBuildInitialAssessment() throws Exception {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -233,7 +233,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenEmptyCurrentStatus_whenBuildInitialAssessmentInvoked_shouldNotReturnAssessmentStatus() {
+    void givenEmptyCurrentStatus_whenBuildInitialAssessmentInvoked_shouldNotReturnAssessmentStatus() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -246,7 +246,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenEmptyWorkReason_whenBuildInitialAssessmentInvoked_shouldNotReturnNewWorkReason() {
+    void givenEmptyWorkReason_whenBuildInitialAssessmentInvoked_shouldNotReturnNewWorkReason() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -259,7 +259,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenEmptyReview_whenBuildInitialAssessmentInvoked_shouldNotReturnReviewType() {
+    void givenEmptyReview_whenBuildInitialAssessmentInvoked_shouldNotReturnReviewType() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -272,7 +272,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenEmptyAssessmentCriteriaEntity_whenBuildInitialAssessmentInvoked_shouldNotReturnThreshold() {
+    void givenEmptyAssessmentCriteriaEntity_whenBuildInitialAssessmentInvoked_shouldNotReturnThreshold() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -286,7 +286,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() throws Exception {
+    void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() throws Exception {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -307,7 +307,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() throws Exception {
+    void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() throws Exception {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -328,7 +328,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
     }
 
     @Test
-     void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+    void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
