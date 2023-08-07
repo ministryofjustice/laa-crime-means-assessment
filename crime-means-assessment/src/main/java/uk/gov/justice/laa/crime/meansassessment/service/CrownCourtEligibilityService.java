@@ -80,8 +80,7 @@ public class CrownCourtEligibilityService implements EligibilityChecker {
     }
 
     private boolean hasDisqualifyingResult(Assessment assessment) {
-        if (assessment instanceof FinancialAssessmentDTO) {
-            FinancialAssessmentDTO means = (FinancialAssessmentDTO) assessment;
+        if (assessment instanceof FinancialAssessmentDTO means) {
             return InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(means.getInitResult()))
                     || FullAssessmentResult.PASS.equals(FullAssessmentResult.getFrom(means.getFullResult()))
                     || FullAssessmentResult.FAIL.equals(FullAssessmentResult.getFrom(means.getFullResult()));
