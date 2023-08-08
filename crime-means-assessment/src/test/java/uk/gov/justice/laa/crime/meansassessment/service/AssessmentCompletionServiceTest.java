@@ -151,14 +151,24 @@ class AssessmentCompletionServiceTest {
     @Test
     void givenCompleteFullAssessment_whenExecuteIsInvoked_thenCompletionDateIsUpdated() {
         assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
-        doReturn(true)
-                .when(assessmentCompletionService).isFullUpdateRequired(any(MeansAssessmentDTO.class), anyString());
 
         when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
                 .thenReturn(TestModelDataBuilder.getRepOrderDTO());
 
         assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
+    }
+
+    @Test
+    public void givenIncompleteFullAssessment_whenExecuteIsInvoked_thenCompletionDateIsNull() {
+        assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
+        assessment.getMeansAssessment().setAssessmentStatus(CurrentStatus.IN_PROGRESS);
+
+        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
+                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
+
+        assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
+        assertThat(assessment.getDateCompleted()).isNull();
     }
 
 }
