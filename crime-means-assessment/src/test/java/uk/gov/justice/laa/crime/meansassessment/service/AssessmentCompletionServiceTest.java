@@ -128,7 +128,7 @@ class AssessmentCompletionServiceTest {
     }
 
     @Test
-    public void givenIncompleteFullAssessment_whenExecuteIsInvoked_thenCompletionDateIsNull() {
+    void givenIncompleteFullAssessment_whenExecuteIsInvoked_thenCompletionDateIsNull() {
         assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         assessment.getMeansAssessment().setAssessmentStatus(CurrentStatus.IN_PROGRESS);
 
