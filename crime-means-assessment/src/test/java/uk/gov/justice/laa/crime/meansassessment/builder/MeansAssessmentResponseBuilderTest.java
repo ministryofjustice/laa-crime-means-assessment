@@ -1,8 +1,8 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
@@ -12,7 +12,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class MeansAssessmentResponseBuilderTest {
+class MeansAssessmentResponseBuilderTest {
 
     private final MeansAssessmentResponseBuilder responseBuilder =
             new MeansAssessmentResponseBuilder();
@@ -21,8 +21,8 @@ public class MeansAssessmentResponseBuilderTest {
     private MeansAssessmentDTO completedAssessment;
     private MaatApiAssessmentResponse maatApiAssessmentResponse;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         completedAssessment = TestModelDataBuilder.getMeansAssessmentDTO();
         maatApiAssessmentResponse = TestModelDataBuilder.getMaatApiInitAssessmentResponse();
     }
@@ -53,7 +53,7 @@ public class MeansAssessmentResponseBuilderTest {
     }
 
     @Test
-    public void givenInitAssessmentType_whenBuildIsInvoked_thenCommonFieldsArePopulated() {
+    void givenInitAssessmentType_whenBuildIsInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentResponse response =
                 responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
         checkCommonFieldsPopulated(response);
@@ -62,7 +62,7 @@ public class MeansAssessmentResponseBuilderTest {
     }
 
     @Test
-    public void givenFullAssessmentType_whenBuildIsInvoked_thenFullFieldsArePopulated() {
+    void givenFullAssessmentType_whenBuildIsInvoked_thenFullFieldsArePopulated() {
         completedAssessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         ApiMeansAssessmentResponse response =
                 responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);

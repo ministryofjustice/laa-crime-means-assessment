@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
@@ -10,13 +10,13 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAsses
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class MeansAssessmentRequestDTOBuilderTest {
+class MeansAssessmentRequestDTOBuilderTest {
 
     private final MeansAssessmentRequestDTOBuilder requestDTOBuilder =
             new MeansAssessmentRequestDTOBuilder();
 
     @Test
-    public void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
+    void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
         ApiMeansAssessmentRequest meansAssessment =
                 TestModelDataBuilder.getApiMeansAssessmentRequest(true);
 
@@ -46,7 +46,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
     }
 
     @Test
-    public void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
+    void givenInitMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenInitFieldsArePopulated() {
         ApiCreateMeansAssessmentRequest createMeansAssessment =
                 TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
 
@@ -60,7 +60,7 @@ public class MeansAssessmentRequestDTOBuilderTest {
     }
 
     @Test
-    public void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
+    void givenFullMeansAssessmentRequest_whenBuildRequestDTOIsInvoked_thenFullFieldsArePopulated() {
         ApiUpdateMeansAssessmentRequest updateMeansAssessment =
                 TestModelDataBuilder.getApiUpdateMeansAssessmentRequest(true);
 

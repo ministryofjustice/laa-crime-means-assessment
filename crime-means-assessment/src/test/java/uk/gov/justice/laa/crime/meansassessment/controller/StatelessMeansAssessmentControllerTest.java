@@ -1,15 +1,15 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
@@ -36,10 +36,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(StatelessMeansAssessmentController.class)
-public class StatelessMeansAssessmentControllerTest {
+class StatelessMeansAssessmentControllerTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
     private static final ApiMeansAssessmentRequest testRequest = TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
     private static final DependantChild childOne = new DependantChild().withAgeRange(AgeRange.ZERO_TO_ONE).withCount(2);
@@ -57,7 +57,7 @@ public class StatelessMeansAssessmentControllerTest {
     private StatelessAssessmentService statelessAssessmentService;
 
     @Test
-    public void validRequest_success() throws Exception {
+    void validRequest_success() throws Exception {
         var assessment = buildAssessment(StatelessRequestType.BOTH);
 
         var request = new StatelessApiRequest()
@@ -77,7 +77,7 @@ public class StatelessMeansAssessmentControllerTest {
     }
 
     @Test
-    public void fullRequest_success() throws Exception {
+    void fullRequest_success() throws Exception {
         var assessment = buildAssessment(StatelessRequestType.BOTH);
 
         var request = new StatelessApiRequest()
@@ -99,13 +99,13 @@ public class StatelessMeansAssessmentControllerTest {
     }
 
     @Test
-    public void requestFailsValidation() throws Exception {
+    void requestFailsValidation() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, "invalid JSON", MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
-    public void requestBodyIsMissing() throws Exception {
+    void requestBodyIsMissing() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, "", MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().is4xxClientError());
     }

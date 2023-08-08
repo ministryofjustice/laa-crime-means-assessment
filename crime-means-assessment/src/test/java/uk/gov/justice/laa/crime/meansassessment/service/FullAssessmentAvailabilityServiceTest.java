@@ -1,9 +1,9 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -13,22 +13,22 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class FullAssessmentAvailabilityServiceTest {
+@ExtendWith(MockitoExtension.class)
+class FullAssessmentAvailabilityServiceTest {
 
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
     private MeansAssessmentRequestDTO meansAssessmentRequest;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         fullAssessmentAvailabilityService = new FullAssessmentAvailabilityService();
         meansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         meansAssessmentRequest.setFullAssessmentDate(null);
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFull_ThenFullAssessmentAvailableIsTrue() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFull_ThenFullAssessmentAvailableIsTrue() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 meansAssessmentRequest.getCaseType(),
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -37,7 +37,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsIndictable_ThenFullAssessmentAvailableIsTrue() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsIndictable_ThenFullAssessmentAvailableIsTrue() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.INDICTABLE,
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -46,7 +46,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsCCAlready_ThenFullAssessmentAvailableIsTrue() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsCCAlready_ThenFullAssessmentAvailableIsTrue() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.CC_ALREADY,
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -55,7 +55,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsAppealCC_ThenFullAssessmentAvailableIsTrue() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsAppealCC_ThenFullAssessmentAvailableIsTrue() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.APPEAL_CC,
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -64,7 +64,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsCommittal_ThenFullAssessmentAvailableIsFalse() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsCommittal_ThenFullAssessmentAvailableIsFalse() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.COMMITAL,
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -73,7 +73,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsSummaryOnly_ThenFullAssessmentAvailableIsFalse() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsSummaryOnly_ThenFullAssessmentAvailableIsFalse() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.SUMMARY_ONLY,
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -82,7 +82,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeNull_ThenFullAssessmentAvailableIsTrue() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeNull_ThenFullAssessmentAvailableIsTrue() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.EITHER_WAY,
                 MagCourtOutcome.COMMITTED,
@@ -91,7 +91,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeCommittedForTrial_ThenFullAssessmentAvailableIsTrue() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeCommittedForTrial_ThenFullAssessmentAvailableIsTrue() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.EITHER_WAY,
                 MagCourtOutcome.COMMITTED_FOR_TRIAL,
@@ -100,7 +100,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeAppealCC_ThenFullAssessmentAvailableIsFalse() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsFailAndCaseTypeIsEitherWayWithMagOutcomeAppealCC_ThenFullAssessmentAvailableIsFalse() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 CaseType.EITHER_WAY,
                 MagCourtOutcome.APPEAL_TO_CC,
@@ -109,7 +109,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonNull_ThenFullAssessmentAvailableIsFalse() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonNull_ThenFullAssessmentAvailableIsFalse() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 meansAssessmentRequest.getCaseType(),
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -118,7 +118,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonIsHR_ThenFullAssessmentAvailableIsTrue() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonIsHR_ThenFullAssessmentAvailableIsTrue() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 meansAssessmentRequest.getCaseType(),
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -127,7 +127,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonIsPBI_ThenFullAssessmentAvailableIsFalse() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsHardshipAndNewWorkReasonIsPBI_ThenFullAssessmentAvailableIsFalse() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 meansAssessmentRequest.getCaseType(),
                 meansAssessmentRequest.getMagCourtOutcome(),
@@ -136,7 +136,7 @@ public class FullAssessmentAvailabilityServiceTest {
     }
 
     @Test
-    public void givenMeansAssessmentRequestAndResponse_WhenResultIsNull_ThenFullAssessmentAvailableIsFalse() {
+    void givenMeansAssessmentRequestAndResponse_WhenResultIsNull_ThenFullAssessmentAvailableIsFalse() {
         assertThat(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 meansAssessmentRequest.getCaseType(),
                 meansAssessmentRequest.getMagCourtOutcome(),

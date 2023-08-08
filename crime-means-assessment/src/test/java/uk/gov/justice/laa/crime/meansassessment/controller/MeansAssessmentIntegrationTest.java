@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -46,21 +46,18 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DirtiesContext
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(
         classes = {
                 CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class
         }, webEnvironment = DEFINED_PORT)
-public class MeansAssessmentIntegrationTest {
+class MeansAssessmentIntegrationTest {
 
     private static final boolean IS_VALID = true;
     private static final String ENDPOINT_URL = "/api/internal/v1/assessment/means";
-
-    private MockMvc mvc;
-
     private static MockWebServer mockMaatCourtDataApi;
-
+    private MockMvc mvc;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -70,22 +67,22 @@ public class MeansAssessmentIntegrationTest {
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
 
-    @Before
-    public void setup() {
-        this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
-                .addFilter(springSecurityFilterChain).build();
-    }
-
-    @BeforeClass
-    public static void initialiseMockWebServer() throws IOException {
+    @BeforeAll
+    static void initialiseMockWebServer() throws IOException {
         mockMaatCourtDataApi = new MockWebServer();
         mockMaatCourtDataApi.start(9999);
         mockMaatCourtDataApi.setDispatcher(MockWebServerStubs.getDispatcher());
     }
 
-    @AfterClass
-    public static void shutdownMockWebServer() throws IOException {
+    @AfterAll
+    static void shutdownMockWebServer() throws IOException {
         mockMaatCourtDataApi.shutdown();
+    }
+
+    @BeforeEach
+    void setup() {
+        this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
+                .addFilter(springSecurityFilterChain).build();
     }
 
     private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String endpointUrl, boolean withAuth) {
@@ -112,19 +109,19 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAInvalidContent_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
+    void givenAInvalidContent_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
         mvc.perform(buildRequest(HttpMethod.POST, "{}", ENDPOINT_URL))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenNoOAuthToken_whenCreateAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
+    void givenNoOAuthToken_whenCreateAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
         mvc.perform(buildRequest(HttpMethod.POST, "{}", ENDPOINT_URL, Boolean.FALSE))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void givenAnInvalidRepId_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
+    void givenAnInvalidRepId_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
         var initialMeansAssessmentRequest =
                 TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         initialMeansAssessmentRequest.setRepId(-1000);
@@ -137,7 +134,7 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAValidCreateMeansAssessmentRequest_whenDateCompletionCallFails_thenServerErrorResponseIsReturned()
+    void givenAValidCreateMeansAssessmentRequest_whenDateCompletionCallFails_thenServerErrorResponseIsReturned()
             throws Exception {
 
         var initialMeansAssessmentRequest =
@@ -161,7 +158,7 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAValidCreateMeansAssessmentRequest_WhenCreateAssessmentInvoked_ThenSuccessResponseIsReturned()
+    void givenAValidCreateMeansAssessmentRequest_WhenCreateAssessmentInvoked_ThenSuccessResponseIsReturned()
             throws Exception {
 
         var initialMeansAssessmentRequest =
@@ -192,19 +189,19 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAInvalidContent_whenUpdateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
+    void givenAInvalidContent_whenUpdateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
         mvc.perform(buildRequest(HttpMethod.PUT, "{}", ENDPOINT_URL))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenNoOAuthToken_whenUpdateAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
+    void givenNoOAuthToken_whenUpdateAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
         mvc.perform(buildRequest(HttpMethod.PUT, "{}", ENDPOINT_URL, Boolean.FALSE))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ThenSuccessResponseIsReturned() throws Exception {
+    void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ThenSuccessResponseIsReturned() throws Exception {
         var updateAssessmentRequest =
                 TestModelDataBuilder.getUpdateMeansAssessmentRequest(IS_VALID);
         updateAssessmentRequest.setAssessmentType(AssessmentType.FULL);
@@ -248,13 +245,13 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void givenAInvalidContent_whenGetOldAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
+    void givenAInvalidContent_whenGetOldAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
         mvc.perform(buildRequest(HttpMethod.GET, ENDPOINT_URL, ENDPOINT_URL, Boolean.TRUE))
                 .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
-    public void givenNoOAuthToken_whenGetOldAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
+    void givenNoOAuthToken_whenGetOldAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
         mvc.perform(buildRequest(HttpMethod.GET, ENDPOINT_URL + "/"
                         + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/" +
                         TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, Boolean.FALSE))
@@ -262,8 +259,8 @@ public class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    @Ignore("Flaky test")
-    public void givenAValidFinancialAssessmentId_whenGetOldAssessmentInvoked_thenAssessmentIsReturned() throws Exception {
+    @Disabled("Flaky test")
+    void givenAValidFinancialAssessmentId_whenGetOldAssessmentInvoked_thenAssessmentIsReturned() throws Exception {
         FinancialAssessmentDTO financialAssessmentDTO =
                 TestModelDataBuilder.getFinancialAssessmentDTO(
                         CurrentStatus.IN_PROGRESS.getStatus(),
