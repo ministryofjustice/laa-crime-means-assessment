@@ -28,7 +28,7 @@ public class AssessmentCompletionService {
             if (AssessmentType.INIT.equals(type)) {
                 isUpdateRequired = isInitAssessmentComplete(assessment);
             } else {
-                isUpdateRequired = isFullUpdateRequired(assessment, laaTransactionId);
+                isUpdateRequired = true;
             }
         }
 
@@ -46,17 +46,6 @@ public class AssessmentCompletionService {
                 .build();
         RepOrderDTO response = maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO, laaTransactionId);
         assessment.setApplicationTimestamp(response.getDateModified());
-    }
-
-    boolean isFullUpdateRequired(MeansAssessmentDTO assessment, String laaTransactionId) {
-        Integer financialAssessmentId = assessment.getMeansAssessment().getFinancialAssessmentId();
-        if (financialAssessmentId != null) {
-            FinancialAssessmentDTO existingAssessment = maatCourtDataService.getFinancialAssessment(
-                    financialAssessmentId, laaTransactionId
-            );
-            return existingAssessment.getDateCompleted() == null;
-        }
-        return true;
     }
 
     boolean isInitAssessmentComplete(MeansAssessmentDTO assessment) {
