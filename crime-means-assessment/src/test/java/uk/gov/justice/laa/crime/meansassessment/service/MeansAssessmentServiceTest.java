@@ -5,10 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -96,23 +93,23 @@ class MeansAssessmentServiceTest {
     }
 
     private void setupDoAssessmentStubbing(AssessmentType assessmentType) {
-        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+        lenient().when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(assessmentCriteria);
 
-        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class)))
+        lenient().when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(new MaatApiAssessmentRequest());
 
-        when(meansAssessmentServiceFactory.getService(any(AssessmentType.class)))
+        lenient().when(meansAssessmentServiceFactory.getService(any(AssessmentType.class)))
                 .thenReturn(
                         (AssessmentType.INIT.equals(assessmentType)) ? initMeansAssessmentService : fullMeansAssessmentService
                 );
 
-        when(initMeansAssessmentService.execute(
+        lenient().when(initMeansAssessmentService.execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
 
-        when(fullMeansAssessmentService.execute(
+        lenient().when(fullMeansAssessmentService.execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
@@ -125,11 +122,11 @@ class MeansAssessmentServiceTest {
                         .withInitAdjustedIncomeValue(TestModelDataBuilder.TEST_ADJUSTED_INCOME)
                         .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
 
-        when(maatCourtDataService.persistMeansAssessment(
+        lenient().when(maatCourtDataService.persistMeansAssessment(
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
-        when(meansAssessmentResponseBuilder.build(any(MaatApiAssessmentResponse.class),
+        lenient().when(meansAssessmentResponseBuilder.build(any(MaatApiAssessmentResponse.class),
                 any(AssessmentCriteriaEntity.class),
                 any(MeansAssessmentDTO.class))).thenReturn(new ApiMeansAssessmentResponse());
     }
