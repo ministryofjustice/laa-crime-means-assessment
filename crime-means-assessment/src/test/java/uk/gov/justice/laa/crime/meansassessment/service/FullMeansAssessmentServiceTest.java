@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +42,7 @@ class FullMeansAssessmentServiceTest {
 
     @BeforeEach
     void setUp() {
-        when(childWeightingService.getTotalChildWeighting(
+        lenient().when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
 

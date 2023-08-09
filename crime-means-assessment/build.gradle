@@ -17,6 +17,7 @@ def versions = [
         liquibase                          : "4.20.0",
         crimeCommonsVersion                : "2.2.0",
         mockitoInlineVersion               : "5.2.0",
+        springCloudStubRunnerVersion       : "4.0.4"
 ]
 
 group = "uk.gov.justice.laa.crime"
@@ -65,10 +66,17 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "com.squareup.okhttp3:okhttp:$versions.okhttpVersion"
-    testImplementation "com.squareup.okhttp3:mockwebserver:$versions.mockwebserverVersion"
+    testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:$versions.springCloudStubRunnerVersion"
+}
+
+configurations {
+    all {
+        exclude group: 'junit', module: 'junit'
+    }
 }
 
 test {
+    useJUnitPlatform()
     dependsOn "cleanTest"
     finalizedBy jacocoTestReport
 }
