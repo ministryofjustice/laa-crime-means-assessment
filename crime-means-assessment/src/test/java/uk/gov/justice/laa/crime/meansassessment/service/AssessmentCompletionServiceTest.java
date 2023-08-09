@@ -39,38 +39,6 @@ class AssessmentCompletionServiceTest {
     }
 
     @Test
-    void givenNullExistingCompletionDate_whenIsFullUpdateRequiredIsInvoked_thenReturnTrue() {
-        when(maatCourtDataService.getFinancialAssessment(anyInt(), anyString()))
-                .thenReturn(FinancialAssessmentDTO.builder().build());
-
-        boolean result = assessmentCompletionService.isFullUpdateRequired(assessment, LAA_TRANSACTION_ID);
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void givenExistingCompletionDate_whenIsFullUpdateRequiredIsInvoked_thenReturnFalse() {
-        when(maatCourtDataService.getFinancialAssessment(anyInt(), anyString()))
-                .thenReturn(
-                        FinancialAssessmentDTO
-                                .builder()
-                                .dateCompleted(LocalDateTime.now())
-                                .build()
-                );
-
-        boolean result = assessmentCompletionService.isFullUpdateRequired(assessment, LAA_TRANSACTION_ID);
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void givenNullFinancialAssessmentId_whenIsFullUpdateRequiredIsInvoked_thenReturnTrue() {
-        assessment.getMeansAssessment().setFinancialAssessmentId(null);
-        boolean result = assessmentCompletionService.isFullUpdateRequired(
-                assessment, LAA_TRANSACTION_ID
-        );
-        assertThat(result).isTrue();
-    }
-
-    @Test
     void givenAssessment_whenUpdateApplicationCompletionDateIsInvoked_thenCompletionDateIsPersisted() {
         when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
                 .thenReturn(TestModelDataBuilder.getRepOrderDTO());
@@ -151,14 +119,23 @@ class AssessmentCompletionServiceTest {
     @Test
     void givenCompleteFullAssessment_whenExecuteIsInvoked_thenCompletionDateIsUpdated() {
         assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
-        doReturn(true)
-                .when(assessmentCompletionService).isFullUpdateRequired(any(MeansAssessmentDTO.class), anyString());
 
         when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
                 .thenReturn(TestModelDataBuilder.getRepOrderDTO());
 
         assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
+    }
+
+    @Test
+    void givenIncompleteFullAssessment_whenExecuteIsInvoked_thenCompletionDateIsNull() {
+        assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
+        assessment.getMeansAssessment().setAssessmentStatus(CurrentStatus.IN_PROGRESS);
+
+        assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
+
+        assertThat(assessment.getDateCompleted()).isNull();
+        verify(maatCourtDataService, never()).updateCompletionDate(any(DateCompletionRequestDTO.class), anyString());
     }
 
 }

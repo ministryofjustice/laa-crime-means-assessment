@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
@@ -28,7 +27,7 @@ public class AssessmentCompletionService {
             if (AssessmentType.INIT.equals(type)) {
                 isUpdateRequired = isInitAssessmentComplete(assessment);
             } else {
-                isUpdateRequired = isFullUpdateRequired(assessment, laaTransactionId);
+                isUpdateRequired = true;
             }
         }
 
@@ -46,17 +45,6 @@ public class AssessmentCompletionService {
                 .build();
         RepOrderDTO response = maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO, laaTransactionId);
         assessment.setApplicationTimestamp(response.getDateModified());
-    }
-
-    boolean isFullUpdateRequired(MeansAssessmentDTO assessment, String laaTransactionId) {
-        Integer financialAssessmentId = assessment.getMeansAssessment().getFinancialAssessmentId();
-        if (financialAssessmentId != null) {
-            FinancialAssessmentDTO existingAssessment = maatCourtDataService.getFinancialAssessment(
-                    financialAssessmentId, laaTransactionId
-            );
-            return existingAssessment.getDateCompleted() == null;
-        }
-        return true;
     }
 
     boolean isInitAssessmentComplete(MeansAssessmentDTO assessment) {
