@@ -132,11 +132,10 @@ class AssessmentCompletionServiceTest {
         assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         assessment.getMeansAssessment().setAssessmentStatus(CurrentStatus.IN_PROGRESS);
 
-        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
-                .thenReturn(TestModelDataBuilder.getRepOrderDTO());
-
         assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
+
         assertThat(assessment.getDateCompleted()).isNull();
+        verify(maatCourtDataService, never()).updateCompletionDate(any(DateCompletionRequestDTO.class), anyString());
     }
 
 }
