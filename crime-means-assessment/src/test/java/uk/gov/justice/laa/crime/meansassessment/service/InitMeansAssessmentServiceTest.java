@@ -1,13 +1,13 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -22,10 +22,11 @@ import java.math.RoundingMode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class InitMeansAssessmentServiceTest {
+@ExtendWith(MockitoExtension.class)
+class InitMeansAssessmentServiceTest {
 
     private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
@@ -43,15 +44,15 @@ public class InitMeansAssessmentServiceTest {
     @Mock
     private AssessmentCriteriaChildWeightingService childWeightingService;
 
-    @Before
-    public void setUp() {
-        when(childWeightingService.getTotalChildWeighting(
+    @BeforeEach
+    void setUp() {
+        lenient().when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
     }
 
     @Test
-    public void givenCompletedAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+    void givenCompletedAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
         MeansAssessmentDTO result =
                 initMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_INCOME, meansAssessment, assessmentCriteria);
 
@@ -65,7 +66,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenIncompleteAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+    void givenIncompleteAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
         meansAssessment.setAssessmentStatus(CurrentStatus.IN_PROGRESS);
         MeansAssessmentDTO result =
                 initMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_INCOME, meansAssessment, assessmentCriteria);
@@ -80,7 +81,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenIncomeBelowLowerThreshold_whenGetAssessmentResultIsInvoked_thenResultIsPass() {
+    void givenIncomeBelowLowerThreshold_whenGetAssessmentResultIsInvoked_thenResultIsPass() {
         BigDecimal adjustedIncome = lowerThreshold.subtract(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
@@ -88,7 +89,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenIncomeBetweenThresholds_whenGetAssessmentResultIsInvoked_thenResultIsFull() {
+    void givenIncomeBetweenThresholds_whenGetAssessmentResultIsInvoked_thenResultIsFull() {
         BigDecimal adjustedIncome = lowerThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
@@ -96,7 +97,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenIncomeAboveUpperThreshold_whenGetAssessmentResultIsInvoked_thenResultIsFail() {
+    void givenIncomeAboveUpperThreshold_whenGetAssessmentResultIsInvoked_thenResultIsFail() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.FMA);
@@ -104,7 +105,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenIncomeAboveUpperThresholdAndHardshipApplication_whenGetAssessmentResultIsInvoked_thenResultIsHardship() {
+    void givenIncomeAboveUpperThresholdAndHardshipApplication_whenGetAssessmentResultIsInvoked_thenResultIsHardship() {
         BigDecimal adjustedIncome = upperThreshold.add(BigDecimal.valueOf(0.01));
         InitAssessmentResult result =
                 initMeansAssessmentService.getResult(adjustedIncome, assessmentCriteria, NewWorkReason.HR);
@@ -112,7 +113,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenPositiveAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
+    void givenPositiveAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
         BigDecimal annualTotal = BigDecimal.valueOf(11000.00);
         BigDecimal totalChildWeighting = BigDecimal.valueOf(0.50);
         BigDecimal applicantWeightingFactor = TestModelDataBuilder.TEST_APPLICANT_WEIGHTING_FACTOR;
@@ -123,7 +124,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenPositiveAnnualTotalRequiringRounding_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
+    void givenPositiveAnnualTotalRequiringRounding_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
         BigDecimal annualTotal = BigDecimal.valueOf(36613.02);
         BigDecimal totalChildWeighting = BigDecimal.valueOf(0);
         BigDecimal applicantWeightingFactor = BigDecimal.valueOf(1.0);
@@ -134,7 +135,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenPositiveAnnualTotalChildWeightingRoundingError_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
+    void givenPositiveAnnualTotalChildWeightingRoundingError_whenGetAdjustedIncomeIsInvoked_thenAdjustedIncomeIsCalculated() {
         BigDecimal annualTotal = BigDecimal.valueOf(37506.00);
         BigDecimal totalChildWeighting = BigDecimal.valueOf(0.68);
         BigDecimal applicantWeightingFactor = BigDecimal.valueOf(1.00);
@@ -145,7 +146,7 @@ public class InitMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenZeroAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenReturnsZero() {
+    void givenZeroAnnualTotal_whenGetAdjustedIncomeIsInvoked_thenReturnsZero() {
         BigDecimal annualTotal = BigDecimal.ZERO;
         when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))

@@ -1,12 +1,12 @@
 package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -32,29 +32,23 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-public class StatelessAssessmentServiceTest {
-
-    @InjectMocks
-    private StatelessAssessmentService statelessAssessmentService;
-
-    @Mock
-    private InitMeansAssessmentService initMeansAssessmentService;
-
-    @Mock
-    private FullMeansAssessmentService fullMeansAssessmentService;
-
-    @Mock
-    private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
-
-    @Mock
-    private AssessmentCriteriaService assessmentCriteriaService;
-
-    @Mock
-    private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
+@ExtendWith(SpringExtension.class)
+class StatelessAssessmentServiceTest {
 
     private static final AssessmentCriteriaEntity mockAssessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntity();
+    @InjectMocks
+    private StatelessAssessmentService statelessAssessmentService;
+    @Mock
+    private InitMeansAssessmentService initMeansAssessmentService;
+    @Mock
+    private FullMeansAssessmentService fullMeansAssessmentService;
+    @Mock
+    private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
+    @Mock
+    private AssessmentCriteriaService assessmentCriteriaService;
+    @Mock
+    private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
     private void setupStubs() {
         when(meansAssessmentServiceFactory.getService(AssessmentType.INIT))
@@ -66,7 +60,7 @@ public class StatelessAssessmentServiceTest {
     }
 
     @Test
-    public void givenInitRequestType_whenExecuteIsInvoked_thenInitAssessmentIsPerformed() {
+    void givenInitRequestType_whenExecuteIsInvoked_thenInitAssessmentIsPerformed() {
 
         setupStubs();
 
@@ -94,7 +88,7 @@ public class StatelessAssessmentServiceTest {
     }
 
     @Test
-    public void givenBothRequestType_whenExecuteIsInvoked_thenFullAssessmentIsPerformed() {
+    void givenBothRequestType_whenExecuteIsInvoked_thenFullAssessmentIsPerformed() {
 
         setupStubs();
 
@@ -128,7 +122,7 @@ public class StatelessAssessmentServiceTest {
     }
 
     @Test
-    public void givenBothRequestTypeAndInitAssessmentFails_whenExecuteIsInvoked_thenOnlyInitAssessmentIsPerformed() {
+    void givenBothRequestTypeAndInitAssessmentFails_whenExecuteIsInvoked_thenOnlyInitAssessmentIsPerformed() {
         setupStubs();
 
         when(initMeansAssessmentService.execute(

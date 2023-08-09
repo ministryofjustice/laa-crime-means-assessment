@@ -1,12 +1,12 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -20,10 +20,11 @@ import java.math.RoundingMode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class FullMeansAssessmentServiceTest {
+@ExtendWith(MockitoExtension.class)
+class FullMeansAssessmentServiceTest {
 
     private final BigDecimal EXPECTED_ADJUSTED_LIVING_ALLOWANCE = BigDecimal.valueOf(6000)
             .setScale(2, RoundingMode.HALF_UP);
@@ -39,9 +40,9 @@ public class FullMeansAssessmentServiceTest {
     @Mock
     private AssessmentCriteriaChildWeightingService childWeightingService;
 
-    @Before
-    public void setUp() {
-        when(childWeightingService.getTotalChildWeighting(
+    @BeforeEach
+    void setUp() {
+        lenient().when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
 
@@ -50,7 +51,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenCompletedAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+    void givenCompletedAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
         MeansAssessmentDTO result =
                 fullMeansAssessmentService.execute(TestModelDataBuilder.TEST_TOTAL_EXPENDITURE, meansAssessment, assessmentCriteria);
 
@@ -67,7 +68,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenIncompleteAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+    void givenIncompleteAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
 
         meansAssessment.setAssessmentStatus(CurrentStatus.IN_PROGRESS);
         MeansAssessmentDTO result =
@@ -88,7 +89,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenCorrectParameters_whenGetDisposableIncomeIsInvoked_thenCalculationIsCorrect() {
+    void givenCorrectParameters_whenGetDisposableIncomeIsInvoked_thenCalculationIsCorrect() {
         BigDecimal result = fullMeansAssessmentService.getDisposableIncome(
                 TestModelDataBuilder.TEST_AGGREGATED_INCOME,
                 TestModelDataBuilder.TEST_TOTAL_EXPENDITURE,
@@ -98,7 +99,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenAggregatedAndDisposableIncome_whenGetAnnualAggregatedExpenditureIsInvoked_thenResultIsCorrect() {
+    void givenAggregatedAndDisposableIncome_whenGetAnnualAggregatedExpenditureIsInvoked_thenResultIsCorrect() {
         BigDecimal aggregatedExpenditure = fullMeansAssessmentService.getAnnualAggregatedExpenditure(
                 TestModelDataBuilder.TEST_AGGREGATED_INCOME, TestModelDataBuilder.TEST_DISPOSABLE_INCOME
         );
@@ -106,7 +107,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenCorrectParameters_whenGetAdjustedLivingAllowanceIsInvoked_thenCalculationIsCorrect() {
+    void givenCorrectParameters_whenGetAdjustedLivingAllowanceIsInvoked_thenCalculationIsCorrect() {
         when(childWeightingService.getTotalChildWeighting(anyList(), any(AssessmentCriteriaEntity.class)))
                 .thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
         BigDecimal result = fullMeansAssessmentService.getAdjustedLivingAllowance(meansAssessment, assessmentCriteria);
@@ -114,7 +115,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenDisposableIncomeAboveThreshold_whenGetResultIsInvoked_thenResultIsFail() {
+    void givenDisposableIncomeAboveThreshold_whenGetResultIsInvoked_thenResultIsFail() {
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().add(BigDecimal.valueOf(0.01));
         FullAssessmentResult result =
@@ -123,7 +124,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenDisposableIncomeBelowThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+    void givenDisposableIncomeBelowThreshold_whenGetResultIsInvoked_thenResultIsPass() {
         BigDecimal disposableIncome =
                 assessmentCriteria.getFullThreshold().subtract(BigDecimal.valueOf(0.01));
         FullAssessmentResult result =
@@ -132,7 +133,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenEligibilityCheckRequiredAndIncomeBelowThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+    void givenEligibilityCheckRequiredAndIncomeBelowThreshold_whenGetResultIsInvoked_thenResultIsPass() {
         BigDecimal disposableIncome =
                 assessmentCriteria.getEligibilityThreshold().subtract(BigDecimal.valueOf(0.01));
         assertThat(fullMeansAssessmentService.getResult(disposableIncome, meansAssessment, assessmentCriteria))
@@ -140,7 +141,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenEligibilityCheckRequiredAndEqualsThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+    void givenEligibilityCheckRequiredAndEqualsThreshold_whenGetResultIsInvoked_thenResultIsPass() {
         BigDecimal disposableIncome =
                 assessmentCriteria.getEligibilityThreshold();
         meansAssessment.setEligibilityCheckRequired(true);
@@ -149,7 +150,7 @@ public class FullMeansAssessmentServiceTest {
     }
 
     @Test
-    public void givenEligibilityCheckRequiredAndIncomeAboveThreshold_whenGetResultIsInvoked_thenResultIsPass() {
+    void givenEligibilityCheckRequiredAndIncomeAboveThreshold_whenGetResultIsInvoked_thenResultIsPass() {
         BigDecimal disposableIncome =
                 assessmentCriteria.getEligibilityThreshold().add(BigDecimal.valueOf(0.01));
         meansAssessment.setEligibilityCheckRequired(true);

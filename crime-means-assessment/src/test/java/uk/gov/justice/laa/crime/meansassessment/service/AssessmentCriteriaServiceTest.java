@@ -2,13 +2,13 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.ThrowableAssert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
@@ -30,8 +30,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AssessmentCriteriaServiceTest {
+@ExtendWith(MockitoExtension.class)
+class AssessmentCriteriaServiceTest {
 
     private static final int VALID_ASSESSMENT_CRITERIA_ID = 1000;
     private AssessmentCriteriaEntity assessmentCriteriaEntity;
@@ -49,14 +49,14 @@ public class AssessmentCriteriaServiceTest {
     @Mock
     private CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         assessmentCriteriaEntity = TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
         assessmentCriteriaEntity.setId(VALID_ASSESSMENT_CRITERIA_ID);
     }
 
     @Test
-    public void givenValidDateWithPartnerAndNoContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
+    void givenValidDateWithPartnerAndNoContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(assessmentCriteriaEntity);
 
@@ -68,7 +68,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenValidDateAndNoPartner_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithZeroedPartnerWeightingFactor() {
+    void givenValidDateAndNoPartner_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithZeroedPartnerWeightingFactor() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(assessmentCriteriaEntity);
 
@@ -81,7 +81,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenValidDateWithPartnerAndContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
+    void givenValidDateWithPartnerAndContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(assessmentCriteriaEntity);
 
@@ -94,7 +94,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenValidDateWithoutPartnerAndContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithZeroedPartnerWeightingFactor() {
+    void givenValidDateWithoutPartnerAndContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithZeroedPartnerWeightingFactor() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(assessmentCriteriaEntity);
 
@@ -107,7 +107,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenInvalidDateWithPartnerAndNoContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenExceptionIsThrown() throws AssessmentCriteriaNotFoundException {
+    void givenInvalidDateWithPartnerAndNoContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenExceptionIsThrown() throws AssessmentCriteriaNotFoundException {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class))).thenReturn(null);
 
         LocalDateTime criteriaDate = TestModelDataBuilder.TEST_DATE_FROM.minusYears(100);
@@ -119,7 +119,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenValidFrequency_whenCheckCriteriaDetailFrequencyIsInvoked_thenDoesNothing() {
+    void givenValidFrequency_whenCheckCriteriaDetailFrequencyIsInvoked_thenDoesNothing() {
         when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
                         any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
                 )
@@ -129,7 +129,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenInvalidFrequency_whenCheckCriteriaDetailFrequencyIsInvoked_thenExceptionIsThrown() {
+    void givenInvalidFrequency_whenCheckCriteriaDetailFrequencyIsInvoked_thenExceptionIsThrown() {
         when(assessmentCriteriaDetailFrequencyRepository.findByAssessmentCriteriaDetailAndFrequency(
                         any(AssessmentCriteriaDetailEntity.class), any(Frequency.class)
                 )
@@ -142,7 +142,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenDetailWithIncorrectId_whenCheckAssessmentDetailIsInvoked_thenExceptionIsThrown() {
+    void givenDetailWithIncorrectId_whenCheckAssessmentDetailIsInvoked_thenExceptionIsThrown() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails().get(0);
         detail.setCriteriaDetailId(0);
@@ -160,7 +160,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenDetailWithIncorrectSection_whenCheckAssessmentDetailIsInvoked_thenExceptionIsThrown() {
+    void givenDetailWithIncorrectSection_whenCheckAssessmentDetailIsInvoked_thenExceptionIsThrown() {
         String section = "BAD_SECTION";
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails().get(0);
 
@@ -179,7 +179,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenApplicantFrequency_whenCheckAssessmentDetailIsInvoked_thenValidateApplicantFrequency() {
+    void givenApplicantFrequency_whenCheckAssessmentDetailIsInvoked_thenValidateApplicantFrequency() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails().get(0);
 
@@ -192,7 +192,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenPartnerFrequency_whenCheckAssessmentDetailIsInvoked_thenValidatePartnerFrequency() {
+    void givenPartnerFrequency_whenCheckAssessmentDetailIsInvoked_thenValidatePartnerFrequency() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails(true).get(0);
 
@@ -206,7 +206,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenAppealCostsCriteriaDetailIsNull_whenCheckAssessmentDetailIsInvoked_thenDoNothing() {
+    void givenAppealCostsCriteriaDetailIsNull_whenCheckAssessmentDetailIsInvoked_thenDoNothing() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails(true).get(0);
 
@@ -223,7 +223,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenAppealCostsCriteriaDetailWithCorrectAmounts_whenCheckAssessmentDetailIsInvoked_thenDoNothing() {
+    void givenAppealCostsCriteriaDetailWithCorrectAmounts_whenCheckAssessmentDetailIsInvoked_thenDoNothing() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails(true).get(0);
 
@@ -240,7 +240,7 @@ public class AssessmentCriteriaServiceTest {
     }
 
     @Test
-    public void givenAppealCostsCriteriaDetailWithIncorrectAmounts_whenCheckAssessmentDetailIsInvoked_thenThrowsException() {
+    void givenAppealCostsCriteriaDetailWithIncorrectAmounts_whenCheckAssessmentDetailIsInvoked_thenThrowsException() {
         String section = TestModelDataBuilder.TEST_SECTION;
         ApiAssessmentDetail detail = TestModelDataBuilder.getApiAssessmentDetails(true).get(0);
 

@@ -1,24 +1,24 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class FrequencyTest {
+class FrequencyTest {
 
     @Test
-    public void valueOfFrequencyFromString_success() {
+    void valueOfFrequencyFromString_success() {
         assertEquals(Frequency.TWO_WEEKLY, Frequency.getFrom("2WEEKLY"));
     }
 
     @Test
-    public void valueOfFrequencyFromString_nullParamenter_ReturnsNull() {
+    void valueOfFrequencyFromString_nullParamenter_ReturnsNull() {
         assertNull(Frequency.getFrom(null));
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void valueOfFrequencyFromString_valueNotFound_throwsException() {
-        Frequency.getFrom("THROWS_EXCEPTION");
+    @Test
+    void valueOfFrequencyFromString_valueNotFound_throwsException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Frequency.getFrom("THROWS_EXCEPTION"));
     }
 }

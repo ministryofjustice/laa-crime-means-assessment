@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentChildWeighting;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
@@ -23,14 +23,14 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class StatelessDataAdaptorTest {
+class StatelessDataAdaptorTest {
 
 
-    private Set<AssessmentCriteriaChildWeightingEntity> childWeightingEntities;
     private final AssessmentCriteriaEntity assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntity();
+    private Set<AssessmentCriteriaChildWeightingEntity> childWeightingEntities;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         assessmentCriteria.setAssessmentCriteriaDetails(
                 Set.of(
                         AssessmentCriteriaDetailEntity.builder()
@@ -92,7 +92,7 @@ public class StatelessDataAdaptorTest {
     }
 
     @Test
-    public void givenValidApplicantIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Income> incomes = List.of(
                 buildIncome(IncomeType.EMPLOYMENT_INCOME, BigDecimal.valueOf(1500), Frequency.MONTHLY),
                 buildIncome(IncomeType.SELF_EMPLOYMENT_INCOME, BigDecimal.valueOf(500), Frequency.ANNUALLY)
@@ -126,7 +126,7 @@ public class StatelessDataAdaptorTest {
     }
 
     @Test
-    public void givenValidApplicantAndPartnerIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantAndPartnerIncomes_whenMapIncomesToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Income> incomes = List.of(
                 buildIncome(IncomeType.EMPLOYMENT_INCOME,
                         BigDecimal.valueOf(1500),
@@ -174,7 +174,7 @@ public class StatelessDataAdaptorTest {
     }
 
     @Test
-    public void givenValidApplicantOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Outgoing> outgoings = List.of(
                 buildOutgoing(OutgoingType.COUNCIL_TAX, BigDecimal.valueOf(500), Frequency.ANNUALLY),
                 buildOutgoing(OutgoingType.NATIONAL_INSURANCE, BigDecimal.valueOf(1500), Frequency.MONTHLY)
@@ -208,7 +208,7 @@ public class StatelessDataAdaptorTest {
     }
 
     @Test
-    public void givenValidApplicantAndPartnerOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
+    void givenValidApplicantAndPartnerOutgoings_whenMapOutgoingsToSectionSummariesIsInvoked_thenSectionSummariesAreReturned() {
         List<Outgoing> outgoings = List.of(
                 buildOutgoing(OutgoingType.COUNCIL_TAX,
                         BigDecimal.valueOf(500),
@@ -257,7 +257,7 @@ public class StatelessDataAdaptorTest {
     }
 
     @Test
-    public void givenValidWeightsAndNoGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
+    void givenValidWeightsAndNoGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
 
         List<ApiAssessmentChildWeighting> expected = List.of(
                 new ApiAssessmentChildWeighting()
@@ -276,7 +276,7 @@ public class StatelessDataAdaptorTest {
     }
 
     @Test
-    public void givenValidWeightsAndGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
+    void givenValidWeightsAndGroupings_whenMapChildGroupingsIsInvoked_thenMappingIsPerformed() {
 
         Map<AgeRange, Integer> childGroupings = Map.of(
                 AgeRange.ZERO_TO_ONE, 1,

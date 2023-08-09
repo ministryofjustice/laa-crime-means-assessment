@@ -1,16 +1,16 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -41,13 +41,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(
         classes = {
                 CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class
         }, webEnvironment = DEFINED_PORT)
-public class StatelessMeansAssessmentIntegrationTest {
+class StatelessMeansAssessmentIntegrationTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
 
     private MockMvc mvc;
@@ -70,14 +70,14 @@ public class StatelessMeansAssessmentIntegrationTest {
     private static final DependantChild childOne = new DependantChild().withAgeRange(AgeRange.ZERO_TO_ONE).withCount(2);
     private static final DependantChild childTwo = new DependantChild().withAgeRange(AgeRange.FIVE_TO_SEVEN).withCount(1);
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
                 .addFilter(springSecurityFilterChain).build();
     }
 
     @Test
-    public void validJsonProducesSuccessResult() throws Exception {
+    void validJsonProducesSuccessResult() throws Exception {
         var assessment = buildAssessment(StatelessRequestType.BOTH);
 
         var request = new StatelessApiRequest()
@@ -92,7 +92,7 @@ public class StatelessMeansAssessmentIntegrationTest {
     }
 
     @Test
-    public void simplePassProducesSuccessfulResult() throws Exception {
+    void simplePassProducesSuccessfulResult() throws Exception {
         var income = new Income(IncomeType.EMPLOYMENT_INCOME, incomeAmount, incomeAmount);
         var tax = new Outgoing(OutgoingType.TAX, taxAmount, taxAmount);
         var ni = new Outgoing(OutgoingType.NATIONAL_INSURANCE, niAmount, niAmount);

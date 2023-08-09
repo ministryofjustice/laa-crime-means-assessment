@@ -1,12 +1,11 @@
 package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
@@ -19,58 +18,43 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MeansAssessmentValidationProcessorTest {
+@ExtendWith(MockitoExtension.class)
+class MeansAssessmentValidationProcessorTest {
 
+    MeansAssessmentRequestDTO createMeansAssessmentRequest;
+    MeansAssessmentRequestDTO fullAssessment;
     @Mock
     private MeansAssessmentValidationService meansAssessmentValidationService;
-
     @Mock
     private InitAssessmentValidator initAssessmentValidator;
-
     @Mock
     private FullAssessmentValidator fullAssessmentValidator;
-
     @InjectMocks
     private MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
-    MeansAssessmentRequestDTO createMeansAssessmentRequest;
-
-    MeansAssessmentRequestDTO fullAssessment;
-
-    @Before
-    public void setup() {
-
-        when(meansAssessmentValidationService.isNewWorkReasonValid(
-                any(MeansAssessmentRequestDTO.class))
-        ).thenReturn(Boolean.TRUE);
-
-        when(meansAssessmentValidationService.isRoleActionValid(
-                any(MeansAssessmentRequestDTO.class), any(String.class))
-        ).thenReturn(Boolean.TRUE);
-
-        when(meansAssessmentValidationService.isRepOrderReserved(
-                any(MeansAssessmentRequestDTO.class))
-        ).thenReturn(Boolean.TRUE);
-
-        when(initAssessmentValidator.validate(
-                any(MeansAssessmentRequestDTO.class))
-        ).thenReturn(Boolean.TRUE);
-
-        when(fullAssessmentValidator.validate(
-                any(MeansAssessmentRequestDTO.class)
-        )).thenReturn(Boolean.TRUE);
-
+    @BeforeEach
+    void setup() {
         createMeansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         fullAssessment = MeansAssessmentRequestDTO.builder().assessmentType(AssessmentType.FULL).repId(1000).build();
     }
 
     @Test
-    public void givenCreateInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+    void givenCreateInitAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+        when(meansAssessmentValidationService.isNewWorkReasonValid(
+                any(MeansAssessmentRequestDTO.class))
+        ).thenReturn(Boolean.TRUE);
+
+        buildMockForRoleActionValidAndRepOrderReserved();
+
+        when(initAssessmentValidator.validate(
+                any(MeansAssessmentRequestDTO.class))
+        ).thenReturn(Boolean.TRUE);
+
         Optional<Void> result =
                 meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.CREATE);
 
@@ -86,7 +70,13 @@ public class MeansAssessmentValidationProcessorTest {
     }
 
     @Test
-    public void givenUpdateFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+    void givenUpdateFullAssessmentRequest_whenAllValidationsPass_thenValidatorDoesNotThrowException() {
+        buildMockForRoleActionValidAndRepOrderReserved();
+
+        when(fullAssessmentValidator.validate(
+                any(MeansAssessmentRequestDTO.class)
+        )).thenReturn(Boolean.TRUE);
+
         fullAssessment.setFullAssessmentDate(LocalDateTime.now());
         Optional<Void> result = meansAssessmentValidationProcessor.validate(fullAssessment, AssessmentRequestType.UPDATE);
 
@@ -101,10 +91,12 @@ public class MeansAssessmentValidationProcessorTest {
     }
 
     @Test
-    public void givenInitAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
-        when(initAssessmentValidator.validate(
+    void givenInitAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+        when(meansAssessmentValidationService.isNewWorkReasonValid(
                 any(MeansAssessmentRequestDTO.class))
-        ).thenReturn(Boolean.FALSE);
+        ).thenReturn(Boolean.TRUE);
+
+        buildMockForRoleActionValidAndRepOrderReserved();
 
         assertThatThrownBy(
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE)
@@ -112,10 +104,12 @@ public class MeansAssessmentValidationProcessorTest {
     }
 
     @Test
-    public void givenFullAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenFullAssessmentValidationFailure_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(fullAssessmentValidator.validate(
                 any(MeansAssessmentRequestDTO.class)
         )).thenReturn(Boolean.FALSE);
+
+        buildMockForRoleActionValidAndRepOrderReserved();
 
         assertThatThrownBy(
                 () -> meansAssessmentValidationProcessor.validate(fullAssessment, AssessmentRequestType.UPDATE)
@@ -123,63 +117,81 @@ public class MeansAssessmentValidationProcessorTest {
     }
 
     @Test
-    public void givenInvalidNewWorkReason_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenInvalidNewWorkReason_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(meansAssessmentValidationService.isNewWorkReasonValid(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 
-        ValidationException validationException = Assert.assertThrows(ValidationException.class,
+        buildMockForRoleActionValidAndRepOrderReserved();
+
+        ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.CREATE));
         assertThat(validationException.getMessage()).isEqualTo(MSG_NEW_WORK_REASON_IS_NOT_VALID);
     }
 
     @Test
-    public void givenNullRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenNullRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         createMeansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(false);
-        ValidationException validationException = Assert.assertThrows(ValidationException.class,
+        ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
         assertThat(validationException.getMessage()).isEqualTo(MSG_REP_ID_REQUIRED);
     }
 
     @Test
-    public void givenNegativeRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenNegativeRepId_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         createMeansAssessmentRequest.setRepId(-1000);
-        ValidationException validationException = Assert.assertThrows(ValidationException.class,
+        ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
         assertThat(validationException.getMessage()).isEqualTo(MSG_REP_ID_REQUIRED);
     }
 
     @Test
-    public void givenInvalidRoleReservation_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenInvalidRoleReservation_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+        when(meansAssessmentValidationService.isRoleActionValid(
+                any(MeansAssessmentRequestDTO.class), any(String.class))
+        ).thenReturn(Boolean.TRUE);
+
         when(meansAssessmentValidationService.isRepOrderReserved(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.FALSE);
 
-        ValidationException validationException = Assert.assertThrows(ValidationException.class,
+        ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
         assertThat(validationException.getMessage()).isEqualTo(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
     }
 
     @Test
-    public void givenInvalidRoleAction_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenInvalidRoleAction_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
         when(meansAssessmentValidationService.isRoleActionValid(
                 any(MeansAssessmentRequestDTO.class), any(String.class))
         ).thenReturn(Boolean.FALSE);
 
-        ValidationException validationException = Assert.assertThrows(ValidationException.class,
+        ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.UPDATE));
         assertThat(validationException.getMessage()).isEqualTo(MSG_ROLE_ACTION_IS_NOT_VALID);
     }
 
     @Test
-    public void givenOutstandingAssessment_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+    void givenOutstandingAssessment_whenValidateIsInvoked_thenCorrectExceptionIsThrown() {
+        buildMockForRoleActionValidAndRepOrderReserved();
+
         when(meansAssessmentValidationService.isOutstandingAssessment(
                 any(MeansAssessmentRequestDTO.class))
         ).thenReturn(Boolean.TRUE);
 
-        ValidationException validationException = Assert.assertThrows(ValidationException.class,
+        ValidationException validationException = assertThrows(ValidationException.class,
                 () -> meansAssessmentValidationProcessor.validate(createMeansAssessmentRequest, AssessmentRequestType.CREATE));
         assertThat(validationException.getMessage()).isEqualTo(MSG_INCOMPLETE_ASSESSMENT_FOUND);
+    }
+
+    private void buildMockForRoleActionValidAndRepOrderReserved() {
+        when(meansAssessmentValidationService.isRoleActionValid(
+                any(MeansAssessmentRequestDTO.class), any(String.class))
+        ).thenReturn(Boolean.TRUE);
+
+        when(meansAssessmentValidationService.isRepOrderReserved(
+                any(MeansAssessmentRequestDTO.class))
+        ).thenReturn(Boolean.TRUE);
     }
 
 }
