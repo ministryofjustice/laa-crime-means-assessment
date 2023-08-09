@@ -39,27 +39,6 @@ class MeansAssessmentValidationProcessorTest {
 
     @BeforeEach
     void setup() {
-
-//        when(meansAssessmentValidationService.isNewWorkReasonValid(
-//                any(MeansAssessmentRequestDTO.class))
-//        ).thenReturn(Boolean.TRUE);
-//
-//        when(meansAssessmentValidationService.isRoleActionValid(
-//                any(MeansAssessmentRequestDTO.class), any(String.class))
-//        ).thenReturn(Boolean.TRUE);
-//
-//        when(meansAssessmentValidationService.isRepOrderReserved(
-//                any(MeansAssessmentRequestDTO.class))
-//        ).thenReturn(Boolean.TRUE);
-
-//        when(initAssessmentValidator.validate(
-//                any(MeansAssessmentRequestDTO.class))
-//        ).thenReturn(Boolean.TRUE);
-//
-//        when(fullAssessmentValidator.validate(
-//                any(MeansAssessmentRequestDTO.class)
-//        )).thenReturn(Boolean.TRUE);
-
         createMeansAssessmentRequest = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         fullAssessment = MeansAssessmentRequestDTO.builder().assessmentType(AssessmentType.FULL).repId(1000).build();
     }
