@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +21,6 @@ import java.math.RoundingMode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,15 +42,15 @@ class InitMeansAssessmentServiceTest {
     @Mock
     private AssessmentCriteriaChildWeightingService childWeightingService;
 
-    @BeforeEach
-    void setUp() {
-        lenient().when(childWeightingService.getTotalChildWeighting(
+    private void setupChildWeightingMock() {
+        when(childWeightingService.getTotalChildWeighting(
                 anyList(), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
     }
 
     @Test
     void givenCompletedAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+        setupChildWeightingMock();
         MeansAssessmentDTO result =
                 initMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_INCOME, meansAssessment, assessmentCriteria);
 
@@ -67,6 +65,7 @@ class InitMeansAssessmentServiceTest {
 
     @Test
     void givenIncompleteAssessment_whenDoInitAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+        setupChildWeightingMock();
         meansAssessment.setAssessmentStatus(CurrentStatus.IN_PROGRESS);
         MeansAssessmentDTO result =
                 initMeansAssessmentService.execute(TestModelDataBuilder.TEST_AGGREGATED_INCOME, meansAssessment, assessmentCriteria);
