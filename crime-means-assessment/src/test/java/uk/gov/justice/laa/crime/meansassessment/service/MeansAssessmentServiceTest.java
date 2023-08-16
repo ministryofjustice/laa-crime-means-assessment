@@ -93,25 +93,16 @@ class MeansAssessmentServiceTest {
     }
 
     private void setupDoAssessmentStubbing(AssessmentType assessmentType) {
-        lenient().when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(assessmentCriteria);
 
-        lenient().when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class)))
+        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(new MaatApiAssessmentRequest());
 
-        lenient().when(meansAssessmentServiceFactory.getService(any(AssessmentType.class)))
+        when(meansAssessmentServiceFactory.getService(any(AssessmentType.class)))
                 .thenReturn(
                         (AssessmentType.INIT.equals(assessmentType)) ? initMeansAssessmentService : fullMeansAssessmentService
                 );
-
-        lenient().when(initMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
-
-
-        lenient().when(fullMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         MaatApiAssessmentResponse maatApiAssessmentResponse =
                 new MaatApiAssessmentResponse()
@@ -122,11 +113,11 @@ class MeansAssessmentServiceTest {
                         .withInitAdjustedIncomeValue(TestModelDataBuilder.TEST_ADJUSTED_INCOME)
                         .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
 
-        lenient().when(maatCourtDataService.persistMeansAssessment(
+        when(maatCourtDataService.persistMeansAssessment(
                 any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
-        lenient().when(meansAssessmentResponseBuilder.build(any(MaatApiAssessmentResponse.class),
+        when(meansAssessmentResponseBuilder.build(any(MaatApiAssessmentResponse.class),
                 any(AssessmentCriteriaEntity.class),
                 any(MeansAssessmentDTO.class))).thenReturn(new ApiMeansAssessmentResponse());
     }
@@ -134,6 +125,9 @@ class MeansAssessmentServiceTest {
     @Test
     void givenInitAssessmentType_whenDoAssessmentIsInvoked_thenCreateAssessmentIsPerformed() {
         setupDoAssessmentStubbing(AssessmentType.INIT);
+        when(initMeansAssessmentService.execute(
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(
@@ -151,6 +145,9 @@ class MeansAssessmentServiceTest {
     @Test
     void givenFullAssessmentType_whenDoAssessmentIsInvoked_thenFullAssessmentIsPerformed() {
         setupDoAssessmentStubbing(AssessmentType.FULL);
+        when(fullMeansAssessmentService.execute(
+                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         meansAssessment.setAssessmentType(AssessmentType.FULL);
         meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);

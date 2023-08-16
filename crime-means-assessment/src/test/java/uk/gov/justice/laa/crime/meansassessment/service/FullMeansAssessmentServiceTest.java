@@ -20,7 +20,6 @@ import java.math.RoundingMode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,16 +41,19 @@ class FullMeansAssessmentServiceTest {
 
     @BeforeEach
     void setUp() {
-        lenient().when(childWeightingService.getTotalChildWeighting(
-                anyList(), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
-
         meansAssessment = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         meansAssessment.setInitTotalAggregatedIncome(TestModelDataBuilder.TEST_AGGREGATED_INCOME);
     }
 
+    private void setupChildWeightingMock() {
+        when(childWeightingService.getTotalChildWeighting(
+                anyList(), any(AssessmentCriteriaEntity.class))
+        ).thenReturn(TestModelDataBuilder.TEST_TOTAL_CHILD_WEIGHTING);
+    }
+
     @Test
     void givenCompletedAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
+        setupChildWeightingMock();
         MeansAssessmentDTO result =
                 fullMeansAssessmentService.execute(TestModelDataBuilder.TEST_TOTAL_EXPENDITURE, meansAssessment, assessmentCriteria);
 
@@ -69,7 +71,7 @@ class FullMeansAssessmentServiceTest {
 
     @Test
     void givenIncompleteAssessment_whenDoFullAssessmentIsInvoked_thenMeansAssessmentDTOIsReturned() {
-
+        setupChildWeightingMock();
         meansAssessment.setAssessmentStatus(CurrentStatus.IN_PROGRESS);
         MeansAssessmentDTO result =
                 fullMeansAssessmentService.execute(
