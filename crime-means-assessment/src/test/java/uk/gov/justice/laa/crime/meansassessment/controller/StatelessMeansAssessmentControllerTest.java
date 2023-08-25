@@ -67,7 +67,7 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var initialResult = new StatelessResult(
-                null, new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, false));
+                null, new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, false, BigDecimal.TEN));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(initialResult);
@@ -87,9 +87,9 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var fullResult = new StatelessResult(
-                new StatelessFullResult(FullAssessmentResult.PASS, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ONE,
+                new StatelessFullResult(FullAssessmentResult.PASS, BigDecimal.ONE, BigDecimal.ONE,
                         BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ONE),
-                new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true));
+                new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true, BigDecimal.ZERO));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(fullResult);

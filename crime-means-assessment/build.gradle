@@ -17,6 +17,7 @@ def versions = [
         liquibase                          : "4.20.0",
         crimeCommonsVersion                : "2.2.0",
         mockitoInlineVersion               : "5.2.0",
+        cucumberVersion                    : "7.13.0",
         springCloudStubRunnerVersion       : "4.0.4"
 ]
 
@@ -31,7 +32,6 @@ java {
 repositories {
     mavenCentral()
 }
-
 
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
@@ -67,11 +67,25 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "com.squareup.okhttp3:okhttp:$versions.okhttpVersion"
     testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:$versions.springCloudStubRunnerVersion"
+
+    //  cucumber
+    testImplementation "org.junit.platform:junit-platform-suite"
+    // Allow cucumber tests to be run via JUnit
+//    testImplementation "org.junit.vintage:junit-vintage-engine:5.7.2"
+    testImplementation "io.cucumber:cucumber-java:$versions.cucumberVersion"
+    testImplementation "io.cucumber:cucumber-junit:$versions.cucumberVersion"
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:$versions.cucumberVersion"
+    testCompileOnly "io.cucumber:cucumber-spring:$versions.cucumberVersion"
+//    testImplementation "org.projectlombok:lombok"
 }
 
 configurations {
     all {
         exclude group: 'junit', module: 'junit'
+    }
+
+    cucumberRuntime {
+        extendsFrom testImplementation
     }
 }
 
@@ -80,6 +94,28 @@ test {
     dependsOn "cleanTest"
     finalizedBy jacocoTestReport
 }
+
+task cucumberCli() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = [
+                    '--plugin', 'pretty',
+                    '--plugin', 'html:target/cucumber-report.html',
+                    '--glue', 'uk.gov.justice.laa.crime.meansassessment.cucumber',
+                    'src/test/resources/cucumber']
+        }
+    }
+}
+
+//cucumber {
+//    main = 'io.cucumber.core.cli.Main'
+//    glue = 'classpath:uk.gov.justice.laa.crime.meansassessment.cucumber'
+//    plugin = ['pretty']
+//    featurePath = 'src/test/resources/cucumber'
+//}
 
 jacocoTestReport {
     reports {

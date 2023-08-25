@@ -41,14 +41,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DirtiesContext
 @ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
-@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class}, webEnvironment = DEFINED_PORT)
+@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class}, webEnvironment = RANDOM_PORT)
 @AutoConfigureWireMock(port = 9999)
 class MeansAssessmentIntegrationTest {
 
