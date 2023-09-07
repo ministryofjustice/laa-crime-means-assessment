@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 @Component
 @ScenarioScope
+// This is injected via Spring on each scenario, and so will always be torn up/down correctly between cucumber tests
 public class CucumberRequestData {
     private final StatelessApiRequest request;
     private StatelessApiResponse response;
