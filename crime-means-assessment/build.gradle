@@ -70,13 +70,10 @@ dependencies {
 
     //  cucumber
     testImplementation "org.junit.platform:junit-platform-suite"
-    // Allow cucumber tests to be run via JUnit
-//    testImplementation "org.junit.vintage:junit-vintage-engine:5.7.2"
     testImplementation "io.cucumber:cucumber-java:$versions.cucumberVersion"
     testImplementation "io.cucumber:cucumber-junit:$versions.cucumberVersion"
     testImplementation "io.cucumber:cucumber-junit-platform-engine:$versions.cucumberVersion"
     testCompileOnly "io.cucumber:cucumber-spring:$versions.cucumberVersion"
-//    testImplementation "org.projectlombok:lombok"
 }
 
 configurations {
@@ -95,20 +92,20 @@ test {
     finalizedBy jacocoTestReport
 }
 
-task cucumberCli() {
-    dependsOn assemble, testClasses
-    doLast {
-        javaexec {
-            main = "io.cucumber.core.cli.Main"
-            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-            args = [
-                    '--plugin', 'pretty',
-                    '--plugin', 'html:target/cucumber-report.html',
-                    '--glue', 'uk.gov.justice.laa.crime.meansassessment.cucumber',
-                    'src/test/resources/cucumber']
-        }
-    }
-}
+//task cucumberCli() {
+//    dependsOn assemble, testClasses
+//    doLast {
+//        javaexec {
+//            main = "io.cucumber.core.cli.Main"
+//            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+//            args = [
+//                    '--plugin', 'pretty',
+//                    '--plugin', 'html:target/cucumber-report.html',
+//                    '--glue', 'uk.gov.justice.laa.crime.meansassessment.cucumber',
+//                    'src/test/resources/cucumber']
+//        }
+//    }
+//}
 
 //cucumber {
 //    main = 'io.cucumber.core.cli.Main'
