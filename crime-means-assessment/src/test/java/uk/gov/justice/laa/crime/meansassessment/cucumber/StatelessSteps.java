@@ -32,7 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
 
+// This doesn't seem to help either
+//@NoArgsConstructor
+//@RequiredArgsConstructor
+//@AllArgsConstructor
 public class StatelessSteps {
+//public class StatelessSteps implements En {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
 
     @Autowired
@@ -43,6 +48,14 @@ public class StatelessSteps {
 
     @Autowired
     private CucumberRequestData requestData;
+
+//    This doesn't help, because we just get this.mvc is null error
+//    @Before
+//    public void setRequestData() {
+//        requestData = new CucumberRequestData();
+//        objectMapper = new ObjectMapper();
+//        objectMapper.registerModule(new JavaTimeModule());
+//    }
 
     @Given("^An initial assessment$")
     public void an_initial_assessment() {

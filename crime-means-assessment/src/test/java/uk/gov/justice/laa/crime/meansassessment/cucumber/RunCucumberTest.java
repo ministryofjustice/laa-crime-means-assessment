@@ -7,7 +7,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 
 @Suite
 @SuiteDisplayName("Junit cucumber test suite")
-@SelectClasspathResource(value = "uk.gov.justice.laa.crime.meansassessment")
-@SelectPackages("uk.gov.justice.laa.crime.meansassessment")
+@SelectClasspathResource(value = "uk.gov.justice.laa.crime.meansassessment.cucumber")
+@SelectPackages("uk.gov.justice.laa.crime.meansassessment.cucumber")
 public class RunCucumberTest {
 }
