@@ -95,28 +95,14 @@ test {
     finalizedBy jacocoTestReport
 }
 
-//task "cucumber" {
-//    dependsOn assemble, testClasses
-//    doLast {
-//        javaexec {
-//            mainClass = "io.cucumber.core.cli.Main"
-//            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-//            args = [
-//                    '--plugin', 'pretty',
-//                    '--plugin', 'html:target/cucumber-report.html',
-//                    '--glue', 'uk.gov.justice.laa.crime.meansassessment.cucumber',
-//                    'src/test/resources/uk/gov/justice/laa/crime/meansassessment/cucumber'
-//                    ]
-//        }
-//    }
-//}
-
 cucumber {
     main = 'io.cucumber.core.cli.Main'
     glue = 'classpath:uk.gov.justice.laa.crime.meansassessment.cucumber'
     plugin = ['pretty']
     featurePath = 'src/test/resources/uk/gov/justice/laa/crime/meansassessment/cucumber'
 }
+
+tasks["build"].dependsOn tasks["cucumber"]
 
 jacocoTestReport {
     reports {
