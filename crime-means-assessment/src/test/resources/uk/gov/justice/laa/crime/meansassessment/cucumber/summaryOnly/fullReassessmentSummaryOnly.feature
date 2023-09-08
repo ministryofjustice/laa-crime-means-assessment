@@ -1,15 +1,5 @@
-Feature: Stateless API Demo
-  Demo of steps for Stateless API
-
-#  Scenario: Full Assessment - case type "Summary only"
-#    Given A full assessment
-#    And A case type of "SUMMARY_ONLY"
-#    And A mag court outcome of "RESOLVED_IN_MAGS"
-#    And The applicant has a partner
-#    And The partner has income of 2952.00 and frequency "MONTHLY"
-#    And The partner has outgoings of 2935.60 with frequency "MONTHLY"
-#    When I call the stateless CMA endpoint
-#    Then I expect the initial outcome to be "FULL"
+Feature: Stateless API
+  Summary only cases
 
   Scenario Outline: Full Assessment - case type "Summary only" - examples
     Given The applicant details
