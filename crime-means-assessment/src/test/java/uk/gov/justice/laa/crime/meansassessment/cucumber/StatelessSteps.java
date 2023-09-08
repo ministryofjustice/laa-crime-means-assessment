@@ -44,45 +44,6 @@ public class StatelessSteps {
     @Autowired
     private CucumberRequestData requestData;
 
-    @Given("^An initial assessment$")
-    public void an_initial_assessment() {
-        requestData.setRequestType(StatelessRequestType.INITIAL);
-    }
-
-    @Given("A full assessment")
-    public void aFullAssessment() {
-        requestData.setRequestType(StatelessRequestType.BOTH);
-    }
-
-    @Given("^A case type of \"([^\"]*)\"$")
-    public void case_type(String caseType) {
-        requestData.setCaseType(CaseType.valueOf(caseType));
-    }
-
-    @Given("^A mag court outcome of \"([^\"]*)\"$")
-    public void mag_court(String magCourtOutcome) {
-        requestData.setMagCourtOutcome(MagCourtOutcome.valueOf(magCourtOutcome));
-    }
-
-    @Given("^The applicant has a partner$")
-    public void partner() {
-        requestData.setPartner();
-    }
-
-    @And("The partner has income of {double} and frequency {string}")
-    public void thePartnerHasIncomeOfAndFrequency(double value, String frequency) {
-        var frequencyAmount = new FrequencyAmount(Frequency.valueOf(frequency), BigDecimal.valueOf(value));
-
-        requestData.addIncome(frequencyAmount);
-    }
-
-    @And("The partner has outgoings of {double} with frequency {string}")
-    public void thePartnerHasOutgoingsOfWithFrequency(double value, String frequency) {
-        var frequencyAmount = new FrequencyAmount(Frequency.valueOf(frequency), BigDecimal.valueOf(value));
-
-        requestData.addOutgoings(frequencyAmount);
-    }
-
     @When("^I call the stateless CMA endpoint$")
     public void call_stateless_cma() throws Exception {
         String json = objectMapper.writeValueAsString(requestData.getRequest());
@@ -94,18 +55,6 @@ public class StatelessSteps {
         var content = thing.getContentAsString();
         var response = objectMapper.readValue(content, StatelessApiResponse.class);
         requestData.setResponse(response);
-    }
-
-    @Then("I expect the initial outcome to be {string}")
-    public void iExpectTheInitialOutcomeToBe(String outcome) {
-        var response = requestData.getResponse();
-        assertEquals(InitAssessmentResult.valueOf(outcome), response.getInitialMeansAssessment().getResult());
-    }
-
-    @Then("I expect the full outcome to be {string}")
-    public void iExpectTheFullOutcomeToBe(String outcome) {
-        var response = requestData.getResponse();
-        assertEquals(FullAssessmentResult.valueOf(outcome), response.getFullMeansAssessment().getResult());
     }
 
     @Given("The applicant details")
@@ -198,7 +147,6 @@ public class StatelessSteps {
                 assertEquals(new BigDecimal(result_pair.getLeft()), result_pair.getRight().getDisposableIncome(), "totalAnnualDisposableIncome");
             }
     );
-
 
     @Then("I expect the result to be")
     public void iExpectTheResultToBe(DataTable dataTable) {
