@@ -70,7 +70,7 @@ dependencies {
     testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:$versions.springCloudStubRunnerVersion"
 
     //  cucumber
-    testImplementation "org.projectlombok:lombok:1.18.26"
+//    testImplementation "org.projectlombok:lombok:1.18.26"
     testImplementation "org.junit.platform:junit-platform-suite"
     testImplementation "io.cucumber:cucumber-java:$versions.cucumberVersion"
     testImplementation("io.cucumber:cucumber-java8:$versions.cucumberVersion")
