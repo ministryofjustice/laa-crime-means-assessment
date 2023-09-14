@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
@@ -110,41 +110,39 @@ public class StatelessSteps {
         requestData.setChildren(dependantChildren);
     }
 
-    // lambdas to check initial result
     static Map<String, Consumer<Pair<String, StatelessInitialResult>>> initialCheckers = Map.of(
             "imaResult", result_pair -> {
-                assertEquals(InitAssessmentResult.valueOf(result_pair.getLeft()), result_pair.getRight().getResult(), "imaResult");
+                assertThat(result_pair.getRight().getResult()).isEqualTo(InitAssessmentResult.valueOf(result_pair.getLeft()));
             },
             "imaReason", result_pair -> {
-                assertEquals(result_pair.getLeft(), result_pair.getRight().getResultReason(), "imaReason");
+                assertThat(result_pair.getRight().getResultReason()).isEqualTo(result_pair.getLeft());
             },
             "fullAssessmentAvailable", result_pair -> {
-                assertEquals(Boolean.parseBoolean(result_pair.getLeft()), result_pair.getRight().isFullAssessmentPossible(), "fullAssessmentAvailable");
+                assertThat(result_pair.getRight().isFullAssessmentPossible()).isEqualTo(Boolean.parseBoolean(result_pair.getLeft()));
             },
             "adjustedIncome", result_pair -> {
-                assertEquals(new BigDecimal(result_pair.getLeft()), result_pair.getRight().getAdjustedIncomeValue(), "adjustedIncome");
+                assertThat(result_pair.getRight().getAdjustedIncomeValue()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             }
     );
 
-    // lambdas to check full result
     static Map<String, Consumer<Pair<String, StatelessFullResult>>> fullCheckers = Map.of(
             "fmaResult", result_pair -> {
-                assertEquals(FullAssessmentResult.valueOf(result_pair.getLeft()), result_pair.getRight().getResult(), "fmaResult");
+                assertThat(result_pair.getRight().getResult()).isEqualTo(FullAssessmentResult.valueOf(result_pair.getLeft()));
             },
             "fmaReason", result_pair -> {
-                assertEquals(result_pair.getLeft(), result_pair.getRight().getResultReason(), "fmaReason");
+                assertThat(result_pair.getRight().getResultReason()).isEqualTo(result_pair.getLeft());
             },
             "totalAggregatedIncome", result_pair -> {
-                assertEquals(new BigDecimal(result_pair.getLeft()), result_pair.getRight().getTotalAggregatedIncome(), "totalAggregatedIncome");
+                assertThat(result_pair.getRight().getTotalAggregatedIncome()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             },
             "adjustedLivingAllowance", result_pair -> {
-                assertEquals(new BigDecimal(result_pair.getLeft()), result_pair.getRight().getAdjustedLivingAllowance().setScale(2), "adjustedLivingAllowance");
+                assertThat(result_pair.getRight().getAdjustedLivingAllowance().setScale(2)).isEqualTo(new BigDecimal(result_pair.getLeft()));
             },
             "totalAggregatedExpense", result_pair -> {
-                assertEquals(new BigDecimal(result_pair.getLeft()), result_pair.getRight().getTotalAnnualAggregatedExpenditure(), "totalAggregatedExpense");
+                assertThat(result_pair.getRight().getTotalAnnualAggregatedExpenditure()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             },
             "totalAnnualDisposableIncome", result_pair -> {
-                assertEquals(new BigDecimal(result_pair.getLeft()), result_pair.getRight().getDisposableIncome(), "totalAnnualDisposableIncome");
+                assertThat(result_pair.getRight().getDisposableIncome()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             }
     );
 
