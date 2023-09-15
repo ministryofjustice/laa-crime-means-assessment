@@ -98,7 +98,7 @@ test {
 cucumber {
     main = 'io.cucumber.core.cli.Main'
     glue = 'classpath:uk.gov.justice.laa.crime.meansassessment.cucumber'
-    plugin = ['pretty']
+    plugin = ['pretty', 'html:build/reports/cucumber-report.html']
     featurePath = 'src/test/resources/uk/gov/justice/laa/crime/meansassessment/cucumber'
 }
 
