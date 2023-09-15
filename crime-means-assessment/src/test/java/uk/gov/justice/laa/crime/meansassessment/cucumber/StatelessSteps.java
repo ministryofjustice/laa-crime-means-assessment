@@ -45,7 +45,7 @@ public class StatelessSteps {
     private CucumberRequestData requestData;
 
     @When("^I call the stateless CMA endpoint$")
-    public void call_stateless_cma() throws Exception {
+    public void iCallStatelessCma() throws Exception {
         String json = objectMapper.writeValueAsString(requestData.getRequest());
 
         var thing = mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
