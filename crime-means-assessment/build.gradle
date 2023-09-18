@@ -74,7 +74,6 @@ dependencies {
     testImplementation "io.cucumber:cucumber-spring:$versions.cucumberVersion"
     testImplementation "io.cucumber:cucumber-junit-platform-engine:$versions.cucumberVersion"
     testImplementation 'org.junit.platform:junit-platform-suite:1.10.0'
-    testImplementation 'org.junit.platform:junit-platform-suite-api:1.10.0'
 }
 
 configurations {
