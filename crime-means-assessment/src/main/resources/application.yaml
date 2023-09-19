@@ -90,13 +90,13 @@ springdoc:
     operationsSorter: method
 
 sentry:
-  dsn: https://f6f14768c95b4cc38f597ebd5cfd0129@o345774.ingest.sentry.io/6212907
+  dsn: ${SENTRY_DSN}
   environment: ${SENTRY_ENV}
   release: 0.0.1
   servername: aws-eks-container
   send-default-pii: true
   attach-stacktrace: true
-  sample-rate: 0.05
+  sample-rate: ${SENTRY_SAMPLE_RATE}
 
 retry-config:
   max-retries: 3
