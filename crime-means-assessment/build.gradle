@@ -17,6 +17,7 @@ def versions = [
         liquibase                          : "4.20.0",
         crimeCommonsVersion                : "2.2.0",
         mockitoInlineVersion               : "5.2.0",
+        cucumberVersion                    : "7.14.0",
         springCloudStubRunnerVersion       : "4.0.4"
 ]
 
@@ -31,7 +32,6 @@ java {
 repositories {
     mavenCentral()
 }
-
 
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
@@ -67,6 +67,13 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "com.squareup.okhttp3:okhttp:$versions.okhttpVersion"
     testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:$versions.springCloudStubRunnerVersion"
+
+    //  cucumber
+    testImplementation platform("io.cucumber:cucumber-bom:$versions.cucumberVersion")
+    testImplementation "io.cucumber:cucumber-java:$versions.cucumberVersion"
+    testImplementation "io.cucumber:cucumber-spring:$versions.cucumberVersion"
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:$versions.cucumberVersion"
+    testImplementation 'org.junit.platform:junit-platform-suite:1.10.0'
 }
 
 configurations {
@@ -79,6 +86,7 @@ test {
     useJUnitPlatform()
     dependsOn "cleanTest"
     finalizedBy jacocoTestReport
+
 }
 
 jacocoTestReport {
@@ -113,7 +121,7 @@ tasks["sonar"].dependsOn test
 sonar {
     properties {
         property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
-        property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java"
+        property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java, , **/StatelessCucumberTest.java"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
         property "sonar.projectKey", "ministryofjustice_laa-crime-means-assessment"
         property "sonar.organization", "ministryofjustice"
