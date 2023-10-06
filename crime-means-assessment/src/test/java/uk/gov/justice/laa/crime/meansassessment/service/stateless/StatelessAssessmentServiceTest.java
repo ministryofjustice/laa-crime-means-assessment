@@ -50,6 +50,8 @@ class StatelessAssessmentServiceTest {
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
+    private static final BigDecimal adjustedLivingAllowance = BigDecimal.valueOf(10000.67);
+
     private void setupStubs() {
         when(meansAssessmentServiceFactory.getService(AssessmentType.INIT))
                 .thenReturn(initMeansAssessmentService);
@@ -98,7 +100,9 @@ class StatelessAssessmentServiceTest {
 
         when(fullMeansAssessmentService.execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(MeansAssessmentDTO.builder().fullAssessmentResult(FullAssessmentResult.PASS).build());
+        ).thenReturn(MeansAssessmentDTO.builder()
+                .fullAssessmentResult(FullAssessmentResult.PASS)
+                .adjustedLivingAllowance(adjustedLivingAllowance).build());
 
         when(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class))
@@ -156,7 +160,7 @@ class StatelessAssessmentServiceTest {
 
     private void validateFullResult(StatelessFullResult fullResult, FullAssessmentResult expected) {
         assertThat(fullResult.getResult()).isEqualTo(expected);
-        assertThat(fullResult.getAdjustedLivingAllowance()).isEqualTo(mockAssessmentCriteria.getLivingAllowance());
+        assertThat(fullResult.getAdjustedLivingAllowance()).isEqualTo(adjustedLivingAllowance);
         assertThat(fullResult.getEligibilityThreshold()).isEqualTo(mockAssessmentCriteria.getEligibilityThreshold());
     }
 

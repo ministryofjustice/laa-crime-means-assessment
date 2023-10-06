@@ -75,20 +75,17 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                     .build();
 
             final var totalOutgoings = calcOutgoingTotals(criteriaEntry, assessment.getCaseType(), outgoings);
-            final var service = meansAssessmentServiceFactory.getService(AssessmentType.FULL);
-            final var result = service.execute(totalOutgoings, requestDTO, criteriaEntry);
+            final var fullAssessmentService = meansAssessmentServiceFactory.getService(AssessmentType.FULL);
+            final var fullAssessmentResult = fullAssessmentService.execute(totalOutgoings, requestDTO, criteriaEntry);
 
-            return new StatelessResult(
-                    new StatelessFullResult(result.getFullAssessmentResult(),
-                            result.getTotalAnnualDisposableIncome(),
-                            result.getAdjustedIncomeValue(),
-                            result.getTotalAggregatedIncome(),
-                            criteriaEntry.getLivingAllowance(),
-                            result.getTotalAggregatedExpense(),
-                            criteriaEntry.getEligibilityThreshold()
-                    ),
-                    initialAnswer
-            );
+            final var statelessFullResult = StatelessFullResult.builder()
+                    .result(fullAssessmentResult.getFullAssessmentResult())
+                    .disposableIncome(fullAssessmentResult.getTotalAnnualDisposableIncome())
+                    .totalAggregatedIncome(totalIncome)
+                    .adjustedLivingAllowance(fullAssessmentResult.getAdjustedLivingAllowance())
+                    .totalAnnualAggregatedExpenditure(fullAssessmentResult.getTotalAggregatedExpense())
+                    .eligibilityThreshold(criteriaEntry.getEligibilityThreshold()).build();
+            return new StatelessResult(statelessFullResult, initialAnswer);
         } else {
             return new StatelessResult(null, initialAnswer);
         }
@@ -130,12 +127,13 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                         null, result.getInitAssessmentResult()
                 );
 
-        return new StatelessInitialResult(
-                result.getInitAssessmentResult(),
-                criteriaEntry.getInitialLowerThreshold(),
-                criteriaEntry.getInitialUpperThreshold(),
-                fullAssessmentPossible
-        );
+        return StatelessInitialResult.builder()
+                .result(result.getInitAssessmentResult())
+                .lowerThreshold(criteriaEntry.getInitialLowerThreshold())
+                .upperThreshold(criteriaEntry.getInitialUpperThreshold())
+                .fullAssessmentPossible(fullAssessmentPossible)
+                .adjustedIncomeValue(result.getAdjustedIncomeValue())
+                .build();
     }
 
     private BigDecimal calcIncomeTotals(AssessmentCriteriaEntity assessmentCriteria,
