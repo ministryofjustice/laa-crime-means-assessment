@@ -77,6 +77,7 @@ public class TestModelDataBuilder {
     public static final LocalDateTime TEST_MAGS_OUTCOME_DATE = LocalDateTime.of(2022, 6, 5, 0, 0);
     public static final LocalDateTime TEST_DATE_CREATED =
             LocalDateTime.of(2021, 10, 9, 15, 1, 25);
+    public static final LocalDateTime ASSESSMENT_DATE = LocalDateTime.of(2021, 10, 9, 15, 1, 25);
 
     public static final BigDecimal TEST_DISPOSABLE_INCOME = BigDecimal.valueOf(4000d);
     public static final BigDecimal TEST_ADJUSTED_LIVING_ALLOWANCE = BigDecimal.valueOf(6000d);
@@ -88,6 +89,9 @@ public class TestModelDataBuilder {
     //create means assessment
     public static final Integer TEST_REP_ID = 42312;
     public static final int MEANS_ASSESSMENT_ID = 1000;
+
+    public static final int FULL_THRESHOLD = 1000;
+
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final Integer TEST_ASSESSMENT_DETAILS_ID = 41681819;
     public static final String TEST_ASSESSMENT_TYPE_INIT = "INIT";

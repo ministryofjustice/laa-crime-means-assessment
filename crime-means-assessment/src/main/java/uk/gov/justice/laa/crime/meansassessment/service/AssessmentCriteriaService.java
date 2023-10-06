@@ -3,8 +3,10 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentCriteriaDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
+import uk.gov.justice.laa.crime.meansassessment.mapper.AssessmentCriteriaEntityMapper;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -13,6 +15,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.Assessment
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.CaseTypeAssessmentCriteriaDetailValueRepository;
+import uk.gov.justice.laa.crime.meansassessment.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,6 +30,7 @@ public class AssessmentCriteriaService {
     private final AssessmentCriteriaDetailFrequencyRepository assessmentCriteriaDetailFrequencyRepository;
     private final CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
     private final AssessmentCriteriaChildWeightingRepository assessmentCriteriaChildWeightingRepository;
+    private final AssessmentCriteriaEntityMapper assessmentCriteriaEntityMapper;
 
     public AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
         log.info("Retrieving assessment criteria for date: {}", assessmentDate);
@@ -41,6 +45,11 @@ public class AssessmentCriteriaService {
             log.error("No Assessment Criteria found for date {}", assessmentDate);
             throw new AssessmentCriteriaNotFoundException(String.format("No Assessment Criteria found for date %s", assessmentDate));
         }
+    }
+
+    public AssessmentCriteriaDTO getFullAssessmentThreshold(String assessmentDate) {
+        AssessmentCriteriaEntity assessmentCriteriaEntity = assessmentCriteriaRepository.findAssessmentCriteriaForDate(DateUtil.getLocalDateTime(assessmentDate));
+        return assessmentCriteriaEntityMapper.updateAssessmentCriteriaEntityToAssessmentCriteriaDTO(assessmentCriteriaEntity);
     }
 
     // Check for Council Tax not being submitted anything other than 'ANNUALLY'
