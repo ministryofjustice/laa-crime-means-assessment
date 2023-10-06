@@ -120,6 +120,9 @@ public class StatelessSteps {
             "fullAssessmentAvailable", result_pair -> {
                 assertThat(result_pair.getRight().isFullAssessmentPossible()).isEqualTo(Boolean.parseBoolean(result_pair.getLeft()));
             },
+            "totalAggregatedIncome", result_pair -> {
+                assertThat(result_pair.getRight().getTotalAggregatedIncome()).isEqualTo(new BigDecimal(result_pair.getLeft()));
+            },
             "adjustedIncome", result_pair -> {
                 assertThat(result_pair.getRight().getAdjustedIncomeValue()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             }
@@ -131,9 +134,6 @@ public class StatelessSteps {
             },
             "fmaReason", result_pair -> {
                 assertThat(result_pair.getRight().getResultReason()).isEqualTo(result_pair.getLeft());
-            },
-            "totalAggregatedIncome", result_pair -> {
-                assertThat(result_pair.getRight().getTotalAggregatedIncome()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             },
             "adjustedLivingAllowance", result_pair -> {
                 assertThat(result_pair.getRight().getAdjustedLivingAllowance().setScale(2)).isEqualTo(new BigDecimal(result_pair.getLeft()));

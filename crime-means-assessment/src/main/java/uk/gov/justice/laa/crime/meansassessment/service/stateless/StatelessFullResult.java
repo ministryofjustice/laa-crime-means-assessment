@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 public class StatelessFullResult {
     private final FullAssessmentResult result;
     private final BigDecimal disposableIncome;
-    private final BigDecimal totalAggregatedIncome;
     private final BigDecimal adjustedLivingAllowance;
     private final BigDecimal totalAnnualAggregatedExpenditure;
     private final BigDecimal eligibilityThreshold;

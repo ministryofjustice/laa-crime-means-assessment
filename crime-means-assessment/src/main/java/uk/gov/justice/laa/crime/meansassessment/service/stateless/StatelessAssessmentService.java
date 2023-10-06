@@ -81,7 +81,6 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
             final var statelessFullResult = StatelessFullResult.builder()
                     .result(fullAssessmentResult.getFullAssessmentResult())
                     .disposableIncome(fullAssessmentResult.getTotalAnnualDisposableIncome())
-                    .totalAggregatedIncome(totalIncome)
                     .adjustedLivingAllowance(fullAssessmentResult.getAdjustedLivingAllowance())
                     .totalAnnualAggregatedExpenditure(fullAssessmentResult.getTotalAggregatedExpense())
                     .eligibilityThreshold(criteriaEntry.getEligibilityThreshold()).build();
@@ -133,6 +132,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                 .upperThreshold(criteriaEntry.getInitialUpperThreshold())
                 .fullAssessmentPossible(fullAssessmentPossible)
                 .adjustedIncomeValue(result.getAdjustedIncomeValue())
+                .totalAggregatedIncome(result.getTotalAggregatedIncome())
                 .build();
     }
 
