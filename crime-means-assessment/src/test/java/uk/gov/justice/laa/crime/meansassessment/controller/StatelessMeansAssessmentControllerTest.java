@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.DependantChild;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
@@ -42,8 +41,8 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
 class StatelessMeansAssessmentControllerTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
     private static final ApiMeansAssessmentRequest testRequest = TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
-    private static final DependantChild childOne = new DependantChild().withAgeRange(AgeRange.ZERO_TO_ONE).withCount(2);
-    private static final DependantChild childTwo = new DependantChild().withAgeRange(AgeRange.FIVE_TO_SEVEN).withCount(1);
+    private static final DependantChild childOne = new DependantChild(AgeRange.ZERO_TO_ONE, 2);
+    private static final DependantChild childTwo = new DependantChild(AgeRange.FIVE_TO_SEVEN, 1);
     private static final FrequencyAmount incomeAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(2700));
     private static final FrequencyAmount outAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(100));
 

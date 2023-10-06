@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.DependantChild;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiResponse;
+import uk.gov.justice.laa.crime.meansassessment.service.stateless.DependantChild;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
 

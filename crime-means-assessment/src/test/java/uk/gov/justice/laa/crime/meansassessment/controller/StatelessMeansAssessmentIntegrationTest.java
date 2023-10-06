@@ -20,8 +20,8 @@ import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestC
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.DependantChild;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.meansassessment.service.stateless.DependantChild;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.FrequencyAmount;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.Income;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.Outgoing;
@@ -67,8 +67,8 @@ class StatelessMeansAssessmentIntegrationTest {
     private static final FrequencyAmount outAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(100));
 
     private static final ApiMeansAssessmentRequest testRequest = TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
-    private static final DependantChild childOne = new DependantChild().withAgeRange(AgeRange.ZERO_TO_ONE).withCount(2);
-    private static final DependantChild childTwo = new DependantChild().withAgeRange(AgeRange.FIVE_TO_SEVEN).withCount(1);
+    private static final DependantChild childOne = new DependantChild(AgeRange.ZERO_TO_ONE, 2);
+    private static final DependantChild childTwo = new DependantChild(AgeRange.FIVE_TO_SEVEN, 1);
 
     @BeforeEach
     void setup() {
