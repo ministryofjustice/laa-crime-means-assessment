@@ -1,13 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
-
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -20,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "ASSESSMENT_CRITERIA", schema = "CRIME_MEANS_ASSESSMENT")
-public class AssessmentCriteriaEntity implements Serializable {
+public class AssessmentCriteriaEntity {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
