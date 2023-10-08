@@ -4,14 +4,13 @@ import org.mapstruct.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentCriteriaDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        componentModel = "spring",
+@Mapper(componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
         builder = @Builder(disableBuilder = true),
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        uses = AssessmentCriteriaEntity.class)
 public interface AssessmentCriteriaEntityMapper {
-
     AssessmentCriteriaDTO updateAssessmentCriteriaEntityToAssessmentCriteriaDTO(final AssessmentCriteriaEntity assessment);
-
 
 }
