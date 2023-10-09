@@ -14,14 +14,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentCriteriaDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
@@ -177,16 +175,14 @@ class MeansAssessmentControllerTest {
 
     @Test
     void givenValidParam_whenFullAssessmentThresholdInvoked_shouldSuccess() throws Exception {
-        AssessmentCriteriaDTO assessmentCriteriaDTO = new AssessmentCriteriaDTO();
-        assessmentCriteriaDTO.setFullThreshold(new BigDecimal("1000"));
-        when(assessmentCriteriaService.getFullAssessmentThreshold(any())).thenReturn(assessmentCriteriaDTO);
+        when(assessmentCriteriaService.getFullAssessmentThreshold(any())).thenReturn(new BigDecimal("1000"));
         mvc.perform(buildRequestGivenContent(
-                HttpMethod.GET,
-                "",
-                FA_THRESHOLD_ENDPOINT_URL + "/" + ASSESSMENT_DATE,
-                true)
-        ).andExpect(status().isOk())
-                .andExpect(jsonPath("$.fullThreshold").value(FULL_THRESHOLD));
+                        HttpMethod.GET,
+                        "",
+                        FA_THRESHOLD_ENDPOINT_URL + "/" + ASSESSMENT_DATE,
+                        true)
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(FULL_THRESHOLD));
 
     }
 }

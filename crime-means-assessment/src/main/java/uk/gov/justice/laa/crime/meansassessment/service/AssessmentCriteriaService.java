@@ -3,10 +3,8 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentCriteriaDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.mapper.AssessmentCriteriaEntityMapper;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
@@ -30,7 +28,6 @@ public class AssessmentCriteriaService {
     private final AssessmentCriteriaDetailFrequencyRepository assessmentCriteriaDetailFrequencyRepository;
     private final CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
     private final AssessmentCriteriaChildWeightingRepository assessmentCriteriaChildWeightingRepository;
-    private final AssessmentCriteriaEntityMapper assessmentCriteriaEntityMapper;
 
     public AssessmentCriteriaEntity getAssessmentCriteria(LocalDateTime assessmentDate, boolean hasPartner, boolean contraryInterest) {
         log.info("Retrieving assessment criteria for date: {}", assessmentDate);
@@ -47,9 +44,9 @@ public class AssessmentCriteriaService {
         }
     }
 
-    public AssessmentCriteriaDTO getFullAssessmentThreshold(String assessmentDate) {
+    public BigDecimal getFullAssessmentThreshold(String assessmentDate) {
         AssessmentCriteriaEntity assessmentCriteriaEntity = assessmentCriteriaRepository.findAssessmentCriteriaForDate(DateUtil.getLocalDateTime(assessmentDate));
-        return assessmentCriteriaEntityMapper.updateAssessmentCriteriaEntityToAssessmentCriteriaDTO(assessmentCriteriaEntity);
+        return assessmentCriteriaEntity.getFullThreshold();
     }
 
     // Check for Council Tax not being submitted anything other than 'ANNUALLY'

@@ -10,10 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentCriteriaDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.mapper.AssessmentCriteriaEntityMapper;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
@@ -50,12 +48,6 @@ class AssessmentCriteriaServiceTest {
 
     @Mock
     private CaseTypeAssessmentCriteriaDetailValueRepository caseTypeAssessmentCriteriaDetailValueRepository;
-
-    @Mock
-    private AssessmentCriteriaEntityMapper assessmentCriteriaEntityMapper;
-
-    @Mock
-    private AssessmentCriteriaDTO assessmentCriteriaDTO;
 
     @BeforeEach
     void setUp() {
@@ -297,10 +289,7 @@ class AssessmentCriteriaServiceTest {
     void givenValidFrequency_whenGetFullAssessmentThresholdIsInvoked_thenThenAssessmentCriteriaDTOShouldBeReturned() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
-        when(assessmentCriteriaEntityMapper.updateAssessmentCriteriaEntityToAssessmentCriteriaDTO(any()))
-                .thenReturn(AssessmentCriteriaDTO.builder().fullThreshold(BigDecimal.TEN).build());
-        AssessmentCriteriaDTO result = assessmentCriteriaService.getFullAssessmentThreshold(TestModelDataBuilder.TEST_DATE_STRING);
-        assertThat(result.getFullThreshold()).isEqualTo(BigDecimal.TEN);
-
+        BigDecimal result = assessmentCriteriaService.getFullAssessmentThreshold(TestModelDataBuilder.TEST_DATE_STRING);
+        assertThat(result).isEqualTo(TestModelDataBuilder.TEST_FULL_THRESHOLD);
     }
 }
