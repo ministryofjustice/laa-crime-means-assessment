@@ -59,11 +59,9 @@ class AssessmentCriteriaServiceTest {
     void givenValidDateWithPartnerAndNoContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(assessmentCriteriaEntity);
-
         AssessmentCriteriaEntity result =
                 assessmentCriteriaService.getAssessmentCriteria(
-                        TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false
-                );
+                        TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false);
         assertThat(assessmentCriteriaEntity.getPartnerWeightingFactor()).isEqualTo(result.getPartnerWeightingFactor());
     }
 
@@ -285,5 +283,13 @@ class AssessmentCriteriaServiceTest {
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
             detail.setPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY);
         });
+    }
+
+    @Test
+    void givenValidFrequency_whenGetFullAssessmentThresholdIsInvoked_thenThenAssessmentCriteriaDTOShouldBeReturned() {
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        BigDecimal result = assessmentCriteriaService.getFullAssessmentThreshold(TestModelDataBuilder.TEST_DATE_STRING);
+        assertThat(result).isEqualTo(TestModelDataBuilder.TEST_FULL_THRESHOLD);
     }
 }
