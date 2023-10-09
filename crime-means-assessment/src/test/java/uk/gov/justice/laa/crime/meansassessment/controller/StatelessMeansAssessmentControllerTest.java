@@ -15,7 +15,9 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
@@ -55,6 +57,9 @@ class StatelessMeansAssessmentControllerTest {
     @MockBean
     private StatelessAssessmentService statelessAssessmentService;
 
+    @MockBean
+    private AssessmentCriteriaService assessmentCriteriaService;
+
     @Test
     void validRequest_success() throws Exception {
         var assessment = buildAssessment(StatelessRequestType.BOTH);
@@ -69,8 +74,10 @@ class StatelessMeansAssessmentControllerTest {
                 null, new StatelessInitialResult(InitAssessmentResult.PASS,
                 BigDecimal.ZERO, BigDecimal.ONE, false, BigDecimal.TEN, BigDecimal.ZERO));
 
-        when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
+        when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList(), any(AssessmentCriteriaEntity.class)))
                 .thenReturn(initialResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -91,8 +98,10 @@ class StatelessMeansAssessmentControllerTest {
                         BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ONE),
                 new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true, BigDecimal.ZERO, BigDecimal.ONE));
 
-        when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
+        when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList(), any(AssessmentCriteriaEntity.class)))
                 .thenReturn(fullResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));

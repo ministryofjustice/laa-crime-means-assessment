@@ -92,6 +92,7 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             }
             MeansAssessmentDTO completedAssessment =
                     assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
+//            MeansAssessmentDTO completedAssessment = MeansAssessmentDTO.builder().build();
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
@@ -105,8 +106,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                     );
             log.info("Posting completed means assessment to Court Data API");
 
-            updateDetailIds(completedAssessment, maatApiAssessmentResponse);
-
             ApiMeansAssessmentResponse assessmentResponse =
                     responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
 
@@ -118,6 +117,8 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                                 completedAssessment.getInitAssessmentResult());
                 assessmentResponse.setFullAssessmentAvailable(fullAssessmentAvailable);
             }
+
+            updateDetailIds(completedAssessment, maatApiAssessmentResponse);
 
             return assessmentResponse;
         } catch (Exception exception) {
