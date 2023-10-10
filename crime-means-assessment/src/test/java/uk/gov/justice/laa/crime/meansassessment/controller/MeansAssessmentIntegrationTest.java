@@ -35,10 +35,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
@@ -238,6 +235,7 @@ class MeansAssessmentIntegrationTest {
     void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ThenSuccessResponseIsReturned() throws Exception {
         var updateAssessmentRequest = TestModelDataBuilder.getUpdateMeansAssessmentRequest(IS_VALID);
         updateAssessmentRequest.setAssessmentType(AssessmentType.FULL);
+        updateAssessmentRequest.setSectionSummaries(Arrays.asList(TestModelDataBuilder.getApiAssessmentSectionSummaryForFullA()));
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
 
         stubForRoleActionAndReservationUrl();

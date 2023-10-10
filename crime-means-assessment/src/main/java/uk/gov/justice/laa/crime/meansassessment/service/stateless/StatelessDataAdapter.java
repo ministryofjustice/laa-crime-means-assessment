@@ -82,6 +82,18 @@ public class StatelessDataAdapter {
         }).toList();
     }
 
+    public static IncomeType mapDetailCodeToIncomeType(String detailCode) {
+        return inputToDetailCodeMap.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(detailCode))
+                .findFirst().get().getKey();
+    }
+
+    public static OutgoingType mapDetailCodeToOutgoingType(String detailCode) {
+        return outgoingToDetailCodeMap.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(detailCode))
+                .findFirst().get().getKey();
+    }
+
     private static ApiAssessmentDetail createAssessmentDetail(Amount amount,
                                                               AssessmentCriteriaEntity assessmentCriteria, String detailCode) {
         // create a map based on detailCode, so that entity can be found trivially with a get() call
