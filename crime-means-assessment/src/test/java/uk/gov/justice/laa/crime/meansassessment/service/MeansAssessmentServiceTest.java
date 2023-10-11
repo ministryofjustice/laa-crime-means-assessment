@@ -46,11 +46,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MeansAssessmentServiceTest {
 
-    private final AssessmentCriteriaEntity assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithChildWeightings(
-            new BigDecimal[]{
-                BigDecimal.valueOf(0.15), BigDecimal.valueOf(0.35)
-            }
-        );
+    private final AssessmentCriteriaEntity assessmentCriteria =
+            TestModelDataBuilder.getAssessmentCriteriaEntityWithDetailsAndChildWeightings();
 
     private final MeansAssessmentRequestDTO meansAssessment =
             TestModelDataBuilder.getMeansAssessmentRequestDTO(true);

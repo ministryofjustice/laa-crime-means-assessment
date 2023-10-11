@@ -44,6 +44,7 @@ public class TestModelDataBuilder {
     // Assessment Criteria Details
     public static final Integer TEST_DETAIL_ID = 2;
     public static final Integer TEST_CRITERIA_DETAIL_ID = 135;
+    public static final Integer TAX_CRITERIA_DETAIL_ID = 128;
     public static final String TEST_DETAIL_CODE = "TEST_CODE";
     public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION";
     public static final String TEST_SECTION = "SECTION";
@@ -110,11 +111,21 @@ public class TestModelDataBuilder {
         weighting1.setWeightingFactor(weightingFactors[0]);
         var weighting2 = getAssessmentCriteriaChildWeightingEntityWithId(38);
         weighting2.setWeightingFactor(weightingFactors[1]);
+        criteria.setAssessmentCriteriaChildWeightings(Set.of(weighting1, weighting2));
+        return criteria;
+    }
+
+    public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithDetailsAndChildWeightings() {
+        var criteria = getAssessmentCriteriaEntity();
+        var weighting1 = getAssessmentCriteriaChildWeightingEntityWithId(37);
+        weighting1.setWeightingFactor(BigDecimal.valueOf(0.15));
+        var weighting2 = getAssessmentCriteriaChildWeightingEntityWithId(38);
+        weighting2.setWeightingFactor(BigDecimal.valueOf(0.35));
         weighting2.setLowerAgeRange(2);
         weighting2.setUpperAgeRange(4);
         criteria.setAssessmentCriteriaChildWeightings(Set.of(weighting1, weighting2));
 
-        var detailEntities = Map.of("EMP_INC", 135, "TAX", 128).entrySet().stream().map(
+        var detailEntities = Map.of("EMP_INC", TEST_CRITERIA_DETAIL_ID, "TAX", TAX_CRITERIA_DETAIL_ID).entrySet().stream().map(
                 code_and_id -> {
                     final var detailEntity = getAssessmentCriteriaDetailEntity();
                     detailEntity.setId(code_and_id.getValue());
@@ -128,10 +139,18 @@ public class TestModelDataBuilder {
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithDetails() {
         var criteria = getAssessmentCriteriaEntity();
-        criteria.setAssessmentCriteriaDetails(
-                Set.of(getAssessmentCriteriaDetailEntityWithId())
-        );
+
+        var detailEntities = Map.of("EMP_INC", TEST_CRITERIA_DETAIL_ID, "TAX", TAX_CRITERIA_DETAIL_ID).entrySet().stream().map(
+                code_and_id -> {
+                    final var detailEntity = TestModelDataBuilder.getAssessmentCriteriaDetailEntity();
+                    detailEntity.setId(code_and_id.getValue());
+                    detailEntity.setAssessmentDetail(AssessmentDetailEntity.builder().detailCode(code_and_id.getKey()).build());
+                    return detailEntity;
+                }
+        ).collect(Collectors.toSet());
+        criteria.setAssessmentCriteriaDetails(detailEntities);
         return criteria;
+
     }
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntity() {
@@ -403,7 +422,7 @@ public class TestModelDataBuilder {
                         new ArrayList<>(
                                 List.of(
                                         new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(128)
+                                                .withCriteriaDetailId(TAX_CRITERIA_DETAIL_ID)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
                                                 .withApplicantFrequency(TEST_FREQUENCY)
                                 )
@@ -644,7 +663,7 @@ public class TestModelDataBuilder {
                         new ArrayList<>(
                                 List.of(
                                         new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(136)
+                                                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
                                                 .withApplicantAmount(TEST_APPLICANT_VALUE)
                                                 .withApplicantFrequency(TEST_FREQUENCY)
                                 )

@@ -16,15 +16,13 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TAX_CRITERIA_DETAIL_ID;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_CRITERIA_DETAIL_ID;
 import static uk.gov.justice.laa.crime.meansassessment.service.stateless.MaatToStatelessDataAdapter.*;
 
 class MaatToStatelessDataAdapterTest {
 
-    private static final AssessmentCriteriaEntity assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithChildWeightings(
-            new BigDecimal[]{
-                    BigDecimal.valueOf(0.15), BigDecimal.valueOf(0.35)
-            }
-    );
+    private static final AssessmentCriteriaEntity assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
 
     @Test
     void childGroupingsFromChildWeightingsReturnsMapOfRangesToQuantities() {
@@ -47,7 +45,7 @@ class MaatToStatelessDataAdapterTest {
                         .withAssessmentDetails(
                                 Arrays.asList(
                                         new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(135)
+                                                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
                                                 .withApplicantAmount(BigDecimal.TEN)
                                                 .withApplicantFrequency(Frequency.WEEKLY)))),
                 assessmentCriteria))
@@ -67,7 +65,7 @@ class MaatToStatelessDataAdapterTest {
                         .withAssessmentDetails(
                                 Arrays.asList(
                                         new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(128)
+                                                .withCriteriaDetailId(TAX_CRITERIA_DETAIL_ID)
                                                 .withApplicantAmount(BigDecimal.TEN)
                                                 .withApplicantFrequency(Frequency.MONTHLY)))),
                 assessmentCriteria))

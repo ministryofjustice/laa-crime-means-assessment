@@ -132,14 +132,14 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                     );
             log.info("Posting completed means assessment to Court Data API");
 
+            updateDetailIds(completedAssessment, maatApiAssessmentResponse);
+
             ApiMeansAssessmentResponse assessmentResponse =
                     responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
 
             if (AssessmentType.INIT.equals(assessmentType)) {
                 assessmentResponse.setFullAssessmentAvailable(fullAssessmentAvailable);
             }
-
-            updateDetailIds(completedAssessment, maatApiAssessmentResponse);
 
             return assessmentResponse;
         } catch (Exception exception) {
