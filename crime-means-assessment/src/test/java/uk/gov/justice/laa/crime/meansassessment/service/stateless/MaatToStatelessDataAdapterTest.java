@@ -20,6 +20,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TAX_CRITERIA_DETAIL_ID;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_CRITERIA_DETAIL_ID;
 import static uk.gov.justice.laa.crime.meansassessment.service.stateless.MaatToStatelessDataAdapter.*;
+import static uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessDataAdapter.mapDetailCodeToIncomeType;
+import static uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessDataAdapter.mapDetailCodeToOutgoingType;
 
 class MaatToStatelessDataAdapterTest {
 
@@ -48,6 +50,16 @@ class MaatToStatelessDataAdapterTest {
                         .withUpperAgeRange(4);
         assertThatThrownBy(()-> childGroupingsFromChildWeightings(Arrays.asList(apiAssessmentChildWeighting)))
                 .isInstanceOf(AgeRangeNotFoundException.class);
+    }
+
+    @Test
+    void mapDetailCodeToIncomeTypeThrowsOnUnknownCode() {
+        assertThatThrownBy(() -> mapDetailCodeToIncomeType("ANYTHING")).isInstanceOf(StatelessDataAdapter.DetailCodeNotFoundException.class);
+    }
+
+    @Test
+    void mapDetailCodeToOutgoingTypeThrowsOnUnknownCode() {
+        assertThatThrownBy(() -> mapDetailCodeToOutgoingType("ANYTHING")).isInstanceOf(StatelessDataAdapter.DetailCodeNotFoundException.class);
     }
 
     @Test

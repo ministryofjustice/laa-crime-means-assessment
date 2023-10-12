@@ -60,7 +60,7 @@ public class StatelessDataAdapter {
             "FULLB", List.of(OutgoingType.TAX, OutgoingType.NATIONAL_INSURANCE, OutgoingType.CHILDCARE_COSTS, OutgoingType.MAINTENANCE_COSTS)
     );
 
-    private static class DetailCodeNotFoundException extends RuntimeException {
+    static class DetailCodeNotFoundException extends RuntimeException {
         DetailCodeNotFoundException(String type, String detailCode) {
             super(String.format("%s type with detail code: %s does not exist.", type, detailCode));
         }
