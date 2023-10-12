@@ -77,11 +77,11 @@ public class MaatToStatelessDataAdapter {
     }
 
     private static String getDetailCodeFromDetailId(AssessmentCriteriaEntity assessmentCriteria, int criteriaDetailId) {
-        final var code = assessmentCriteria.getAssessmentCriteriaDetails()
+        final var assessmentDetailEntity = assessmentCriteria.getAssessmentCriteriaDetails()
                 .stream()
                 .filter(criteriaDetail -> criteriaDetail.getId() == criteriaDetailId)
                 .findFirst().map(AssessmentCriteriaDetailEntity::getAssessmentDetail);
-        return code.map(AssessmentDetailEntity::getDetailCode).orElseThrow(() ->
+        return assessmentDetailEntity.map(AssessmentDetailEntity::getDetailCode).orElseThrow(() ->
                 new CriteriaDetailsNotFoundException(criteriaDetailId));
     }
 }
