@@ -31,17 +31,10 @@ public class MaatToStatelessDataAdapter {
     public static Map<AgeRange, Integer> childGroupingsFromChildWeightings(List<ApiAssessmentChildWeighting> childWeightings) {
         return childWeightings.stream()
                 .collect(Collectors.toMap(
-                        weighting -> {
-                            var w = Arrays.stream(AgeRange.values())
-                                    .filter(age -> age.getLowerLimit() == weighting.getLowerAgeRange()
-                                                && age.getUpperLimit() == weighting.getUpperAgeRange())
-                                    .findFirst();
-                            if (w.isPresent()) {
-                                return w.get();
-                            } else {
-                                throw new AgeRangeNotFoundException(weighting);
-                            }
-                            },
+                        weighting -> Arrays.stream(AgeRange.values())
+                                .filter(age -> age.getLowerLimit() == weighting.getLowerAgeRange()
+                                            && age.getUpperLimit() == weighting.getUpperAgeRange())
+                                .findFirst().orElseThrow(() -> new AgeRangeNotFoundException(weighting)),
                 ApiAssessmentChildWeighting::getNoOfChildren));
     }
 
