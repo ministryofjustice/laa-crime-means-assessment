@@ -16,13 +16,13 @@ import static uk.gov.justice.laa.crime.meansassessment.service.stateless.Statele
 
 @UtilityClass
 public class MaatToStatelessDataAdapter {
-    private static class AgeRangeNotFoundException extends RuntimeException {
+    static class AgeRangeNotFoundException extends RuntimeException {
         AgeRangeNotFoundException(ApiAssessmentChildWeighting weighting) {
             super(String.format("Age range with lower %d and upper %d does not exist.", weighting.getLowerAgeRange(), weighting.getUpperAgeRange()));
         }
     }
 
-    private static class CriteriaDetailsNotFoundException extends RuntimeException {
+    static class CriteriaDetailsNotFoundException extends RuntimeException {
         CriteriaDetailsNotFoundException(int criteriaDetailId) {
             super(String.format("Criteria detail id %d does not exist.", criteriaDetailId));
         }
