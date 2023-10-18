@@ -16,7 +16,7 @@ def versions = [
         okhttpVersion               : "4.9.3",
         mockwebserverVersion        : "4.9.3",
         liquibase                   : "4.20.0",
-        crimeCommonsVersion         : "2.2.0",
+        crimeCommonsVersion         : "2.7.0",
         mockitoInlineVersion        : "5.2.0",
         cucumberVersion             : "7.14.0",
         springCloudStubRunnerVersion: "4.0.4"

@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
@@ -24,6 +26,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
 
 @ExtendWith(SpringExtension.class)
+@Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
 class MeansAssessmentSectionSummaryBuilderTest {
 
