@@ -60,6 +60,12 @@ public class StatelessDataAdapter {
             "FULLB", List.of(OutgoingType.TAX, OutgoingType.NATIONAL_INSURANCE, OutgoingType.CHILDCARE_COSTS, OutgoingType.MAINTENANCE_COSTS)
     );
 
+    static class DetailCodeNotFoundException extends RuntimeException {
+        DetailCodeNotFoundException(String type, String detailCode) {
+            super(String.format("%s type with detail code: %s does not exist.", type, detailCode));
+        }
+    }
+
     public static List<ApiAssessmentSectionSummary> mapIncomesToSectionSummaries(AssessmentCriteriaEntity assessmentCriteria,
                                                                                  @NotNull List<Income> incomes) {
         return incomes.stream().map(income -> {
@@ -80,6 +86,22 @@ public class StatelessDataAdapter {
                     withSection(getSectionByOutgoingType(outgoing.getOutgoingType())).
                     withAssessmentDetails(Collections.singletonList(detail));
         }).toList();
+    }
+
+    public static IncomeType mapDetailCodeToIncomeType(String detailCode) {
+        final var incomeType = inputToDetailCodeMap.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(detailCode))
+                .findFirst();
+        return incomeType.map(Map.Entry::getKey).orElseThrow(() ->
+                new DetailCodeNotFoundException("Income", detailCode));
+    }
+
+    public static OutgoingType mapDetailCodeToOutgoingType(String detailCode) {
+        final var outgoingType = outgoingToDetailCodeMap.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(detailCode))
+                .findFirst();
+        return outgoingType.map(Map.Entry::getKey).orElseThrow(() ->
+                new DetailCodeNotFoundException("Outgoing", detailCode));
     }
 
     private static ApiAssessmentDetail createAssessmentDetail(Amount amount,

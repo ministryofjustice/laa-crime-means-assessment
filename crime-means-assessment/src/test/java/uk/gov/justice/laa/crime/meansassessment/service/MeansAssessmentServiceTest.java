@@ -5,7 +5,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -30,6 +33,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentR
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +47,7 @@ import static org.mockito.Mockito.*;
 class MeansAssessmentServiceTest {
 
     private final AssessmentCriteriaEntity assessmentCriteria =
-            TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
+            TestModelDataBuilder.getAssessmentCriteriaEntityWithDetailsAndChildWeightings();
 
     private final MeansAssessmentRequestDTO meansAssessment =
             TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
@@ -95,6 +99,10 @@ class MeansAssessmentServiceTest {
     private void setupDoAssessmentStubbing(AssessmentType assessmentType) {
         when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(assessmentCriteria);
+
+        if (assessmentType == AssessmentType.FULL) {
+            meansAssessment.setSectionSummaries(Arrays.asList(TestModelDataBuilder.getApiAssessmentSectionSummaryForFullA()));
+        }
 
         when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class)))
                 .thenReturn(new MaatApiAssessmentRequest());

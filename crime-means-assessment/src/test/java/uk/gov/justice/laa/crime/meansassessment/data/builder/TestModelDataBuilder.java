@@ -11,10 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -40,13 +37,14 @@ public class TestModelDataBuilder {
     public static final LocalDateTime TEST_DATE_TO = LocalDateTime.now().plusDays(2);
 
     // Assessment Criteria Child Weighting
-    public static final Integer TEST_INITIAL_LOWER_AGE_RANGE = 3;
-    public static final Integer TEST_INITIAL_UPPER_AGE_RANGE = 5;
+    public static final Integer TEST_INITIAL_LOWER_AGE_RANGE = 5;
+    public static final Integer TEST_INITIAL_UPPER_AGE_RANGE = 7;
     public static final BigDecimal TEST_WEIGHTING_FACTOR = BigDecimal.ONE;
 
     // Assessment Criteria Details
     public static final Integer TEST_DETAIL_ID = 2;
     public static final Integer TEST_CRITERIA_DETAIL_ID = 135;
+    public static final Integer TAX_CRITERIA_DETAIL_ID = 128;
     public static final String TEST_DETAIL_CODE = "TEST_CODE";
     public static final String TEST_DESCRIPTION = "TEST_DESCRIPTION";
     public static final String TEST_SECTION = "SECTION";
@@ -117,12 +115,42 @@ public class TestModelDataBuilder {
         return criteria;
     }
 
+    public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithDetailsAndChildWeightings() {
+        var criteria = getAssessmentCriteriaEntity();
+        var weighting1 = getAssessmentCriteriaChildWeightingEntityWithId(37);
+        weighting1.setWeightingFactor(BigDecimal.valueOf(0.15));
+        var weighting2 = getAssessmentCriteriaChildWeightingEntityWithId(38);
+        weighting2.setWeightingFactor(BigDecimal.valueOf(0.35));
+        weighting2.setLowerAgeRange(2);
+        weighting2.setUpperAgeRange(4);
+        criteria.setAssessmentCriteriaChildWeightings(Set.of(weighting1, weighting2));
+
+        var detailEntities = Map.of("EMP_INC", TEST_CRITERIA_DETAIL_ID, "TAX", TAX_CRITERIA_DETAIL_ID).entrySet().stream().map(
+                code_and_id -> {
+                    final var detailEntity = getAssessmentCriteriaDetailEntity();
+                    detailEntity.setId(code_and_id.getValue());
+                    detailEntity.setAssessmentDetail(AssessmentDetailEntity.builder().detailCode(code_and_id.getKey()).build());
+                    return detailEntity;
+                }
+        ).collect(Collectors.toSet());
+        criteria.setAssessmentCriteriaDetails(detailEntities);
+        return criteria;
+    }
+
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithDetails() {
         var criteria = getAssessmentCriteriaEntity();
-        criteria.setAssessmentCriteriaDetails(
-                Set.of(getAssessmentCriteriaDetailEntityWithId())
-        );
+
+        var detailEntities = Map.of("EMP_INC", TEST_CRITERIA_DETAIL_ID, "TAX", TAX_CRITERIA_DETAIL_ID).entrySet().stream().map(
+                code_and_id -> {
+                    final var detailEntity = TestModelDataBuilder.getAssessmentCriteriaDetailEntity();
+                    detailEntity.setId(code_and_id.getValue());
+                    detailEntity.setAssessmentDetail(AssessmentDetailEntity.builder().detailCode(code_and_id.getKey()).build());
+                    return detailEntity;
+                }
+        ).collect(Collectors.toSet());
+        criteria.setAssessmentCriteriaDetails(detailEntities);
         return criteria;
+
     }
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntity() {
@@ -384,6 +412,24 @@ public class TestModelDataBuilder {
                 );
     }
 
+    public static ApiAssessmentSectionSummary getApiAssessmentSectionSummaryForFullA() {
+        return new ApiAssessmentSectionSummary()
+                .withApplicantAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
+                .withAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
+                .withPartnerAnnualTotal(BigDecimal.ZERO)
+                .withSection("FULLA")
+                .withAssessmentDetails(
+                        new ArrayList<>(
+                                List.of(
+                                        new ApiAssessmentDetail()
+                                                .withCriteriaDetailId(TAX_CRITERIA_DETAIL_ID)
+                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
+                                                .withApplicantFrequency(TEST_FREQUENCY)
+                                )
+                        )
+                );
+    }
+
     public static List<ApiAssessmentSectionSummary> getAssessmentSummaries() {
         ApiAssessmentSectionSummary section = getApiAssessmentSectionSummary();
         return List.of(section, new ApiAssessmentSectionSummary()
@@ -457,11 +503,15 @@ public class TestModelDataBuilder {
                 new ApiAssessmentChildWeighting()
                         .withId(1234)
                         .withChildWeightingId(37)
+                        .withLowerAgeRange(2)
+                        .withUpperAgeRange(4)
                         .withNoOfChildren(1)
                 ,
                 new ApiAssessmentChildWeighting()
                         .withId(2345)
                         .withChildWeightingId(38)
+                        .withLowerAgeRange(5)
+                        .withUpperAgeRange(7)
                         .withNoOfChildren(2)
         );
     }
@@ -625,25 +675,38 @@ public class TestModelDataBuilder {
         return List.of(
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(37)
-                        .withNoOfChildren(1)
-                ,
+                        .withLowerAgeRange(0)
+                        .withUpperAgeRange(1)
+                        .withNoOfChildren(1),
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(38)
+                        .withLowerAgeRange(2)
+                        .withUpperAgeRange(4)
                         .withNoOfChildren(2),
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(39)
+                        .withLowerAgeRange(5)
+                        .withUpperAgeRange(7)
                         .withNoOfChildren(2),
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(40)
+                        .withLowerAgeRange(8)
+                        .withUpperAgeRange(10)
                         .withNoOfChildren(2),
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(41)
+                        .withLowerAgeRange(11)
+                        .withUpperAgeRange(12)
                         .withNoOfChildren(2),
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(42)
+                        .withLowerAgeRange(13)
+                        .withUpperAgeRange(15)
                         .withNoOfChildren(2),
                 new ApiAssessmentChildWeighting()
                         .withChildWeightingId(43)
+                        .withLowerAgeRange(16)
+                        .withUpperAgeRange(18)
                         .withNoOfChildren(2)
         );
     }

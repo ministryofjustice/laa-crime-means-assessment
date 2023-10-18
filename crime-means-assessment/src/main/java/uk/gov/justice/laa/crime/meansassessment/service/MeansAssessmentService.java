@@ -15,6 +15,7 @@ import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingEx
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
@@ -23,11 +24,12 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentReque
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.util.SortUtils;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.gov.justice.laa.crime.meansassessment.service.stateless.MaatToStatelessDataAdapter.*;
 
 @Slf4j
 @Service
@@ -37,13 +39,13 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     private final AssessmentCriteriaService assessmentCriteriaService;
     private final MeansAssessmentResponseBuilder responseBuilder;
     private final MaatCourtDataAssessmentBuilder assessmentBuilder;
-    private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
-    private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
     private final AssessmentCompletionService assessmentCompletionService;
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
     private final IncomeEvidenceService incomeEvidenceService;
     private final EligibilityChecker crownCourtEligibilityService;
+
+    private final StatelessAssessmentService statelessAssessmentService;
 
     public MeansAssessmentService(MaatCourtDataService maatCourtDataService,
                                   AssessmentCriteriaService assessmentCriteriaService,
@@ -62,13 +64,13 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         this.assessmentCriteriaService = assessmentCriteriaService;
         this.responseBuilder = responseBuilder;
         this.assessmentBuilder = assessmentBuilder;
-        this.fullAssessmentAvailabilityService = fullAssessmentAvailabilityService;
-        this.meansAssessmentServiceFactory = meansAssessmentServiceFactory;
         this.assessmentCompletionService = assessmentCompletionService;
         this.meansAssessmentBuilder = meansAssessmentBuilder;
         this.assessmentCriteriaDetailService = assessmentCriteriaDetailService;
         this.incomeEvidenceService = incomeEvidenceService;
         this.crownCourtEligibilityService = crownCourtEligibilityService;
+
+        statelessAssessmentService = new StatelessAssessmentService(assessmentCriteriaService, meansAssessmentServiceFactory, fullAssessmentAvailabilityService);
     }
 
     public ApiMeansAssessmentResponse doAssessment(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
@@ -79,19 +81,44 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                     (AssessmentType.FULL.equals(assessmentType)) ? requestDTO.getFullAssessmentDate()
                             : requestDTO.getInitialAssessmentDate();
 
-            AssessmentService assessmentService =
-                    meansAssessmentServiceFactory.getService(assessmentType);
-
             AssessmentCriteriaEntity assessmentCriteria = assessmentCriteriaService.getAssessmentCriteria(
                     assessmentDate, requestDTO.getHasPartner(), requestDTO.getPartnerContraryInterest());
 
-            BigDecimal summariesTotal = calculateSummariesTotal(requestDTO, assessmentCriteria);
-
-            if (AssessmentType.FULL == assessmentType) {
-                requestDTO.setEligibilityCheckRequired(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO));
+            MeansAssessmentDTO completedAssessment;
+            boolean fullAssessmentAvailable;
+            final var childGroupings = childGroupingsFromChildWeightings(requestDTO.getChildWeightings());
+            if (AssessmentType.INIT == assessmentType) {
+                final var initResult = statelessAssessmentService.initialResult(
+                        childGroupings,
+                        assessmentCriteria,
+                        requestDTO.getCaseType(),
+                        requestDTO.getMagCourtOutcome(),
+                        incomesFromSectionSummaries(requestDTO.getSectionSummaries(), assessmentCriteria),
+                        requestDTO.getNewWorkReason());
+                completedAssessment = MeansAssessmentDTO.builder()
+                        .currentStatus(requestDTO.getAssessmentStatus())
+                        .initAssessmentResult(initResult.getResult())
+                        .adjustedIncomeValue(initResult.getAdjustedIncomeValue())
+                        .totalAggregatedIncome(initResult.getTotalAggregatedIncome())
+                        .build();
+                fullAssessmentAvailable = initResult.isFullAssessmentPossible();
+            } else {
+                final var fullResult = statelessAssessmentService.fullResult(
+                        childGroupings,
+                        assessmentCriteria,
+                        crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO),
+                        requestDTO.getCaseType(),
+                        outgoingsFromSectionSummaries(requestDTO.getSectionSummaries(), assessmentCriteria),
+                        requestDTO.getInitTotalAggregatedIncome());
+                completedAssessment = MeansAssessmentDTO.builder()
+                        .currentStatus(requestDTO.getAssessmentStatus())
+                        .fullAssessmentResult(fullResult.getResult())
+                        .adjustedLivingAllowance(fullResult.getAdjustedLivingAllowance())
+                        .totalAggregatedExpense(fullResult.getTotalAnnualAggregatedExpenditure())
+                        .totalAnnualDisposableIncome(fullResult.getDisposableIncome())
+                        .build();
+                fullAssessmentAvailable = false;
             }
-            MeansAssessmentDTO completedAssessment =
-                    assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
@@ -111,11 +138,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                     responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
 
             if (AssessmentType.INIT.equals(assessmentType)) {
-                boolean fullAssessmentAvailable = fullAssessmentAvailabilityService
-                        .isFullAssessmentAvailable(requestDTO.getCaseType(),
-                                requestDTO.getMagCourtOutcome(),
-                                requestDTO.getNewWorkReason(),
-                                completedAssessment.getInitAssessmentResult());
                 assessmentResponse.setFullAssessmentAvailable(fullAssessmentAvailable);
             }
 

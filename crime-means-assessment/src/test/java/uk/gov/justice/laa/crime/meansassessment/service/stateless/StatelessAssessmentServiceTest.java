@@ -175,7 +175,7 @@ class StatelessAssessmentServiceTest {
                                 .withCaseType(CaseType.APPEAL_CC)
                                 .withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
                         Map.of(AgeRange.ZERO_TO_ONE, 1, AgeRange.EIGHT_TO_TEN, 4),
-                        List.of(employmentIncome), Collections.emptyList()
+                        List.of(employmentIncome), Collections.emptyList(), TestModelDataBuilder.getAssessmentCriteriaEntity()
                 );
     }
 }
