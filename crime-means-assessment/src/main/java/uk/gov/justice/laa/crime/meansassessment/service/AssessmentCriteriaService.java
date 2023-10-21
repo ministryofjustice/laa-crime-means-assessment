@@ -13,6 +13,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.Assessment
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.CaseTypeAssessmentCriteriaDetailValueRepository;
+import uk.gov.justice.laa.crime.meansassessment.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,6 +42,11 @@ public class AssessmentCriteriaService {
             log.error("No Assessment Criteria found for date {}", assessmentDate);
             throw new AssessmentCriteriaNotFoundException(String.format("No Assessment Criteria found for date %s", assessmentDate));
         }
+    }
+
+    public BigDecimal getFullAssessmentThreshold(String assessmentDate) {
+        AssessmentCriteriaEntity assessmentCriteriaEntity = assessmentCriteriaRepository.findAssessmentCriteriaForDate(DateUtil.getLocalDateTime(assessmentDate));
+        return assessmentCriteriaEntity.getFullThreshold();
     }
 
     // Check for Council Tax not being submitted anything other than 'ANNUALLY'

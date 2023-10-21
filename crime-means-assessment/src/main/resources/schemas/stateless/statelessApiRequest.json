@@ -37,18 +37,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "properties": {
-              "age_range": {
-                "type": "object",
-                "description": "Age Range of children",
-                "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange"
-              },
-              "count": {
-                "type": "integer"
-              }
-            },
-            "required": ["age_range", "count"],
-            "additionalProperties": false
+            "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.service.stateless.DependantChild"
           }
         }
       },

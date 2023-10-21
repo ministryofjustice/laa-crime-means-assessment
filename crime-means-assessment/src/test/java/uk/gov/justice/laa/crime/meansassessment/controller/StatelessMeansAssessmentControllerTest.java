@@ -7,14 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.DependantChild;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
@@ -38,12 +39,13 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(CrimeMeansAssessmentTestConfiguration.class)
 @WebMvcTest(StatelessMeansAssessmentController.class)
 class StatelessMeansAssessmentControllerTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
     private static final ApiMeansAssessmentRequest testRequest = TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
-    private static final DependantChild childOne = new DependantChild().withAgeRange(AgeRange.ZERO_TO_ONE).withCount(2);
-    private static final DependantChild childTwo = new DependantChild().withAgeRange(AgeRange.FIVE_TO_SEVEN).withCount(1);
+    private static final DependantChild childOne = new DependantChild(AgeRange.ZERO_TO_ONE, 2);
+    private static final DependantChild childTwo = new DependantChild(AgeRange.FIVE_TO_SEVEN, 1);
     private static final FrequencyAmount incomeAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(2700));
     private static final FrequencyAmount outAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(100));
 
@@ -67,7 +69,8 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var initialResult = new StatelessResult(
-                null, new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, false, BigDecimal.TEN));
+                null, new StatelessInitialResult(InitAssessmentResult.PASS,
+                BigDecimal.ZERO, BigDecimal.ONE, false, BigDecimal.TEN, BigDecimal.ZERO));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(initialResult);
@@ -87,9 +90,9 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var fullResult = new StatelessResult(
-                new StatelessFullResult(FullAssessmentResult.PASS, BigDecimal.ONE, BigDecimal.ONE,
+                new StatelessFullResult(FullAssessmentResult.PASS, BigDecimal.ONE,
                         BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ONE),
-                new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true, BigDecimal.ZERO));
+                new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true, BigDecimal.ZERO, BigDecimal.ONE));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(fullResult);

@@ -7,37 +7,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
 import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
 
 @DirtiesContext
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(CrimeMeansAssessmentTestConfiguration.class)
 @WebMvcTest(MeansAssessmentController.class)
 class MeansAssessmentControllerTest {
 
     private static final boolean IS_VALID = true;
     private static final String ENDPOINT_URL = "/api/internal/v1/assessment/means";
+    private static final String FA_THRESHOLD_ENDPOINT_URL = "/api/internal/v1/assessment/means/fullAssessmentThreshold/";
 
     @Autowired
     private MockMvc mvc;
@@ -50,6 +56,9 @@ class MeansAssessmentControllerTest {
 
     @MockBean
     private MeansAssessmentService meansAssessmentService;
+
+    @MockBean
+    private AssessmentCriteriaService assessmentCriteriaService;
 
     @MockBean
     private MeansAssessmentValidationProcessor assessmentValidator;
@@ -145,13 +154,13 @@ class MeansAssessmentControllerTest {
     }
 
     @Test
-    void givenInvalidPram_whenGetOldAssessmentInvoked_shouldFailBadRequest() throws Exception {
+    void givenInvalidParam_whenGetOldAssessmentInvoked_shouldFailBadRequest() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.GET, "", ENDPOINT_URL, true))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
-    void givenValidPram_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
+    void givenValidParam_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
         when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(new ApiGetMeansAssessmentResponse());
         mvc.perform(buildRequestGivenContent(
                 HttpMethod.GET,
@@ -159,5 +168,24 @@ class MeansAssessmentControllerTest {
                 ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID,
                 true)
         ).andExpect(status().isOk());
+    }
+
+    @Test
+    void givenInvalidParam_whenFullAssessmentThresholdInvoked_shouldFailBadRequest() throws Exception {
+        mvc.perform(buildRequestGivenContent(HttpMethod.GET, "", FA_THRESHOLD_ENDPOINT_URL, true))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void givenValidParam_whenFullAssessmentThresholdInvoked_shouldSuccess() throws Exception {
+        when(assessmentCriteriaService.getFullAssessmentThreshold(any())).thenReturn(new BigDecimal("1000"));
+        mvc.perform(buildRequestGivenContent(
+                        HttpMethod.GET,
+                        "",
+                        FA_THRESHOLD_ENDPOINT_URL + "/" + ASSESSMENT_DATE,
+                        true)
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(FULL_THRESHOLD));
+
     }
 }
