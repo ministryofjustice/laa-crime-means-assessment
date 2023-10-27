@@ -23,12 +23,11 @@ public class CrownCourtEligibilityService implements EligibilityChecker {
     private final MaatCourtDataService maatCourtDataService;
 
     public boolean isEligibilityCheckRequired(MeansAssessmentRequestDTO assessmentRequest) {
-        String laaTransactionId = assessmentRequest.getLaaTransactionId();
 
         boolean isEitherWayAndCommittedForTrial =
                 CaseType.EITHER_WAY.equals(assessmentRequest.getCaseType())
                         && MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(assessmentRequest.getMagCourtOutcome());
-        RepOrderDTO repOrder = maatCourtDataService.getRepOrder(assessmentRequest.getRepId(), laaTransactionId);
+        RepOrderDTO repOrder = maatCourtDataService.getRepOrder(assessmentRequest.getRepId());
 
         if (isEitherWayAndCommittedForTrial) {
             Integer financialAssessmentId = assessmentRequest.getFinancialAssessmentId();

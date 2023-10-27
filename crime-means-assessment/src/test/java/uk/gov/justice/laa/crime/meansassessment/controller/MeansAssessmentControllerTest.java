@@ -161,7 +161,7 @@ class MeansAssessmentControllerTest {
 
     @Test
     void givenValidParam_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
-        when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(new ApiGetMeansAssessmentResponse());
+        when(meansAssessmentService.getOldAssessment(any())).thenReturn(new ApiGetMeansAssessmentResponse());
         mvc.perform(buildRequestGivenContent(
                 HttpMethod.GET,
                 "",
