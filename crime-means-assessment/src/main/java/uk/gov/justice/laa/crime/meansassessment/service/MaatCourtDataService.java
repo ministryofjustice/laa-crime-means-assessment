@@ -26,7 +26,6 @@ public class MaatCourtDataService {
     private final RestAPIClient maatAPIClient;
 
     public MaatApiAssessmentResponse persistMeansAssessment(MaatApiAssessmentRequest assessment,
-                                                            String laaTransactionId,
                                                             AssessmentRequestType requestType) {
         MaatApiAssessmentResponse response;
         String endpoint = configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType);
@@ -34,69 +33,64 @@ public class MaatCourtDataService {
             response =
                     maatAPIClient.post(assessment, new ParameterizedTypeReference<>() {},
                             endpoint,
-                            Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId));
+                            Map.of());
         } else {
             response =
                     maatAPIClient.put(assessment, new ParameterizedTypeReference<>() {},
                             endpoint,
-                            Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId));
+                            Map.of());
         }
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
-    public RepOrderDTO updateCompletionDate(DateCompletionRequestDTO dateCompletionRequestDTO, String laaTransactionId) {
+    public RepOrderDTO updateCompletionDate(DateCompletionRequestDTO dateCompletionRequestDTO) {
         RepOrderDTO response = maatAPIClient.post(dateCompletionRequestDTO, new ParameterizedTypeReference<>() {},
                 configuration.getRepOrderEndpoints().getDateCompletionUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId));
+                Map.of());
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
-    public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId, String laaTransactionId) {
+    public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId) {
         PassportAssessmentDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                 configuration.getPassportAssessmentEndpoints().getFindUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 repId
         );
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
-    public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId, String laaTransactionId) {
+    public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId) {
         HardshipReviewDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                 configuration.getHardshipReviewEndpoints().getFindUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 repId
         );
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
-    public IOJAppealDTO getIOJAppealFromRepId(Integer repId, String laaTransactionId) {
+    public IOJAppealDTO getIOJAppealFromRepId(Integer repId) {
         IOJAppealDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                 configuration.getIojAppealEndpoints().getFindUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 repId
         );
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
-    public FinancialAssessmentDTO getFinancialAssessment(Integer financialAssessmentId, String laaTransactionId) {
+    public FinancialAssessmentDTO getFinancialAssessment(Integer financialAssessmentId) {
         FinancialAssessmentDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                 configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 financialAssessmentId
         );
         log.info(String.format(RESPONSE_STRING, response));
         return response;
     }
 
-    public RepOrderDTO getRepOrder(Integer repId, String laaTransactionId) {
+    public RepOrderDTO getRepOrder(Integer repId) {
         RepOrderDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                 configuration.getRepOrderEndpoints().getFindUrl(),
-                Map.of(Constants.LAA_TRANSACTION_ID, laaTransactionId),
                 repId
         );
         log.info(String.format(RESPONSE_STRING, response));

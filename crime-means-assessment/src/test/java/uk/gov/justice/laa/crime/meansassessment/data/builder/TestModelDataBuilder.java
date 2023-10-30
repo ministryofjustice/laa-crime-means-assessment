@@ -1,7 +1,9 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.meansassessment.dto.*;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
@@ -12,12 +14,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Component
 public class TestModelDataBuilder {
@@ -95,7 +93,6 @@ public class TestModelDataBuilder {
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final Integer TEST_ASSESSMENT_DETAILS_ID = 41681819;
     public static final String TEST_ASSESSMENT_TYPE_INIT = "INIT";
-    public static final String TEST_ASSESSMENT_TYPE_FULL = "FULL";
     public static final String TEST_ASSESSMENT_SECTION_INITA = "INITA";
     public static final String TEST_ASSESSMENT_SECTION_INITB = "INITB";
     public static final String TEST_ASSESSMENT_SECTION_FULLA = "FULLA";
@@ -104,8 +101,6 @@ public class TestModelDataBuilder {
     private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
 
     public static final String TEST_DATE_STRING = "2022-10-08";
-
-    public static final String MAAT_API_REGISTRATION_ID = "maat-api";
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -156,17 +151,6 @@ public class TestModelDataBuilder {
                 .upperAgeRange(TEST_INITIAL_UPPER_AGE_RANGE)
                 .weightingFactor(TEST_WEIGHTING_FACTOR)
                 .userCreated(TEST_USER)
-                .build();
-    }
-
-    public static AssessmentDetailEntity getAssessmentDetailEntity() {
-        return AssessmentDetailEntity.builder()
-                .detailCode(TEST_DETAIL_CODE)
-                .description(TEST_DESCRIPTION)
-                .createdDateTime(LocalDateTime.now())
-                .createdBy(TEST_USER)
-                .modifiedDateTime(LocalDateTime.now())
-                .modifiedBy(TEST_USER)
                 .build();
     }
 
@@ -310,7 +294,6 @@ public class TestModelDataBuilder {
 
     public static MeansAssessmentRequestDTO getMeansAssessmentRequestDTO(boolean isValid) {
         return MeansAssessmentRequestDTO.builder()
-                .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .repId(isValid ? 91919 : null)
                 .cmuId(isValid ? 91919 : null)
                 .initialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
@@ -401,51 +384,6 @@ public class TestModelDataBuilder {
         );
     }
 
-    public static List<ApiAssessmentSectionSummary> getAllApiAssessmentSectionSummaries() {
-        return List.of(
-                new ApiAssessmentSectionSummary()
-                        .withSection("INITA")
-                        .withAssessmentDetails(
-                                List.of(
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(132)
-                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
-                                        ,
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(133)
-                                                .withApplicantAmount(BigDecimal.ZERO)
-                                        ,
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(134)
-                                                .withApplicantAmount(BigDecimal.ZERO)
-                                                .withPartnerAmount(TEST_PARTNER_VALUE)
-                                                .withPartnerFrequency(TEST_FREQUENCY)
-                                )
-                        )
-                ,
-                new ApiAssessmentSectionSummary()
-                        .withSection("INITB")
-                        .withAssessmentDetails(
-                                Stream.of(
-                                        List.of(new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(135)
-                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
-                                                .withPartnerAmount(TEST_PARTNER_VALUE)
-                                                .withPartnerFrequency(TEST_FREQUENCY)),
-
-                                        IntStream.range(136, 146).boxed().collect(Collectors.toList())
-                                                .stream().map(num -> new ApiAssessmentDetail()
-                                                        .withCriteriaDetailId(num)
-                                                        .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                        .withApplicantFrequency(TEST_FREQUENCY)
-                                                ).collect(Collectors.toList())
-                                ).flatMap(Collection::stream).collect(Collectors.toList())
-                        )
-        );
-    }
-
     public static ApiUserSession getUserSession() {
         return new ApiUserSession()
                 .withSessionId("6c45ebfe-fe3a-5f2f-8dad-f7c8f03b8327")
@@ -490,14 +428,6 @@ public class TestModelDataBuilder {
                 .withAdjustedIncomeValue(TEST_ADJUSTED_INCOME)
                 .withTotalAnnualDisposableIncome(TEST_DISPOSABLE_INCOME)
                 .withTotalAggregatedExpense(TEST_TOTAL_EXPENDITURE);
-    }
-
-    public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid) {
-        return AuthorizationResponseDTO.builder().result(valid).build();
-    }
-
-    public static OutstandingAssessmentResultDTO getOutstandingAssessmentResultDTO(boolean outstandingAssessmentsFound) {
-        return OutstandingAssessmentResultDTO.builder().outstandingAssessments(outstandingAssessmentsFound).build();
     }
 
     public static List<ApiAssessmentSectionSummary> getApiAssessmentSummaries(boolean isValid) {

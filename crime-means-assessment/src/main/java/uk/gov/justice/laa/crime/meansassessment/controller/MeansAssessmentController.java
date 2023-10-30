@@ -39,6 +39,7 @@ public class MeansAssessmentController {
     private final MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
     private MeansAssessmentRequestDTO preProcessRequest(ApiMeansAssessmentRequest meansAssessment, AssessmentRequestType requestType) {
+        log.info("Means assessment request received with transaction id - " + meansAssessment.getLaaTransactionId());
         MeansAssessmentRequestDTO requestDTO =
                 meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);
         meansAssessmentValidationProcessor.validate(requestDTO, requestType);
@@ -130,8 +131,8 @@ public class MeansAssessmentController {
     )
     public ResponseEntity<ApiGetMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId,
                                                                           @Parameter(description = "Used for tracing calls") @RequestHeader(value = "Laa-Transaction-Id", required = false) String laaTransactionId) {
-        log.info("Get old means assessment request received");
-        return ResponseEntity.ok(meansAssessmentService.getOldAssessment(financialAssessmentId, laaTransactionId));
+        log.info("Get old means assessment request received with transaction id - " + laaTransactionId);
+        return ResponseEntity.ok(meansAssessmentService.getOldAssessment(financialAssessmentId));
     }
 
 
@@ -144,6 +145,5 @@ public class MeansAssessmentController {
         log.info("Retrieve full assessment threshold");
         return ResponseEntity.ok(assessmentCriteriaService.getFullAssessmentThreshold(assessmentDate));
     }
-
 
 }

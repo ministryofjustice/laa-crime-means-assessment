@@ -23,7 +23,6 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, SoftAssertionsExtension.class})
@@ -50,7 +49,7 @@ class CrownCourtEligibilityServiceTest {
         requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         repOrderDTO = TestModelDataBuilder.getRepOrderDTOWithAssessments(new ArrayList<>(List.of(financialAssessment)));
 
-        when(maatCourtDataService.getRepOrder(anyInt(), anyString()))
+        when(maatCourtDataService.getRepOrder(anyInt()))
                 .thenReturn(repOrderDTO);
     }
 

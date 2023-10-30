@@ -5,7 +5,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -38,6 +41,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
 
 @ExtendWith(MockitoExtension.class)
 class MeansAssessmentServiceTest {
@@ -106,7 +110,7 @@ class MeansAssessmentServiceTest {
 
         MaatApiAssessmentResponse maatApiAssessmentResponse =
                 new MaatApiAssessmentResponse()
-                        .withId(TestModelDataBuilder.MEANS_ASSESSMENT_ID)
+                        .withId(MEANS_ASSESSMENT_ID)
                         .withInitTotAggregatedIncome(TestModelDataBuilder.TEST_AGGREGATED_INCOME)
                         .withInitResult(InitAssessmentResult.PASS.getResult())
                         .withInitResultReason(InitAssessmentResult.PASS.getReason())
@@ -114,7 +118,7 @@ class MeansAssessmentServiceTest {
                         .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
 
         when(maatCourtDataService.persistMeansAssessment(
-                any(MaatApiAssessmentRequest.class), anyString(), any(AssessmentRequestType.class))
+                any(MaatApiAssessmentRequest.class), any(AssessmentRequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
         when(meansAssessmentResponseBuilder.build(any(MaatApiAssessmentResponse.class),
@@ -262,12 +266,10 @@ class MeansAssessmentServiceTest {
     @Test
     void givenInvalidAssessmentId_whenGetOldAssessmentInvoked_thenReturnEmpty() {
 
-        when(maatCourtDataService.getFinancialAssessment(any(), any())).thenReturn(null);
+        when(maatCourtDataService.getFinancialAssessment(any())).thenReturn(null);
         ApiGetMeansAssessmentResponse apiMeansAssessmentResponse =
-                meansAssessmentService.getOldAssessment(
-                        TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID
-                );
-        verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
+                meansAssessmentService.getOldAssessment(MEANS_ASSESSMENT_ID);
+        verify(maatCourtDataService, times(1)).getFinancialAssessment(any());
         assertThat(apiMeansAssessmentResponse).isNull();
 
     }
@@ -278,10 +280,10 @@ class MeansAssessmentServiceTest {
                 .when(assessmentCriteriaDetailService).getAssessmentCriteriaDetailById(any());
         when(meansAssessmentSectionSummaryBuilder.buildAssessmentDTO(any(), any())).thenReturn(TestModelDataBuilder
                 .getAssessmentDTO(TestModelDataBuilder.TEST_ASSESSMENT_TYPE_INIT, TestModelDataBuilder.TEST_SEQ));
-        when(maatCourtDataService.getFinancialAssessment(any(), any()))
+        when(maatCourtDataService.getFinancialAssessment(any()))
                 .thenReturn(TestModelDataBuilder.getFinancialAssessmentDTOWithDetails());
-        meansAssessmentService.getOldAssessment(TestModelDataBuilder.MEANS_ASSESSMENT_ID, TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID);
-        verify(maatCourtDataService, times(1)).getFinancialAssessment(any(), any());
+        meansAssessmentService.getOldAssessment(MEANS_ASSESSMENT_ID);
+        verify(maatCourtDataService, times(1)).getFinancialAssessment(any());
 
     }
 
