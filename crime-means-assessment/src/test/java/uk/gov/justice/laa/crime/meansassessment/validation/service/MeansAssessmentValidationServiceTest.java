@@ -55,7 +55,7 @@ class MeansAssessmentValidationServiceTest {
     void givenInvalidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenFalseIsReturned() {
         when(maatAPIClient.get(
                 eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {
-                }), anyString(), anyMap(), anyString(), anyString()))
+                }), anyString(), anyString(), anyString()))
                 .thenReturn(FALSE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
     }
@@ -63,7 +63,7 @@ class MeansAssessmentValidationServiceTest {
     @Test
     void givenValidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenTrueIsReturned() {
         when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {
-        }), anyString(), anyMap(), anyString(), anyString()))
+        }), anyString(), anyString(), anyString()))
                 .thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isTrue();
     }
@@ -88,7 +88,7 @@ class MeansAssessmentValidationServiceTest {
     @Test
     void givenInvalidRoleAction_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
         when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {
-        }), anyString(), anyMap(), anyString(), anyString()))
+        }), anyString(), anyString(), anyString()))
                 .thenReturn(FALSE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isFalse();
     }
@@ -96,7 +96,7 @@ class MeansAssessmentValidationServiceTest {
     @Test
     void givenValidRoleAction_whenIsRoleActionValidIsInvoked_thenTrueIsReturned() {
         when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {
-        }), anyString(), anyMap(), anyString(), anyString()))
+        }), anyString(), anyString(), anyString()))
                 .thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isTrue();
     }
@@ -104,7 +104,7 @@ class MeansAssessmentValidationServiceTest {
     @Test
     void givenValidReservation_whenIsRepOrderReserved_thenTrueIsReturned() {
         when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {
-        }), anyString(), anyMap(), anyString(), anyInt(), anyString()))
+        }), anyString(), anyString(), anyInt(), anyString()))
                 .thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isTrue();
     }
@@ -112,7 +112,7 @@ class MeansAssessmentValidationServiceTest {
     @Test
     void givenInvalidReservation_whenIsRepOrderReserved_thenFalseIsReturned() {
         when(maatAPIClient.get(eq(new ParameterizedTypeReference<AuthorizationResponseDTO>() {
-        }), anyString(), anyMap(), anyString(), anyInt(), anyString()))
+        }), anyString(), anyString(), anyInt(), anyString()))
                 .thenReturn(FALSE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
     }
@@ -138,7 +138,7 @@ class MeansAssessmentValidationServiceTest {
     @Test
     void givenAnOutstandingAssessment_whenIsOutstandingAssessmentIsInvoked_thenTrueIsReturned() {
         when(maatAPIClient.get(eq(new ParameterizedTypeReference<OutstandingAssessmentResultDTO>() {
-        }), anyString(), anyMap(), any()))
+        }), anyString(), any()))
                 .thenReturn(IS_OUTSTANDING_ASSESSMENT);
         assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isTrue();
     }
@@ -146,7 +146,7 @@ class MeansAssessmentValidationServiceTest {
     @Test
     void givenNoOutstandingAssessments_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
         when(maatAPIClient.get(eq(new ParameterizedTypeReference<OutstandingAssessmentResultDTO>() {
-        }), anyString(), anyMap(), any()))
+        }), anyString(), any()))
                 .thenReturn(NO_OUTSTANDING_ASSESSMENT);
         assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
     }

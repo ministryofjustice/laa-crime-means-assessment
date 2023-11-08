@@ -95,12 +95,11 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             completedAssessment.setMeansAssessment(requestDTO);
             completedAssessment.setAssessmentCriteria(assessmentCriteria);
 
-            assessmentCompletionService.execute(completedAssessment, requestDTO.getLaaTransactionId());
+            assessmentCompletionService.execute(completedAssessment);
 
             MaatApiAssessmentResponse maatApiAssessmentResponse =
                     maatCourtDataService.persistMeansAssessment(
                             assessmentBuilder.build(completedAssessment, requestType),
-                            requestDTO.getLaaTransactionId(),
                             requestType
                     );
             log.info("Posting completed means assessment to Court Data API");
@@ -140,11 +139,11 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         }
     }
 
-    public ApiGetMeansAssessmentResponse getOldAssessment(Integer financialAssessmentId, String laaTransactionId) {
+    public ApiGetMeansAssessmentResponse getOldAssessment(Integer financialAssessmentId) {
         log.info("Processing get old assessment request - Start");
         ApiGetMeansAssessmentResponse assessmentResponse = null;
         FinancialAssessmentDTO financialAssessmentDTO =
-                maatCourtDataService.getFinancialAssessment(financialAssessmentId, laaTransactionId);
+                maatCourtDataService.getFinancialAssessment(financialAssessmentId);
         if (null != financialAssessmentDTO) {
             assessmentResponse = new ApiGetMeansAssessmentResponse();
             buildMeansAssessmentResponse(assessmentResponse, financialAssessmentDTO);

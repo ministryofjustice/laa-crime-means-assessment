@@ -14,7 +14,6 @@ public class MeansAssessmentRequestDTOBuilder {
     public MeansAssessmentRequestDTO buildRequestDTO(final ApiMeansAssessmentRequest assessmentRequest) {
 
         MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO.builder()
-                .laaTransactionId(assessmentRequest.getLaaTransactionId())
                 .repId(assessmentRequest.getRepId())
                 .cmuId(assessmentRequest.getCmuId())
                 .initialAssessmentDate(assessmentRequest.getInitialAssessmentDate())

@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.service.FullMeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.service.InitMeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
@@ -12,6 +14,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest()
+@Import(CrimeMeansAssessmentTestConfiguration.class)
 @ExtendWith(SpringExtension.class)
 class MeansAssessmentServiceFactoryTest {
 

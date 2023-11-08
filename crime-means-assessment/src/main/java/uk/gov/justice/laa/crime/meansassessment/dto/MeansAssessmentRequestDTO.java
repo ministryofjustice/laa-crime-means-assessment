@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 @Builder
 public class MeansAssessmentRequestDTO {
-    private String laaTransactionId;
     private Integer repId;
     private Integer cmuId;
     private LocalDateTime initialAssessmentDate;
