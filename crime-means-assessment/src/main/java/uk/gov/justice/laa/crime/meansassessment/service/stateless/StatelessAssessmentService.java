@@ -103,7 +103,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
         final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 
         final var totalIncome = calcIncomeTotals(criteriaEntry, caseType, incomes);
-        final var service = meansAssessmentServiceFactory.getService(AssessmentType.INIT);
+        final var initMeansAssessmentService = meansAssessmentServiceFactory.getService(AssessmentType.INIT);
 
         // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
         final MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO
@@ -111,7 +111,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                 .childWeightings(children)
                 .assessmentStatus(CurrentStatus.COMPLETE)
                 .build();
-        final var result = service.execute(totalIncome, requestDTO, criteriaEntry);
+        final var result = initMeansAssessmentService.execute(totalIncome, requestDTO, criteriaEntry);
 
         final var fullAssessmentPossible = fullAssessmentAvailabilityService.isFullAssessmentAvailable(
                 caseType,
