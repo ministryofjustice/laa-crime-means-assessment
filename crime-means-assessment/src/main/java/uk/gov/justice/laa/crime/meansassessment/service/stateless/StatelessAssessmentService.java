@@ -38,8 +38,10 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     public StatelessResult execute(Assessment assessment,
                                    Map<AgeRange, Integer> childGroupings,
                                    List<Income> income,
-                                   List<Outgoing> outgoings,
-                                   AssessmentCriteriaEntity assessmentCriteriaEntity) {
+                                   List<Outgoing> outgoings) {
+        final var assessmentCriteriaEntity = assessmentCriteriaService.getAssessmentCriteria(
+                assessment.getAssessmentDate(), assessment.getHasPartner(), false
+        );
         var initialAnswer = initialResult(
                 childGroupings,
                 assessmentCriteriaEntity,

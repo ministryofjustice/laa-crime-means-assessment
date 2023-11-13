@@ -48,12 +48,8 @@ public class StatelessMeansAssessmentController {
         var apiAssessment = meansAssessment.getAssessment();
         Map<AgeRange, Integer> childGroupings = getChildGroupings(apiAssessment.getDependantChildren());
 
-        final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(
-                apiAssessment.getAssessmentDate(), apiAssessment.getHasPartner(), false
-        );
-
         var result = statelessAssessmentService.execute(apiAssessment, childGroupings,
-                meansAssessment.getIncome(), meansAssessment.getOutgoings(), criteriaEntry);
+                meansAssessment.getIncome(), meansAssessment.getOutgoings());
         var initialResult = result.getInitialResult();
         var fullResult = result.getFullResult();
         var response = new StatelessApiResponse()
