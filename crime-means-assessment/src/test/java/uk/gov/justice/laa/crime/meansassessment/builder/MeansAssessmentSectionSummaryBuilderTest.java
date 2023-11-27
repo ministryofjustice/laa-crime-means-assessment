@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,6 +29,7 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 @ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
+@AutoConfigureObservability
 class MeansAssessmentSectionSummaryBuilderTest {
 
     static final BigDecimal EXPECTED_AMOUNT = new BigDecimal("280.00");

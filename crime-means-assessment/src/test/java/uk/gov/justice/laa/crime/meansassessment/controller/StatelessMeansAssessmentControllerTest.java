@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
@@ -57,6 +58,9 @@ class StatelessMeansAssessmentControllerTest {
 
     @MockBean
     private StatelessAssessmentService statelessAssessmentService;
+
+    @MockBean
+    private TraceIdHandler traceIdHandler;
 
     @Test
     void validRequest_success() throws Exception {

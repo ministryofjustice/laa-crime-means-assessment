@@ -3,6 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.factory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -13,9 +14,10 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest()
+@SpringBootTest
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @ExtendWith(SpringExtension.class)
+@AutoConfigureObservability
 class MeansAssessmentServiceFactoryTest {
 
     @Autowired

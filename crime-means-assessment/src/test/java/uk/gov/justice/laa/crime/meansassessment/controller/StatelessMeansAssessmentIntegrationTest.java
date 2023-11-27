@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
@@ -47,6 +48,7 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
         classes = {
                 CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class
         }, webEnvironment = DEFINED_PORT)
+@AutoConfigureObservability
 class StatelessMeansAssessmentIntegrationTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
 
