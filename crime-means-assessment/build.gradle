@@ -19,7 +19,8 @@ def versions = [
         mockitoInlineVersion        : "5.2.0",
         cucumberVersion             : "7.14.0",
         jUnitPlatformSuiteVersion   : "1.10.0",
-        springCloudStubRunnerVersion: "4.0.4"
+        springCloudStubRunnerVersion: "4.0.4",
+        h2DBVersion                 : '2.1.210'
 ]
 
 
@@ -59,7 +60,7 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    testImplementation "com.h2database:h2"
+    testImplementation group: 'com.h2database', name: 'h2', version: versions.h2DBVersion
     testImplementation "org.mockito:mockito-inline:$versions.mockitoInlineVersion"
     testImplementation "org.pitest:pitest:$versions.pitest"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
