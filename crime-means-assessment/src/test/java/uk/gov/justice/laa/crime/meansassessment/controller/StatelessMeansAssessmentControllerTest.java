@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
@@ -40,7 +38,6 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(CrimeMeansAssessmentTestConfiguration.class)
 @WebMvcTest(StatelessMeansAssessmentController.class)
 class StatelessMeansAssessmentControllerTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
