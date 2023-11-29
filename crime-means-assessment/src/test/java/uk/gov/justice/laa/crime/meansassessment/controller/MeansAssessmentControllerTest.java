@@ -7,14 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
@@ -37,7 +36,6 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
 @DirtiesContext
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(CrimeMeansAssessmentTestConfiguration.class)
 @WebMvcTest(MeansAssessmentController.class)
 class MeansAssessmentControllerTest {
 
@@ -62,6 +60,9 @@ class MeansAssessmentControllerTest {
 
     @MockBean
     private MeansAssessmentValidationProcessor assessmentValidator;
+
+    @MockBean
+    private TraceIdHandler traceIdHandler;
 
     @Test
     void createAssessment_success() throws Exception {
