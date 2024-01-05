@@ -52,19 +52,18 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
 
         if (assessment.getAssessmentType() == StatelessRequestType.INITIAL) {
             return new StatelessResult(null, initialAnswer);
+        }
+        if (initialAnswer.isFullAssessmentPossible()) {
+            final var statelessFullResult =
+                    fullResult(childGroupings, assessmentCriteriaEntity, assessment.getEligibilityCheckRequired(), assessment.getCaseType(), outgoings,
+                            initialAnswer.getTotalAggregatedIncome());
+            return new StatelessResult(statelessFullResult, initialAnswer);
         } else {
-            if (initialAnswer.isFullAssessmentPossible()) {
-                final var statelessFullResult =
-                        fullResult(childGroupings, assessmentCriteriaEntity, assessment.getEligibilityCheckRequired(), assessment.getCaseType(), outgoings,
-                                initialAnswer.getTotalAggregatedIncome());
-                return new StatelessResult(statelessFullResult, initialAnswer);
-            } else {
-                return new StatelessResult(null, initialAnswer);
-            }
+            return new StatelessResult(null, initialAnswer);
         }
     }
 
-    public StatelessFullResult fullResult(Map<AgeRange, Integer> childGroupings,
+    public StatelessFullResult fullResult(@NotNull Map<AgeRange, Integer> childGroupings,
                                            AssessmentCriteriaEntity criteriaEntry,
                                            boolean eligibilityCheckRequired,
                                            CaseType caseType,
