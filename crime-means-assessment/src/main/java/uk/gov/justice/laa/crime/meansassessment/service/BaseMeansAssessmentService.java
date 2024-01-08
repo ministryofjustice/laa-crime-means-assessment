@@ -18,7 +18,7 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setSta
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 public abstract class BaseMeansAssessmentService {
 
-    private final AssessmentCriteriaService assessmentCriteriaService;
+    protected final AssessmentCriteriaService assessmentCriteriaService;
 
     protected BigDecimal calculateDetailTotal(BigDecimal amount, Frequency frequency) {
         if (amount != null && frequency != null && !BigDecimal.ZERO.equals(amount)) {

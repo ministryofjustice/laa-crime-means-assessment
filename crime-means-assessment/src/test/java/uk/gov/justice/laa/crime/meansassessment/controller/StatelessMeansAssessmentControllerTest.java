@@ -16,6 +16,7 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
@@ -57,6 +58,9 @@ class StatelessMeansAssessmentControllerTest {
     private StatelessAssessmentService statelessAssessmentService;
 
     @MockBean
+    private AssessmentCriteriaService assessmentCriteriaService;
+
+    @MockBean
     private TraceIdHandler traceIdHandler;
 
     @Test
@@ -75,6 +79,8 @@ class StatelessMeansAssessmentControllerTest {
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(initialResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -97,6 +103,8 @@ class StatelessMeansAssessmentControllerTest {
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(fullResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
