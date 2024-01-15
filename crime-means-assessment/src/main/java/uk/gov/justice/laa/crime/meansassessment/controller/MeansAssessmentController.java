@@ -12,19 +12,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
 import java.math.BigDecimal;
 
-import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType.CREATE;
-import static uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType.UPDATE;
+import static uk.gov.justice.laa.crime.enums.RequestType.CREATE;
+import static uk.gov.justice.laa.crime.enums.RequestType.UPDATE;
 
 @Slf4j
 @RestController
@@ -38,7 +38,7 @@ public class MeansAssessmentController {
     private final MeansAssessmentRequestDTOBuilder meansAssessmentRequestDTOBuilder;
     private final MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
-    private MeansAssessmentRequestDTO preProcessRequest(ApiMeansAssessmentRequest meansAssessment, AssessmentRequestType requestType) {
+    private MeansAssessmentRequestDTO preProcessRequest(ApiMeansAssessmentRequest meansAssessment, RequestType requestType) {
         log.info("Means assessment request received with transaction id - " + meansAssessment.getLaaTransactionId());
         MeansAssessmentRequestDTO requestDTO =
                 meansAssessmentRequestDTOBuilder.buildRequestDTO(meansAssessment);

@@ -21,6 +21,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
+import uk.gov.justice.laa.crime.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.common.Constants;
@@ -30,10 +34,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultD
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -184,7 +184,7 @@ class MeansAssessmentIntegrationTest {
 
         verify(exactly(1), postRequestedFor(urlEqualTo("/oauth2/token")));
         verify(exactly(4), getRequestedFor(urlPathMatching("/api/internal/v1/assessment/.*")));
-        verify(exactly(1), postRequestedFor(urlEqualTo("/api/internal/v1/assessment/rep-orders/update-date-completed")));
+        verify(exactly(3), postRequestedFor(urlEqualTo("/api/internal/v1/assessment/rep-orders/update-date-completed")));
     }
 
     @Test

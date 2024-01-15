@@ -15,7 +15,7 @@ def versions = [
         okhttpVersion               : "4.9.3",
         mockwebserverVersion        : "4.9.3",
         liquibase                   : "4.20.0",
-        crimeCommonsVersion         : "2.8.0",
+        crimeCommonsVersion         : "2.13.4",
         mockitoInlineVersion        : "5.2.0",
         cucumberVersion             : "7.14.0",
         jUnitPlatformSuiteVersion   : "1.10.0",
@@ -55,6 +55,7 @@ dependencies {
     implementation "org.liquibase:liquibase-core:$versions.liquibase"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:$versions.crimeCommonsVersion"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsVersion"
 
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"

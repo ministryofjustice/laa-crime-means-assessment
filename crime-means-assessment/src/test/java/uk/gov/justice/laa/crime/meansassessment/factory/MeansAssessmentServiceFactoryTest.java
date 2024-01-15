@@ -7,10 +7,10 @@ import org.springframework.boot.test.autoconfigure.actuate.observability.AutoCon
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.service.FullMeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.service.InitMeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

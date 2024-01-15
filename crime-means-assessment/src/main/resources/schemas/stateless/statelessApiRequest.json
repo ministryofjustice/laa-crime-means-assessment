@@ -18,12 +18,12 @@
         "case_type": {
           "type": "object",
           "description": "The case type",
-          "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType"
+          "existingJavaType": "uk.gov.justice.laa.crime.enums.CaseType"
         },
         "magistrate_court_outcome": {
           "type": "object",
           "description": "The magistrates court outcome",
-          "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome"
+          "existingJavaType": "uk.gov.justice.laa.crime.enums.MagCourtOutcome"
         },
         "has_partner": {
           "type": "boolean",

@@ -41,7 +41,7 @@
     "assessmentStatus": {
       "type": "object",
       "description": "Assessment Status",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus"
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.CurrentStatus"
     },
     "sectionSummaries": {
       "type": "array",
@@ -68,12 +68,12 @@
     "assessmentType": {
       "description": "Type of as Assessment - Initial, full etc.",
       "type": "object",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType"
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.AssessmentType"
     },
     "caseType": {
       "type": "object",
       "description": "The case type",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType"
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.CaseType"
     },
     "userSession": {
       "type": "object",
@@ -93,11 +93,11 @@
     "magCourtOutcome": {
       "type": "object",
       "description": "Magistrate Court Outcome",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome"
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.MagCourtOutcome"
     },
     "newWorkReason": {
       "description": "Work Reason Details",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason"
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.NewWorkReason"
     }
   },
   "additionalProperties": false,

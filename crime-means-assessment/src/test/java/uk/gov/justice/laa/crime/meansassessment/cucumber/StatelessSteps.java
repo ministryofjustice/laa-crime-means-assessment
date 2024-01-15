@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiResponse;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.DependantChild;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.FrequencyAmount;
