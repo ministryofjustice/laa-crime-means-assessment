@@ -7,20 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
+import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
@@ -39,7 +39,6 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(CrimeMeansAssessmentTestConfiguration.class)
 @WebMvcTest(StatelessMeansAssessmentController.class)
 class StatelessMeansAssessmentControllerTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
@@ -58,6 +57,12 @@ class StatelessMeansAssessmentControllerTest {
     @MockBean
     private StatelessAssessmentService statelessAssessmentService;
 
+    @MockBean
+    private AssessmentCriteriaService assessmentCriteriaService;
+
+    @MockBean
+    private TraceIdHandler traceIdHandler;
+
     @Test
     void validRequest_success() throws Exception {
         var assessment = buildAssessment(StatelessRequestType.BOTH);
@@ -74,6 +79,8 @@ class StatelessMeansAssessmentControllerTest {
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(initialResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -96,6 +103,8 @@ class StatelessMeansAssessmentControllerTest {
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(fullResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));

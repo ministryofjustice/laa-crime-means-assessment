@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     id "java"
     id "jacoco"
-    id "org.springframework.boot" version "3.1.2"
+    id "org.springframework.boot" version "3.1.5"
     id "org.sonarqube" version "4.0.0.2929"
     id "info.solidsoft.pitest" version "1.9.11"
     id "org.jsonschema2dataclass" version "6.0.0"
@@ -15,11 +15,12 @@ def versions = [
         okhttpVersion               : "4.9.3",
         mockwebserverVersion        : "4.9.3",
         liquibase                   : "4.20.0",
-        crimeCommonsVersion         : "2.7.0",
+        crimeCommonsVersion         : "2.13.6",
         mockitoInlineVersion        : "5.2.0",
         cucumberVersion             : "7.14.0",
         jUnitPlatformSuiteVersion   : "1.10.0",
-        springCloudStubRunnerVersion: "4.0.4"
+        springCloudStubRunnerVersion: "4.0.4",
+        h2DBVersion                 : '2.1.210'
 ]
 
 
@@ -54,12 +55,13 @@ dependencies {
     implementation "org.liquibase:liquibase-core:$versions.liquibase"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:$versions.crimeCommonsVersion"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsVersion"
 
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    testImplementation "com.h2database:h2"
+    testImplementation group: 'com.h2database', name: 'h2', version: versions.h2DBVersion
     testImplementation "org.mockito:mockito-inline:$versions.mockitoInlineVersion"
     testImplementation "org.pitest:pitest:$versions.pitest"
     testImplementation "org.springframework.boot:spring-boot-starter-test"

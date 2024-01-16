@@ -23,7 +23,6 @@ class MeansAssessmentRequestDTOBuilderTest {
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(meansAssessment);
 
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(resultDto.getLaaTransactionId()).isEqualTo(meansAssessment.getLaaTransactionId());
             assertThat(resultDto.getRepId()).isEqualTo(meansAssessment.getRepId());
             assertThat(resultDto.getCmuId()).isEqualTo(meansAssessment.getCmuId());
             assertThat(resultDto.getInitialAssessmentDate()).isEqualTo(meansAssessment.getInitialAssessmentDate());

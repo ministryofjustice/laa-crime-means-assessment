@@ -3,11 +3,11 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,7 @@ public class AssessmentCompletionService {
 
     private final MaatCourtDataService maatCourtDataService;
 
-    public void execute(MeansAssessmentDTO assessment, String laaTransactionId) {
+    public void execute(MeansAssessmentDTO assessment) {
         boolean isUpdateRequired = false;
         MeansAssessmentRequestDTO meansAssessmentRequest = assessment.getMeansAssessment();
         CurrentStatus assessmentStatus = meansAssessmentRequest.getAssessmentStatus();
@@ -32,18 +32,18 @@ public class AssessmentCompletionService {
         }
 
         if (isUpdateRequired) {
-            updateApplicationCompletionDate(assessment, laaTransactionId);
+            updateApplicationCompletionDate(assessment);
         }
     }
 
-    void updateApplicationCompletionDate(MeansAssessmentDTO assessment, String laaTransactionId) {
+    void updateApplicationCompletionDate(MeansAssessmentDTO assessment) {
         assessment.setDateCompleted(LocalDateTime.now());
         DateCompletionRequestDTO dateCompletionRequestDTO = DateCompletionRequestDTO
                 .builder()
                 .repId(assessment.getMeansAssessment().getRepId())
                 .assessmentDateCompleted(assessment.getDateCompleted())
                 .build();
-        RepOrderDTO response = maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO, laaTransactionId);
+        RepOrderDTO response = maatCourtDataService.updateCompletionDate(dateCompletionRequestDTO);
         assessment.setApplicationTimestamp(response.getDateModified());
     }
 

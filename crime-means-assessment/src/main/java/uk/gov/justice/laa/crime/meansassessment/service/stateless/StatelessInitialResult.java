@@ -3,7 +3,7 @@ package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 

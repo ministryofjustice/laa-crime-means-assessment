@@ -2,8 +2,8 @@ package uk.gov.justice.laa.crime.meansassessment.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 @Builder
 public class MeansAssessmentRequestDTO {
-    private String laaTransactionId;
     private Integer repId;
     private Integer cmuId;
     private LocalDateTime initialAssessmentDate;

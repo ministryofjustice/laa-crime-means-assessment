@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.crime.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -17,7 +18,6 @@ import uk.gov.justice.laa.crime.meansassessment.service.FullAssessmentAvailabili
 import uk.gov.justice.laa.crime.meansassessment.service.FullMeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.service.InitMeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
@@ -37,6 +37,7 @@ class StatelessAssessmentServiceTest {
 
     private static final AssessmentCriteriaEntity mockAssessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntity();
+    private static final BigDecimal adjustedLivingAllowance = BigDecimal.valueOf(10000.67);
     @InjectMocks
     private StatelessAssessmentService statelessAssessmentService;
     @Mock
@@ -49,8 +50,6 @@ class StatelessAssessmentServiceTest {
     private AssessmentCriteriaService assessmentCriteriaService;
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
-
-    private static final BigDecimal adjustedLivingAllowance = BigDecimal.valueOf(10000.67);
 
     private void setupStubs() {
         when(meansAssessmentServiceFactory.getService(AssessmentType.INIT))
