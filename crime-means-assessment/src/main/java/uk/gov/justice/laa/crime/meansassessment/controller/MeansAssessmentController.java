@@ -56,18 +56,6 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
             )
     )
-    @ApiResponse(responseCode = "400",
-            description = "Bad Request.",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorDTO.class)
-            )
-    )
-    @ApiResponse(responseCode = "500",
-            description = "Server Error.",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorDTO.class)
-            )
-    )
     @DefaultHTTPErrorResponse
     public ResponseEntity<ApiMeansAssessmentResponse> createAssessment(@Parameter(description = "Init means assessment data",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -87,18 +75,6 @@ public class MeansAssessmentController {
     @ApiResponse(responseCode = "200",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
-            )
-    )
-    @ApiResponse(responseCode = "400",
-            description = "Bad Request.",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorDTO.class)
-            )
-    )
-    @ApiResponse(responseCode = "500",
-            description = "Server Error.",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorDTO.class)
             )
     )
     @DefaultHTTPErrorResponse
@@ -121,18 +97,6 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ApiMeansAssessmentResponse.class)
             )
     )
-    @ApiResponse(responseCode = "400",
-            description = "Bad Request.",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorDTO.class)
-            )
-    )
-    @ApiResponse(responseCode = "500",
-            description = "Server Error.",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorDTO.class)
-            )
-    )
     @DefaultHTTPErrorResponse
     public ResponseEntity<ApiGetMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId,
                                                                           @Parameter(description = "Used for tracing calls") @RequestHeader(value = "Laa-Transaction-Id", required = false) String laaTransactionId) {
@@ -144,8 +108,6 @@ public class MeansAssessmentController {
     @GetMapping(value = "/fullAssessmentThreshold/{assessmentDate}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Retrieve full assessment threshold")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
-    @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorDTO.class)))
-    @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorDTO.class)))
     @DefaultHTTPErrorResponse
     public ResponseEntity<BigDecimal> fullAssessmentThreshold(@PathVariable("assessmentDate") String assessmentDate) {
         log.info("Retrieve full assessment threshold");
