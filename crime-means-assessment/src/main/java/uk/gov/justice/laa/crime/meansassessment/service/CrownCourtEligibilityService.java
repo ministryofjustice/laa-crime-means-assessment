@@ -3,12 +3,12 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -21,6 +21,12 @@ import static java.util.Comparator.comparing;
 public class CrownCourtEligibilityService implements EligibilityChecker {
 
     private final MaatCourtDataService maatCourtDataService;
+
+    public static boolean isCrownCourtCase(CaseType caseType, MagCourtOutcome magCourtOutcome) {
+        return ((caseType == CaseType.INDICTABLE || caseType == CaseType.CC_ALREADY)
+                && magCourtOutcome == MagCourtOutcome.SENT_FOR_TRIAL) ||
+                caseType == CaseType.EITHER_WAY && magCourtOutcome == MagCourtOutcome.COMMITTED_FOR_TRIAL;
+    }
 
     public boolean isEligibilityCheckRequired(MeansAssessmentRequestDTO assessmentRequest) {
 
@@ -59,12 +65,6 @@ public class CrownCourtEligibilityService implements EligibilityChecker {
         Stream<Assessment> previousAssessments = getPreviousAssessments(repOrder);
         return previousAssessments
                 .noneMatch(this::hasDisqualifyingResult);
-    }
-
-    public static boolean isCrownCourtCase(CaseType caseType, MagCourtOutcome magCourtOutcome) {
-        return ((caseType == CaseType.INDICTABLE || caseType == CaseType.CC_ALREADY)
-                && magCourtOutcome == MagCourtOutcome.SENT_FOR_TRIAL) ||
-                caseType == CaseType.EITHER_WAY && magCourtOutcome == MagCourtOutcome.COMMITTED_FOR_TRIAL;
     }
 
     private Stream<Assessment> getPreviousAssessments(RepOrderDTO repOrder) {

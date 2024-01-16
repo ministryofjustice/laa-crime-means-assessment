@@ -23,7 +23,7 @@
     "assessmentType": {
       "type": "object",
       "description": "The Frequency of Applicant",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType"
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.AssessmentType"
     },
     "assessmentDetails": {
       "type": "array",

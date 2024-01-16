@@ -10,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentSectionSummaryBuilder;
@@ -26,9 +29,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -100,7 +100,7 @@ class MeansAssessmentServiceTest {
         when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(assessmentCriteria);
 
-        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(AssessmentRequestType.class)))
+        when(assessmentBuilder.build(any(MeansAssessmentDTO.class), any(RequestType.class)))
                 .thenReturn(new MaatApiAssessmentRequest());
 
         when(meansAssessmentServiceFactory.getService(any(AssessmentType.class)))
@@ -118,7 +118,7 @@ class MeansAssessmentServiceTest {
                         .withFassInitStatus(TestModelDataBuilder.TEST_ASSESSMENT_STATUS.getStatus());
 
         when(maatCourtDataService.persistMeansAssessment(
-                any(MaatApiAssessmentRequest.class), any(AssessmentRequestType.class))
+                any(MaatApiAssessmentRequest.class), any(RequestType.class))
         ).thenReturn(maatApiAssessmentResponse);
 
         when(meansAssessmentResponseBuilder.build(any(MaatApiAssessmentResponse.class),
@@ -132,7 +132,7 @@ class MeansAssessmentServiceTest {
         when(initMeansAssessmentService.execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE);
+        meansAssessmentService.doAssessment(meansAssessment, RequestType.CREATE);
 
         verify(initMeansAssessmentService).execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
@@ -154,7 +154,7 @@ class MeansAssessmentServiceTest {
         ).thenReturn(TestModelDataBuilder.getMeansAssessmentDTO());
 
         meansAssessment.setAssessmentType(AssessmentType.FULL);
-        meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.UPDATE);
+        meansAssessmentService.doAssessment(meansAssessment, RequestType.UPDATE);
 
         verify(fullMeansAssessmentService).execute(
                 any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class)
@@ -173,7 +173,7 @@ class MeansAssessmentServiceTest {
         );
 
         assertThatThrownBy(
-                () -> meansAssessmentService.doAssessment(meansAssessment, AssessmentRequestType.CREATE)
+                () -> meansAssessmentService.doAssessment(meansAssessment, RequestType.CREATE)
         ).isInstanceOf(AssessmentProcessingException.class).hasMessageContaining(
                 "An error occurred whilst processing the assessment request with RepID: " + meansAssessment.getRepId()
         );

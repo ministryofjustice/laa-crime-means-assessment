@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -21,7 +22,6 @@ import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessme
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
 import java.math.BigDecimal;
@@ -75,10 +75,10 @@ class MeansAssessmentControllerTest {
         when(assessmentRequestDTOBuilder.buildRequestDTO(any(ApiCreateMeansAssessmentRequest.class)))
                 .thenReturn(TestModelDataBuilder.getMeansAssessmentRequestDTO(true));
 
-        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(initialMeansAssessmentResponse);
 
-        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(Optional.empty());
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
@@ -98,10 +98,10 @@ class MeansAssessmentControllerTest {
         when(assessmentRequestDTOBuilder.buildRequestDTO(any(ApiUpdateMeansAssessmentRequest.class)))
                 .thenReturn(TestModelDataBuilder.getMeansAssessmentRequestDTO(true));
 
-        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(updateAssessmentResponse);
 
-        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(Optional.empty());
 
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson, ENDPOINT_URL))

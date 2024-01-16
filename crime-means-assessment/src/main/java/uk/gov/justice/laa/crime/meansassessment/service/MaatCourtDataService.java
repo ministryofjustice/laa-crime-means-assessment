@@ -6,12 +6,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
-import uk.gov.justice.laa.crime.meansassessment.common.Constants;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 
 import java.util.Map;
 
@@ -26,10 +25,10 @@ public class MaatCourtDataService {
     private final RestAPIClient maatAPIClient;
 
     public MaatApiAssessmentResponse persistMeansAssessment(MaatApiAssessmentRequest assessment,
-                                                            AssessmentRequestType requestType) {
+                                                            RequestType requestType) {
         MaatApiAssessmentResponse response;
         String endpoint = configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType);
-        if (AssessmentRequestType.CREATE.equals(requestType)) {
+        if (RequestType.CREATE.equals(requestType)) {
             response =
                     maatAPIClient.post(assessment, new ParameterizedTypeReference<>() {},
                             endpoint,

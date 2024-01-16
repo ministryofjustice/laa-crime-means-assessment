@@ -2,9 +2,9 @@ package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.laa.crime.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.ReviewType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

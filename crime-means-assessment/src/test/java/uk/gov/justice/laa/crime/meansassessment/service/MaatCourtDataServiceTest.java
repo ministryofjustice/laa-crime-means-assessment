@@ -7,12 +7,12 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -40,7 +40,7 @@ class MaatCourtDataServiceTest {
                 .thenReturn(expected);
 
         MaatApiAssessmentResponse response = maatCourtDataService.persistMeansAssessment(
-                new MaatApiAssessmentRequest(), AssessmentRequestType.CREATE);
+                new MaatApiAssessmentRequest(), RequestType.CREATE);
         assertThat(response).isEqualTo(expected);
     }
 
@@ -51,7 +51,7 @@ class MaatCourtDataServiceTest {
                 .thenReturn(expected);
 
         MaatApiAssessmentResponse response = maatCourtDataService.persistMeansAssessment(
-                new MaatApiAssessmentRequest(), AssessmentRequestType.UPDATE);
+                new MaatApiAssessmentRequest(), RequestType.UPDATE);
         assertThat(response).isEqualTo(expected);
     }
 
