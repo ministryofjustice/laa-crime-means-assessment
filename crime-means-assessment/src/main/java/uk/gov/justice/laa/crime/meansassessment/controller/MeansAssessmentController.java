@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.justice.laa.crime.annotation.DefaultHTTPErrorResponse;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.ErrorDTO;
@@ -38,6 +39,7 @@ public class MeansAssessmentController {
     private final MeansAssessmentRequestDTOBuilder meansAssessmentRequestDTOBuilder;
     private final MeansAssessmentValidationProcessor meansAssessmentValidationProcessor;
 
+    @DefaultHTTPErrorResponse
     private MeansAssessmentRequestDTO preProcessRequest(ApiMeansAssessmentRequest meansAssessment, RequestType requestType) {
         log.info("Means assessment request received with transaction id - " + meansAssessment.getLaaTransactionId());
         MeansAssessmentRequestDTO requestDTO =
@@ -66,6 +68,7 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ErrorDTO.class)
             )
     )
+    @DefaultHTTPErrorResponse
     public ResponseEntity<ApiMeansAssessmentResponse> createAssessment(@Parameter(description = "Init means assessment data",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ApiCreateMeansAssessmentRequest.class)
@@ -98,6 +101,7 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ErrorDTO.class)
             )
     )
+    @DefaultHTTPErrorResponse
     public ResponseEntity<ApiMeansAssessmentResponse> updateAssessment(@Parameter(description = "Init/Full means assessment data",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ApiUpdateMeansAssessmentRequest.class)
@@ -129,6 +133,7 @@ public class MeansAssessmentController {
                     schema = @Schema(implementation = ErrorDTO.class)
             )
     )
+    @DefaultHTTPErrorResponse
     public ResponseEntity<ApiGetMeansAssessmentResponse> getOldAssessment(@PathVariable int financialAssessmentId,
                                                                           @Parameter(description = "Used for tracing calls") @RequestHeader(value = "Laa-Transaction-Id", required = false) String laaTransactionId) {
         log.info("Get old means assessment request received with transaction id - " + laaTransactionId);
@@ -141,6 +146,7 @@ public class MeansAssessmentController {
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
     @ApiResponse(responseCode = "400", description = "Bad Request.", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorDTO.class)))
     @ApiResponse(responseCode = "500", description = "Server Error.", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorDTO.class)))
+    @DefaultHTTPErrorResponse
     public ResponseEntity<BigDecimal> fullAssessmentThreshold(@PathVariable("assessmentDate") String assessmentDate) {
         log.info("Retrieve full assessment threshold");
         return ResponseEntity.ok(assessmentCriteriaService.getFullAssessmentThreshold(assessmentDate));
