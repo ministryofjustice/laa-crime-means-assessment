@@ -33,7 +33,7 @@ public class MeansAssessmentValidationProcessor {
     public static final String MSG_FULL_ASSESSMENT_DATE_REQUIRED = "Full assessment date is required";
 
     public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO, RequestType requestType) {
-        log.info("Validating means assessment request : {}", requestDTO);
+        log.info("Validating means assessment request : {}", requestDTO.getRepId());
         if (!isRepIdValid(requestDTO)) {
             throw new ValidationException(MSG_REP_ID_REQUIRED);
         } else if (!meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT)) {
