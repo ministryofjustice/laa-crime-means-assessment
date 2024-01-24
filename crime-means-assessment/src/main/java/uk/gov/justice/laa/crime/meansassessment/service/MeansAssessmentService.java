@@ -17,6 +17,7 @@ import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingEx
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
@@ -285,5 +286,9 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         SortUtils.sortListWithComparing(
                 assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator()
         );
+    }
+
+    public FinancialAssessmentDTO updateFinancialAssessment(Integer financialAssessmentId, MaatApiRollbackAssessment maatApiRollbackAssessment) {
+        return maatCourtDataService.updateFinancialAssessment(financialAssessmentId, maatApiRollbackAssessment);
     }
 }

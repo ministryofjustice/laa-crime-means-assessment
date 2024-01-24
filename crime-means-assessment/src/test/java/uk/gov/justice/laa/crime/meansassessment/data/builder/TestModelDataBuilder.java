@@ -8,6 +8,7 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
 
@@ -261,6 +262,15 @@ public class TestModelDataBuilder {
                         )
                 )
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
+    }
+
+    public static MaatApiUpdateAssessment getMaatApiRollbackAssessment() {
+        return new MaatApiUpdateAssessment()
+                .withFinancialAssessmentId(MEANS_ASSESSMENT_ID)
+                .withFassFullStatus("FAIL")
+                .withFassInitStatus("FAIL")
+                .withInitResult(InitAssessmentResult.FAIL.getResult())
+                .withFullResult(FullAssessmentResult.FAIL.getResult());
     }
 
     public static ApiUpdateMeansAssessmentRequest getApiUpdateMeansAssessmentRequest(boolean isValid) {
