@@ -13,6 +13,8 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.util.MockMaatApiConfiguration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -124,5 +126,19 @@ class MaatCourtDataServiceTest {
                 anyString(),
                 anyMap()
         );
+    }
+
+    @Test
+    void givenFinancialAssessmentId_whenUpdateFinancialAssessmentIsInvoked_thenPatchRequestIsSent() {
+        maatCourtDataService.updateFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, new MaatApiRollbackAssessment());
+        verify(maatAPIClient).patch(any(MaatApiRollbackAssessment.class), any(), anyString(), anyMap(), any());
+    }
+
+    @Test
+    void givenFinancialAssessmentId_whenUpdateFinancialAssessmentIsInvoked_thenResponseIsReturned() {
+        FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
+        when(maatAPIClient.patch(any(), any(), anyString(), anyMap(), any())).thenReturn(expected);
+        FinancialAssessmentDTO response = maatCourtDataService.updateFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, new MaatApiRollbackAssessment());
+        assertThat(response).isEqualTo(expected);
     }
 }

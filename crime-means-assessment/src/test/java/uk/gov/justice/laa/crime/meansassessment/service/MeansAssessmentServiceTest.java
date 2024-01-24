@@ -28,6 +28,7 @@ import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFa
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
 import java.math.BigDecimal;
@@ -436,5 +437,15 @@ class MeansAssessmentServiceTest {
 
         checkGenericResponseFields(response, financialAssessmentDTO);
         assertThat(response.getFullAvailable()).isTrue();
+    }
+
+    @Test
+    void givenFinancialAssessmentId_whenUpdateFinancialAssessmentIsInvoked_thenResponseIsReturned() {
+        FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
+        when(maatCourtDataService.updateFinancialAssessment(any(), any()))
+                .thenReturn(expected);
+        FinancialAssessmentDTO response =
+                meansAssessmentService.updateFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, new MaatApiRollbackAssessment());
+        assertThat(response).isEqualTo(expected);
     }
 }

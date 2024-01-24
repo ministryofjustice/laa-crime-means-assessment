@@ -12,7 +12,7 @@ def versions = [
         pitest                      : "1.4.10",
         springdocVersion            : "2.1.0",
         liquibase                   : "4.20.0",
-        crimeCommonsVersion         : "2.13.6",
+        crimeCommonsVersion         : "2.19.0",
         mockitoInlineVersion        : "5.2.0",
         cucumberVersion             : "7.14.0",
         jUnitPlatformSuiteVersion   : "1.10.0",

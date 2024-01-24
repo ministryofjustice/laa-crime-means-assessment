@@ -13,10 +13,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.enums.RequestType;
+import uk.gov.justice.laa.crime.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
@@ -28,6 +32,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
@@ -188,5 +193,26 @@ class MeansAssessmentControllerTest {
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(FULL_THRESHOLD));
 
+    }
+
+    @Test
+    void givenInvalidParam_whenRollbackInvoked_shouldFailBadRequest() throws Exception {
+        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "", ENDPOINT_URL + "/rollback", true))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void givenValidParam_whenRollbackInvoked_shouldSuccess() throws Exception {
+        FinancialAssessmentDTO financialAssessmentDTO =
+                TestModelDataBuilder.getFinancialAssessmentDTO(CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
+        financialAssessmentDTO.setId(MEANS_ASSESSMENT_ID);
+        when(meansAssessmentService.updateFinancialAssessment(anyInt(), any())).thenReturn(financialAssessmentDTO);
+        var rollbackAssessmentRequestJson = objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiRollbackAssessment());
+        mvc.perform(buildRequestGivenContent(
+                HttpMethod.PUT,
+                rollbackAssessmentRequestJson,
+                ENDPOINT_URL + "/rollback",
+                true)
+        ).andExpect(status().isOk());
     }
 }

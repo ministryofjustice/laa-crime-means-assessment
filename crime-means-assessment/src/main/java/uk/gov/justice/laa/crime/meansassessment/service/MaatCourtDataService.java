@@ -11,6 +11,7 @@ import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 
 import java.util.Map;
 
@@ -30,12 +31,14 @@ public class MaatCourtDataService {
         String endpoint = configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType);
         if (RequestType.CREATE.equals(requestType)) {
             response =
-                    maatAPIClient.post(assessment, new ParameterizedTypeReference<>() {},
+                    maatAPIClient.post(assessment, new ParameterizedTypeReference<>() {
+                            },
                             endpoint,
                             Map.of());
         } else {
             response =
-                    maatAPIClient.put(assessment, new ParameterizedTypeReference<>() {},
+                    maatAPIClient.put(assessment, new ParameterizedTypeReference<>() {
+                            },
                             endpoint,
                             Map.of());
         }
@@ -44,7 +47,8 @@ public class MaatCourtDataService {
     }
 
     public RepOrderDTO updateCompletionDate(DateCompletionRequestDTO dateCompletionRequestDTO) {
-        RepOrderDTO response = maatAPIClient.post(dateCompletionRequestDTO, new ParameterizedTypeReference<>() {},
+        RepOrderDTO response = maatAPIClient.post(dateCompletionRequestDTO, new ParameterizedTypeReference<>() {
+                },
                 configuration.getRepOrderEndpoints().getDateCompletionUrl(),
                 Map.of());
         log.info(String.format(RESPONSE_STRING, response));
@@ -52,7 +56,8 @@ public class MaatCourtDataService {
     }
 
     public PassportAssessmentDTO getPassportAssessmentFromRepId(Integer repId) {
-        PassportAssessmentDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
+        PassportAssessmentDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {
+                                                           },
                 configuration.getPassportAssessmentEndpoints().getFindUrl(),
                 repId
         );
@@ -61,7 +66,8 @@ public class MaatCourtDataService {
     }
 
     public HardshipReviewDTO getHardshipReviewFromRepId(Integer repId) {
-        HardshipReviewDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
+        HardshipReviewDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {
+                                                       },
                 configuration.getHardshipReviewEndpoints().getFindUrl(),
                 repId
         );
@@ -70,7 +76,8 @@ public class MaatCourtDataService {
     }
 
     public IOJAppealDTO getIOJAppealFromRepId(Integer repId) {
-        IOJAppealDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
+        IOJAppealDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {
+                                                  },
                 configuration.getIojAppealEndpoints().getFindUrl(),
                 repId
         );
@@ -79,7 +86,8 @@ public class MaatCourtDataService {
     }
 
     public FinancialAssessmentDTO getFinancialAssessment(Integer financialAssessmentId) {
-        FinancialAssessmentDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
+        FinancialAssessmentDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {
+                                                            },
                 configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
                 financialAssessmentId
         );
@@ -88,9 +96,22 @@ public class MaatCourtDataService {
     }
 
     public RepOrderDTO getRepOrder(Integer repId) {
-        RepOrderDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {},
+        RepOrderDTO response = maatAPIClient.get(new ParameterizedTypeReference<>() {
+                                                 },
                 configuration.getRepOrderEndpoints().getFindUrl(),
                 repId
+        );
+        log.info(String.format(RESPONSE_STRING, response));
+        return response;
+    }
+
+    public FinancialAssessmentDTO updateFinancialAssessment(Integer financialAssessmentId, MaatApiRollbackAssessment maatApiRollbackAssessment) {
+        FinancialAssessmentDTO response = maatAPIClient.patch(maatApiRollbackAssessment,
+                new ParameterizedTypeReference<>() {
+                },
+                configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
+                Map.of(),
+                financialAssessmentId
         );
         log.info(String.format(RESPONSE_STRING, response));
         return response;
