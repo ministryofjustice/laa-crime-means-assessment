@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "apiRollbackMeansAssessmentResponse.json",
+  "type": "object",
+  "title": "Means Assessment Response",
+  "description": "The response data for a rollback of the Means Assessment",
+  "properties": {
+    "assessmentId": {
+      "type": "integer",
+      "description": "Unique Identifier of an Assessment."
+    },
+    "initResult": {
+      "type": "string",
+      "description": "Outcome of initial assessment"
+    },
+    "fassInitStatus": {
+      "description": "Assessment Status",
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.CurrentStatus"
+    },
+    "fullResult": {
+      "type": "string",
+      "description": "Outcome of full assessment"
+    },
+    "fassFullStatus": {
+      "description": "Assessment Status",
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.CurrentStatus"
+    }
+  },
+  "additionalProperties": false
+}
