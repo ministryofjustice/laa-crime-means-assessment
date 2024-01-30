@@ -104,6 +104,12 @@ public class MaatApiConfiguration {
         @NotNull
         private String updateUrl;
 
+        /**
+         * Rollback assessment URL
+         */
+        @NotNull
+        private String rollbackUrl;
+
         public String getByRequestType(RequestType requestType) {
             return (requestType.equals(RequestType.CREATE)) ? createUrl : updateUrl;
         }

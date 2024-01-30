@@ -28,6 +28,7 @@ class MaatApiConfigurationTest {
         assertThat(buildUrl("search-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getSearchUrl());
         assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getCreateUrl());
         assertThat(buildUrl("update-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getUpdateUrl());
+        assertThat(buildUrl("rollback-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getRollbackUrl());
 
         assertThat(false).isEqualTo(configuration.isOAuthEnabled());
 

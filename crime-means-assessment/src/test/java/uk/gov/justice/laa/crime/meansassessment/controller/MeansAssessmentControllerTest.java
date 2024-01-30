@@ -19,7 +19,6 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiRollbackMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
@@ -199,19 +198,10 @@ class MeansAssessmentControllerTest {
 
     @Test
     void givenValidParam_whenRollbackInvoked_shouldSuccess() throws Exception {
-        when(meansAssessmentService.updateFinancialAssessment(any())).thenReturn(
-                new ApiRollbackMeansAssessmentResponse()
-                        .withAssessmentId(MEANS_ASSESSMENT_ID)
-                        .withFassFullStatus(CurrentStatus.IN_PROGRESS)
-                        .withFullResult(FullAssessmentResult.PASS.getResult())
-                        .withFassInitStatus(CurrentStatus.IN_PROGRESS)
-                        .withInitResult(InitAssessmentResult.FULL.name())
-        );
-        var rollbackAssessmentRequestJson = objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiRollbackAssessment());
         mvc.perform(buildRequestGivenContent(
                 HttpMethod.PUT,
-                rollbackAssessmentRequestJson,
-                ENDPOINT_URL + "/rollback",
+                "",
+                ENDPOINT_URL + "/rollback/" + MEANS_ASSESSMENT_ID,
                 true)
         ).andExpect(status().isOk());
     }

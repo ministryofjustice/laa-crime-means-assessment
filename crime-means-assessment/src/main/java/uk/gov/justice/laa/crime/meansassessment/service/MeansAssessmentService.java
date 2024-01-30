@@ -19,7 +19,6 @@ import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingEx
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
@@ -28,9 +27,7 @@ import uk.gov.justice.laa.crime.meansassessment.util.SortUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -295,14 +292,28 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         );
     }
 
-    public ApiRollbackMeansAssessmentResponse updateFinancialAssessment(MaatApiRollbackAssessment maatApiRollbackAssessment) {
-        FinancialAssessmentDTO financialAssessmentDTO = maatCourtDataService
-                .updateFinancialAssessment(maatApiRollbackAssessment.getFinancialAssessmentId(), maatApiRollbackAssessment);
-        return new ApiRollbackMeansAssessmentResponse()
-                .withAssessmentId(financialAssessmentDTO.getId())
-                .withFullResult(financialAssessmentDTO.getFullResult())
-                .withInitResult(financialAssessmentDTO.getInitResult())
-                .withFassInitStatus(CurrentStatus.getFrom(financialAssessmentDTO.getFassInitStatus()))
-                .withFassFullStatus(CurrentStatus.getFrom(financialAssessmentDTO.getFassFullStatus()));
+    public ApiRollbackMeansAssessmentResponse rollbackAssessment(int financialAssessmentId) {
+        FinancialAssessmentDTO financialAssessmentDTO =
+                maatCourtDataService.getFinancialAssessment(financialAssessmentId);
+        ApiRollbackMeansAssessmentResponse apiRollbackMeansAssessmentResponse =
+                new ApiRollbackMeansAssessmentResponse();
+        if (financialAssessmentDTO != null) {
+            apiRollbackMeansAssessmentResponse.withAssessmentId(financialAssessmentDTO.getId());
+            String assessmentType = financialAssessmentDTO.getAssessmentType();
+            Map<String, Object> updateFields = new HashMap<>();
+            if (AssessmentType.INIT.getType().equals(assessmentType)) {
+                updateFields.put("fassInitStatus", "IN PROGRESS");
+                updateFields.put("initResult", null);
+                apiRollbackMeansAssessmentResponse.setFassInitStatus(CurrentStatus.IN_PROGRESS);
+                apiRollbackMeansAssessmentResponse.setInitResult(null);
+            } else if (AssessmentType.FULL.getType().equals(assessmentType)) {
+                updateFields.put("fassFullStatus", "IN PROGRESS");
+                updateFields.put("fullResult", null);
+                apiRollbackMeansAssessmentResponse.setFassFullStatus(CurrentStatus.IN_PROGRESS);
+                apiRollbackMeansAssessmentResponse.setFullResult(null);
+            }
+            maatCourtDataService.rollbackFinancialAssessment(financialAssessmentId, updateFields);
+        }
+        return apiRollbackMeansAssessmentResponse;
     }
 }
