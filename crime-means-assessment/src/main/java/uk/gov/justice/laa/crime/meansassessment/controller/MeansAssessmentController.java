@@ -16,7 +16,6 @@ import uk.gov.justice.laa.crime.annotation.DefaultHTTPErrorResponse;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
@@ -119,13 +118,14 @@ public class MeansAssessmentController {
     @Operation(description = "Rollback Financial Assessments")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = MaatApiRollbackAssessment.class)))
     @DefaultHTTPErrorResponse
-    public ResponseEntity<FinancialAssessmentDTO> rollback(
+    public ResponseEntity<ApiRollbackMeansAssessmentResponse> rollback(
             @Parameter(description = "JSON object containing Financial Assessment information",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = MaatApiRollbackAssessment.class)
                     )
             ) @Valid @RequestBody MaatApiRollbackAssessment maatApiRollbackAssessment) {
-        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.updateFinancialAssessment(maatApiRollbackAssessment.getFinancialAssessmentId(), maatApiRollbackAssessment);
-        return ResponseEntity.ok(financialAssessmentDTO);
+        log.info("Received a request to rollback financial assessment with id: %d",
+                maatApiRollbackAssessment.getFinancialAssessmentId());
+        return ResponseEntity.ok(meansAssessmentService.updateFinancialAssessment(maatApiRollbackAssessment));
     }
 }

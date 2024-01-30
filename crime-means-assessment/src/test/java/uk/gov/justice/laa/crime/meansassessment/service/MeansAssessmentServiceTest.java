@@ -10,9 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.laa.crime.enums.AssessmentType;
-import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
-import uk.gov.justice.laa.crime.enums.RequestType;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentSectionSummaryBuilder;
@@ -441,11 +439,21 @@ class MeansAssessmentServiceTest {
 
     @Test
     void givenFinancialAssessmentId_whenUpdateFinancialAssessmentIsInvoked_thenResponseIsReturned() {
-        FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
+        FinancialAssessmentDTO financialAssessmentDTO = FinancialAssessmentDTO.builder()
+                .id(MEANS_ASSESSMENT_ID)
+                .fassFullStatus(CurrentStatus.IN_PROGRESS.getStatus())
+                .fassInitStatus(CurrentStatus.COMPLETE.getStatus())
+                .fullResult(FullAssessmentResult.PASS.getResult())
+                .initResult(InitAssessmentResult.FULL.name())
+                .build();
         when(maatCourtDataService.updateFinancialAssessment(any(), any()))
-                .thenReturn(expected);
-        FinancialAssessmentDTO response =
-                meansAssessmentService.updateFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, new MaatApiRollbackAssessment());
-        assertThat(response).isEqualTo(expected);
+                .thenReturn(financialAssessmentDTO);
+        ApiRollbackMeansAssessmentResponse response =
+                meansAssessmentService.updateFinancialAssessment(new MaatApiRollbackAssessment());
+        assertThat(response.getAssessmentId()).isEqualTo(financialAssessmentDTO.getId());
+        assertThat(response.getFassFullStatus().getStatus()).isEqualTo(financialAssessmentDTO.getFassFullStatus());
+        assertThat(response.getFassInitStatus().getStatus()).isEqualTo(financialAssessmentDTO.getFassInitStatus());
+        assertThat(response.getInitResult()).isEqualTo(financialAssessmentDTO.getInitResult());
+        assertThat(response.getFullResult()).isEqualTo(financialAssessmentDTO.getFullResult());
     }
 }
