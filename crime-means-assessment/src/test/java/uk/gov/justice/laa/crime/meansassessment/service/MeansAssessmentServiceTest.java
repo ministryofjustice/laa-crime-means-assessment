@@ -10,9 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.laa.crime.enums.AssessmentType;
-import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
-import uk.gov.justice.laa.crime.enums.RequestType;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentSectionSummaryBuilder;
@@ -28,7 +26,6 @@ import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFa
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
 import java.math.BigDecimal;
@@ -440,12 +437,31 @@ class MeansAssessmentServiceTest {
     }
 
     @Test
-    void givenFinancialAssessmentId_whenUpdateFinancialAssessmentIsInvoked_thenResponseIsReturned() {
-        FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
-        when(maatCourtDataService.updateFinancialAssessment(any(), any()))
-                .thenReturn(expected);
-        FinancialAssessmentDTO response =
-                meansAssessmentService.updateFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, new MaatApiRollbackAssessment());
-        assertThat(response).isEqualTo(expected);
+    void givenInitialAssessmentId_whenRollbackAssessmentIsInvoked_thenResponseIsReturned() {
+        FinancialAssessmentDTO financialAssessmentDTO = FinancialAssessmentDTO.builder()
+                .id(MEANS_ASSESSMENT_ID)
+                .assessmentType(AssessmentType.INIT.getType())
+                .build();
+        when(maatCourtDataService.getFinancialAssessment(MEANS_ASSESSMENT_ID))
+                .thenReturn(financialAssessmentDTO);
+        ApiRollbackMeansAssessmentResponse response =
+                meansAssessmentService.rollbackAssessment(MEANS_ASSESSMENT_ID);
+        assertThat(response.getAssessmentId()).isEqualTo(MEANS_ASSESSMENT_ID);
+        assertThat(response.getFassInitStatus()).isEqualTo(CurrentStatus.IN_PROGRESS);
+        assertThat(response.getInitResult()).isNull();
     }
-}
+
+    @Test
+    void givenFullAssessmentId_whenRollbackAssessmentIsInvoked_thenResponseIsReturned() {
+        FinancialAssessmentDTO financialAssessmentDTO = FinancialAssessmentDTO.builder()
+                .id(MEANS_ASSESSMENT_ID)
+                .assessmentType(AssessmentType.FULL.getType())
+                .build();
+        when(maatCourtDataService.getFinancialAssessment(MEANS_ASSESSMENT_ID))
+                .thenReturn(financialAssessmentDTO);
+        ApiRollbackMeansAssessmentResponse response =
+                meansAssessmentService.rollbackAssessment(MEANS_ASSESSMENT_ID);
+        assertThat(response.getAssessmentId()).isEqualTo(MEANS_ASSESSMENT_ID);
+        assertThat(response.getFassFullStatus()).isEqualTo(CurrentStatus.IN_PROGRESS);
+        assertThat(response.getFullResult()).isNull();
+    }}

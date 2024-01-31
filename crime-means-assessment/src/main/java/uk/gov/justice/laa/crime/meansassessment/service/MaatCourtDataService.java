@@ -11,7 +11,6 @@ import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 
 import java.util.Map;
 
@@ -105,15 +104,13 @@ public class MaatCourtDataService {
         return response;
     }
 
-    public FinancialAssessmentDTO updateFinancialAssessment(Integer financialAssessmentId, MaatApiRollbackAssessment maatApiRollbackAssessment) {
-        FinancialAssessmentDTO response = maatAPIClient.patch(maatApiRollbackAssessment,
+    public void rollbackFinancialAssessment(Integer financialAssessmentId, Map<String, Object> updateFields) {
+        maatAPIClient.patch(updateFields,
                 new ParameterizedTypeReference<>() {
                 },
-                configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
+                configuration.getFinancialAssessmentEndpoints().getRollbackUrl(),
                 Map.of(),
                 financialAssessmentId
         );
-        log.info(String.format(RESPONSE_STRING, response));
-        return response;
     }
 }

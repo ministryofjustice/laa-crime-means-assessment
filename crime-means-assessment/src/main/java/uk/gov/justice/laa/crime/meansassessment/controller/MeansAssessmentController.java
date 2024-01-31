@@ -16,9 +16,7 @@ import uk.gov.justice.laa.crime.annotation.DefaultHTTPErrorResponse;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
@@ -49,7 +47,6 @@ public class MeansAssessmentController {
         return requestDTO;
     }
 
-
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Create an initial means assessment")
     @ApiResponse(responseCode = "200",
@@ -69,7 +66,6 @@ public class MeansAssessmentController {
                 meansAssessmentService.doAssessment(requestDTO, CREATE)
         );
     }
-
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Update a means assessment")
@@ -105,7 +101,6 @@ public class MeansAssessmentController {
         return ResponseEntity.ok(meansAssessmentService.getOldAssessment(financialAssessmentId));
     }
 
-
     @GetMapping(value = "/fullAssessmentThreshold/{assessmentDate}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Retrieve full assessment threshold")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
@@ -115,17 +110,12 @@ public class MeansAssessmentController {
         return ResponseEntity.ok(assessmentCriteriaService.getFullAssessmentThreshold(assessmentDate));
     }
 
-    @PutMapping(value = "/rollback", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/rollback/{financialAssessmentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Rollback Financial Assessments")
-    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = MaatApiRollbackAssessment.class)))
+    @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
     @DefaultHTTPErrorResponse
-    public ResponseEntity<FinancialAssessmentDTO> rollback(
-            @Parameter(description = "JSON object containing Financial Assessment information",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = MaatApiRollbackAssessment.class)
-                    )
-            ) @Valid @RequestBody MaatApiRollbackAssessment maatApiRollbackAssessment) {
-        FinancialAssessmentDTO financialAssessmentDTO = meansAssessmentService.updateFinancialAssessment(maatApiRollbackAssessment.getFinancialAssessmentId(), maatApiRollbackAssessment);
-        return ResponseEntity.ok(financialAssessmentDTO);
+    public ResponseEntity<ApiRollbackMeansAssessmentResponse> rollback(@PathVariable int financialAssessmentId) {
+        log.info("Received a request to rollback financial assessment with id: {}", financialAssessmentId);
+        return ResponseEntity.ok(meansAssessmentService.rollbackAssessment(financialAssessmentId));
     }
 }

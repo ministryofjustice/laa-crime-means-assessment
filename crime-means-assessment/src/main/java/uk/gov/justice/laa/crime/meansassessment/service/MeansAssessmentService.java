@@ -1,8 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MaatCourtDataAssessmentBuilder;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
@@ -17,7 +19,6 @@ import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentProcessingEx
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiRollbackAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
@@ -26,9 +27,7 @@ import uk.gov.justice.laa.crime.meansassessment.util.SortUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -158,14 +157,7 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
 
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
-        ApiIncomeEvidenceSummary apiIncomeEvidenceSummary = new ApiIncomeEvidenceSummary();
-        apiIncomeEvidenceSummary.setEvidenceDueDate(financialAssessmentDTO.getIncomeEvidenceDueDate());
-        apiIncomeEvidenceSummary.setEvidenceReceivedDate(financialAssessmentDTO.getEvidenceReceivedDate());
-        apiIncomeEvidenceSummary.setIncomeEvidenceNotes(financialAssessmentDTO.getIncomeEvidenceNotes());
-        apiIncomeEvidenceSummary.setUpliftAppliedDate(financialAssessmentDTO.getIncomeUpliftApplyDate());
-        apiIncomeEvidenceSummary.setUpliftRemovedDate(financialAssessmentDTO.getIncomeUpliftRemoveDate());
-        apiIncomeEvidenceSummary.setFirstReminderDate(financialAssessmentDTO.getFirstIncomeReminderDate());
-        apiIncomeEvidenceSummary.setSecondReminderDate(financialAssessmentDTO.getSecondIncomeReminderDate());
+        ApiIncomeEvidenceSummary apiIncomeEvidenceSummary = getApiIncomeEvidenceSummary(financialAssessmentDTO);
         if (!finAssIncomeEvidenceDTOList.isEmpty()) {
             sortFinAssIncomeEvidenceSummary(finAssIncomeEvidenceDTOList);
             finAssIncomeEvidenceDTOList.forEach(finAssIncomeEvidenceDTO -> {
@@ -182,6 +174,18 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             });
         }
         apiGetMeansAssessmentResponse.setIncomeEvidenceSummary(apiIncomeEvidenceSummary);
+    }
+
+    @NotNull
+    private static ApiIncomeEvidenceSummary getApiIncomeEvidenceSummary(FinancialAssessmentDTO financialAssessmentDTO) {
+        return new ApiIncomeEvidenceSummary()
+                .withEvidenceDueDate(financialAssessmentDTO.getIncomeEvidenceDueDate())
+                .withEvidenceReceivedDate(financialAssessmentDTO.getEvidenceReceivedDate())
+                .withIncomeEvidenceNotes(financialAssessmentDTO.getIncomeEvidenceNotes())
+                .withUpliftAppliedDate(financialAssessmentDTO.getIncomeUpliftApplyDate())
+                .withUpliftRemovedDate(financialAssessmentDTO.getIncomeUpliftRemoveDate())
+                .withFirstReminderDate(financialAssessmentDTO.getFirstIncomeReminderDate())
+                .withSecondReminderDate(financialAssessmentDTO.getSecondIncomeReminderDate());
     }
 
     protected ApiEvidenceType getEvidenceType(String evidence) {
@@ -288,7 +292,28 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         );
     }
 
-    public FinancialAssessmentDTO updateFinancialAssessment(Integer financialAssessmentId, MaatApiRollbackAssessment maatApiRollbackAssessment) {
-        return maatCourtDataService.updateFinancialAssessment(financialAssessmentId, maatApiRollbackAssessment);
+    public ApiRollbackMeansAssessmentResponse rollbackAssessment(int financialAssessmentId) {
+        FinancialAssessmentDTO financialAssessmentDTO =
+                maatCourtDataService.getFinancialAssessment(financialAssessmentId);
+        ApiRollbackMeansAssessmentResponse apiRollbackMeansAssessmentResponse =
+                new ApiRollbackMeansAssessmentResponse();
+        if (financialAssessmentDTO != null) {
+            apiRollbackMeansAssessmentResponse.withAssessmentId(financialAssessmentDTO.getId());
+            String assessmentType = financialAssessmentDTO.getAssessmentType();
+            Map<String, Object> updateFields = new HashMap<>();
+            if (AssessmentType.INIT.getType().equals(assessmentType)) {
+                updateFields.put("fassInitStatus", "IN PROGRESS");
+                updateFields.put("initResult", null);
+                apiRollbackMeansAssessmentResponse.setFassInitStatus(CurrentStatus.IN_PROGRESS);
+                apiRollbackMeansAssessmentResponse.setInitResult(null);
+            } else if (AssessmentType.FULL.getType().equals(assessmentType)) {
+                updateFields.put("fassFullStatus", "IN PROGRESS");
+                updateFields.put("fullResult", null);
+                apiRollbackMeansAssessmentResponse.setFassFullStatus(CurrentStatus.IN_PROGRESS);
+                apiRollbackMeansAssessmentResponse.setFullResult(null);
+            }
+            maatCourtDataService.rollbackFinancialAssessment(financialAssessmentId, updateFields);
+        }
+        return apiRollbackMeansAssessmentResponse;
     }
 }

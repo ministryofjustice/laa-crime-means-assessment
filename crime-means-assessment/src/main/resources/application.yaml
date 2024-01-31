@@ -34,6 +34,7 @@ maatApi:
     create-url: ${maatApi.assessments-domain}/financial-assessments
     update-url: ${maatApi.assessments-domain}/financial-assessments
     search-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
+    rollback-url: ${maatApi.assessments-domain}/financial-assessments/rollback/{financialAssessmentId}
   passport-assessment-endpoints:
     find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
   hardship-review-endpoints:
