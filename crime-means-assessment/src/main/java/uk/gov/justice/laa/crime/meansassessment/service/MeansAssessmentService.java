@@ -298,8 +298,8 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         ApiRollbackMeansAssessmentResponse apiRollbackMeansAssessmentResponse =
                 new ApiRollbackMeansAssessmentResponse();
         if (financialAssessmentDTO != null) {
-            apiRollbackMeansAssessmentResponse.withAssessmentId(financialAssessmentDTO.getId());
             String assessmentType = financialAssessmentDTO.getAssessmentType();
+            apiRollbackMeansAssessmentResponse.setAssessmentType(assessmentType);
             Map<String, Object> updateFields = new HashMap<>();
             if (AssessmentType.INIT.getType().equals(assessmentType)) {
                 updateFields.put("fassInitStatus", "IN PROGRESS");

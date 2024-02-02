@@ -5,9 +5,9 @@
   "title": "Means Assessment Response",
   "description": "The response data for a rollback of the Means Assessment",
   "properties": {
-    "assessmentId": {
-      "type": "integer",
-      "description": "Unique Identifier of an Assessment."
+    "assessmentType": {
+      "type": "string",
+      "description": "Type of an Assessment - FULL or INIT."
     },
     "initResult": {
       "type": "string",

@@ -110,7 +110,7 @@ public class MeansAssessmentController {
         return ResponseEntity.ok(assessmentCriteriaService.getFullAssessmentThreshold(assessmentDate));
     }
 
-    @PutMapping(value = "/rollback/{financialAssessmentId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/rollback/{financialAssessmentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Rollback Financial Assessments")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
     @DefaultHTTPErrorResponse
