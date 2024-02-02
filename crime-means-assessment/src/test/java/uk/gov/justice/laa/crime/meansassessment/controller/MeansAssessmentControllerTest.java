@@ -199,7 +199,7 @@ class MeansAssessmentControllerTest {
     @Test
     void givenValidParam_whenRollbackInvoked_shouldSuccess() throws Exception {
         mvc.perform(buildRequestGivenContent(
-                HttpMethod.PUT,
+                HttpMethod.PATCH,
                 "",
                 ENDPOINT_URL + "/rollback/" + MEANS_ASSESSMENT_ID,
                 true)

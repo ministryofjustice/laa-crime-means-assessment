@@ -446,7 +446,7 @@ class MeansAssessmentServiceTest {
                 .thenReturn(financialAssessmentDTO);
         ApiRollbackMeansAssessmentResponse response =
                 meansAssessmentService.rollbackAssessment(MEANS_ASSESSMENT_ID);
-        assertThat(response.getAssessmentId()).isEqualTo(MEANS_ASSESSMENT_ID);
+        assertThat(response.getAssessmentType()).isEqualTo(AssessmentType.INIT.getType());
         assertThat(response.getFassInitStatus()).isEqualTo(CurrentStatus.IN_PROGRESS);
         assertThat(response.getInitResult()).isNull();
     }
@@ -461,7 +461,7 @@ class MeansAssessmentServiceTest {
                 .thenReturn(financialAssessmentDTO);
         ApiRollbackMeansAssessmentResponse response =
                 meansAssessmentService.rollbackAssessment(MEANS_ASSESSMENT_ID);
-        assertThat(response.getAssessmentId()).isEqualTo(MEANS_ASSESSMENT_ID);
+        assertThat(response.getAssessmentType()).isEqualTo(AssessmentType.FULL.getType());
         assertThat(response.getFassFullStatus()).isEqualTo(CurrentStatus.IN_PROGRESS);
         assertThat(response.getFullResult()).isNull();
     }}
