@@ -41,7 +41,7 @@ public class RestControllerAdviser {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorDTO> handleValidationError(ValidationException ex) {
-        log.error("ValidationException: ", ex);
+        log.warn("ValidationException: ", ex);
         return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getMessage(), traceIdHandler.getTraceId());
     }
 
