@@ -3,10 +3,10 @@ package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessmentValidationService;
 
 import java.util.Optional;
@@ -32,8 +32,8 @@ public class MeansAssessmentValidationProcessor {
             "Eligibility Review, Miscalculation Review or New Application Following Ineligibility.";
     public static final String MSG_FULL_ASSESSMENT_DATE_REQUIRED = "Full assessment date is required";
 
-    public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO, AssessmentRequestType requestType) {
-        log.info("Validating means assessment request : {}", requestDTO);
+    public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO, RequestType requestType) {
+        log.info("Validating means assessment request : {}", requestDTO.getRepId());
         if (!isRepIdValid(requestDTO)) {
             throw new ValidationException(MSG_REP_ID_REQUIRED);
         } else if (!meansAssessmentValidationService.isRoleActionValid(requestDTO, ACTION_CREATE_ASSESSMENT)) {
@@ -42,7 +42,7 @@ public class MeansAssessmentValidationProcessor {
             throw new ValidationException(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
         }
 
-        if (AssessmentRequestType.CREATE.equals(requestType) &&
+        if (RequestType.CREATE.equals(requestType) &&
                 meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
             throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
         }

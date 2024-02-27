@@ -1,14 +1,16 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.*;
 import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -98,9 +100,8 @@ public class TestModelDataBuilder {
     public static final String TEST_ASSESSMENT_SECTION_FULLA = "FULLA";
     public static final String TEST_ASSESSMENT_SECTION_FULLB = "FULLB";
     public static final int CMU_ID = 30;
-    private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
-
     public static final String TEST_DATE_STRING = "2022-10-08";
+    private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -261,6 +262,15 @@ public class TestModelDataBuilder {
                         )
                 )
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
+    }
+
+    public static MaatApiUpdateAssessment getMaatApiRollbackAssessment() {
+        return new MaatApiUpdateAssessment()
+                .withFinancialAssessmentId(MEANS_ASSESSMENT_ID)
+                .withFassFullStatus("FAIL")
+                .withFassInitStatus("FAIL")
+                .withInitResult(InitAssessmentResult.FAIL.getResult())
+                .withFullResult(FullAssessmentResult.FAIL.getResult());
     }
 
     public static ApiUpdateMeansAssessmentRequest getApiUpdateMeansAssessmentRequest(boolean isValid) {

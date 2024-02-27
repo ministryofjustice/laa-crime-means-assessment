@@ -2,10 +2,10 @@ package uk.gov.justice.laa.crime.meansassessment.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

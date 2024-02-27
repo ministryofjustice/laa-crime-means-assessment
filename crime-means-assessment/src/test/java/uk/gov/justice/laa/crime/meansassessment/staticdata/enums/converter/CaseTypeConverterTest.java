@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums.converter;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.CaseType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,7 +10,7 @@ class CaseTypeConverterTest {
     private static final String VALID_VALUE = "APPEAL CC";
     private static final String INVALID_VALUE = "INVALID_VALUE";
 
-    private CaseTypeConverter caseTypeConverter = new CaseTypeConverter();
+    private final CaseTypeConverter caseTypeConverter = new CaseTypeConverter();
 
     @Test
     void givenWhenEnumIsProvidedThenMatchingValueForDBIsReturned() {

@@ -16,7 +16,7 @@
     "type": {
       "type": "string",
       "description": "Assessment type (work_type)",
-      "existingJavaType": "uk.gov.justice.laa.crime.meansassessment.staticdata.enums.WorkType"
+      "existingJavaType": "uk.gov.justice.laa.crime.enums.WorkType"
     },
     "reviewType": {
       "type": "string",
@@ -32,11 +32,5 @@
     }
   },
   "additionalProperties": false,
-  "required": [
-    "id",
-    "type",
-    "assessmentDate",
-    "status",
-    "result"
-  ]
+  "required": ["id", "type", "assessmentDate", "status", "result"]
 }
