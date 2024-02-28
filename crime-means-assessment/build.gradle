@@ -17,7 +17,9 @@ def versions = [
         cucumberVersion             : "7.14.0",
         jUnitPlatformSuiteVersion   : "1.10.0",
         springCloudStubRunnerVersion: "4.0.4",
-        h2DBVersion                 : '2.1.210'
+        h2DBVersion                 : '2.1.210',
+        postgresqlVersion           : "42.7.2"
+
 ]
 
 
@@ -41,7 +43,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
-    implementation "org.postgresql:postgresql"
+    implementation "org.postgresql:postgresql:$versions.postgresqlVersion"
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "org.liquibase:liquibase-core:$versions.liquibase"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
