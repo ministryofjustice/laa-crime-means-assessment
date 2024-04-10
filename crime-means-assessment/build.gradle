@@ -9,16 +9,17 @@ plugins {
 }
 
 def versions = [
-        pitest                      : "1.4.10",
-        springdocVersion            : "2.1.0",
-        liquibase                   : "4.20.0",
-        crimeCommonsVersion         : "2.19.0",
-        mockitoInlineVersion        : "5.2.0",
-        cucumberVersion             : "7.14.0",
-        jUnitPlatformSuiteVersion   : "1.10.0",
-        springCloudStubRunnerVersion: "4.0.4",
-        h2DBVersion                 : '2.1.210',
-        postgresqlVersion           : "42.7.2"
+        pitest                       : "1.4.10",
+        springdocVersion             : "2.1.0",
+        liquibase                    : "4.20.0",
+        crimeCommonsClassesVersion   : "3.2.0",
+        crimeCommonsRestClientVersion: "3.2.0",
+        mockitoInlineVersion         : "5.2.0",
+        cucumberVersion              : "7.14.0",
+        jUnitPlatformSuiteVersion    : "1.10.0",
+        springCloudStubRunnerVersion : "4.0.4",
+        h2DBVersion                  : '2.1.210',
+        postgresqlVersion            : "42.7.2"
 
 ]
 
@@ -36,8 +37,8 @@ repositories {
 }
 
 dependencies {
-    implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:$versions.crimeCommonsVersion:all"
-    implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsVersion"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:$versions.crimeCommonsRestClientVersion:all"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-validation"
