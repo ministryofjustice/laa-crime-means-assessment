@@ -772,8 +772,8 @@ public class TestModelDataBuilder {
                 .initAdjustedIncomeValue(BigDecimal.valueOf(15600.00))
                 .initResult(InitAssessmentResult.PASS.getResult())
                 .initApplicationEmploymentStatus(TEST_EMPLOYMENT_STATUS)
-                .firstIncomeReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
-                .secondIncomeReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .firstReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .secondReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
                 .build();
     }
 

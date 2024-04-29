@@ -184,8 +184,8 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                 .withIncomeEvidenceNotes(financialAssessmentDTO.getIncomeEvidenceNotes())
                 .withUpliftAppliedDate(financialAssessmentDTO.getIncomeUpliftApplyDate())
                 .withUpliftRemovedDate(financialAssessmentDTO.getIncomeUpliftRemoveDate())
-                .withFirstReminderDate(financialAssessmentDTO.getFirstIncomeReminderDate())
-                .withSecondReminderDate(financialAssessmentDTO.getSecondIncomeReminderDate());
+                .withFirstReminderDate(financialAssessmentDTO.getFirstReminderDate())
+                .withSecondReminderDate(financialAssessmentDTO.getSecondReminderDate());
     }
 
     protected ApiEvidenceType getEvidenceType(String evidence) {
