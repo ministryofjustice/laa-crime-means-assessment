@@ -2,18 +2,22 @@ package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
 import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
+import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
+import uk.gov.justice.laa.crime.meansassessment.Income;
+import uk.gov.justice.laa.crime.meansassessment.Outgoing;
+import uk.gov.justice.laa.crime.meansassessment.StatelessFullResult;
+import uk.gov.justice.laa.crime.meansassessment.StatelessInitialResult;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.BaseMeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.service.FullAssessmentAvailabilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -65,11 +69,11 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     }
 
     public StatelessFullResult fullResult(@NotNull Map<AgeRange, Integer> childGroupings,
-                                           AssessmentCriteriaEntity criteriaEntry,
-                                           boolean eligibilityCheckRequired,
-                                           CaseType caseType,
-                                           List<Outgoing> outgoings,
-                                           BigDecimal totalIncome) {
+                                          AssessmentCriteriaEntity criteriaEntry,
+                                          boolean eligibilityCheckRequired,
+                                          CaseType caseType,
+                                          List<Outgoing> outgoings,
+                                          BigDecimal totalIncome) {
         final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 
         // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
@@ -94,11 +98,11 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
     }
 
     public StatelessInitialResult initialResult(@NotNull Map<AgeRange, Integer> childGroupings,
-                                                 AssessmentCriteriaEntity criteriaEntry,
-                                                 CaseType caseType,
-                                                 MagCourtOutcome magCourtOutcome,
-                                                 List<Income> incomes,
-                                                 NewWorkReason newWorkReason) {
+                                                AssessmentCriteriaEntity criteriaEntry,
+                                                CaseType caseType,
+                                                MagCourtOutcome magCourtOutcome,
+                                                List<Income> incomes,
+                                                NewWorkReason newWorkReason) {
 
         final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 

@@ -12,8 +12,9 @@ def versions = [
         pitest                       : "1.4.10",
         springdocVersion             : "2.1.0",
         liquibase                    : "4.20.0",
-        crimeCommonsClassesVersion   : "3.4.0",
+        crimeCommonsClassesVersion   : "3.18.0",
         crimeCommonsRestClientVersion: "3.4.0",
+        crimeCommonsModsSchemas      : "0.7.0",
         mockitoInlineVersion         : "5.2.0",
         cucumberVersion              : "7.14.0",
         jUnitPlatformSuiteVersion    : "1.10.0",
@@ -39,6 +40,7 @@ repositories {
 dependencies {
     implementation "uk.gov.justice.service.laa-crime:crime-commons-spring-boot-starter-rest-client:$versions.crimeCommonsRestClientVersion:all"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-mod-schemas:$versions.crimeCommonsModsSchemas"
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-validation"
