@@ -692,7 +692,7 @@ public class TestModelDataBuilder {
                 .id(TEST_REP_ID)
                 .catyCaseType(CaseType.EITHER_WAY.getCaseType())
                 .magsOutcome(MagCourtOutcome.COMMITTED.getOutcome())
-                .magsOutcomeDate(TEST_MAGS_OUTCOME_DATE.toString())
+                .magsOutcomeDate("05-JUN-22")
                 .magsOutcomeDateSet(TEST_MAGS_OUTCOME_DATE)
                 .committalDate(TEST_MAGS_OUTCOME_DATE.toLocalDate())
                 .decisionReasonCode("rder-code")

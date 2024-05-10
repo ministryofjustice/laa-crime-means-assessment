@@ -13,7 +13,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.Assessment
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.CaseTypeAssessmentCriteriaDetailValueRepository;
-import uk.gov.justice.laa.crime.meansassessment.util.DateUtil;
+import uk.gov.justice.laa.crime.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
