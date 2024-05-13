@@ -188,4 +188,13 @@ class CrownCourtEligibilityServiceTest {
         requestDTO.setMagCourtOutcome(MagCourtOutcome.COMMITTED);
         softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
     }
+
+    @Test
+    void givenMagsOutcomeDateSetIsNull_whenIsEligibilityCheckRequiredIsInvoked_thenReturnTrue() {
+        PassportAssessmentDTO previous =
+                PassportAssessmentDTO.builder().result(PassportAssessmentResult.FAIL.getResult()).build();
+        repOrderDTO.getPassportAssessments().add(previous);
+        repOrderDTO.setMagsOutcomeDateSet(null);
+        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
+    }
 }

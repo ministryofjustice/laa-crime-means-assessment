@@ -9,8 +9,11 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
+import uk.gov.justice.laa.crime.util.DateUtil;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
@@ -50,8 +53,8 @@ public class CrownCourtEligibilityService implements EligibilityChecker {
             if (!isFirstMeansAssessment) {
                 boolean isInitResultPass =
                         InitAssessmentResult.PASS.equals(InitAssessmentResult.getFrom(initialAssessment.getInitResult()));
-                boolean isDateCreatedAfterMagsOutcome =
-                        initialAssessment.getDateCreated().isAfter(repOrder.getMagsOutcomeDateSet());
+                LocalDateTime magsOutcomeDate = Objects.requireNonNullElse(repOrder.getMagsOutcomeDateSet(), DateUtil.stringToLocalDateTime(repOrder.getMagsOutcomeDate(), DateUtil.DATE_FORMAT));
+                boolean isDateCreatedAfterMagsOutcome = initialAssessment.getDateCreated().isAfter(magsOutcomeDate);
 
                 if (isInitResultPass || isDateCreatedAfterMagsOutcome) {
                     Assessment previousAssessment = getLatestAssessment(repOrder, financialAssessmentId);
