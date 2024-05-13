@@ -25,7 +25,10 @@ public class MeansAssessmentValidationProcessor {
     public static final String MSG_REP_ID_REQUIRED = "Rep Id is missing from request and is required";
     public static final String MSG_ROLE_ACTION_IS_NOT_VALID = "Role action is not valid";
     public static final String MSG_NEW_WORK_REASON_IS_NOT_VALID = "New work reason is not valid";
-    public static final String MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER = "This record is not reserved by current user";
+    public static final String MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER = """
+            This record is not reserved by current user. Please try logging out and logging back in again.
+            Please contact your system administrator if this issue persists.
+            """;
     public static final String MSG_INCOMPLETE_ASSESSMENT_FOUND = "An incomplete assessment is associated with the current application";
     public static final String MSG_INCORRECT_REVIEW_TYPE = "Review Type - As the current Crown Court Rep Order Decision is Refused - " +
             "Ineligible (applicants disposable income exceeds eligibility threshold) you must select the appropriate review type - " +
