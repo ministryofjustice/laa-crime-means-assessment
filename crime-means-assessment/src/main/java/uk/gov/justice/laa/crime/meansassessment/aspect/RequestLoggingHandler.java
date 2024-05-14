@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.LoggingData;
 
 @Slf4j
