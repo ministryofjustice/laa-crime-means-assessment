@@ -14,10 +14,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.MaatCourtDataService;
 
-import java.util.Map;
-
-import static uk.gov.justice.laa.crime.meansassessment.common.Constants.LAA_TRANSACTION_ID;
-
 /**
  * This service provides methods for validation of means assessment requests
  */
