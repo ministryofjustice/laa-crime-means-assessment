@@ -12,22 +12,25 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiGetMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiUpdateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiCreateMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiGetMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiUpdateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.MEANS_ASSESSMENT_ID;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
 import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
 
 @DirtiesContext
@@ -38,6 +41,7 @@ class MeansAssessmentControllerTest {
 
     private static final boolean IS_VALID = true;
     private static final String ENDPOINT_URL = "/api/internal/v1/assessment/means";
+    private static final String FA_THRESHOLD_ENDPOINT_URL = "/api/internal/v1/assessment/means/fullAssessmentThreshold/";
 
     @Autowired
     private MockMvc mvc;
@@ -52,7 +56,13 @@ class MeansAssessmentControllerTest {
     private MeansAssessmentService meansAssessmentService;
 
     @MockBean
+    private AssessmentCriteriaService assessmentCriteriaService;
+
+    @MockBean
     private MeansAssessmentValidationProcessor assessmentValidator;
+
+    @MockBean
+    private TraceIdHandler traceIdHandler;
 
     @Test
     void createAssessment_success() throws Exception {
@@ -65,10 +75,10 @@ class MeansAssessmentControllerTest {
         when(assessmentRequestDTOBuilder.buildRequestDTO(any(ApiCreateMeansAssessmentRequest.class)))
                 .thenReturn(TestModelDataBuilder.getMeansAssessmentRequestDTO(true));
 
-        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(initialMeansAssessmentResponse);
 
-        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(Optional.empty());
 
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
@@ -88,10 +98,10 @@ class MeansAssessmentControllerTest {
         when(assessmentRequestDTOBuilder.buildRequestDTO(any(ApiUpdateMeansAssessmentRequest.class)))
                 .thenReturn(TestModelDataBuilder.getMeansAssessmentRequestDTO(true));
 
-        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(meansAssessmentService.doAssessment(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(updateAssessmentResponse);
 
-        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(AssessmentRequestType.class)))
+        when(assessmentValidator.validate(any(MeansAssessmentRequestDTO.class), any(RequestType.class)))
                 .thenReturn(Optional.empty());
 
         mvc.perform(buildRequestGivenContent(HttpMethod.PUT, updateAssessmentRequestJson, ENDPOINT_URL))
@@ -145,18 +155,53 @@ class MeansAssessmentControllerTest {
     }
 
     @Test
-    void givenInvalidPram_whenGetOldAssessmentInvoked_shouldFailBadRequest() throws Exception {
+    void givenInvalidParam_whenGetOldAssessmentInvoked_shouldFailBadRequest() throws Exception {
         mvc.perform(buildRequestGivenContent(HttpMethod.GET, "", ENDPOINT_URL, true))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
-    void givenValidPram_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
-        when(meansAssessmentService.getOldAssessment(any(), any())).thenReturn(new ApiGetMeansAssessmentResponse());
+    void givenValidParam_whenGetOldAssessmentInvoked_shouldSuccess() throws Exception {
+        when(meansAssessmentService.getOldAssessment(any())).thenReturn(new ApiGetMeansAssessmentResponse());
         mvc.perform(buildRequestGivenContent(
                 HttpMethod.GET,
                 "",
                 ENDPOINT_URL + "/" + MEANS_ASSESSMENT_ID,
+                true)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void givenInvalidParam_whenFullAssessmentThresholdInvoked_shouldFailBadRequest() throws Exception {
+        mvc.perform(buildRequestGivenContent(HttpMethod.GET, "", FA_THRESHOLD_ENDPOINT_URL, true))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void givenValidParam_whenFullAssessmentThresholdInvoked_shouldSuccess() throws Exception {
+        when(assessmentCriteriaService.getFullAssessmentThreshold(any())).thenReturn(new BigDecimal("1000"));
+        mvc.perform(buildRequestGivenContent(
+                        HttpMethod.GET,
+                        "",
+                        FA_THRESHOLD_ENDPOINT_URL + "/" + ASSESSMENT_DATE,
+                        true)
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(FULL_THRESHOLD));
+
+    }
+
+    @Test
+    void givenInvalidParam_whenRollbackInvoked_shouldFailBadRequest() throws Exception {
+        mvc.perform(buildRequestGivenContent(HttpMethod.PUT, "", ENDPOINT_URL + "/rollback", true))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void givenValidParam_whenRollbackInvoked_shouldSuccess() throws Exception {
+        mvc.perform(buildRequestGivenContent(
+                HttpMethod.PATCH,
+                "",
+                ENDPOINT_URL + "/rollback/" + MEANS_ASSESSMENT_ID,
                 true)
         ).andExpect(status().isOk());
     }

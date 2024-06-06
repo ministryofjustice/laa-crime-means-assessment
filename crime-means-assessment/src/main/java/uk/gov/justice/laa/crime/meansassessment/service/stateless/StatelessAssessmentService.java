@@ -2,19 +2,22 @@ package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
+import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
+import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
+import uk.gov.justice.laa.crime.meansassessment.Income;
+import uk.gov.justice.laa.crime.meansassessment.Outgoing;
+import uk.gov.justice.laa.crime.meansassessment.StatelessFullResult;
+import uk.gov.justice.laa.crime.meansassessment.StatelessInitialResult;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFactory;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.BaseMeansAssessmentService;
 import uk.gov.justice.laa.crime.meansassessment.service.FullAssessmentAvailabilityService;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,7 +28,6 @@ import static uk.gov.justice.laa.crime.meansassessment.service.stateless.Statele
 @Service
 public class StatelessAssessmentService extends BaseMeansAssessmentService {
 
-    private final AssessmentCriteriaService assessmentCriteriaService;
     private final MeansAssessmentServiceFactory meansAssessmentServiceFactory;
     private final FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
@@ -34,7 +36,6 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                                       FullAssessmentAvailabilityService fullAssessmentAvailabilityService) {
 
         super(assessmentCriteriaService);
-        this.assessmentCriteriaService = assessmentCriteriaService;
         this.meansAssessmentServiceFactory = meansAssessmentServiceFactory;
         this.fullAssessmentAvailabilityService = fullAssessmentAvailabilityService;
     }
@@ -43,74 +44,70 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                                    Map<AgeRange, Integer> childGroupings,
                                    List<Income> income,
                                    List<Outgoing> outgoings) {
-
-        if (assessment.getAssessmentType() == StatelessRequestType.INITIAL) {
-            return initialOnly(assessment, childGroupings, income);
-        } else {
-            return initialAndFull(assessment, childGroupings, income, outgoings);
-        }
-    }
-
-    private StatelessResult initialAndFull(@NotNull Assessment assessment,
-                                           @NotNull Map<AgeRange, Integer> childGroupings,
-                                           @NotNull List<Income> incomes,
-                                           @NotNull List<Outgoing> outgoings) {
-
-        final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(
+        final var assessmentCriteriaEntity = assessmentCriteriaService.getAssessmentCriteria(
                 assessment.getAssessmentDate(), assessment.getHasPartner(), false
         );
-        final var totalIncome = calcIncomeTotals(criteriaEntry, assessment.getCaseType(), incomes);
-        var initialAnswer = initialResult(assessment, totalIncome, childGroupings);
+        var initialAnswer = initialResult(
+                childGroupings,
+                assessmentCriteriaEntity,
+                assessment.getCaseType(),
+                assessment.getMagistrateCourtOutcome(),
+                income,
+                null);
 
+        if (assessment.getAssessmentType() == StatelessRequestType.INITIAL) {
+            return new StatelessResult(null, initialAnswer);
+        }
         if (initialAnswer.isFullAssessmentPossible()) {
-            final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
-
-            // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
-            final MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO
-                    .builder()
-                    .assessmentStatus(CurrentStatus.COMPLETE)
-                    .childWeightings(children)
-                    .initTotalAggregatedIncome(totalIncome)
-                    .eligibilityCheckRequired(assessment.getEligibilityCheckRequired())
-                    .build();
-
-            final var totalOutgoings = calcOutgoingTotals(criteriaEntry, assessment.getCaseType(), outgoings);
-            final var fullAssessmentService = meansAssessmentServiceFactory.getService(AssessmentType.FULL);
-            final var fullAssessmentResult = fullAssessmentService.execute(totalOutgoings, requestDTO, criteriaEntry);
-
-            final var statelessFullResult = StatelessFullResult.builder()
-                    .result(fullAssessmentResult.getFullAssessmentResult())
-                    .disposableIncome(fullAssessmentResult.getTotalAnnualDisposableIncome())
-                    .totalAggregatedIncome(totalIncome)
-                    .adjustedLivingAllowance(fullAssessmentResult.getAdjustedLivingAllowance())
-                    .totalAnnualAggregatedExpenditure(fullAssessmentResult.getTotalAggregatedExpense())
-                    .eligibilityThreshold(criteriaEntry.getEligibilityThreshold()).build();
+            final var statelessFullResult =
+                    fullResult(childGroupings, assessmentCriteriaEntity, assessment.getEligibilityCheckRequired(), assessment.getCaseType(), outgoings,
+                            initialAnswer.getTotalAggregatedIncome());
             return new StatelessResult(statelessFullResult, initialAnswer);
         } else {
             return new StatelessResult(null, initialAnswer);
         }
     }
 
-    private StatelessResult initialOnly(@NotNull Assessment assessment,
-                                        @NotNull Map<AgeRange, Integer> childGroupings,
-                                        @NotNull List<Income> incomes) {
+    public StatelessFullResult fullResult(@NotNull Map<AgeRange, Integer> childGroupings,
+                                          AssessmentCriteriaEntity criteriaEntry,
+                                          boolean eligibilityCheckRequired,
+                                          CaseType caseType,
+                                          List<Outgoing> outgoings,
+                                          BigDecimal totalIncome) {
+        final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
 
-        final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(
-                assessment.getAssessmentDate(), assessment.getHasPartner(), false
-        );
-        final var totalIncome = calcIncomeTotals(criteriaEntry, assessment.getCaseType(), incomes);
-        var initialAssessment = initialResult(assessment, totalIncome, childGroupings);
-        return new StatelessResult(null, initialAssessment);
+        // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
+        final MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO
+                .builder()
+                .assessmentStatus(CurrentStatus.COMPLETE)
+                .childWeightings(children)
+                .initTotalAggregatedIncome(totalIncome)
+                .eligibilityCheckRequired(eligibilityCheckRequired)
+                .build();
+
+        final var totalOutgoings = calcOutgoingTotals(criteriaEntry, caseType, outgoings);
+        final var fullAssessmentService = meansAssessmentServiceFactory.getService(AssessmentType.FULL);
+        final var fullAssessmentResult = fullAssessmentService.execute(totalOutgoings, requestDTO, criteriaEntry);
+
+        return StatelessFullResult.builder()
+                .result(fullAssessmentResult.getFullAssessmentResult())
+                .disposableIncome(fullAssessmentResult.getTotalAnnualDisposableIncome())
+                .adjustedLivingAllowance(fullAssessmentResult.getAdjustedLivingAllowance())
+                .totalAnnualAggregatedExpenditure(fullAssessmentResult.getTotalAggregatedExpense())
+                .eligibilityThreshold(criteriaEntry.getEligibilityThreshold()).build();
     }
 
-    private StatelessInitialResult initialResult(@NotNull Assessment assessment,
-                                                 @NotNull BigDecimal totalIncome,
-                                                 @NotNull Map<AgeRange, Integer> childGroupings) {
+    public StatelessInitialResult initialResult(@NotNull Map<AgeRange, Integer> childGroupings,
+                                                AssessmentCriteriaEntity criteriaEntry,
+                                                CaseType caseType,
+                                                MagCourtOutcome magCourtOutcome,
+                                                List<Income> incomes,
+                                                NewWorkReason newWorkReason) {
 
-        final var criteriaEntry = assessmentCriteriaService.getAssessmentCriteria(
-                assessment.getAssessmentDate(), assessment.getHasPartner(), false
-        );
         final var children = mapChildGroupings(childGroupings, criteriaEntry.getAssessmentCriteriaChildWeightings());
+
+        final var totalIncome = calcIncomeTotals(criteriaEntry, caseType, incomes);
+        final var initMeansAssessmentService = meansAssessmentServiceFactory.getService(AssessmentType.INIT);
 
         // assessmentStatus has to be set 'COMPLETE' otherwise the return value is null
         final MeansAssessmentRequestDTO requestDTO = MeansAssessmentRequestDTO
@@ -118,14 +115,14 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                 .childWeightings(children)
                 .assessmentStatus(CurrentStatus.COMPLETE)
                 .build();
+        final var result = initMeansAssessmentService.execute(totalIncome, requestDTO, criteriaEntry);
 
-        final var service = meansAssessmentServiceFactory.getService(AssessmentType.INIT);
-        final var result = service.execute(totalIncome, requestDTO, criteriaEntry);
-        final var fullAssessmentPossible = fullAssessmentAvailabilityService
-                .isFullAssessmentAvailable(assessment.getCaseType(),
-                        assessment.getMagistrateCourtOutcome(),
-                        null, result.getInitAssessmentResult()
-                );
+        final var fullAssessmentPossible = fullAssessmentAvailabilityService.isFullAssessmentAvailable(
+                caseType,
+                magCourtOutcome,
+                newWorkReason,
+                result.getInitAssessmentResult()
+        );
 
         return StatelessInitialResult.builder()
                 .result(result.getInitAssessmentResult())
@@ -133,6 +130,7 @@ public class StatelessAssessmentService extends BaseMeansAssessmentService {
                 .upperThreshold(criteriaEntry.getInitialUpperThreshold())
                 .fullAssessmentPossible(fullAssessmentPossible)
                 .adjustedIncomeValue(result.getAdjustedIncomeValue())
+                .totalAggregatedIncome(result.getTotalAggregatedIncome())
                 .build();
     }
 

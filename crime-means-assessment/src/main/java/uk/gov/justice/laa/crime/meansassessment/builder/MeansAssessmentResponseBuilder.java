@@ -3,12 +3,12 @@ package uk.gov.justice.laa.crime.meansassessment.builder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
 
 import static java.util.Optional.ofNullable;
 

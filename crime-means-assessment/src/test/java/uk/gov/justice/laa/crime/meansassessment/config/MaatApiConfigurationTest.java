@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
+import uk.gov.justice.laa.crime.enums.RequestType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -28,6 +28,7 @@ class MaatApiConfigurationTest {
         assertThat(buildUrl("search-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getSearchUrl());
         assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getCreateUrl());
         assertThat(buildUrl("update-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getUpdateUrl());
+        assertThat(buildUrl("rollback-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getRollbackUrl());
 
         assertThat(false).isEqualTo(configuration.isOAuthEnabled());
 
@@ -39,7 +40,7 @@ class MaatApiConfigurationTest {
 
     @Test
     void givenDefinedFinancialAssessmentEndpoints_whenGetByRequestTypeIsInvoked_thenCorrectEndpointIsReturned() {
-        assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getByRequestType(AssessmentRequestType.CREATE));
+        assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getByRequestType(RequestType.CREATE));
     }
 
     @Test

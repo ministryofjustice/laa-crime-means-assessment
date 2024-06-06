@@ -2,14 +2,17 @@ package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentChildWeighting;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentChildWeighting;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
+import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
+import uk.gov.justice.laa.crime.enums.meansassessment.OutgoingType;
+import uk.gov.justice.laa.crime.meansassessment.Amount;
+import uk.gov.justice.laa.crime.meansassessment.Income;
+import uk.gov.justice.laa.crime.meansassessment.Outgoing;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
 
 import java.util.Collections;
 import java.util.List;

@@ -66,6 +66,7 @@ maatApi:
     create-url: ${maatApi.assessments-domain}/create-url
     search-url: ${maatApi.assessments-domain}/search-url
     update-url: ${maatApi.assessments-domain}/update-url
+    rollback-url: ${maatApi.assessments-domain}/rollback-url
   passport-assessment-endpoints:
     find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
   hardship-review-endpoints:

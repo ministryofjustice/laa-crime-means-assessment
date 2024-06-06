@@ -9,15 +9,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.CaseTypeAssessmentCriteriaDetailValueEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.CaseTypeAssessmentCriteriaDetailValueRepository;
@@ -59,11 +59,9 @@ class AssessmentCriteriaServiceTest {
     void givenValidDateWithPartnerAndNoContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(assessmentCriteriaEntity);
-
         AssessmentCriteriaEntity result =
                 assessmentCriteriaService.getAssessmentCriteria(
-                        TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false
-                );
+                        TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), true, false);
         assertThat(assessmentCriteriaEntity.getPartnerWeightingFactor()).isEqualTo(result.getPartnerWeightingFactor());
     }
 
@@ -285,5 +283,13 @@ class AssessmentCriteriaServiceTest {
             assertThatThrownBy(function).isInstanceOf(ValidationException.class).hasMessageContaining(expectedErrorMessage);
             detail.setPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY);
         });
+    }
+
+    @Test
+    void givenValidFrequency_whenGetFullAssessmentThresholdIsInvoked_thenThenAssessmentCriteriaDTOShouldBeReturned() {
+        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        BigDecimal result = assessmentCriteriaService.getFullAssessmentThreshold(TestModelDataBuilder.TEST_DATE_STRING);
+        assertThat(result).isEqualTo(TestModelDataBuilder.TEST_FULL_THRESHOLD);
     }
 }
