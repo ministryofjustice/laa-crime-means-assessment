@@ -2,18 +2,21 @@ package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentChildWeighting;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
+import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
+import uk.gov.justice.laa.crime.enums.meansassessment.OutgoingType;
+import uk.gov.justice.laa.crime.meansassessment.FrequencyAmount;
+import uk.gov.justice.laa.crime.meansassessment.Income;
+import uk.gov.justice.laa.crime.meansassessment.Outgoing;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentChildWeighting;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentSectionSummary;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentDetailEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
 
 import java.math.BigDecimal;
 import java.util.Collections;

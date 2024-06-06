@@ -3,16 +3,17 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.exception.AssessmentCriteriaNotFoundException;
 import uk.gov.justice.laa.crime.meansassessment.exception.ValidationException;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaChildWeightingRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaDetailFrequencyRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.AssessmentCriteriaRepository;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.repository.CaseTypeAssessmentCriteriaDetailValueRepository;
+import uk.gov.justice.laa.crime.util.DateUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,6 +42,11 @@ public class AssessmentCriteriaService {
             log.error("No Assessment Criteria found for date {}", assessmentDate);
             throw new AssessmentCriteriaNotFoundException(String.format("No Assessment Criteria found for date %s", assessmentDate));
         }
+    }
+
+    public BigDecimal getFullAssessmentThreshold(String assessmentDate) {
+        AssessmentCriteriaEntity assessmentCriteriaEntity = assessmentCriteriaRepository.findAssessmentCriteriaForDate(DateUtil.getLocalDateTime(assessmentDate));
+        return assessmentCriteriaEntity.getFullThreshold();
     }
 
     // Check for Council Tax not being submitted anything other than 'ANNUALLY'

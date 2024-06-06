@@ -3,12 +3,12 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.NewWorkReason;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

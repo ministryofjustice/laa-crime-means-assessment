@@ -2,13 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "laa-crime-means-assessment.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "laa-crime-means-assessment.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: http
     {{- if not (eq (toString .Values.actuator.port) "http") }}

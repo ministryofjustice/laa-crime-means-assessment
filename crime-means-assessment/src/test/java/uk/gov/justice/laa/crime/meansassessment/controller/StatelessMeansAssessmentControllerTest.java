@@ -11,19 +11,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
+import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
+import uk.gov.justice.laa.crime.enums.meansassessment.OutgoingType;
+import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
+import uk.gov.justice.laa.crime.meansassessment.*;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.DependantChild;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.FullAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.InitAssessmentResult;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,8 +44,8 @@ import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.
 class StatelessMeansAssessmentControllerTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
     private static final ApiMeansAssessmentRequest testRequest = TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
-    private static final DependantChild childOne = new DependantChild().withAgeRange(AgeRange.ZERO_TO_ONE).withCount(2);
-    private static final DependantChild childTwo = new DependantChild().withAgeRange(AgeRange.FIVE_TO_SEVEN).withCount(1);
+    private static final DependantChild childOne = new DependantChild(AgeRange.ZERO_TO_ONE, 2);
+    private static final DependantChild childTwo = new DependantChild(AgeRange.FIVE_TO_SEVEN, 1);
     private static final FrequencyAmount incomeAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(2700));
     private static final FrequencyAmount outAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(100));
 
@@ -56,6 +58,12 @@ class StatelessMeansAssessmentControllerTest {
     @MockBean
     private StatelessAssessmentService statelessAssessmentService;
 
+    @MockBean
+    private AssessmentCriteriaService assessmentCriteriaService;
+
+    @MockBean
+    private TraceIdHandler traceIdHandler;
+
     @Test
     void validRequest_success() throws Exception {
         var assessment = buildAssessment(StatelessRequestType.BOTH);
@@ -67,10 +75,13 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var initialResult = new StatelessResult(
-                null, new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, false, BigDecimal.TEN));
+                null, new StatelessInitialResult(InitAssessmentResult.PASS,
+                BigDecimal.ZERO, BigDecimal.ONE, false, BigDecimal.TEN, BigDecimal.ZERO));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(initialResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -87,12 +98,14 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var fullResult = new StatelessResult(
-                new StatelessFullResult(FullAssessmentResult.PASS, BigDecimal.ONE, BigDecimal.ONE,
+                new StatelessFullResult(FullAssessmentResult.PASS, BigDecimal.ONE,
                         BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ONE),
-                new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true, BigDecimal.ZERO));
+                new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true, BigDecimal.ZERO, BigDecimal.ONE));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(fullResult);
+        when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
+                .thenReturn(TestModelDataBuilder.getAssessmentCriteriaEntity());
         mvc.perform(buildRequestGivenContent(HttpMethod.POST, json, MEANS_ASSESSMENT_ENDPOINT_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));

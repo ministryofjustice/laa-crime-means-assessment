@@ -7,23 +7,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AssessmentCompletionServiceTest {
 
-    private final String LAA_TRANSACTION_ID = "laa-transaction-id";
     private MeansAssessmentDTO assessment;
     @Spy
     @InjectMocks
@@ -40,10 +38,10 @@ class AssessmentCompletionServiceTest {
 
     @Test
     void givenAssessment_whenUpdateApplicationCompletionDateIsInvoked_thenCompletionDateIsPersisted() {
-        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
+        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class)))
                 .thenReturn(TestModelDataBuilder.getRepOrderDTO());
 
-        assessmentCompletionService.updateApplicationCompletionDate(assessment, LAA_TRANSACTION_ID);
+        assessmentCompletionService.updateApplicationCompletionDate(assessment);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
     }
 
@@ -99,9 +97,9 @@ class AssessmentCompletionServiceTest {
     @Test
     void givenIncompleteAssessment_whenExecuteIsInvoked_thenCompletionDateIsNotUpdated() {
         assessment.getMeansAssessment().setAssessmentStatus(CurrentStatus.IN_PROGRESS);
-        assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
+        assessmentCompletionService.execute(assessment);
         verify(maatCourtDataService, never())
-                .updateCompletionDate(any(DateCompletionRequestDTO.class), anyString());
+                .updateCompletionDate(any(DateCompletionRequestDTO.class));
     }
 
     @Test
@@ -109,10 +107,10 @@ class AssessmentCompletionServiceTest {
         doReturn(true)
                 .when(assessmentCompletionService).isInitAssessmentComplete(any(MeansAssessmentDTO.class));
 
-        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
+        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class)))
                 .thenReturn(TestModelDataBuilder.getRepOrderDTO());
 
-        assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
+        assessmentCompletionService.execute(assessment);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
     }
 
@@ -120,10 +118,10 @@ class AssessmentCompletionServiceTest {
     void givenCompleteFullAssessment_whenExecuteIsInvoked_thenCompletionDateIsUpdated() {
         assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
 
-        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class), anyString()))
+        when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class)))
                 .thenReturn(TestModelDataBuilder.getRepOrderDTO());
 
-        assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
+        assessmentCompletionService.execute(assessment);
         assertThat(LocalDate.now()).isEqualTo(assessment.getDateCompleted().toLocalDate());
     }
 
@@ -132,10 +130,10 @@ class AssessmentCompletionServiceTest {
         assessment.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         assessment.getMeansAssessment().setAssessmentStatus(CurrentStatus.IN_PROGRESS);
 
-        assessmentCompletionService.execute(assessment, LAA_TRANSACTION_ID);
+        assessmentCompletionService.execute(assessment);
 
         assertThat(assessment.getDateCompleted()).isNull();
-        verify(maatCourtDataService, never()).updateCompletionDate(any(DateCompletionRequestDTO.class), anyString());
+        verify(maatCourtDataService, never()).updateCompletionDate(any(DateCompletionRequestDTO.class));
     }
 
 }

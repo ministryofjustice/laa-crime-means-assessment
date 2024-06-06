@@ -3,10 +3,11 @@ package uk.gov.justice.laa.crime.meansassessment.staticdata.entity;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
 
 import jakarta.persistence.*;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.Frequency;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

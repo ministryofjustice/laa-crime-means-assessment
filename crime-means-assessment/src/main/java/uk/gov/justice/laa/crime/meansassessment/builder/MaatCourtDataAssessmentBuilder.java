@@ -3,14 +3,14 @@ package uk.gov.justice.laa.crime.meansassessment.builder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidenceSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiCreateAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiUpdateAssessment;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.ApiIncomeEvidenceSummary;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiCreateAssessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import static java.util.Optional.ofNullable;
 
@@ -19,7 +19,7 @@ import static java.util.Optional.ofNullable;
 @Slf4j
 public class MaatCourtDataAssessmentBuilder {
 
-    public MaatApiAssessmentRequest build(final MeansAssessmentDTO assessment, final AssessmentRequestType requestType) {
+    public MaatApiAssessmentRequest build(final MeansAssessmentDTO assessment, final RequestType requestType) {
 
         CurrentStatus assessmentStatus = assessment.getCurrentStatus();
         MeansAssessmentRequestDTO requestDTO = assessment.getMeansAssessment();
@@ -28,7 +28,7 @@ public class MaatCourtDataAssessmentBuilder {
 
         MaatApiAssessmentRequest apiAssessmentRequest;
 
-        if (AssessmentRequestType.UPDATE.equals(requestType)) {
+        if (RequestType.UPDATE.equals(requestType)) {
             apiAssessmentRequest = buildUpdate(assessment);
         } else {
             apiAssessmentRequest = buildCreate(requestDTO);

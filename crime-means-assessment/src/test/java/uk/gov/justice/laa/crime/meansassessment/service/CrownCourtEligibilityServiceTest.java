@@ -10,12 +10,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.laa.crime.enums.*;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,6 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, SoftAssertionsExtension.class})
@@ -50,7 +49,7 @@ class CrownCourtEligibilityServiceTest {
         requestDTO = TestModelDataBuilder.getMeansAssessmentRequestDTO(true);
         repOrderDTO = TestModelDataBuilder.getRepOrderDTOWithAssessments(new ArrayList<>(List.of(financialAssessment)));
 
-        when(maatCourtDataService.getRepOrder(anyInt(), anyString()))
+        when(maatCourtDataService.getRepOrder(anyInt()))
                 .thenReturn(repOrderDTO);
     }
 
@@ -188,5 +187,14 @@ class CrownCourtEligibilityServiceTest {
         requestDTO.setCaseType(CaseType.EITHER_WAY);
         requestDTO.setMagCourtOutcome(MagCourtOutcome.COMMITTED);
         softly.assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isFalse();
+    }
+
+    @Test
+    void givenMagsOutcomeDateSetIsNull_whenIsEligibilityCheckRequiredIsInvoked_thenReturnTrue() {
+        PassportAssessmentDTO previous =
+                PassportAssessmentDTO.builder().result(PassportAssessmentResult.FAIL.getResult()).build();
+        repOrderDTO.getPassportAssessments().add(previous);
+        repOrderDTO.setMagsOutcomeDateSet(null);
+        assertThat(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO)).isTrue();
     }
 }

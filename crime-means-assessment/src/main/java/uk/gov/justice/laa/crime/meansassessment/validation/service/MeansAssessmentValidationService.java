@@ -14,10 +14,6 @@ import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.MaatCourtDataService;
 
-import java.util.Map;
-
-import static uk.gov.justice.laa.crime.meansassessment.common.Constants.LAA_TRANSACTION_ID;
-
 /**
  * This service provides methods for validation of means assessment requests
  */
@@ -40,7 +36,6 @@ public class MeansAssessmentValidationService {
         if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest)) && StringUtils.isNotBlank(action)) {
             AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getRoleActionUrl(),
-                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     getUserIdFromRequest(meansAssessmentRequest),
                     action
             );
@@ -53,7 +48,6 @@ public class MeansAssessmentValidationService {
         if (meansAssessmentRequest.getNewWorkReason() != null) {
             AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getNewWorkReasonUrl(),
-                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     getUserIdFromRequest(meansAssessmentRequest),
                     meansAssessmentRequest.getNewWorkReason().getCode()
             );
@@ -66,7 +60,6 @@ public class MeansAssessmentValidationService {
         if (meansAssessmentRequest.getRepId() != null) {
             OutstandingAssessmentResultDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getOutstandingAssessmentsUrl(),
-                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     meansAssessmentRequest.getRepId()
             );
             return apiResponse.isOutstandingAssessments();
@@ -80,7 +73,6 @@ public class MeansAssessmentValidationService {
                 && meansAssessmentRequest.getRepId() != null) {
             AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
                     configuration.getValidationEndpoints().getReservationsUrl(),
-                    Map.of(LAA_TRANSACTION_ID, meansAssessmentRequest.getLaaTransactionId()),
                     getUserIdFromRequest(meansAssessmentRequest),
                     meansAssessmentRequest.getRepId(),
                     meansAssessmentRequest.getUserSession().getSessionId()

@@ -2,13 +2,13 @@ package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiCreateAssessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiUpdateAssessment;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentRequestType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.AssessmentType;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiCreateAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiUpdateAssessment;
 
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -122,7 +122,7 @@ class MaatCourtDataAssessmentBuilderTest {
     @Test
     void givenCreateRequestType_whenBuildAssessmentRequestIsInvoked_thenCreateFieldsArePopulated() {
         MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.CREATE);
+                requestDTOBuilder.build(assessmentDTO, RequestType.CREATE);
 
         checkCommonFields(resultDto);
         checkCreateFields(resultDto);
@@ -136,7 +136,7 @@ class MaatCourtDataAssessmentBuilderTest {
     @Test
     void givenUpdateRequestType_whenBuildAssessmentRequestIsInvoked_thenUpdateFieldsArePopulated() {
         MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);
+                requestDTOBuilder.build(assessmentDTO, RequestType.UPDATE);
 
         checkCommonFields(resultDto);
         checkUpdateFields(resultDto);
@@ -151,7 +151,7 @@ class MaatCourtDataAssessmentBuilderTest {
     void givenUpdateRequestType_whenBuildFullAssessmentRequestIsInvoked_thenChildWeightingsAreNotArePopulated() {
         assessmentDTO.getMeansAssessment().setAssessmentType(AssessmentType.FULL);
         MaatApiAssessmentRequest resultDto =
-                requestDTOBuilder.build(assessmentDTO, AssessmentRequestType.UPDATE);
+                requestDTOBuilder.build(assessmentDTO, RequestType.UPDATE);
 
         checkCommonFields(resultDto);
         checkUpdateFields(resultDto);

@@ -1,23 +1,23 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.meansassessment.dto.*;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiUpdateAssessment;
+import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
-import uk.gov.justice.laa.crime.meansassessment.model.common.*;
-import uk.gov.justice.laa.crime.meansassessment.model.common.maatapi.MaatApiAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Component
 public class TestModelDataBuilder {
@@ -77,6 +77,7 @@ public class TestModelDataBuilder {
     public static final LocalDateTime TEST_MAGS_OUTCOME_DATE = LocalDateTime.of(2022, 6, 5, 0, 0);
     public static final LocalDateTime TEST_DATE_CREATED =
             LocalDateTime.of(2021, 10, 9, 15, 1, 25);
+    public static final LocalDateTime ASSESSMENT_DATE = LocalDateTime.of(2021, 10, 9, 15, 1, 25);
 
     public static final BigDecimal TEST_DISPOSABLE_INCOME = BigDecimal.valueOf(4000d);
     public static final BigDecimal TEST_ADJUSTED_LIVING_ALLOWANCE = BigDecimal.valueOf(6000d);
@@ -88,18 +89,19 @@ public class TestModelDataBuilder {
     //create means assessment
     public static final Integer TEST_REP_ID = 42312;
     public static final int MEANS_ASSESSMENT_ID = 1000;
+
+    public static final int FULL_THRESHOLD = 1000;
+
     public static final String MEANS_ASSESSMENT_TRANSACTION_ID = "7c49ebfe-fe3a-4f2f-8dad-f7b8f03b8327";
     public static final Integer TEST_ASSESSMENT_DETAILS_ID = 41681819;
     public static final String TEST_ASSESSMENT_TYPE_INIT = "INIT";
-    public static final String TEST_ASSESSMENT_TYPE_FULL = "FULL";
     public static final String TEST_ASSESSMENT_SECTION_INITA = "INITA";
     public static final String TEST_ASSESSMENT_SECTION_INITB = "INITB";
     public static final String TEST_ASSESSMENT_SECTION_FULLA = "FULLA";
     public static final String TEST_ASSESSMENT_SECTION_FULLB = "FULLB";
     public static final int CMU_ID = 30;
+    public static final String TEST_DATE_STRING = "2022-10-08";
     private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
-
-    public static final String MAAT_API_REGISTRATION_ID = "maat-api";
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
@@ -150,17 +152,6 @@ public class TestModelDataBuilder {
                 .upperAgeRange(TEST_INITIAL_UPPER_AGE_RANGE)
                 .weightingFactor(TEST_WEIGHTING_FACTOR)
                 .userCreated(TEST_USER)
-                .build();
-    }
-
-    public static AssessmentDetailEntity getAssessmentDetailEntity() {
-        return AssessmentDetailEntity.builder()
-                .detailCode(TEST_DETAIL_CODE)
-                .description(TEST_DESCRIPTION)
-                .createdDateTime(LocalDateTime.now())
-                .createdBy(TEST_USER)
-                .modifiedDateTime(LocalDateTime.now())
-                .modifiedBy(TEST_USER)
                 .build();
     }
 
@@ -273,6 +264,15 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
+    public static MaatApiUpdateAssessment getMaatApiRollbackAssessment() {
+        return new MaatApiUpdateAssessment()
+                .withFinancialAssessmentId(MEANS_ASSESSMENT_ID)
+                .withFassFullStatus("FAIL")
+                .withFassInitStatus("FAIL")
+                .withInitResult(InitAssessmentResult.FAIL.getResult())
+                .withFullResult(FullAssessmentResult.FAIL.getResult());
+    }
+
     public static ApiUpdateMeansAssessmentRequest getApiUpdateMeansAssessmentRequest(boolean isValid) {
         return new ApiUpdateMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
@@ -304,7 +304,6 @@ public class TestModelDataBuilder {
 
     public static MeansAssessmentRequestDTO getMeansAssessmentRequestDTO(boolean isValid) {
         return MeansAssessmentRequestDTO.builder()
-                .laaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
                 .repId(isValid ? 91919 : null)
                 .cmuId(isValid ? 91919 : null)
                 .initialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
@@ -395,51 +394,6 @@ public class TestModelDataBuilder {
         );
     }
 
-    public static List<ApiAssessmentSectionSummary> getAllApiAssessmentSectionSummaries() {
-        return List.of(
-                new ApiAssessmentSectionSummary()
-                        .withSection("INITA")
-                        .withAssessmentDetails(
-                                List.of(
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(132)
-                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
-                                        ,
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(133)
-                                                .withApplicantAmount(BigDecimal.ZERO)
-                                        ,
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(134)
-                                                .withApplicantAmount(BigDecimal.ZERO)
-                                                .withPartnerAmount(TEST_PARTNER_VALUE)
-                                                .withPartnerFrequency(TEST_FREQUENCY)
-                                )
-                        )
-                ,
-                new ApiAssessmentSectionSummary()
-                        .withSection("INITB")
-                        .withAssessmentDetails(
-                                Stream.of(
-                                        List.of(new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(135)
-                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
-                                                .withPartnerAmount(TEST_PARTNER_VALUE)
-                                                .withPartnerFrequency(TEST_FREQUENCY)),
-
-                                        IntStream.range(136, 146).boxed().collect(Collectors.toList())
-                                                .stream().map(num -> new ApiAssessmentDetail()
-                                                        .withCriteriaDetailId(num)
-                                                        .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                        .withApplicantFrequency(TEST_FREQUENCY)
-                                                ).collect(Collectors.toList())
-                                ).flatMap(Collection::stream).collect(Collectors.toList())
-                        )
-        );
-    }
-
     public static ApiUserSession getUserSession() {
         return new ApiUserSession()
                 .withSessionId("6c45ebfe-fe3a-5f2f-8dad-f7c8f03b8327")
@@ -484,14 +438,6 @@ public class TestModelDataBuilder {
                 .withAdjustedIncomeValue(TEST_ADJUSTED_INCOME)
                 .withTotalAnnualDisposableIncome(TEST_DISPOSABLE_INCOME)
                 .withTotalAggregatedExpense(TEST_TOTAL_EXPENDITURE);
-    }
-
-    public static AuthorizationResponseDTO getAuthorizationResponseDTO(boolean valid) {
-        return AuthorizationResponseDTO.builder().result(valid).build();
-    }
-
-    public static OutstandingAssessmentResultDTO getOutstandingAssessmentResultDTO(boolean outstandingAssessmentsFound) {
-        return OutstandingAssessmentResultDTO.builder().outstandingAssessments(outstandingAssessmentsFound).build();
     }
 
     public static List<ApiAssessmentSectionSummary> getApiAssessmentSummaries(boolean isValid) {
@@ -746,7 +692,7 @@ public class TestModelDataBuilder {
                 .id(TEST_REP_ID)
                 .catyCaseType(CaseType.EITHER_WAY.getCaseType())
                 .magsOutcome(MagCourtOutcome.COMMITTED.getOutcome())
-                .magsOutcomeDate(TEST_MAGS_OUTCOME_DATE.toString())
+                .magsOutcomeDate("05-JUN-22")
                 .magsOutcomeDateSet(TEST_MAGS_OUTCOME_DATE)
                 .committalDate(TEST_MAGS_OUTCOME_DATE.toLocalDate())
                 .decisionReasonCode("rder-code")
@@ -826,8 +772,8 @@ public class TestModelDataBuilder {
                 .initAdjustedIncomeValue(BigDecimal.valueOf(15600.00))
                 .initResult(InitAssessmentResult.PASS.getResult())
                 .initApplicationEmploymentStatus(TEST_EMPLOYMENT_STATUS)
-                .firstIncomeReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
-                .secondIncomeReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .firstReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
+                .secondReminderDate(LocalDateTime.parse("2021-10-09T15:02:25"))
                 .build();
     }
 

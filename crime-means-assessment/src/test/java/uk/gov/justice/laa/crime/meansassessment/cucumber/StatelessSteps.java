@@ -12,14 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.DependantChild;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiResponse;
-import uk.gov.justice.laa.crime.meansassessment.service.stateless.FrequencyAmount;
-import uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessFullResult;
-import uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessInitialResult;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiResponse;
+import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
+import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
+import uk.gov.justice.laa.crime.meansassessment.DependantChild;
+import uk.gov.justice.laa.crime.meansassessment.FrequencyAmount;
+import uk.gov.justice.laa.crime.meansassessment.StatelessFullResult;
+import uk.gov.justice.laa.crime.meansassessment.StatelessInitialResult;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.AgeRange;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
 
-public class StatelessSteps {
+public class StatelessSteps extends CucumberSpringConfiguration {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
 
     @Autowired
@@ -120,6 +121,9 @@ public class StatelessSteps {
             "fullAssessmentAvailable", result_pair -> {
                 assertThat(result_pair.getRight().isFullAssessmentPossible()).isEqualTo(Boolean.parseBoolean(result_pair.getLeft()));
             },
+            "totalAggregatedIncome", result_pair -> {
+                assertThat(result_pair.getRight().getTotalAggregatedIncome()).isEqualTo(new BigDecimal(result_pair.getLeft()));
+            },
             "adjustedIncome", result_pair -> {
                 assertThat(result_pair.getRight().getAdjustedIncomeValue()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             }
@@ -131,9 +135,6 @@ public class StatelessSteps {
             },
             "fmaReason", result_pair -> {
                 assertThat(result_pair.getRight().getResultReason()).isEqualTo(result_pair.getLeft());
-            },
-            "totalAggregatedIncome", result_pair -> {
-                assertThat(result_pair.getRight().getTotalAggregatedIncome()).isEqualTo(new BigDecimal(result_pair.getLeft()));
             },
             "adjustedLivingAllowance", result_pair -> {
                 assertThat(result_pair.getRight().getAdjustedLivingAllowance().setScale(2)).isEqualTo(new BigDecimal(result_pair.getLeft()));

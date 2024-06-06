@@ -2,19 +2,19 @@ package uk.gov.justice.laa.crime.meansassessment.cucumber;
 
 import io.cucumber.spring.ScenarioScope;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.Assessment;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.DependantChild;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiRequest;
-import uk.gov.justice.laa.crime.meansassessment.model.common.stateless.StatelessApiResponse;
-import uk.gov.justice.laa.crime.meansassessment.service.stateless.FrequencyAmount;
-import uk.gov.justice.laa.crime.meansassessment.service.stateless.Income;
-import uk.gov.justice.laa.crime.meansassessment.service.stateless.Outgoing;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.CaseType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Frequency;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.MagCourtOutcome;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.IncomeType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.OutgoingType;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.stateless.StatelessRequestType;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiResponse;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.MagCourtOutcome;
+import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
+import uk.gov.justice.laa.crime.enums.meansassessment.OutgoingType;
+import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
+import uk.gov.justice.laa.crime.meansassessment.DependantChild;
+import uk.gov.justice.laa.crime.meansassessment.FrequencyAmount;
+import uk.gov.justice.laa.crime.meansassessment.Income;
+import uk.gov.justice.laa.crime.meansassessment.Outgoing;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -43,6 +43,10 @@ public class CucumberRequestData {
         return response;
     }
 
+    public void setResponse(StatelessApiResponse response) {
+        this.response = response;
+    }
+
     public void setRequestType(StatelessRequestType requestType) {
         request.getAssessment().setAssessmentType(requestType);
     }
@@ -61,10 +65,6 @@ public class CucumberRequestData {
 
     public StatelessApiRequest getRequest() {
         return request;
-    }
-
-    public void setResponse(StatelessApiResponse response) {
-        this.response = response;
     }
 
     public void addIncome(FrequencyAmount value) {
