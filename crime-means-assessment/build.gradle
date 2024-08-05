@@ -11,7 +11,7 @@ plugins {
 def versions = [
         pitest                       : "1.4.10",
         springdocVersion             : "2.1.0",
-        liquibase                    : "4.20.0",
+        liquibase                    : "4.29.1",
         crimeCommonsClassesVersion   : "3.18.0",
         crimeCommonsRestClientVersion: "3.4.0",
         crimeCommonsModsSchemas      : "0.7.0",
