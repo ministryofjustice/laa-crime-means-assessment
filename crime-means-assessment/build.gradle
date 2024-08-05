@@ -13,7 +13,7 @@ def versions = [
         springdocVersion             : "2.1.0",
         liquibase                    : "4.20.0",
         crimeCommonsClassesVersion   : "3.18.0",
-        crimeCommonsRestClientVersion: "3.4.0",
+        crimeCommonsRestClientVersion: "3.16.0-SNAPSHOT",
         crimeCommonsModsSchemas      : "0.7.0",
         mockitoInlineVersion         : "5.2.0",
         cucumberVersion              : "7.14.0",
@@ -35,6 +35,9 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
 
 dependencies {
