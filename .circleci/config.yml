@@ -4,6 +4,7 @@ orbs:
   snyk: snyk/snyk@1.4.0
   aws-cli: circleci/aws-cli@4.0.0
   aws-ecr: circleci/aws-ecr@8.2.1
+  slack: circleci/slack@4.9.3
 
 _snyk_options: &snyk_options
   project: "${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BRANCH}"
@@ -66,6 +67,65 @@ commands:
                           --namespace=laa-crime-means-assessment-<< parameters.environment >> \
                           --values ./helm_deploy/laa-crime-means-assessment/values-<< parameters.environment >>.yaml \
                           --set image.tag="${CIRCLE_SHA1}"
+      - slack/notify:
+          channel: laa-crimeapps-ci
+          event: fail
+          template: basic_fail_1
+          branch_pattern: main
+  slack_successful_deployment_notify:
+    steps:
+      - slack/notify:
+          channel: laa-crimeapps-ci
+          event: pass
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text":
+                  {
+                    "type": "plain_text",
+                    "text": "Deployment Successful! :partying_face:",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project:* $CIRCLE_PROJECT_REPONAME"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*When:* $(date +'%m/%d/%Y %T')"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:* \n$CIRCLE_BRANCH"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Successful Job:* \n$CIRCLE_JOB"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "action_id": "deployment_link",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Job"
+                      },
+                      "url": "${CIRCLE_BUILD_URL}"
+                    }
+                  ]
+                }
+              ]
+            }
 
 # ------------------
 # JOBS
@@ -139,6 +199,11 @@ jobs:
           name: Push to ECR
           command: |
             docker push "$AWS_ECR_ACCOUNT_URL/laa-crime-apps-team/laa-crime-means-assessment-dev-ecr:${CIRCLE_SHA1}"
+      - slack/notify:
+          channel: laa-crimeapps-ci
+          event: fail
+          template: basic_fail_1
+          branch_pattern: main
 
   deploy-dev:
     executor: cloud-platform-executor
@@ -146,6 +211,12 @@ jobs:
       - deploy-to:
           environment: dev
           token: ${CIRCLE_CI_TOKEN_DEV}
+      - slack/notify:
+          channel: laa-crimeapps-ci
+          event: fail
+          template: basic_fail_1
+          branch_pattern: main
+      - slack_successful_deployment_notify
 
   deploy-test:
     executor: cloud-platform-executor
@@ -153,6 +224,12 @@ jobs:
       - deploy-to:
           environment: test
           token: ${CIRCLE_CI_TOKEN_TEST}
+      - slack/notify:
+          channel: laa-crimeapps-ci
+          event: fail
+          template: basic_fail_1
+          branch_pattern: main
+      - slack_successful_deployment_notify
 
   deploy-uat:
     executor: cloud-platform-executor
@@ -160,6 +237,12 @@ jobs:
       - deploy-to:
           environment: uat
           token: ${CIRCLE_CI_TOKEN_UAT}
+      - slack/notify:
+          channel: laa-crimeapps-ci
+          event: fail
+          template: basic_fail_1
+          branch_pattern: main
+      - slack_successful_deployment_notify
 
   deploy-prod:
     executor: cloud-platform-executor
@@ -167,6 +250,12 @@ jobs:
       - deploy-to:
           environment: prod
           token: ${CIRCLE_CI_TOKEN_PROD}
+      - slack/notify:
+          channel: laa-crimeapps-ci
+          event: fail
+          template: basic_fail_1
+          branch_pattern: main
+      - slack_successful_deployment_notify
 
 # ------------------
 # WORKFLOWS
@@ -185,10 +274,12 @@ workflows:
       - build_scan_and_push_image:
           requires:
             - build_and_scan
+          context: laa-crime-apps-slack
 
       - deploy-dev:
           requires:
             - build_scan_and_push_image
+          context: laa-crime-apps-slack
 
       - hold_install_on_test:
           type: approval
@@ -198,6 +289,7 @@ workflows:
       - deploy-test:
           requires:
             - hold_install_on_test
+          context: laa-crime-apps-slack
 
       - hold_install_on_uat:
           type: approval
@@ -207,6 +299,7 @@ workflows:
       - deploy-uat:
           requires:
             - hold_install_on_uat
+          context: laa-crime-apps-slack
 
       - hold_install_on_prod:
           type: approval
@@ -216,6 +309,7 @@ workflows:
       - deploy-prod:
           requires:
             - hold_install_on_prod
+          context: laa-crime-apps-slack
 
   build-deploy-branch:
     jobs:
@@ -228,6 +322,7 @@ workflows:
       - build_scan_and_push_image:
           requires:
             - build_and_scan
+          context: laa-crime-apps-slack
 
       - hold_install_on_dev:
           type: approval
@@ -237,6 +332,7 @@ workflows:
       - deploy-dev:
           requires:
             - hold_install_on_dev
+          context: laa-crime-apps-slack
 
       - hold_install_on_test:
           type: approval
@@ -246,6 +342,7 @@ workflows:
       - deploy-test:
           requires:
             - hold_install_on_test
+          context: laa-crime-apps-slack
 
       - hold_install_on_uat:
           type: approval
@@ -255,3 +352,4 @@ workflows:
       - deploy-uat:
           requires:
             - hold_install_on_uat
+          context: laa-crime-apps-slack
