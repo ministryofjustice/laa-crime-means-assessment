@@ -35,11 +35,31 @@ This is a Java based Spring Boot application hosted on [MOJ Cloud Platform](http
 4. This is a document to outline the general guideline [Developer Guidelines](https://dsdmoj.atlassian.net/wiki/spaces/ASLST/pages/3896049821/Developer+Guidelines).
 5. This project have its own dedicated Jira Scrum board, and you can access [from here](https://dsdmoj.atlassian.net/jira/software/projects/LCAM/boards/881) and [project backlog](https://dsdmoj.atlassian.net/jira/software/projects/LCAM/boards/881/backlog)
 
-### Decrypting docker-compose.override.yml
+### Obtaining environment variables for running locally
 
-The `docker-compose.override.yml` is encrypted using [git-crypt](https://github.com/AGWA/git-crypt).
+To run the app locally, you will need to download the appropriate environment variables from the team
+vault in 1Password. These environment variables are stored as a .env file, which docker-compose uses
+when starting up the service. If you don't see the team vault, speak to your tech lead to get access.
 
-To run the app locally you need to be able to decrypt this file.
+To begin with, make sure that you have the 1Password CLI installed:
+
+```sh
+op version
+```
+
+If the command is not found, [follow the steps on the 1Password developer docs to get the CLI set-up](https://developer.1password.com/docs/cli/get-started/).
+
+Once you're ready to run the application:
+
+```sh
+./startup-local.sh
+```
+
+### Decrypting values files
+
+The values YAML files are encrypted using [git-crypt](https://github.com/AGWA/git-crypt).
+
+To be able to view and/or edit these files, you will need to decrypt them first.
 
 You will first need to create a GPG key. See [Create a GPG Key](https://docs.publishing.service.gov.uk/manual/create-a-gpg-key.html) for details on how to do this with `GPGTools` (GUI) or `gpg` (command line).
 You can install either from a terminal or just download the UI version.
@@ -83,8 +103,7 @@ You will need to build the artifacts for the source code, using `gradle`.
 The apps should then startup cleanly if you run
 
 ```sh
-docker-compose build
-docker-compose up
+./startup-local.sh
 ```
 
 laa-crime-means-assessment application will be running on http://localhost:8080
