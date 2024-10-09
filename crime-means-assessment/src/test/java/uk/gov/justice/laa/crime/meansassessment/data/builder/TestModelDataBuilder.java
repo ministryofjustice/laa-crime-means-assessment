@@ -84,6 +84,7 @@ public class TestModelDataBuilder {
 
     public static final CurrentStatus TEST_ASSESSMENT_STATUS = CurrentStatus.COMPLETE;
 
+    public static final int APPLICANT_ID = 12;
     public static final LocalDateTime TEST_INCOME_UPLIFT_APPLY_DATE =
             LocalDateTime.of(2021, 12, 12, 0, 0, 0);
 
@@ -232,7 +233,7 @@ public class TestModelDataBuilder {
                 .withAssessmentType(AssessmentType.INIT)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
+                .withInitialAssessmentDate(LocalDateTime.of(2021, APPLICANT_ID, 16, 10, 0))
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .withOtherBenefitNote(TEST_NOTE)
                 .withOtherIncomeNote(TEST_NOTE)
@@ -333,7 +334,22 @@ public class TestModelDataBuilder {
                 .fullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .financialAssessmentId(TEST_FINANCIAL_ASSESSMENT_ID)
                 .eligibilityCheckRequired(false)
+                .incomeEvidence(getApiIncomeEvidence())
                 .build();
+    }
+
+    private static List<ApiIncomeEvidence> getApiIncomeEvidence() {
+        return List.of(new ApiIncomeEvidence()
+                .withApiEvidenceType(new ApiEvidenceType().withCode("Mock Evidence Code").withDescription("Mock Evidence Description"))
+                .withAdhoc("Y")
+                .withId(678)
+                .withApplicantId(APPLICANT_ID)
+                .withActive("Y")
+                .withMandatory("Y")
+                .withOtherText("Other text")
+                .withDateModified(LocalDateTime.of(2021, 12, 11, 10, 0))
+                .withDateReceived(TEST_DATE_CREATED)
+        );
     }
 
     public static ApiCrownCourtOverview getApiCrownCourtOverview() {
@@ -736,7 +752,7 @@ public class TestModelDataBuilder {
 
     public static ApplicantDTO getApplicantDTO() {
         return ApplicantDTO.builder()
-                .id(12)
+                .id(APPLICANT_ID)
                 .build();
     }
 
