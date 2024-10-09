@@ -117,7 +117,7 @@ public class MaatCourtDataAssessmentBuilder {
 
     private List<FinancialAssessmentIncomeEvidence> mapIncomeEvidence(List<ApiIncomeEvidence> incomeEvidences,
                                                                       ApiUserSession userSession) {
-        return incomeEvidences.stream()
+        return incomeEvidences == null ? null : incomeEvidences.stream()
                 .map(item -> new FinancialAssessmentIncomeEvidence(
                         item.getId(), item.getDateReceived(), item.getDateModified(), item.getActive(),
                         item.getApiEvidenceType().getCode(), item.getMandatory(), item.getApplicantId(),
