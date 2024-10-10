@@ -2,6 +2,7 @@ package uk.gov.justice.laa.crime.meansassessment.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.justice.laa.crime.common.model.common.ApiUserSession;
 import uk.gov.justice.laa.crime.common.model.meansassessment.*;
 import uk.gov.justice.laa.crime.enums.*;
 
@@ -42,4 +43,5 @@ public class MeansAssessmentRequestDTO {
     private String fullAssessmentNotes;
     private Integer financialAssessmentId;
     private LocalDateTime timeStamp;
+    private List<ApiIncomeEvidence> incomeEvidence;
 }

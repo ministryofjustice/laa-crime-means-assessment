@@ -2,13 +2,15 @@ package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidence;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.FinancialAssessmentIncomeEvidence;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiCreateAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiUpdateAssessment;
 import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
-import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiCreateAssessment;
-import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiUpdateAssessment;
 
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -111,12 +113,41 @@ class MaatCourtDataAssessmentBuilderTest {
                         .isEqualTo(assessmentDTO.getTotalAggregatedExpense());
                 assertThat(updateRequest.getUserModified())
                         .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
+                checkEvidenceFields(updateRequest.getFinAssIncomeEvidences().get(0),
+                        assessmentDTO.getMeansAssessment().getIncomeEvidence().get(0));
             };
         } else {
             updateRequirements = updateRequest -> assertThat(updateRequest.getUserModified())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
         }
         assertThat(resultDto).isInstanceOfSatisfying(MaatApiUpdateAssessment.class, updateRequirements);
+    }
+
+    private void checkEvidenceFields(FinancialAssessmentIncomeEvidence finAssIncomeEvidence, ApiIncomeEvidence incomeEvidence) {
+        SoftAssertions.assertSoftly(softly -> {
+            assertThat(finAssIncomeEvidence.getId())
+                    .isEqualTo(incomeEvidence.getId());
+            assertThat(finAssIncomeEvidence.getDateModified())
+                    .isEqualTo(incomeEvidence.getDateModified());
+            assertThat(finAssIncomeEvidence.getDateReceived())
+                    .isEqualTo(incomeEvidence.getDateReceived());
+            assertThat(finAssIncomeEvidence.getActive())
+                    .isEqualTo(incomeEvidence.getActive());
+            assertThat(finAssIncomeEvidence.getAdhoc())
+                    .isEqualTo(incomeEvidence.getAdhoc());
+            assertThat(finAssIncomeEvidence.getApplicant())
+                    .isEqualTo(incomeEvidence.getApplicantId());
+            assertThat(finAssIncomeEvidence.getMandatory())
+                    .isEqualTo(incomeEvidence.getMandatory());
+            assertThat(finAssIncomeEvidence.getOtherText())
+                    .isEqualTo(incomeEvidence.getOtherText());
+            assertThat(finAssIncomeEvidence.getIncomeEvidence())
+                    .isEqualTo(incomeEvidence.getApiEvidenceType().getCode());
+            assertThat(finAssIncomeEvidence.getUserCreated())
+                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
+            assertThat(finAssIncomeEvidence.getUserModified())
+                    .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
+        });
     }
 
     @Test

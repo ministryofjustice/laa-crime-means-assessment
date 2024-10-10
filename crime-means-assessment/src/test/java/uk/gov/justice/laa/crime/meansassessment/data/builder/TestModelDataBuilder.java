@@ -1,15 +1,34 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
 import org.springframework.stereotype.Component;
+import uk.gov.justice.laa.crime.common.model.common.ApiUserSession;
+import uk.gov.justice.laa.crime.common.model.meansassessment.*;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
-import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiUpdateAssessment;
-import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.MagCourtOutcome;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
+import uk.gov.justice.laa.crime.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
-import uk.gov.justice.laa.crime.common.model.meansassessment.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.*;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.ApplicantDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.ChildWeightings;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailFrequencyEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentDetailEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.CaseTypeAssessmentCriteriaDetailValueEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.IncomeEvidenceEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
 
 import java.math.BigDecimal;
@@ -65,6 +84,7 @@ public class TestModelDataBuilder {
 
     public static final CurrentStatus TEST_ASSESSMENT_STATUS = CurrentStatus.COMPLETE;
 
+    public static final int APPLICANT_ID = 12;
     public static final LocalDateTime TEST_INCOME_UPLIFT_APPLY_DATE =
             LocalDateTime.of(2021, 12, 12, 0, 0, 0);
 
@@ -264,15 +284,6 @@ public class TestModelDataBuilder {
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
-    public static MaatApiUpdateAssessment getMaatApiRollbackAssessment() {
-        return new MaatApiUpdateAssessment()
-                .withFinancialAssessmentId(MEANS_ASSESSMENT_ID)
-                .withFassFullStatus("FAIL")
-                .withFassInitStatus("FAIL")
-                .withInitResult(InitAssessmentResult.FAIL.getResult())
-                .withFullResult(FullAssessmentResult.FAIL.getResult());
-    }
-
     public static ApiUpdateMeansAssessmentRequest getApiUpdateMeansAssessmentRequest(boolean isValid) {
         return new ApiUpdateMeansAssessmentRequest()
                 .withLaaTransactionId(MEANS_ASSESSMENT_TRANSACTION_ID)
@@ -323,7 +334,22 @@ public class TestModelDataBuilder {
                 .fullAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .financialAssessmentId(TEST_FINANCIAL_ASSESSMENT_ID)
                 .eligibilityCheckRequired(false)
+                .incomeEvidence(getApiIncomeEvidence())
                 .build();
+    }
+
+    private static List<ApiIncomeEvidence> getApiIncomeEvidence() {
+        return List.of(new ApiIncomeEvidence()
+                .withApiEvidenceType(new ApiEvidenceType().withCode("Mock Evidence Code").withDescription("Mock Evidence Description"))
+                .withAdhoc("Y")
+                .withId(678)
+                .withApplicantId(APPLICANT_ID)
+                .withActive("Y")
+                .withMandatory("Y")
+                .withOtherText("Other text")
+                .withDateModified(LocalDateTime.of(2021, 12, 11, 10, 0))
+                .withDateReceived(TEST_DATE_CREATED)
+        );
     }
 
     public static ApiCrownCourtOverview getApiCrownCourtOverview() {
@@ -726,7 +752,7 @@ public class TestModelDataBuilder {
 
     public static ApplicantDTO getApplicantDTO() {
         return ApplicantDTO.builder()
-                .id(12)
+                .id(APPLICANT_ID)
                 .build();
     }
 

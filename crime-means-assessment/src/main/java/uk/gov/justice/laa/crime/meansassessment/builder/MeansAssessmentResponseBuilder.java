@@ -33,6 +33,7 @@ public class MeansAssessmentResponseBuilder {
                 .withAdjustedIncomeValue(completedAssessment.getAdjustedIncomeValue())
                 .withAssessmentSectionSummary(completedAssessment.getMeansAssessment().getSectionSummaries())
                 .withUpdated(maatApiAssessmentResponse.getUpdated())
+                .withIncomeEvidence(maatApiAssessmentResponse.getIncomeEvidence())
                 .withApplicationTimestamp(completedAssessment.getApplicationTimestamp());
 
         AssessmentType assessmentType = completedAssessment.getMeansAssessment().getAssessmentType();
