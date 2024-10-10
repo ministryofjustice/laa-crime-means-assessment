@@ -233,7 +233,7 @@ public class TestModelDataBuilder {
                 .withAssessmentType(AssessmentType.INIT)
                 .withRepId(isValid ? 91919 : null)
                 .withCmuId(isValid ? 91919 : null)
-                .withInitialAssessmentDate(LocalDateTime.of(2021, APPLICANT_ID, 16, 10, 0))
+                .withInitialAssessmentDate(LocalDateTime.of(2021, 12, 16, 10, 0))
                 .withIncomeEvidenceSummary(getApiIncomeEvidenceSummary())
                 .withOtherBenefitNote(TEST_NOTE)
                 .withOtherIncomeNote(TEST_NOTE)
