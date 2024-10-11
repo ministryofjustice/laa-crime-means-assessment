@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.common.model.common.ApiUserSession;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidence;
@@ -19,7 +18,6 @@ import java.util.List;
 
 import static java.util.Optional.ofNullable;
 
-@Slf4j
 @Component
 @AllArgsConstructor
 public class MaatCourtDataAssessmentBuilder {
