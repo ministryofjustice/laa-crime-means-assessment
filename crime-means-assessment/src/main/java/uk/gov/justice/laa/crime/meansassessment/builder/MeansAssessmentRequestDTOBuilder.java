@@ -46,6 +46,7 @@ public class MeansAssessmentRequestDTOBuilder {
             requestDTO.setInitTotalAggregatedIncome(updateMeansAssessmentRequest.getInitTotalAggregatedIncome());
             requestDTO.setFullAssessmentNotes(updateMeansAssessmentRequest.getFullAssessmentNotes());
             requestDTO.setFinancialAssessmentId(updateMeansAssessmentRequest.getFinancialAssessmentId());
+            requestDTO.setIncomeEvidence(updateMeansAssessmentRequest.getIncomeEvidence());
         }
 
         return requestDTO;
