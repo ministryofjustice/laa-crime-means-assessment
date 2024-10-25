@@ -20,12 +20,15 @@ import java.util.Map;
 public class MaatCourtDataService {
 
     private static final String RESPONSE_STRING = "Response from Court Data API: %s";
+    private static final String REQUEST_STRING = "Request to MAAT Court Data Service: {}";
     private final MaatApiConfiguration configuration;
     @Qualifier("maatApiClient")
     private final RestAPIClient maatAPIClient;
 
     public MaatApiAssessmentResponse persistMeansAssessment(MaatApiAssessmentRequest assessment,
                                                             RequestType requestType) {
+        log.debug(REQUEST_STRING, assessment);
+        
         MaatApiAssessmentResponse response;
         String endpoint = configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType);
         if (RequestType.CREATE.equals(requestType)) {
@@ -46,6 +49,7 @@ public class MaatCourtDataService {
     }
 
     public RepOrderDTO updateCompletionDate(DateCompletionRequestDTO dateCompletionRequestDTO) {
+        log.debug(REQUEST_STRING, dateCompletionRequestDTO);
         RepOrderDTO response = maatAPIClient.post(dateCompletionRequestDTO, new ParameterizedTypeReference<>() {
                 },
                 configuration.getRepOrderEndpoints().getDateCompletionUrl(),
