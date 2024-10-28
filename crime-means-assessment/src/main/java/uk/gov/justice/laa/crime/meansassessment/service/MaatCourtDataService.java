@@ -26,6 +26,8 @@ public class MaatCourtDataService {
 
     public MaatApiAssessmentResponse persistMeansAssessment(MaatApiAssessmentRequest assessment,
                                                             RequestType requestType) {
+        log.debug("Request to persist means assessment detail : {}", assessment);
+
         MaatApiAssessmentResponse response;
         String endpoint = configuration.getFinancialAssessmentEndpoints().getByRequestType(requestType);
         if (RequestType.CREATE.equals(requestType)) {
@@ -41,16 +43,17 @@ public class MaatCourtDataService {
                             endpoint,
                             Map.of());
         }
-        log.info(String.format(RESPONSE_STRING, response));
+        log.debug(String.format(RESPONSE_STRING, response));
         return response;
     }
 
     public RepOrderDTO updateCompletionDate(DateCompletionRequestDTO dateCompletionRequestDTO) {
+        log.debug("Request to update completion date detail : {}", dateCompletionRequestDTO);
         RepOrderDTO response = maatAPIClient.post(dateCompletionRequestDTO, new ParameterizedTypeReference<>() {
                 },
                 configuration.getRepOrderEndpoints().getDateCompletionUrl(),
                 Map.of());
-        log.info(String.format(RESPONSE_STRING, response));
+        log.debug(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -60,7 +63,7 @@ public class MaatCourtDataService {
                 configuration.getPassportAssessmentEndpoints().getFindUrl(),
                 repId
         );
-        log.info(String.format(RESPONSE_STRING, response));
+        log.debug(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -70,7 +73,7 @@ public class MaatCourtDataService {
                 configuration.getHardshipReviewEndpoints().getFindUrl(),
                 repId
         );
-        log.info(String.format(RESPONSE_STRING, response));
+        log.debug(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -80,7 +83,7 @@ public class MaatCourtDataService {
                 configuration.getIojAppealEndpoints().getFindUrl(),
                 repId
         );
-        log.info(String.format(RESPONSE_STRING, response));
+        log.debug(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -90,7 +93,7 @@ public class MaatCourtDataService {
                 configuration.getFinancialAssessmentEndpoints().getSearchUrl(),
                 financialAssessmentId
         );
-        log.info(String.format(RESPONSE_STRING, response));
+        log.debug(String.format(RESPONSE_STRING, response));
         return response;
     }
 
@@ -100,7 +103,7 @@ public class MaatCourtDataService {
                 configuration.getRepOrderEndpoints().getFindUrl(),
                 repId
         );
-        log.info(String.format(RESPONSE_STRING, response));
+        log.debug(String.format(RESPONSE_STRING, response));
         return response;
     }
 
