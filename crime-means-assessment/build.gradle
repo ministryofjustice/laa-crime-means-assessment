@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "jacoco"
-    id "org.springframework.boot" version "3.1.5"
+    id "org.springframework.boot" version "3.3.5"
     id 'io.spring.dependency-management' version '1.1.4'
     id "org.sonarqube" version "4.4.1.3373"
     id "info.solidsoft.pitest" version "1.15.0"
@@ -13,10 +13,10 @@ def versions = [
         springdocVersion             : "2.1.0",
         liquibase                    : "4.29.1",
         crimeCommonsClassesVersion   : "3.18.0",
-        crimeCommonsRestClientVersion: "3.4.0",
+        crimeCommonsRestClientVersion: "3.18.0",
         crimeCommonsModsSchemas      : "1.11.1",
         mockitoInlineVersion         : "5.2.0",
-        cucumberVersion              : "7.14.0",
+        cucumberVersion              : "7.20.0",
         jUnitPlatformSuiteVersion    : "1.10.0",
         springCloudStubRunnerVersion : "4.0.4",
         h2DBVersion                  : '2.1.210',
