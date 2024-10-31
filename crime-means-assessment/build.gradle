@@ -16,7 +16,7 @@ def versions = [
         crimeCommonsRestClientVersion: "3.18.0",
         crimeCommonsModsSchemas      : "1.11.1",
         mockitoInlineVersion         : "5.2.0",
-        cucumberVersion              : "7.20.0",
+        cucumberVersion              : "7.20.1",
         jUnitPlatformSuiteVersion    : "1.10.0",
         springCloudStubRunnerVersion : "4.0.4",
         h2DBVersion                  : '2.1.210',
