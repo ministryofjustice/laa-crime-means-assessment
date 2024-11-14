@@ -49,6 +49,7 @@ class MeansAssessmentResponseBuilderTest {
                     .isEqualTo(completedAssessment.getAdjustedIncomeValue());
             assertThat(response.getAssessmentSectionSummary())
                     .isEqualTo(completedAssessment.getMeansAssessment().getSectionSummaries());
+            assertThat(response.getDateCompleted()).isEqualTo(maatApiAssessmentResponse.getDateCompleted());
         });
     }
 
