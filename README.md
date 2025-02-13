@@ -52,7 +52,7 @@ If the command is not found, [follow the steps on the 1Password developer docs t
 Once you're ready to run the application:
 
 ```sh
-./startup-local.sh
+./start-local.sh
 ```
 
 ### Decrypting values files
