@@ -11,7 +11,6 @@ This is a Java based Spring Boot application hosted on [MOJ Cloud Platform](http
 
 - [Getting started](#getting-started)
   - [Developer setup](#developer-setup)
-  - [Decrypting docker-compose.override.yml](#decrypting-docker-composeoverrideyml)
 - [Running locally](#running-locally)
 - [Database](#database)
 - [CI/CD](#cicd)
@@ -54,27 +53,6 @@ Once you're ready to run the application:
 ```sh
 ./start-local.sh
 ```
-
-### Decrypting values files
-
-The values YAML files are encrypted using [git-crypt](https://github.com/AGWA/git-crypt).
-
-To be able to view and/or edit these files, you will need to decrypt them first.
-
-You will first need to create a GPG key. See [Create a GPG Key](https://docs.publishing.service.gov.uk/manual/create-a-gpg-key.html) for details on how to do this with `GPGTools` (GUI) or `gpg` (command line).
-You can install either from a terminal or just download the UI version.
-
-```
-brew update
-brew install gpg
-brew install git-crypt
-```
-
-Once you have done this, a team member who already has access can add your key by running `git-crypt add-gpg-user USER_ID`\* and creating a pull request to this repo.
-
-Once this has been merged you can decrypt your local copy of the repository by running `git-crypt unlock`.
-
-\*`USER_ID` can be your key ID, a full fingerprint, an email address, or anything else that uniquely identifies a public key to GPG (see "HOW TO SPECIFY A USER ID" in the gpg man page).
 
 ## Running locally
 
