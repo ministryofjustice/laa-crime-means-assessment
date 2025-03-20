@@ -340,7 +340,7 @@ public class TestModelDataBuilder {
 
     private static List<ApiIncomeEvidence> getApiIncomeEvidence() {
         return List.of(new ApiIncomeEvidence()
-                .withApiEvidenceType(new ApiEvidenceType().withCode("Mock Evidence Code").withDescription("Mock Evidence Description"))
+                .withIncomeEvidence("Mock Evidence Code")
                 .withAdhoc("Y")
                 .withId(678)
                 .withApplicantId(APPLICANT_ID)

@@ -169,7 +169,7 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                         .withOtherText(finAssIncomeEvidenceDTO.getOtherText())
                         .withDateModified(finAssIncomeEvidenceDTO.getDateModified())
                         .withDateReceived(finAssIncomeEvidenceDTO.getDateReceived())
-                        .withApiEvidenceType(getEvidenceType(finAssIncomeEvidenceDTO.getIncomeEvidence()));
+                        .withIncomeEvidence(finAssIncomeEvidenceDTO.getIncomeEvidence());
                 apiIncomeEvidenceSummary.getIncomeEvidence().add(apiIncomeEvidence);
             });
         }
@@ -186,16 +186,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                 .withUpliftRemovedDate(financialAssessmentDTO.getIncomeUpliftRemoveDate())
                 .withFirstReminderDate(financialAssessmentDTO.getFirstReminderDate())
                 .withSecondReminderDate(financialAssessmentDTO.getSecondReminderDate());
-    }
-
-    protected ApiEvidenceType getEvidenceType(String evidence) {
-        ApiEvidenceType apiEvidenceType = new ApiEvidenceType().withCode(evidence);
-        Optional<IncomeEvidenceEntity> incomeEvidenceEntityOptional = incomeEvidenceService
-                .getIncomeEvidenceById(evidence);
-        incomeEvidenceEntityOptional.ifPresent(incomeEvidenceEntity ->
-                apiEvidenceType.setDescription(incomeEvidenceEntity.getDescription())
-        );
-        return apiEvidenceType;
     }
 
     protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {

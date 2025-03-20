@@ -118,7 +118,7 @@ public class MaatCourtDataAssessmentBuilder {
         return incomeEvidences == null ? null : incomeEvidences.stream()
                 .map(item -> new FinancialAssessmentIncomeEvidence(
                         item.getId(), item.getDateReceived(), item.getDateModified(), item.getActive(),
-                        item.getApiEvidenceType().getCode(), item.getMandatory(), item.getApplicantId(),
+                        item.getIncomeEvidence(), item.getMandatory(), item.getApplicantId(),
                         item.getOtherText(), userSession.getUserName(), userSession.getUserName(), item.getAdhoc()
                 )).toList();
     }

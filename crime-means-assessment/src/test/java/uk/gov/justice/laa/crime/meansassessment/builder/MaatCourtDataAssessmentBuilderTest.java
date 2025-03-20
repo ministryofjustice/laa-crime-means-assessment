@@ -142,7 +142,7 @@ class MaatCourtDataAssessmentBuilderTest {
             assertThat(finAssIncomeEvidence.getOtherText())
                     .isEqualTo(incomeEvidence.getOtherText());
             assertThat(finAssIncomeEvidence.getIncomeEvidence())
-                    .isEqualTo(incomeEvidence.getApiEvidenceType().getCode());
+                    .isEqualTo(incomeEvidence.getIncomeEvidence());
             assertThat(finAssIncomeEvidence.getUserCreated())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getUserSession().getUserName());
             assertThat(finAssIncomeEvidence.getUserModified())
