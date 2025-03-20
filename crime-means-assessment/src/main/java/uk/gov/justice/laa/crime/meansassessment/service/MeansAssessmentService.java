@@ -42,7 +42,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     private final AssessmentCompletionService assessmentCompletionService;
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
-    private final IncomeEvidenceService incomeEvidenceService;
     private final EligibilityChecker crownCourtEligibilityService;
 
     public MeansAssessmentService(MaatCourtDataService maatCourtDataService,
@@ -54,7 +53,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                                   AssessmentCompletionService assessmentCompletionService,
                                   MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder,
                                   AssessmentCriteriaDetailService assessmentCriteriaDetailService,
-                                  IncomeEvidenceService incomeEvidenceService,
                                   EligibilityChecker crownCourtEligibilityService) {
 
         super(assessmentCriteriaService);
@@ -67,7 +65,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         this.assessmentCompletionService = assessmentCompletionService;
         this.meansAssessmentBuilder = meansAssessmentBuilder;
         this.assessmentCriteriaDetailService = assessmentCriteriaDetailService;
-        this.incomeEvidenceService = incomeEvidenceService;
         this.crownCourtEligibilityService = crownCourtEligibilityService;
     }
 
