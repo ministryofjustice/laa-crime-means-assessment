@@ -349,19 +349,9 @@ class MeansAssessmentServiceTest {
     void givenIncomeEvidences_whenMapIncomeEvidenceInvoked_thenResponseIsPopulatedWithIncomeEvidenceList() {
         ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse = new ApiGetMeansAssessmentResponse()
                 .withIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
-        doReturn(Optional.of(TestModelDataBuilder.getIncomeEvidenceEntity()))
-                .when(incomeEvidenceService).getIncomeEvidenceById(any());
         meansAssessmentService.mapIncomeEvidence(apiGetMeansAssessmentResponse, TestModelDataBuilder
                 .getFinancialAssessmentDTOWithIncomeEvidence());
         assertThat(1).isEqualTo(apiGetMeansAssessmentResponse.getIncomeEvidenceSummary().getIncomeEvidence().size());
-    }
-
-    @Test
-    void givenInvalidEvidence_whenGetEvidenceTypeInvoked_thenEvidenceDescriptionIsNull() {
-        String evidence = "NONE";
-        ApiEvidenceType apiEvidenceType = meansAssessmentService.getEvidenceType(evidence);
-        assertThat(evidence).isEqualTo(apiEvidenceType.getCode());
-        assertThat(apiEvidenceType.getDescription()).isNull();
     }
 
     private void checkGenericResponseFields(ApiGetMeansAssessmentResponse response,

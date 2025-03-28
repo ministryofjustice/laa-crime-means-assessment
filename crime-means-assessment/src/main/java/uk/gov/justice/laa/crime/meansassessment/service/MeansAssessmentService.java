@@ -42,7 +42,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     private final AssessmentCompletionService assessmentCompletionService;
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder;
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
-    private final IncomeEvidenceService incomeEvidenceService;
     private final EligibilityChecker crownCourtEligibilityService;
 
     public MeansAssessmentService(MaatCourtDataService maatCourtDataService,
@@ -54,7 +53,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                                   AssessmentCompletionService assessmentCompletionService,
                                   MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder,
                                   AssessmentCriteriaDetailService assessmentCriteriaDetailService,
-                                  IncomeEvidenceService incomeEvidenceService,
                                   EligibilityChecker crownCourtEligibilityService) {
 
         super(assessmentCriteriaService);
@@ -67,7 +65,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         this.assessmentCompletionService = assessmentCompletionService;
         this.meansAssessmentBuilder = meansAssessmentBuilder;
         this.assessmentCriteriaDetailService = assessmentCriteriaDetailService;
-        this.incomeEvidenceService = incomeEvidenceService;
         this.crownCourtEligibilityService = crownCourtEligibilityService;
     }
 
@@ -169,7 +166,7 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                         .withOtherText(finAssIncomeEvidenceDTO.getOtherText())
                         .withDateModified(finAssIncomeEvidenceDTO.getDateModified())
                         .withDateReceived(finAssIncomeEvidenceDTO.getDateReceived())
-                        .withApiEvidenceType(getEvidenceType(finAssIncomeEvidenceDTO.getIncomeEvidence()));
+                        .withIncomeEvidence(finAssIncomeEvidenceDTO.getIncomeEvidence());
                 apiIncomeEvidenceSummary.getIncomeEvidence().add(apiIncomeEvidence);
             });
         }
@@ -186,16 +183,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                 .withUpliftRemovedDate(financialAssessmentDTO.getIncomeUpliftRemoveDate())
                 .withFirstReminderDate(financialAssessmentDTO.getFirstReminderDate())
                 .withSecondReminderDate(financialAssessmentDTO.getSecondReminderDate());
-    }
-
-    protected ApiEvidenceType getEvidenceType(String evidence) {
-        ApiEvidenceType apiEvidenceType = new ApiEvidenceType().withCode(evidence);
-        Optional<IncomeEvidenceEntity> incomeEvidenceEntityOptional = incomeEvidenceService
-                .getIncomeEvidenceById(evidence);
-        incomeEvidenceEntityOptional.ifPresent(incomeEvidenceEntity ->
-                apiEvidenceType.setDescription(incomeEvidenceEntity.getDescription())
-        );
-        return apiEvidenceType;
     }
 
     protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
