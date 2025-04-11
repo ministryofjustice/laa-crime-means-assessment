@@ -121,12 +121,12 @@ class MeansAssessmentIntegrationTest {
     }
 
     private void stubForRoleActionAndReservationUrl() {
-        stubFor(get(urlEqualTo("/api/internal/v1/assessment/role-action-url")).willReturn(aResponse()
+        stubFor(get(urlPathMatching("/api/internal/v1/assessment/authorization/users/([a-zA-Z]*)/actions/([a-zA-Z_]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
 
-        stubFor(get(urlEqualTo("/api/internal/v1/assessment/reservation-url")).willReturn(aResponse()
+        stubFor(get(urlPathMatching("/api/internal/v1/assessment/authorization/users/([a-zA-Z]*)/reservations/([0-9]*)/sessions/([a-zA-Z0-9_.-]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
@@ -164,17 +164,17 @@ class MeansAssessmentIntegrationTest {
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlEqualTo("/api/internal/v1/assessment/outstanding-assessments-url")).willReturn(aResponse()
+        stubFor(get(urlPathMatching("/api/internal/v1/assessment/financial-assessments/check-outstanding/([0-9]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
 
-        stubFor(get(urlEqualTo("/api/internal/v1/assessment/new-work-reason-url")).willReturn(aResponse()
+        stubFor(get(urlPathMatching("/api/internal/v1/assessment/authorization/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
 
-        stubFor(post(urlEqualTo("/api/internal/v1/assessment/rep-orders/update-date-completed")).willReturn(aResponse()
+        stubFor(post(urlPathMatching("/api/internal/v1/assessment/rep-orders/update-date-completed")).willReturn(aResponse()
                 .withStatus(504)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))));
 
@@ -194,12 +194,12 @@ class MeansAssessmentIntegrationTest {
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlEqualTo("/api/internal/v1/assessment/outstanding-assessments-url")).willReturn(aResponse()
+        stubFor(get(urlPathMatching("/api/internal/v1/assessment/financial-assessments/check-outstanding/([0-9]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
 
-        stubFor(get(urlEqualTo("/api/internal/v1/assessment/new-work-reason-url")).willReturn(aResponse()
+        stubFor(get(urlPathMatching("/api/internal/v1/assessment/authorization/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
@@ -210,7 +210,7 @@ class MeansAssessmentIntegrationTest {
                 .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))));
 
         // MaatCourtDataService - Persist means assessment
-        stubFor(post(urlEqualTo("/api/internal/v1/assessment/create-url")).willReturn(aResponse()
+        stubFor(post(urlEqualTo("/api/internal/v1/assessment/financial-assessments")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiInitAssessmentResponse()))));
@@ -221,7 +221,7 @@ class MeansAssessmentIntegrationTest {
 
         verify(exactly(4), getRequestedFor(urlPathMatching("/api/internal/v1/assessment/.*")));
         verify(exactly(1), postRequestedFor(urlEqualTo("/api/internal/v1/assessment/rep-orders/update-date-completed")));
-        verify(exactly(1), postRequestedFor(urlEqualTo("/api/internal/v1/assessment/create-url")));
+        verify(exactly(1), postRequestedFor(urlEqualTo("/api/internal/v1/assessment/financial-assessments")));
     }
 
     @Test
@@ -256,7 +256,7 @@ class MeansAssessmentIntegrationTest {
                 .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))));
 
         // MaatCourtDataService - Persist means assessment
-        stubFor(put(urlEqualTo("/api/internal/v1/assessment/update-url")).willReturn(aResponse()
+        stubFor(put(urlEqualTo("/api/internal/v1/assessment/financial-assessments")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiFullAssessmentResponse()))));
@@ -267,7 +267,7 @@ class MeansAssessmentIntegrationTest {
 
         verify(exactly(3), getRequestedFor(urlPathMatching("/api/internal/v1/assessment/.*")));
         verify(exactly(1), postRequestedFor(urlEqualTo("/api/internal/v1/assessment/rep-orders/update-date-completed")));
-        verify(exactly(1), putRequestedFor(urlEqualTo("/api/internal/v1/assessment/update-url")));
+        verify(exactly(1), putRequestedFor(urlEqualTo("/api/internal/v1/assessment/financial-assessments")));
     }
 
     @Test

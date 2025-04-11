@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.crime.enums.RequestType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -25,31 +24,9 @@ class MaatApiConfigurationTest {
 
     @Test
     void givenUserDefinedPOJO_whenBindingYMLConfigFile_thenAllFieldsAreSet() {
-        assertThat(buildUrl("search-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getSearchUrl());
-        assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getCreateUrl());
-        assertThat(buildUrl("update-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getUpdateUrl());
-        assertThat(buildUrl("rollback-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getRollbackUrl());
 
-        assertThat(false).isEqualTo(configuration.isOAuthEnabled());
-
-        assertThat(buildUrl("role-action-url")).isEqualTo(configuration.getValidationEndpoints().getRoleActionUrl());
-        assertThat(buildUrl("new-work-reason-url")).isEqualTo(configuration.getValidationEndpoints().getNewWorkReasonUrl());
-        assertThat(buildUrl("reservation-url")).isEqualTo(configuration.getValidationEndpoints().getReservationsUrl());
-        assertThat(buildUrl("outstanding-assessments-url")).isEqualTo(configuration.getValidationEndpoints().getOutstandingAssessmentsUrl());
-    }
-
-    @Test
-    void givenDefinedFinancialAssessmentEndpoints_whenGetByRequestTypeIsInvoked_thenCorrectEndpointIsReturned() {
-        assertThat(buildUrl("create-url")).isEqualTo(configuration.getFinancialAssessmentEndpoints().getByRequestType(RequestType.CREATE));
-    }
-
-    @Test
-    void givenDefinedPostProcessingUrl_whenGetPostProcessingUrl_thenCorrectEndpointIsReturned() {
-        assertThat(buildUrl("post-processing/{repId}")).isEqualTo(configuration.getPostProcessingUrl());
-    }
-
-    private String buildUrl(String url) {
-        return String.format("http://localhost:9999/api/internal/v1/assessment/%s", url);
+        assertThat("http://localhost:9999/api/internal/v1/assessment").isEqualTo(configuration.getBaseUrl());
+        assertThat("maat-api").isEqualTo(configuration.getRegistrationId());
     }
 
     @Configuration

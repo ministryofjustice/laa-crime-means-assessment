@@ -4,11 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.commons.client.RestAPIClient;
-import uk.gov.justice.laa.crime.meansassessment.config.MaatApiConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataApiClient;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
@@ -23,10 +20,8 @@ import uk.gov.justice.laa.crime.meansassessment.service.MaatCourtDataService;
 @RequiredArgsConstructor
 public class MeansAssessmentValidationService {
 
-    private final MaatApiConfiguration configuration;
     private final MaatCourtDataService maatCourtDataService;
-    @Qualifier("maatApiClient")
-    private final RestAPIClient maatAPIClient;
+    private final MaatCourtDataApiClient maatCourtDataApiClient;
 
     String getUserIdFromRequest(MeansAssessmentRequestDTO meansAssessmentRequest) {
         return meansAssessmentRequest.getUserSession().getUserName();
@@ -34,11 +29,8 @@ public class MeansAssessmentValidationService {
 
     public boolean isRoleActionValid(final MeansAssessmentRequestDTO meansAssessmentRequest, String action) {
         if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest)) && StringUtils.isNotBlank(action)) {
-            AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
-                    configuration.getValidationEndpoints().getRoleActionUrl(),
-                    getUserIdFromRequest(meansAssessmentRequest),
-                    action
-            );
+            AuthorizationResponseDTO apiResponse = maatCourtDataApiClient.getUserRoleAction(
+                    getUserIdFromRequest(meansAssessmentRequest), action);
             return apiResponse.isResult();
         }
         return false;
@@ -46,11 +38,9 @@ public class MeansAssessmentValidationService {
 
     public boolean isNewWorkReasonValid(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         if (meansAssessmentRequest.getNewWorkReason() != null) {
-            AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
-                    configuration.getValidationEndpoints().getNewWorkReasonUrl(),
+            AuthorizationResponseDTO apiResponse = maatCourtDataApiClient.getNewWorkReason(
                     getUserIdFromRequest(meansAssessmentRequest),
-                    meansAssessmentRequest.getNewWorkReason().getCode()
-            );
+                    meansAssessmentRequest.getNewWorkReason().getCode());
             return apiResponse.isResult();
         }
         return false;
@@ -58,10 +48,8 @@ public class MeansAssessmentValidationService {
 
     public boolean isOutstandingAssessment(final MeansAssessmentRequestDTO meansAssessmentRequest) {
         if (meansAssessmentRequest.getRepId() != null) {
-            OutstandingAssessmentResultDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
-                    configuration.getValidationEndpoints().getOutstandingAssessmentsUrl(),
-                    meansAssessmentRequest.getRepId()
-            );
+            OutstandingAssessmentResultDTO apiResponse = maatCourtDataApiClient.getOutstandingAssessment(
+                    meansAssessmentRequest.getRepId());
             return apiResponse.isOutstandingAssessments();
         }
         return false;
@@ -71,12 +59,10 @@ public class MeansAssessmentValidationService {
         if (StringUtils.isNotBlank(getUserIdFromRequest(meansAssessmentRequest))
                 && StringUtils.isNotBlank(meansAssessmentRequest.getUserSession().getSessionId())
                 && meansAssessmentRequest.getRepId() != null) {
-            AuthorizationResponseDTO apiResponse = maatAPIClient.get(new ParameterizedTypeReference<>() {},
-                    configuration.getValidationEndpoints().getReservationsUrl(),
+            AuthorizationResponseDTO apiResponse = maatCourtDataApiClient.getReservationDetail(
                     getUserIdFromRequest(meansAssessmentRequest),
                     meansAssessmentRequest.getRepId(),
-                    meansAssessmentRequest.getUserSession().getSessionId()
-            );
+                    meansAssessmentRequest.getUserSession().getSessionId());
             return apiResponse.isResult();
         }
         return false;

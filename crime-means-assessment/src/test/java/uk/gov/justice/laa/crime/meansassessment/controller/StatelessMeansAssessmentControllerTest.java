@@ -6,15 +6,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiRequest;
-import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
 import uk.gov.justice.laa.crime.enums.Frequency;
 import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
 import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
@@ -25,7 +24,9 @@ import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
 import uk.gov.justice.laa.crime.meansassessment.*;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
-import uk.gov.justice.laa.crime.meansassessment.service.stateless.*;
+import uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessResult;
+import uk.gov.justice.laa.crime.meansassessment.tracing.TraceIdHandler;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -55,13 +56,13 @@ class StatelessMeansAssessmentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private StatelessAssessmentService statelessAssessmentService;
 
-    @MockBean
+    @MockitoBean
     private AssessmentCriteriaService assessmentCriteriaService;
 
-    @MockBean
+    @MockitoBean
     private TraceIdHandler traceIdHandler;
 
     @Test
