@@ -52,7 +52,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server:$versions.oauth2ResourceServer"
     implementation "org.springframework.security:spring-security-crypto:$versions.securityCrypto"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
 
     implementation "org.apache.tomcat.embed:tomcat-embed-core:$versions.tomcatVersion"
 
