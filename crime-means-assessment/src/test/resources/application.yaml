@@ -62,10 +62,5 @@ means-assessment:
 
 version: 0.0.1
 
-retry-config:
-  max-retries: 2
-  min-back-off-period: 3
-  jitter-value: 0.5
-
 features:
   date-completion-enabled: false

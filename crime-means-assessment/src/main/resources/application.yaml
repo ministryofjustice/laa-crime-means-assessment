@@ -17,6 +17,7 @@ management:
   tracing:
     propagation:
       type: w3c,b3
+    enabled: true
 
 maatApi:
   baseUrl: ${MAAT_API_BASE_URL}
@@ -50,6 +51,28 @@ spring:
         jwt:
           issuer-uri: ${JWT_ISSUER_URI}
 
+  autoconfigure:
+    exclude: org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
+
+resilience4j:
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 2s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        retry-exceptions:
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+          - org.springframework.web.reactive.function.client.WebClientResponseException.BadGateway
+          - org.springframework.web.reactive.function.client.WebClientResponseException.TooManyRequests
+          - org.springframework.web.reactive.function.client.WebClientResponseException.ServiceUnavailable
+          - org.springframework.web.reactive.function.client.WebClientResponseException.GatewayTimeout
+
+    instances:
+      maatCourtDataWebClient:
+        base-config: default
+
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
@@ -79,10 +102,5 @@ sentry:
   send-default-pii: true
   attach-stacktrace: true
   sample-rate: ${SENTRY_SAMPLE_RATE}
-
-retry-config:
-  max-retries: 3
-  min-back-off-period: 5
-  jitter-value: 0.75
 
 version: 0.0.1
