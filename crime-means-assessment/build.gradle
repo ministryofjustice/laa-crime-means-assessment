@@ -64,6 +64,7 @@ dependencies {
     implementation "io.github.resilience4j:resilience4j-spring-boot3:$versions.resilience4jVersion"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation "io.micrometer:micrometer-tracing"
 

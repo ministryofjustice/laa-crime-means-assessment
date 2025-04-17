@@ -50,8 +50,10 @@ spring:
         jwt:
           issuer-uri: ${JWT_ISSUER_URI}
 
-  autoconfigure:
-    exclude: org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
+zipkin:
+  tracing:
+    export:
+      enabled: false
 
 resilience4j:
   retry:

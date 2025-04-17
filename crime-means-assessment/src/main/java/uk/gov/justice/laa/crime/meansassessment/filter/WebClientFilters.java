@@ -29,7 +29,7 @@ public class WebClientFilters {
             clientRequest.headers()
                     .forEach((name, values) -> {
                         if (!name.equals(HttpHeaders.AUTHORIZATION)) {
-                            values.forEach(value -> log.info("{}={}", name, value));
+                            values.forEach(value -> log.debug("{}={}", name, value));
                         }
                     });
             return next.exchange(clientRequest);
