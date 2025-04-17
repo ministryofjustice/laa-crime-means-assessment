@@ -1,7 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.extern.slf4j.Slf4j;
-import jakarta.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.common.model.meansassessment.*;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;

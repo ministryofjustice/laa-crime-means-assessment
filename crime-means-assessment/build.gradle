@@ -45,6 +45,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains:annotations:24.1.0")
     implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-mod-schemas:$versions.crimeCommonsModsSchemas"
     
