@@ -25,9 +25,9 @@ public class MaatCourtDataService {
         log.debug("Request to persist means assessment detail : {}", assessment);
         MaatApiAssessmentResponse response;
         if (RequestType.CREATE.equals(requestType)) {
-            response = maatCourtDataApiClient.create(assessment);
+            response = maatCourtDataApiClient.createFinancialAssessment(assessment);
         } else {
-            response = maatCourtDataApiClient.update(assessment);
+            response = maatCourtDataApiClient.updateFinancialAssessment(assessment);
         }
         log.debug(String.format(RESPONSE_STRING, response));
         return response;

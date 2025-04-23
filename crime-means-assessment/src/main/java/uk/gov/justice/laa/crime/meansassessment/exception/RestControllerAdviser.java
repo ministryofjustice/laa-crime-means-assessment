@@ -58,12 +58,6 @@ public class RestControllerAdviser {
         return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, ex.getMessage(), traceIdHandler.getTraceId());
     }
 
-    @ExceptionHandler(APIClientException.class)
-    public ResponseEntity<ErrorDTO> handleApiClientError(APIClientException ex) {
-        log.error("APIClientException: ", ex);
-        return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), traceIdHandler.getTraceId());
-    }
-
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorDTO> handleValidationError(ValidationException ex) {
         log.warn("ValidationException: ", ex);
@@ -71,7 +65,6 @@ public class RestControllerAdviser {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorDTO> adviceServiceErrors(RuntimeException ex) {
         log.error("Service is failed due to in internal error.", ex);
         return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), traceIdHandler.getTraceId());

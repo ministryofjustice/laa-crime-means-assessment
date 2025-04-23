@@ -65,7 +65,7 @@ public class WebClientsConfiguration {
 
     @Bean(COURT_DATA_API_WEB_CLIENT_NAME)
     WebClient maatCourtDataWebClient(WebClient.Builder webClientBuilder,
-                                     MaatApiConfiguration servicesConfiguration,
+                                     ServicesConfiguration servicesConfiguration,
                                      ClientRegistrationRepository clientRegistrations,
                                      OAuth2AuthorizedClientRepository authorizedClients,
                                      RetryRegistry retryRegistry) {

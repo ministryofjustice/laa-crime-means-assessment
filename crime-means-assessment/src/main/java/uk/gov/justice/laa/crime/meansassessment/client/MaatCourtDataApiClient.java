@@ -15,10 +15,13 @@ import java.util.Map;
 public interface MaatCourtDataApiClient {
 
     @PostExchange("/financial-assessments")
-    MaatApiAssessmentResponse create(@RequestBody MaatApiAssessmentRequest assessment);
+    MaatApiAssessmentResponse createFinancialAssessment(@RequestBody MaatApiAssessmentRequest assessment);
 
     @PutExchange("/financial-assessments")
-    MaatApiAssessmentResponse update(@RequestBody MaatApiAssessmentRequest assessment);
+    MaatApiAssessmentResponse updateFinancialAssessment(@RequestBody MaatApiAssessmentRequest assessment);
+
+    @GetExchange("/financial-assessments/{financialAssessmentId}")
+    FinancialAssessmentDTO getFinancialAssessment(@PathVariable Integer financialAssessmentId);
 
     @PostExchange("/rep-orders/update-date-completed")
     RepOrderDTO updateCompletionDate(@RequestBody DateCompletionRequestDTO dateCompletionRequestDTO);
@@ -32,14 +35,11 @@ public interface MaatCourtDataApiClient {
     @GetExchange("/ioj-appeal/repId/{repId}")
     IOJAppealDTO getIOJAppealFromRepId(@PathVariable Integer repId);
 
-    @GetExchange("/financial-assessments/{financialAssessmentId}")
-    FinancialAssessmentDTO getFinancialAssessment(@PathVariable Integer financialAssessmentId);
-
     @GetExchange("/rep-orders/{repId}")
     RepOrderDTO getRepOrder(@PathVariable Integer repId);
 
     @PatchExchange("/financial-assessments/rollback/{financialAssessmentId}")
-    PassportAssessmentDTO rollbackFinancialAssessment(@RequestBody Map<String, Object> updateFields,
+    void rollbackFinancialAssessment(@RequestBody Map<String, Object> updateFields,
                                                       @PathVariable Integer financialAssessmentId);
     @GetExchange("/authorization/users/{username}/actions/{action}")
     AuthorizationResponseDTO getUserRoleAction(@PathVariable String username, @PathVariable String action);

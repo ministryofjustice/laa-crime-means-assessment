@@ -14,13 +14,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@EnableConfigurationProperties(value = MaatApiConfiguration.class)
+@EnableConfigurationProperties(value = ServicesConfiguration.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
-class MaatApiConfigurationTest {
+class ServicesConfigurationTest {
 
     @Autowired
     @Qualifier("test_configuration")
-    private MaatApiConfiguration configuration;
+    private ServicesConfiguration configuration;
 
     @Test
     void givenUserDefinedPOJO_whenBindingYMLConfigFile_thenAllFieldsAreSet() {
@@ -32,8 +32,8 @@ class MaatApiConfigurationTest {
     @Configuration
     static class MaatApiConfigurationFactory {
         @Bean(name = "test_configuration")
-        MaatApiConfiguration getDefaultConfiguration() {
-            return new MaatApiConfiguration();
+        ServicesConfiguration getDefaultConfiguration() {
+            return new ServicesConfiguration();
         }
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @ConfigurationProperties(prefix = "maat-api")
-public class MaatApiConfiguration {
+public class ServicesConfiguration {
     /**
      * The API's Base URL
      */
