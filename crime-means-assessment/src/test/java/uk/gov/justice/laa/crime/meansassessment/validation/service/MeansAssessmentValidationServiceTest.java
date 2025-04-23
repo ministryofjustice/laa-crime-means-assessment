@@ -85,21 +85,21 @@ class MeansAssessmentValidationServiceTest {
 
     @Test
     void givenValidRoleAction_whenIsRoleActionValidIsInvoked_thenTrueIsReturned() {
-        when(maatAPIClient.getUserRoleAction( anyString(), anyString()))
+        when(maatAPIClient.getUserRoleAction(anyString(), anyString()))
                 .thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isTrue();
     }
 
     @Test
     void givenValidReservation_whenIsRepOrderReserved_thenTrueIsReturned() {
-        when(maatAPIClient.getReservationDetail( anyString(), anyInt(), anyString()))
+        when(maatAPIClient.getReservationDetail(anyString(), anyInt(), anyString()))
                 .thenReturn(TRUE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isTrue();
     }
 
     @Test
     void givenInvalidReservation_whenIsRepOrderReserved_thenFalseIsReturned() {
-        when(maatAPIClient.getReservationDetail( anyString(), anyInt(), anyString()))
+        when(maatAPIClient.getReservationDetail(anyString(), anyInt(), anyString()))
                 .thenReturn(FALSE_AUTH_RESPONSE);
         assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
     }
@@ -124,14 +124,14 @@ class MeansAssessmentValidationServiceTest {
 
     @Test
     void givenAnOutstandingAssessment_whenIsOutstandingAssessmentIsInvoked_thenTrueIsReturned() {
-        when(maatAPIClient.getOutstandingAssessment( any()))
+        when(maatAPIClient.getOutstandingAssessment(anyInt()))
                 .thenReturn(IS_OUTSTANDING_ASSESSMENT);
         assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isTrue();
     }
 
     @Test
     void givenNoOutstandingAssessments_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
-        when(maatAPIClient.getOutstandingAssessment( any()))
+        when(maatAPIClient.getOutstandingAssessment(anyInt()))
                 .thenReturn(NO_OUTSTANDING_ASSESSMENT);
         assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
     }

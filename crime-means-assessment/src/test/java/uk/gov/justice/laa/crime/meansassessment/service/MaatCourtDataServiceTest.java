@@ -54,7 +54,7 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetPassportAssessmentFromRepIdIsInvoked_thenResponseIsReturned() {
         PassportAssessmentDTO expected = new PassportAssessmentDTO();
-        when(maatAPIClient.getPassportAssessmentFromRepId( anyInt()))
+        when(maatAPIClient.getPassportAssessmentFromRepId(anyInt()))
                 .thenReturn(expected);
 
         PassportAssessmentDTO response =
@@ -66,7 +66,7 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetHardshipReviewFromRepIdIsInvoked_thenResponseIsReturned() {
         HardshipReviewDTO expected = new HardshipReviewDTO();
-        when(maatAPIClient.getHardshipReviewFromRepId( anyInt()))
+        when(maatAPIClient.getHardshipReviewFromRepId(anyInt()))
                 .thenReturn(expected);
 
         HardshipReviewDTO response =
@@ -90,7 +90,7 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetFinancialAssessmentIsInvoked_thenResponseIsReturned() {
         FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
-        when(maatAPIClient.getFinancialAssessment( anyInt()))
+        when(maatAPIClient.getFinancialAssessment(anyInt()))
                 .thenReturn(expected);
 
         FinancialAssessmentDTO response =
@@ -102,7 +102,7 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetRepOrderIsInvoked_thenResponseIsReturned() {
         RepOrderDTO expected = new RepOrderDTO();
-        when(maatAPIClient.getRepOrder( anyInt()))
+        when(maatAPIClient.getRepOrder(anyInt()))
                 .thenReturn(expected);
 
         RepOrderDTO response =
