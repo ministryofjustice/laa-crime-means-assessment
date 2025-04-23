@@ -19,9 +19,10 @@ management:
       type: w3c,b3
     enabled: true
 
-maatApi:
-  baseUrl: ${MAAT_API_BASE_URL}
-  registrationId: maat-api
+services:
+  maat-api:
+    baseUrl: ${MAAT_API_BASE_URL}
+    registrationId: maat-api
 
 spring:
   datasource:

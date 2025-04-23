@@ -25,8 +25,8 @@ class ServicesConfigurationTest {
     @Test
     void givenUserDefinedPOJO_whenBindingYMLConfigFile_thenAllFieldsAreSet() {
 
-        assertThat("http://localhost:9999/api/internal/v1/assessment").isEqualTo(configuration.getBaseUrl());
-        assertThat("maat-api").isEqualTo(configuration.getRegistrationId());
+        assertThat("http://localhost:9999/api/internal/v1/assessment").isEqualTo(configuration.getMaatApi().getBaseUrl());
+        assertThat("maat-api").isEqualTo(configuration.getMaatApi().getRegistrationId());
     }
 
     @Configuration

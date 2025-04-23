@@ -51,10 +51,10 @@ springdoc:
 swagger-ui:
   path: /open-api/docs.html
 
-maatApi:
-  oAuthEnabled: false
-  baseUrl: http://localhost:9999/api/internal/v1/assessment
-  registrationId: maat-api
+services:
+  maat-api:
+    baseUrl: http://localhost:9999/api/internal/v1/assessment
+    registrationId: maat-api
 
 means-assessment:
   security:

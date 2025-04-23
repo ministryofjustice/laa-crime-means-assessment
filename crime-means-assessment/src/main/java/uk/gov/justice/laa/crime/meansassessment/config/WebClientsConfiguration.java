@@ -14,6 +14,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
@@ -72,13 +73,15 @@ public class WebClientsConfiguration {
 
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauthFilter =
                 new ServletOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrations, authorizedClients);
-        oauthFilter.setDefaultClientRegistrationId(servicesConfiguration.getRegistrationId());
+        String registrationId = servicesConfiguration.getMaatApi().getRegistrationId();
+        Assert.notNull(registrationId, "CMA API registration id cannot be null");
+        oauthFilter.setDefaultClientRegistrationId(registrationId);
 
         Resilience4jRetryFilter retryFilter =
                 new Resilience4jRetryFilter(retryRegistry, COURT_DATA_API_WEB_CLIENT_NAME);
 
         return webClientBuilder
-                .baseUrl(servicesConfiguration.getBaseUrl())
+                .baseUrl(servicesConfiguration.getMaatApi().getBaseUrl())
                 .filters(filters -> configureFilters(filters, oauthFilter, retryFilter))
                 .build();
     }

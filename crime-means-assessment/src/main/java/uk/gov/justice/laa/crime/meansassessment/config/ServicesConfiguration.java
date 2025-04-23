@@ -1,18 +1,31 @@
 package uk.gov.justice.laa.crime.meansassessment.config;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties(prefix = "maat-api")
+@ConfigurationProperties(prefix = "services")
 public class ServicesConfiguration {
-    /**
-     * The API's Base URL
-     */
-    @NotNull
-    private String baseUrl;
 
-    private String registrationId;
+    @NotNull
+    private MaatApi maatApi;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MaatApi {
+        /**
+         * The API's Base URL
+         */
+        @NotNull
+        private String baseUrl;
+
+        @NotNull
+        private String registrationId;
+
+    }
 
 }
