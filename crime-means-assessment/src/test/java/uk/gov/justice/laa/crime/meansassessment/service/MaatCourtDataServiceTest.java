@@ -120,7 +120,7 @@ class MaatCourtDataServiceTest {
     @Test
     void givenFinancialAssessmentId_whenUpdateFinancialAssessmentIsInvoked_thenPatchRequestIsSent() {
         maatCourtDataService.rollbackFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, Map.of());
-        verify(maatAPIClient).rollbackFinancialAssessment(anyMap(), anyInt());
+        verify(maatAPIClient).patchFinancialAssessment(anyMap(), anyInt());
     }
 
 }

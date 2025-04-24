@@ -71,6 +71,6 @@ public class MaatCourtDataService {
     }
 
     public void rollbackFinancialAssessment(Integer financialAssessmentId, Map<String, Object> updateFields) {
-        maatCourtDataApiClient.rollbackFinancialAssessment(updateFields, financialAssessmentId);
+        maatCourtDataApiClient.patchFinancialAssessment(updateFields, financialAssessmentId);
     }
 }

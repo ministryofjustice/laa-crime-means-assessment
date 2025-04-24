@@ -23,6 +23,10 @@ public interface MaatCourtDataApiClient {
     @GetExchange("/financial-assessments/{financialAssessmentId}")
     FinancialAssessmentDTO getFinancialAssessment(@PathVariable Integer financialAssessmentId);
 
+    @PatchExchange("/financial-assessments/rollback/{financialAssessmentId}")
+    void patchFinancialAssessment(@RequestBody Map<String, Object> updateFields,
+                                  @PathVariable Integer financialAssessmentId);
+
     @PostExchange("/rep-orders/update-date-completed")
     RepOrderDTO updateCompletionDate(@RequestBody DateCompletionRequestDTO dateCompletionRequestDTO);
 
@@ -38,9 +42,6 @@ public interface MaatCourtDataApiClient {
     @GetExchange("/rep-orders/{repId}")
     RepOrderDTO getRepOrder(@PathVariable Integer repId);
 
-    @PatchExchange("/financial-assessments/rollback/{financialAssessmentId}")
-    void rollbackFinancialAssessment(@RequestBody Map<String, Object> updateFields,
-                                                      @PathVariable Integer financialAssessmentId);
     @GetExchange("/authorization/users/{username}/actions/{action}")
     AuthorizationResponseDTO getUserRoleAction(@PathVariable String username, @PathVariable String action);
 
@@ -51,7 +52,7 @@ public interface MaatCourtDataApiClient {
     OutstandingAssessmentResultDTO getOutstandingAssessment(@PathVariable Integer repId);
 
     @GetExchange("/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}")
-    AuthorizationResponseDTO getReservationDetail(@PathVariable String username,  @PathVariable Integer reservationId,
+    AuthorizationResponseDTO getReservationDetail(@PathVariable String username, @PathVariable Integer reservationId,
                                                   @PathVariable String sessionId);
 
 }

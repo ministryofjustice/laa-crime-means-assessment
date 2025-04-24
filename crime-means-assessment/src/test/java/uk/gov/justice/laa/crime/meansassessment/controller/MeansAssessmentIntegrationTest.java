@@ -55,8 +55,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MeansAssessmentIntegrationTest {
 
     private static final boolean IS_VALID = true;
+
     private static final String API_VERSION = "/api/internal/v1/assessment";
     private static final String ENDPOINT_URL = API_VERSION + "/means";
+    private static final String AUTHORIZATION_ENDPOINT = API_VERSION + "/authorization";
+
+    private static final String FINANCIAL_ASSESSMENT_ENDPOINT = API_VERSION + "/financial-assessments";
+
+    private static final String REP_ORDER_ENDPOINT = API_VERSION + "/rep-orders";
 
     private MockMvc mvc;
 
@@ -122,12 +128,12 @@ class MeansAssessmentIntegrationTest {
     }
 
     private void stubForRoleActionAndReservationUrl() {
-        stubFor(get(urlPathMatching(API_VERSION + "/authorization/users/([a-zA-Z]*)/actions/([a-zA-Z_]*)")).willReturn(aResponse()
+        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/actions/([a-zA-Z_]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
 
-        stubFor(get(urlPathMatching(API_VERSION + "/authorization/users/([a-zA-Z]*)/reservations/([0-9]*)/sessions/([a-zA-Z0-9_.-]*)")).willReturn(aResponse()
+        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/reservations/([0-9]*)/sessions/([a-zA-Z0-9_.-]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
@@ -165,17 +171,17 @@ class MeansAssessmentIntegrationTest {
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlPathMatching(API_VERSION + "/financial-assessments/check-outstanding/([0-9]*)")).willReturn(aResponse()
+        stubFor(get(urlPathMatching(FINANCIAL_ASSESSMENT_ENDPOINT + "/check-outstanding/([0-9]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
 
-        stubFor(get(urlPathMatching(API_VERSION + "/authorization/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
+        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
 
-        stubFor(post(urlPathMatching(API_VERSION + "/rep-orders/update-date-completed")).willReturn(aResponse()
+        stubFor(post(urlPathMatching(REP_ORDER_ENDPOINT + "/update-date-completed")).willReturn(aResponse()
                 .withStatus(504)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))));
 
@@ -185,7 +191,7 @@ class MeansAssessmentIntegrationTest {
 
         verify(exactly(1), postRequestedFor(urlEqualTo("/oauth2/token")));
         verify(exactly(4), getRequestedFor(urlPathMatching(API_VERSION + "/.*")));
-        verify(exactly(3), postRequestedFor(urlEqualTo(API_VERSION + "/rep-orders/update-date-completed")));
+        verify(exactly(3), postRequestedFor(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed")));
     }
 
     @Test
@@ -195,23 +201,23 @@ class MeansAssessmentIntegrationTest {
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlPathMatching(API_VERSION + "/financial-assessments/check-outstanding/([0-9]*)")).willReturn(aResponse()
+        stubFor(get(urlPathMatching(FINANCIAL_ASSESSMENT_ENDPOINT + "/check-outstanding/([0-9]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
 
-        stubFor(get(urlPathMatching(API_VERSION + "/authorization/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
+        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody("true")));
 
-        stubFor(post(urlEqualTo(API_VERSION + "/rep-orders/update-date-completed")).atPriority(1).willReturn(aResponse()
+        stubFor(post(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed")).atPriority(1).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))));
 
         // MaatCourtDataService - Persist means assessment
-        stubFor(post(urlEqualTo(API_VERSION + "/financial-assessments")).willReturn(aResponse()
+        stubFor(post(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT)).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiInitAssessmentResponse()))));
@@ -221,8 +227,8 @@ class MeansAssessmentIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         verify(exactly(4), getRequestedFor(urlPathMatching(API_VERSION + "/.*")));
-        verify(exactly(1), postRequestedFor(urlEqualTo(API_VERSION + "/rep-orders/update-date-completed")));
-        verify(exactly(1), postRequestedFor(urlEqualTo(API_VERSION + "/financial-assessments")));
+        verify(exactly(1), postRequestedFor(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed")));
+        verify(exactly(1), postRequestedFor(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT)));
     }
 
     @Test
@@ -245,19 +251,19 @@ class MeansAssessmentIntegrationTest {
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlMatching(API_VERSION + "/rep-orders/.*")).willReturn(aResponse()
+        stubFor(get(urlMatching(REP_ORDER_ENDPOINT + "/.*")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getFinancialAssessmentDTO()))));
 
         // DateCompletionService - retrieve rep order
-        stubFor(post(urlEqualTo(API_VERSION + "/rep-orders/update-date-completed")).willReturn(aResponse()
+        stubFor(post(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))));
 
         // MaatCourtDataService - Persist means assessment
-        stubFor(put(urlEqualTo(API_VERSION + "/financial-assessments")).willReturn(aResponse()
+        stubFor(put(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT)).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                 .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiFullAssessmentResponse()))));
@@ -267,8 +273,8 @@ class MeansAssessmentIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         verify(exactly(3), getRequestedFor(urlPathMatching(API_VERSION + "/.*")));
-        verify(exactly(1), postRequestedFor(urlEqualTo(API_VERSION + "/rep-orders/update-date-completed")));
-        verify(exactly(1), putRequestedFor(urlEqualTo(API_VERSION + "/financial-assessments")));
+        verify(exactly(1), postRequestedFor(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed")));
+        verify(exactly(1), putRequestedFor(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT)));
     }
 
     @Test
