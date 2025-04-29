@@ -22,7 +22,7 @@ jwt:
   issuerUri: https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_Bo3WVvzAk
 
 maatApi:
-  baseUrl: https://maat-cd-api.legalservices.gov.uk
+  baseUrl: https://maat-cd-api.legalservices.gov.uk/api/internal/v1/assessment
   oauthUrl: https://maat-cd-api-prd.auth.eu-west-2.amazoncognito.com/oauth2/token
 
 serviceAccount:

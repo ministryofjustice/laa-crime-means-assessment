@@ -17,33 +17,12 @@ management:
   tracing:
     propagation:
       type: w3c,b3
+    enabled: true
 
-maatApi:
-  oAuthEnabled: true
-  baseUrl: ${MAAT_API_BASE_URL}
-  assessments-domain: ${maatApi.baseUrl}/api/internal/v1/assessment
-
-  post-processing-url: ${maatApi.assessments-domain}/post-processing
-
-  validation-endpoints:
-    role-action-url: ${maatApi.assessments-domain}/authorization/users/{username}/actions/{action}
-    new-work-reason-url: ${maatApi.assessments-domain}/authorization/users/{username}/work-reasons/{nworCode}
-    reservations-url: ${maatApi.assessments-domain}/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}
-    outstanding-assessments-url: ${maatApi.assessments-domain}/financial-assessments/check-outstanding/{repId}
-  financial-assessment-endpoints:
-    create-url: ${maatApi.assessments-domain}/financial-assessments
-    update-url: ${maatApi.assessments-domain}/financial-assessments
-    search-url: ${maatApi.assessments-domain}/financial-assessments/{financialAssessmentId}
-    rollback-url: ${maatApi.assessments-domain}/financial-assessments/rollback/{financialAssessmentId}
-  passport-assessment-endpoints:
-    find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
-  hardship-review-endpoints:
-    find-url: ${maatApi.assessments-domain}/hardship/repId/{repId}
-  ioj-appeal-endpoints:
-    find-url: ${maatApi.assessments-domain}/ioj-appeal/repId/{repId}
-  rep-order-endpoints:
-    find-url: ${maatApi.assessments-domain}/rep-orders/{repId}
-    date-completion-url: ${maatApi.assessments-domain}/rep-orders/update-date-completed
+services:
+  maat-api:
+    baseUrl: ${MAAT_API_BASE_URL}
+    registrationId: maat-api
 
 spring:
   datasource:
@@ -71,6 +50,30 @@ spring:
       resource-server:
         jwt:
           issuer-uri: ${JWT_ISSUER_URI}
+
+zipkin:
+  tracing:
+    export:
+      enabled: false
+
+resilience4j:
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 2s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        retry-exceptions:
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+          - org.springframework.web.reactive.function.client.WebClientResponseException.BadGateway
+          - org.springframework.web.reactive.function.client.WebClientResponseException.TooManyRequests
+          - org.springframework.web.reactive.function.client.WebClientResponseException.ServiceUnavailable
+          - org.springframework.web.reactive.function.client.WebClientResponseException.GatewayTimeout
+
+    instances:
+      maatCourtDataWebClient:
+        base-config: default
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
@@ -101,10 +104,5 @@ sentry:
   send-default-pii: true
   attach-stacktrace: true
   sample-rate: ${SENTRY_SAMPLE_RATE}
-
-retry-config:
-  max-retries: 3
-  min-back-off-period: 5
-  jitter-value: 0.75
 
 version: 0.0.1

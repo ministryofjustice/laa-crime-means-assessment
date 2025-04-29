@@ -51,42 +51,16 @@ springdoc:
 swagger-ui:
   path: /open-api/docs.html
 
-maatApi:
-  oAuthEnabled: false
-  baseUrl: http://localhost:9999
-  assessments-domain: ${maatApi.baseUrl}/api/internal/v1/assessment
-  post-processing-url: ${maatApi.assessments-domain}/post-processing/{repId}
-
-  validation-endpoints:
-    role-action-url: ${maatApi.assessments-domain}/role-action-url
-    new-work-reason-url: ${maatApi.assessments-domain}/new-work-reason-url
-    reservations-url: ${maatApi.assessments-domain}/reservation-url
-    outstanding-assessments-url: ${maatApi.assessments-domain}/outstanding-assessments-url
-  financial-assessment-endpoints:
-    create-url: ${maatApi.assessments-domain}/create-url
-    search-url: ${maatApi.assessments-domain}/search-url
-    update-url: ${maatApi.assessments-domain}/update-url
-    rollback-url: ${maatApi.assessments-domain}/rollback-url
-  passport-assessment-endpoints:
-    find-url: ${maatApi.assessments-domain}/passport-assessments/repId/{repId}
-  hardship-review-endpoints:
-    find-url: ${maatApi.assessments-domain}/hardship/repId/{repId}
-  ioj-appeal-endpoints:
-    find-url: ${maatApi.assessments-domain}/ioj-appeal/repId/{repId}
-  rep-order-endpoints:
-    find-url: ${maatApi.assessments-domain}/rep-orders/{repId}
-    date-completion-url: ${maatApi.assessments-domain}/rep-orders/update-date-completed
+services:
+  maat-api:
+    baseUrl: http://localhost:9999/api/internal/v1/assessment
+    registrationId: maat-api
 
 means-assessment:
   security:
     issuer-uri: http://localhost:${server.port}
 
 version: 0.0.1
-
-retry-config:
-  max-retries: 2
-  min-back-off-period: 3
-  jitter-value: 0.5
 
 features:
   date-completion-enabled: false

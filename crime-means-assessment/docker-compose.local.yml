@@ -3,7 +3,7 @@ version: "3.2"
 services:
   app:
     environment:
-      - MAAT_API_BASE_URL=http://court-data-api:8090/
+      - MAAT_API_BASE_URL=http://court-data-api:8090/api/internal/v1/assessment
 
     networks:
       default:

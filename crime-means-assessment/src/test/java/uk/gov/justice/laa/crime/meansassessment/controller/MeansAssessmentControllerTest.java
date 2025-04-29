@@ -6,22 +6,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiGetMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiUpdateMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.commons.tracing.TraceIdHandler;
-import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentRequestDTOBuilder;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.MeansAssessmentService;
+import uk.gov.justice.laa.crime.meansassessment.tracing.TraceIdHandler;
 import uk.gov.justice.laa.crime.meansassessment.validation.validator.MeansAssessmentValidationProcessor;
 
 import java.math.BigDecimal;
@@ -49,19 +49,19 @@ class MeansAssessmentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private MeansAssessmentRequestDTOBuilder assessmentRequestDTOBuilder;
 
-    @MockBean
+    @MockitoBean
     private MeansAssessmentService meansAssessmentService;
 
-    @MockBean
+    @MockitoBean
     private AssessmentCriteriaService assessmentCriteriaService;
 
-    @MockBean
+    @MockitoBean
     private MeansAssessmentValidationProcessor assessmentValidator;
 
-    @MockBean
+    @MockitoBean
     private TraceIdHandler traceIdHandler;
 
     @Test
