@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "jacoco"
-    id "org.springframework.boot" version "3.4.0"
+    id "org.springframework.boot" version "3.4.4"
     id 'io.spring.dependency-management' version '1.1.7'
     id "org.sonarqube" version "4.4.1.3373"
     id "info.solidsoft.pitest" version "1.15.0"
@@ -12,7 +12,7 @@ def versions = [
         pitest                       : "1.4.10",
         springdocVersion             : "2.1.0",
         liquibase                    : "4.29.1",
-        crimeCommonsClassesVersion   : "3.18.0",
+        crimeCommonsClassesVersion   : "4.7.1",
         crimeCommonsModsSchemas      : "1.36.0",
         mockitoInlineVersion         : "5.2.0",
         cucumberVersion              : "7.21.0",
@@ -20,12 +20,7 @@ def versions = [
         springCloudStubRunnerVersion : "4.0.4",
         h2DBVersion                  : '2.1.210',
         postgresqlVersion            : "42.7.2",
-        tomcatVersion                : "10.1.39",
-        oauth2ResourceServer         : "3.4.1",
-        securityCrypto               : "6.4.4",
-        resilience4jVersion          : "2.2.0",
-        oauth2ResourceServer         : "3.4.1",
-        securityCrypto               : "6.4.4"
+        resilience4jVersion          : "2.2.0"
 ]
 
 
@@ -51,15 +46,15 @@ dependencies {
     
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-validation"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server:$versions.oauth2ResourceServer"
-    implementation "org.springframework.security:spring-security-crypto:$versions.securityCrypto"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+    implementation "org.springframework.security:spring-security-crypto"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
 
-    implementation "org.apache.tomcat.embed:tomcat-embed-core:$versions.tomcatVersion"
+    implementation "org.apache.tomcat.embed:tomcat-embed-core"
 
     implementation "org.postgresql:postgresql:$versions.postgresqlVersion"
     implementation "org.liquibase:liquibase-core:$versions.liquibase"
