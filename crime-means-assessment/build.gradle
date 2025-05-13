@@ -9,7 +9,6 @@ plugins {
 }
 
 def versions = [
-        pitest                       : "1.4.10",
         springdocVersion             : "2.1.0",
         crimeCommonsClassesVersion   : "4.7.1",
         crimeCommonsModsSchemas      : "1.36.0",
@@ -67,7 +66,6 @@ dependencies {
 
     testImplementation "com.h2database:h2"
     testImplementation "org.mockito:mockito-inline:$versions.mockitoInlineVersion"
-    testImplementation "org.pitest:pitest:$versions.pitest"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:$versions.springCloudStubRunnerVersion"
 
