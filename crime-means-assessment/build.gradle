@@ -8,6 +8,7 @@ plugins {
 }
 
 def versions = [
+        sentry                       : "8.11.1",
         springdocVersion             : "2.1.0",
         crimeCommonsClassesVersion   : "4.7.1",
         crimeCommonsModsSchemas      : "1.36.0",
@@ -35,6 +36,10 @@ repositories {
 }
 
 dependencies {
+    implementation platform("io.sentry:sentry-bom:$versions.sentry")
+    implementation "io.sentry:sentry-spring-boot-starter-jakarta"
+    implementation "io.sentry:sentry-logback"
+
     implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-mod-schemas:$versions.crimeCommonsModsSchemas"
     
@@ -45,6 +50,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
 
     implementation "org.postgresql:postgresql"
