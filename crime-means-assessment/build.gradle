@@ -11,15 +11,12 @@ plugins {
 def versions = [
         pitest                       : "1.4.10",
         springdocVersion             : "2.1.0",
-        liquibase                    : "4.29.1",
         crimeCommonsClassesVersion   : "4.7.1",
         crimeCommonsModsSchemas      : "1.36.0",
         mockitoInlineVersion         : "5.2.0",
         cucumberVersion              : "7.21.0",
         jUnitPlatformSuiteVersion    : "1.10.0",
         springCloudStubRunnerVersion : "4.0.4",
-        h2DBVersion                  : '2.1.210',
-        postgresqlVersion            : "42.7.2",
         resilience4jVersion          : "2.2.0"
 ]
 
@@ -47,17 +44,14 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-    implementation "org.springframework.security:spring-security-crypto"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
 
-    implementation "org.apache.tomcat.embed:tomcat-embed-core"
-
-    implementation "org.postgresql:postgresql:$versions.postgresqlVersion"
-    implementation "org.liquibase:liquibase-core:$versions.liquibase"
+    implementation "org.postgresql:postgresql"
+    implementation "org.liquibase:liquibase-core"
 
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "io.micrometer:micrometer-tracing"
@@ -68,7 +62,10 @@ dependencies {
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
 
-    testImplementation group: 'com.h2database', name: 'h2', version: versions.h2DBVersion
+    testCompileOnly "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
+
+    testImplementation "com.h2database:h2"
     testImplementation "org.mockito:mockito-inline:$versions.mockitoInlineVersion"
     testImplementation "org.pitest:pitest:$versions.pitest"
     testImplementation "org.springframework.security:spring-security-test"
@@ -80,8 +77,6 @@ dependencies {
     testImplementation "io.cucumber:cucumber-spring"
     testImplementation "io.cucumber:cucumber-junit-platform-engine"
     testImplementation "org.junit.platform:junit-platform-suite:$versions.jUnitPlatformSuiteVersion"
-    testCompileOnly "org.projectlombok:lombok"
-    testAnnotationProcessor "org.projectlombok:lombok"
 }
 
 configurations {
