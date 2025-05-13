@@ -4,7 +4,6 @@ plugins {
     id "org.sonarqube" version "6.1.0.5360"
     id "info.solidsoft.pitest" version "1.15.0"
     id "org.springframework.boot" version "3.4.4"
-    id "org.jsonschema2dataclass" version "6.0.0"
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -109,28 +108,20 @@ jacocoTestReport {
 }
 
 pitest {
-    targetClasses = ["uk.gov.justice.laa.crime.meansassessment.service.*", "uk.gov.justice.laa.crime.meansassessment.controller.*", "uk.gov.justice.laa.crime.meansassessment.validation.*"]
-    excludedClasses = ["uk.gov.justice.laa.crime.meansassessment.dto.*", "uk.gov.justice.laa.crime.meansassessment.mapper.*", "uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication"]
+    targetClasses = ["uk.gov.justice.laa.crime.meansassessment.service.*",
+                     "uk.gov.justice.laa.crime.meansassessment.controller.*",
+                     "uk.gov.justice.laa.crime.meansassessment.validation.*"
+    ]
+    excludedClasses = ["uk.gov.justice.laa.crime.meansassessment.dto.*",
+                       "uk.gov.justice.laa.crime.meansassessment.mapper.*",
+                       "uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication"
+    ]
     threads = 5
     outputFormats = ["XML", "HTML"]
     timestampedReports = false
     mutationThreshold = 60
 }
 
-
-jsonSchema2Pojo {
-    executions {
-        main {
-            methods.builders = true
-            methods.buildersDynamic = true
-            methods.annotateJsr303Jakarta = true
-            fields.floatUseBigDecimal = true
-            dateTime.dateTimeType = "java.time.LocalDateTime"
-            klass.targetPackage = "uk.gov.justice.laa.crime.meansassessment.model.common"
-            io.source.setFrom files("${project.rootDir}/src/main/resources/schemas")
-        }
-    }
-}
 
 def isCiBuild = System.getenv("SONAR_TOKEN") != null
 
