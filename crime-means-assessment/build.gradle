@@ -24,8 +24,7 @@ def versions = [
         oauth2ResourceServer         : "3.4.1",
         securityCrypto               : "6.4.4",
         resilience4jVersion          : "2.2.0",
-        oauth2ResourceServer         : "3.4.1",
-        securityCrypto               : "6.4.4"
+        springSecurityCore           : "6.4.6"
 ]
 
 
@@ -52,6 +51,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server:$versions.oauth2ResourceServer"
+    implementation "org.springframework.security:spring-security-core:$versions.springSecurityCore"
     implementation "org.springframework.security:spring-security-crypto:$versions.securityCrypto"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
