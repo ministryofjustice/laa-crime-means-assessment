@@ -1,1 +1,99 @@
-# Default values for laa-crime-means-assessment.# This is a YAML-formatted file.# Declare variables to be passed into your templates.replicaCount: 2image:  repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-crime-apps-team/laa-crime-means-assessment-dev-ecr  pullPolicy: IfNotPresent  # Overrides the image tag whose default is the chart appVersion.  # tag: latestsentry:  sampleRate: 0.05aws_region: eu-west-2java:  host_env: testjwt:  issuerUri: https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_Bo3WVvzAkmaatApi:  baseUrl: https://maat-cd-api.tst.legalservices.gov.uk/api/internal/v1/assessment  oauthUrl: https://maat-cd-api-tst.auth.eu-west-2.amazoncognito.com/oauth2/tokenserviceAccount:  # Specifies whether a service account should be created  create: false  # Annotations to add to the service account  annotations: {}  # The name of the service account to use.  # If not set and create is true, a name is generated using the fullname template  name: "laa-crime-means-assessment"service:  type: ClusterIP  port: 80  targetPort: 8080ingress:  enabled: true  environmentName: laa-crime-means-assessment-test  annotations:    external-dns.alpha.kubernetes.io/aws-weight: "100"    nginx.ingress.kubernetes.io/affinity: "cookie"    nginx.ingress.kubernetes.io/session-cookie-max-age: "300"  externalAnnotations: {}  hosts:    - host: laa-crime-means-assessment-test.apps.live.cloud-platform.service.justice.gov.uk      paths: ["/"]  tls: []  className: defaultautoscaling:  enabled: false  minReplicas: 1  maxReplicas: 100  targetCPUUtilizationPercentage: 80  targetMemoryUtilizationPercentage: 80actuator:  metrics:    enabled: true    scrapeInterval: 15s    path: /actuator/prometheus  health:    path: /actuator/health  port: 8096  liveness:    initialDelaySeconds: 45    periodSeconds: 10    timeoutSeconds: 10    failureThreshold: 5  readiness:    initialDelaySeconds: 45    periodSeconds: 10    timeoutSeconds: 10    failureThreshold: 5scheduledDowntime:  enabled: true  # Start at 6am UTC Monday-Friday  startup: '0 6 * * 1-5'  # Stop at 10pm UTC Monday-Friday  shutdown: '0 22 * * 1-5'  serviceAccountName: scheduled-downtime-serviceaccountsecurityContext:  allowPrivilegeEscalation: false  capabilities:    drop: ["ALL"]  runAsNonRoot: true  seccompProfile:    type: RuntimeDefaultlogging:  level: INFO
+# Default values for laa-crime-means-assessment.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/laa-crime-apps-team/laa-crime-means-assessment-dev-ecr
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  # tag: latest
+
+sentry:
+  sampleRate: 0.05
+
+aws_region: eu-west-2
+
+java:
+  host_env: test
+
+jwt:
+  issuerUri: https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_Bo3WVvzAk
+
+maatApi:
+  baseUrl: https://maat-cd-api.tst.legalservices.gov.uk/api/internal/v1/assessment
+  oauthUrl: https://maat-cd-api-tst.auth.eu-west-2.amazoncognito.com/oauth2/token
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "laa-crime-means-assessment"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  environmentName: laa-crime-means-assessment-test
+  annotations:
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "300"
+  externalAnnotations: {}
+  hosts:
+    - host: laa-crime-means-assessment-test.apps.live.cloud-platform.service.justice.gov.uk
+      paths: ["/"]
+  tls: []
+  className: default
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+actuator:
+  metrics:
+    enabled: true
+    scrapeInterval: 15s
+    path: /actuator/prometheus
+  health:
+    path: /actuator/health
+  port: 8096
+  liveness:
+    initialDelaySeconds: 45
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 5
+  readiness:
+    initialDelaySeconds: 45
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 5
+
+scheduledDowntime:
+  enabled: true
+  # Start at 6am UTC Monday-Friday
+  startup: '0 6 * * 1-5'
+  # Stop at 10pm UTC Monday-Friday
+  shutdown: '0 22 * * 1-5'
+  serviceAccountName: scheduled-downtime-serviceaccount
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+logging:
+  level: INFO
