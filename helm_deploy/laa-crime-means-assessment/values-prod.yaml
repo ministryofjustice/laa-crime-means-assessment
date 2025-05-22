@@ -40,18 +40,7 @@ service:
   targetPort: 8080
 
 ingress:
-  enabled: true
-  environmentName: laa-crime-means-assessment-prod
-  annotations:
-    external-dns.alpha.kubernetes.io/aws-weight: "100"
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "300"
-  externalAnnotations: {}
-  hosts:
-    - host: laa-crime-means-assessment-prod.apps.live.cloud-platform.service.justice.gov.uk
-      paths: ["/open-api/"]
-  tls: []
-  className: default
+  enabled: false
 
 autoscaling:
   enabled: false
