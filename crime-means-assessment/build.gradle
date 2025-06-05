@@ -3,7 +3,7 @@ plugins {
     id "jacoco"
     id "org.springframework.boot" version "3.4.6"
     id 'io.spring.dependency-management' version '1.1.7'
-    id "org.sonarqube" version "4.4.1.3373"
+    id "org.sonarqube" version "6.2.0.5505"
     id "info.solidsoft.pitest" version "1.15.0"
     id "org.jsonschema2dataclass" version "6.0.0"
 }
@@ -12,14 +12,14 @@ def versions = [
         pitest                       : "1.4.10",
         springdocVersion             : "2.1.0",
         liquibase                    : "4.29.1",
-        crimeCommonsClassesVersion   : "4.7.1",
+        crimeCommonsClassesVersion   : "4.10.0",
         crimeCommonsModsSchemas      : "1.36.0",
         mockitoInlineVersion         : "5.2.0",
-        cucumberVersion              : "7.21.0",
+        cucumberVersion              : "7.22.2",
         jUnitPlatformSuiteVersion    : "1.10.0",
-        springCloudStubRunnerVersion : "4.1.0",
+        springCloudStubRunnerVersion : "4.2.1",
         h2DBVersion                  : '2.1.210',
-        postgresqlVersion            : "42.7.2",
+        postgresqlVersion            : "42.7.5",
         resilience4jVersion          : "2.2.0"
 ]
 
