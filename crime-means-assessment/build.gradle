@@ -20,7 +20,7 @@ def versions = [
         springCloudStubRunnerVersion : "4.2.1",
         h2DBVersion                  : '2.1.210',
         postgresqlVersion            : "42.7.5",
-        resilience4jVersion          : "2.2.0"
+        resilience4jVersion          : "2.3.0"
 ]
 
 
