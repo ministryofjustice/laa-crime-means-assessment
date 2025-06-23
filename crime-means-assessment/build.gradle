@@ -17,7 +17,7 @@ def versions = [
         mockitoInlineVersion         : "5.2.0",
         cucumberVersion              : "7.22.2",
         jUnitPlatformSuiteVersion    : "1.10.0",
-        springCloudStubRunnerVersion : "4.2.1",
+        springCloudStubRunnerVersion : "4.3.0",
         h2DBVersion                  : '2.1.210',
         postgresqlVersion            : "42.7.5",
         resilience4jVersion          : "2.2.0"
