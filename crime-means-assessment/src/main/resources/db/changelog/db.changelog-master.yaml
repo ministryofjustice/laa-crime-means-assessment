@@ -45,3 +45,5 @@ databaseChangeLog:
       file: db/changelog/changeset/22-spring-security-oauth2-table-update.sql
   - include:
       file: db/changelog/changeset/23-drop-spring-security-oauth2-tables.sql
+  - include:
+      file: db/changelog/changeset/24-drop-modified-created-by-columns.sql

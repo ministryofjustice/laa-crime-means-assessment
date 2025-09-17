@@ -44,15 +44,9 @@ public class AssessmentCriteriaDetailEntity {
     @Column(name = "use_frequency", nullable = true)
     private Boolean useFrequency;
 
-    @Column(name = "created_by", nullable = false)
-    private String createdBy;
-
     @Column(name = "date_created", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdDateTime;
-
-    @Column(name = "modified_by", nullable = true)
-    private String modifiedBy;
 
     @Column(name = "date_modified")
     @UpdateTimestamp

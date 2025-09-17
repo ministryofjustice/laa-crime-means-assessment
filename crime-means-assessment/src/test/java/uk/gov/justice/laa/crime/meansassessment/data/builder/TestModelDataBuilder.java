@@ -187,9 +187,7 @@ public class TestModelDataBuilder {
                 .section(TEST_SECTION)
                 .seq(TEST_SEQ)
                 .createdDateTime(LocalDateTime.now())
-                .createdBy(TEST_USER)
                 .modifiedDateTime(LocalDateTime.now())
-                .modifiedBy(TEST_USER)
                 .build();
     }
 
@@ -197,9 +195,7 @@ public class TestModelDataBuilder {
         return AssessmentCriteriaDetailFrequencyEntity.builder()
                 .frequency(TEST_FREQUENCY)
                 .createdDateTime(LocalDateTime.now())
-                .createdBy(TEST_USER)
                 .modifiedDateTime(LocalDateTime.now())
-                .modifiedBy(TEST_USER)
                 .build();
     }
 
@@ -211,9 +207,7 @@ public class TestModelDataBuilder {
                 .partnerFrequency(TEST_FREQUENCY)
                 .partnerValue(TEST_PARTNER_VALUE)
                 .createdDateTime(LocalDateTime.now())
-                .createdBy(TEST_USER)
                 .modifiedDateTime(LocalDateTime.now())
-                .modifiedBy(TEST_USER)
                 .build();
     }
 
@@ -663,9 +657,7 @@ public class TestModelDataBuilder {
                 .section(TEST_SECTION)
                 .seq(TEST_SEQ)
                 .createdDateTime(LocalDateTime.now())
-                .createdBy(TEST_USER)
                 .modifiedDateTime(LocalDateTime.now())
-                .modifiedBy(TEST_USER)
                 .assessmentDetail(AssessmentDetailEntity.builder().detailCode(TEST_DETAIL_CODE).build())
                 .build();
     }
