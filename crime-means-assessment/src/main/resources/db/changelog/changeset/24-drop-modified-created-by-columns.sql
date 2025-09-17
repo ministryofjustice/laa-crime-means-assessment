@@ -2,7 +2,7 @@
 --changeset dedwards:24-drop-modified-created-by-columns.sql
 
 ALTER TABLE crime_means_assessment.assessment_criteria
-    DROP COLUMN IF EXISTS created_by,
+    DROP COLUMN IF EXISTS created_by;
 ALTER TABLE crime_means_assessment.assessment_criteria
     DROP COLUMN IF EXISTS modified_by;
 
