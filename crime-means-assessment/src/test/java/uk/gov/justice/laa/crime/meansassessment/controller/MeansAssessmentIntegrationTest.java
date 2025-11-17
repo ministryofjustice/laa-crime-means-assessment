@@ -1,15 +1,39 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import org.junit.jupiter.api.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -21,6 +45,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.wiremock.spring.EnableWireMock;
+import org.wiremock.spring.InjectWireMock;
 import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.enums.NewWorkReason;
@@ -35,33 +61,19 @@ import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEv
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+@EnableWireMock
 @DirtiesContext
+@AutoConfigureObservability
 @ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(classes = {CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class}, webEnvironment = DEFINED_PORT)
-@AutoConfigureObservability
-@AutoConfigureWireMock(port = 9999)
 class MeansAssessmentIntegrationTest {
 
     private static final boolean IS_VALID = true;
-
     private static final String API_VERSION = "/api/internal/v1/assessment";
     private static final String ENDPOINT_URL = API_VERSION + "/means";
     private static final String AUTHORIZATION_ENDPOINT = API_VERSION + "/authorization";
-
     private static final String FINANCIAL_ASSESSMENT_ENDPOINT = API_VERSION + "/financial-assessments";
-
     private static final String REP_ORDER_ENDPOINT = API_VERSION + "/rep-orders";
 
     private MockMvc mvc;
@@ -69,16 +81,22 @@ class MeansAssessmentIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @InjectWireMock
+    private static WireMockServer wiremock;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
 
-    @Autowired
-    private WireMockServer mockMaatCourtDataApi;
+    @BeforeEach
+    void setup() throws JsonProcessingException {
+        stubForOAuth();
+        this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
+                .addFilter(springSecurityFilterChain).build();
+    }
 
-    @BeforeAll
     static void stubForOAuth() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> token = Map.of(
@@ -87,22 +105,12 @@ class MeansAssessmentIntegrationTest {
                 "access_token", UUID.randomUUID()
         );
 
-        stubFor(post("/oauth2/token")
+        wiremock.stubFor(post("/oauth2/token")
                 .willReturn(WireMock.ok()
                         .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
                         .withBody(mapper.writeValueAsString(token))));
     }
 
-    @BeforeEach
-    void setup() {
-        this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
-                .addFilter(springSecurityFilterChain).build();
-    }
-
-    @AfterEach
-    void clean() {
-        mockMaatCourtDataApi.resetAll();
-    }
 
     private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String endpointUrl, boolean withAuth) {
         return buildRequest(method, null, endpointUrl, withAuth);
