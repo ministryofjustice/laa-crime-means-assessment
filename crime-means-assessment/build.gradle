@@ -1,23 +1,21 @@
 plugins {
     id "java"
     id "jacoco"
-    id "org.sonarqube" version "6.1.0.5360"
+    id "org.sonarqube" version "7.0.1.6134"
     id "info.solidsoft.pitest" version "1.15.0"
-    id "org.springframework.boot" version "3.4.4"
+    id "org.springframework.boot" version "3.5.7"
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
 def versions = [
-        sentry                       : "8.11.1",
-        wiremock                     : "3.10.6",
-        springdocVersion             : "2.1.0",
+        sentry                       : "8.26.0",
+        wiremock                     : "4.0.8",
+        springdocVersion             : "2.8.14",
         crimeCommonsClassesVersion   : "4.7.1",
         crimeCommonsModsSchemas      : "1.36.0",
-        mockitoInlineVersion         : "5.2.0",
         cucumberVersion              : "7.21.0",
-        jUnitPlatformSuiteVersion    : "1.10.0",
-        springCloudStubRunnerVersion : "4.0.4",
-        resilience4jVersion          : "2.2.0"
+        jUnitPlatformSuiteVersion    : "1.14.1",
+        resilience4jVersion          : "2.3.0"
 ]
 
 
@@ -38,35 +36,39 @@ repositories {
 }
 
 dependencies {
-    implementation platform("io.sentry:sentry-bom:$versions.sentry")
-    implementation "io.sentry:sentry-spring-boot-starter-jakarta"
+    // ---- Monitoring & Logging ----
     implementation "io.sentry:sentry-logback"
+    implementation "io.micrometer:micrometer-tracing"
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "io.sentry:sentry-spring-boot-starter-jakarta"
+    implementation platform("io.sentry:sentry-bom:$versions.sentry")
 
+    // ---- Core Application ----
     implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-mod-schemas:$versions.crimeCommonsModsSchemas"
-    
+
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-validation"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-    implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
 
     implementation "org.postgresql:postgresql"
     implementation "org.liquibase:liquibase-core"
 
-    implementation "io.micrometer:micrometer-registry-prometheus"
-    implementation "io.micrometer:micrometer-tracing"
-
+    // ---- Resilience4j ----
     implementation "io.github.resilience4j:resilience4j-reactor:$versions.resilience4jVersion"
     implementation "io.github.resilience4j:resilience4j-spring-boot3:$versions.resilience4jVersion"
 
+    // ---- Lombok ----
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
 
+    // ---- Testing ----
     testCompileOnly "org.projectlombok:lombok"
     testAnnotationProcessor "org.projectlombok:lombok"
 
@@ -75,12 +77,15 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.wiremock.integrations:wiremock-spring-boot:$versions.wiremock"
 
-    //  cucumber
+    //  Cucumber
     testImplementation platform("io.cucumber:cucumber-bom:$versions.cucumberVersion")
     testImplementation "io.cucumber:cucumber-java"
     testImplementation "io.cucumber:cucumber-spring"
     testImplementation "io.cucumber:cucumber-junit-platform-engine"
-    testImplementation "org.junit.platform:junit-platform-suite:$versions.jUnitPlatformSuiteVersion"
+
+    testImplementation "org.junit.platform:junit-platform-suite-api"
+    testRuntimeOnly "org.junit.platform:junit-platform-suite-engine"
+
 }
 
 configurations {
