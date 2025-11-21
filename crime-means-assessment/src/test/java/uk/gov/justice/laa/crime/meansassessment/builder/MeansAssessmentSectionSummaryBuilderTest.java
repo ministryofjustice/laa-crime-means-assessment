@@ -1,44 +1,44 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.laa.crime.enums.*;
-import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
-import uk.gov.justice.laa.crime.common.model.meansassessment.*;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLB;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITB;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_FREQUENCY;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_SECTION;
+import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_SEQ;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiFullMeansAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiGetMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiInitialMeansAssessment;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
+import uk.gov.justice.laa.crime.enums.ReviewType;
+import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
 
 @ExtendWith(SpringExtension.class)
-@Import(CrimeMeansAssessmentTestConfiguration.class)
-@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
-@AutoConfigureObservability
 class MeansAssessmentSectionSummaryBuilderTest {
 
     static final BigDecimal EXPECTED_AMOUNT = new BigDecimal("280.00");
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentSectionSummaryBuilder
             = new MeansAssessmentSectionSummaryBuilder();
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     void givenInvalidASectionAssessment_whenBuildInvoked_shouldReturnEmpty() {
@@ -218,7 +218,7 @@ class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    void givenAValidFinancialAssessment_whenBuildInitialAssessmentInvoked_shouldBuildInitialAssessment() throws Exception {
+    void givenAValidFinancialAssessment_whenBuildInitialAssessmentInvoked_shouldBuildInitialAssessment() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -235,7 +235,7 @@ class MeansAssessmentSectionSummaryBuilderTest {
         assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
         Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
         meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getInitialAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedInitAssessment));
+        assertThat(response.getInitialAssessment()).isEqualTo(expectedInitAssessment);
     }
 
     @Test
@@ -292,7 +292,7 @@ class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() throws Exception {
+    void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -309,11 +309,11 @@ class MeansAssessmentSectionSummaryBuilderTest {
         assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
         Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+        assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 
     @Test
-    void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() throws Exception {
+    void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -330,11 +330,11 @@ class MeansAssessmentSectionSummaryBuilderTest {
         assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
         Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+        assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 
     @Test
-    void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+    void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -352,7 +352,7 @@ class MeansAssessmentSectionSummaryBuilderTest {
         assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
         Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getFullAssessment())).isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+        assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 
 }
