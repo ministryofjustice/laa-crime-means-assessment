@@ -195,8 +195,12 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     }
 
     protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
-        SortUtils.sortListWithComparing(finAssIncomeEvidenceDTOList, FinAssIncomeEvidenceDTO::getMandatory,
-                FinAssIncomeEvidenceDTO::getIncomeEvidence, SortUtils.getReverseComparator()
+        SortUtils.sortListWithComparing(
+                finAssIncomeEvidenceDTOList,
+                FinAssIncomeEvidenceDTO::getMandatory,
+                SortUtils.getReverseComparator(),
+                FinAssIncomeEvidenceDTO::getIncomeEvidence,
+                SortUtils.getReverseComparator()
         );
     }
 
@@ -284,7 +288,11 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
         SortUtils.sortListWithComparing(
-                assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator()
+                assessmentDTOList,
+                AssessmentDTO::getSection,
+                SortUtils.getComparator(),
+                AssessmentDTO::getSequence,
+                SortUtils.getComparator()
         );
     }
 
