@@ -11,9 +11,9 @@ def versions = [
         sentry                       : "8.26.0",
         wiremock                     : "4.0.8",
         springdocVersion             : "2.8.14",
-        crimeCommonsClassesVersion   : "4.7.1",
+        crimeCommonsClassesVersion   : "4.10.0",
         crimeCommonsModsSchemas      : "1.36.0",
-        cucumberVersion              : "7.21.0",
+        cucumberVersion              : "7.22.2",
         jUnitPlatformSuiteVersion    : "1.14.1",
         resilience4jVersion          : "2.3.0"
 ]
@@ -23,7 +23,7 @@ group = "uk.gov.justice.laa.crime"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 

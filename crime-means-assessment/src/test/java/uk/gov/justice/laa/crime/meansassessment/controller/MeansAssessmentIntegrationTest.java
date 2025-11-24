@@ -97,21 +97,6 @@ class MeansAssessmentIntegrationTest {
                 .addFilter(springSecurityFilterChain).build();
     }
 
-    static void stubForOAuth() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> token = Map.of(
-                "expires_in", 3600,
-                "token_type", "Bearer",
-                "access_token", UUID.randomUUID()
-        );
-
-        wiremock.stubFor(post("/oauth2/token")
-                .willReturn(WireMock.ok()
-                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                        .withBody(mapper.writeValueAsString(token))));
-    }
-
-
     private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String endpointUrl, boolean withAuth) {
         return buildRequest(method, null, endpointUrl, withAuth);
     }
@@ -133,6 +118,20 @@ class MeansAssessmentIntegrationTest {
             requestBuilder.header("Authorization", "Bearer " + "token");
         }
         return requestBuilder;
+    }
+
+    private void stubForOAuth() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> token = Map.of(
+                "expires_in", 3600,
+                "token_type", "Bearer",
+                "access_token", UUID.randomUUID()
+        );
+
+        stubFor(post("/oauth2/token")
+                .willReturn(WireMock.ok()
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(mapper.writeValueAsString(token))));
     }
 
     private void stubForRoleActionAndReservationUrl() {

@@ -24,15 +24,9 @@ public class AssessmentDetailEntity {
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
-    @Column(name = "CREATED_BY", nullable = false)
-    private String createdBy;
-
     @Column(name = "DATE_CREATED", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdDateTime;
-
-    @Column(name = "MODIFIED_BY", nullable = false)
-    private String modifiedBy;
 
     @Column(name = "DATE_MODIFIED")
     @UpdateTimestamp

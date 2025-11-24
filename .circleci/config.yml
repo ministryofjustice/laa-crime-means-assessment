@@ -26,7 +26,7 @@ executors:
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
   build-executor:
     docker:
-      - image: cimg/openjdk:17.0.4
+      - image: cimg/openjdk:21.0.6
     working_directory: ~/laa-crime-means-assessment/crime-means-assessment
 
 # ------------------
