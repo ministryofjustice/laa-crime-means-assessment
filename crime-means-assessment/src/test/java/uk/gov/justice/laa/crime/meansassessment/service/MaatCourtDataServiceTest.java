@@ -1,23 +1,31 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataApiClient;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class MaatCourtDataServiceTest {
@@ -35,8 +43,8 @@ class MaatCourtDataServiceTest {
         when(maatAPIClient.createFinancialAssessment(any(MaatApiAssessmentRequest.class)))
                 .thenReturn(expected);
 
-        MaatApiAssessmentResponse response = maatCourtDataService.persistMeansAssessment(
-                new MaatApiAssessmentRequest(), RequestType.CREATE);
+        MaatApiAssessmentResponse response =
+                maatCourtDataService.persistMeansAssessment(new MaatApiAssessmentRequest(), RequestType.CREATE);
         assertThat(response).isEqualTo(expected);
     }
 
@@ -46,16 +54,15 @@ class MaatCourtDataServiceTest {
         when(maatAPIClient.updateFinancialAssessment(any(MaatApiAssessmentRequest.class)))
                 .thenReturn(expected);
 
-        MaatApiAssessmentResponse response = maatCourtDataService.persistMeansAssessment(
-                new MaatApiAssessmentRequest(), RequestType.UPDATE);
+        MaatApiAssessmentResponse response =
+                maatCourtDataService.persistMeansAssessment(new MaatApiAssessmentRequest(), RequestType.UPDATE);
         assertThat(response).isEqualTo(expected);
     }
 
     @Test
     void givenRepId_whenGetPassportAssessmentFromRepIdIsInvoked_thenResponseIsReturned() {
         PassportAssessmentDTO expected = new PassportAssessmentDTO();
-        when(maatAPIClient.getPassportAssessmentFromRepId(anyInt()))
-                .thenReturn(expected);
+        when(maatAPIClient.getPassportAssessmentFromRepId(anyInt())).thenReturn(expected);
 
         PassportAssessmentDTO response =
                 maatCourtDataService.getPassportAssessmentFromRepId(TestModelDataBuilder.TEST_REP_ID);
@@ -66,11 +73,9 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetHardshipReviewFromRepIdIsInvoked_thenResponseIsReturned() {
         HardshipReviewDTO expected = new HardshipReviewDTO();
-        when(maatAPIClient.getHardshipReviewFromRepId(anyInt()))
-                .thenReturn(expected);
+        when(maatAPIClient.getHardshipReviewFromRepId(anyInt())).thenReturn(expected);
 
-        HardshipReviewDTO response =
-                maatCourtDataService.getHardshipReviewFromRepId(TestModelDataBuilder.TEST_REP_ID);
+        HardshipReviewDTO response = maatCourtDataService.getHardshipReviewFromRepId(TestModelDataBuilder.TEST_REP_ID);
 
         assertThat(response).isEqualTo(expected);
     }
@@ -78,11 +83,9 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetIojAppealFromRepIdIsInvoked_thenResponseIsReturned() {
         IOJAppealDTO expected = new IOJAppealDTO();
-        when(maatAPIClient.getIOJAppealFromRepId(anyInt()))
-                .thenReturn(expected);
+        when(maatAPIClient.getIOJAppealFromRepId(anyInt())).thenReturn(expected);
 
-        IOJAppealDTO response =
-                maatCourtDataService.getIOJAppealFromRepId(TestModelDataBuilder.TEST_REP_ID);
+        IOJAppealDTO response = maatCourtDataService.getIOJAppealFromRepId(TestModelDataBuilder.TEST_REP_ID);
 
         assertThat(response).isEqualTo(expected);
     }
@@ -90,11 +93,9 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetFinancialAssessmentIsInvoked_thenResponseIsReturned() {
         FinancialAssessmentDTO expected = new FinancialAssessmentDTO();
-        when(maatAPIClient.getFinancialAssessment(anyInt()))
-                .thenReturn(expected);
+        when(maatAPIClient.getFinancialAssessment(anyInt())).thenReturn(expected);
 
-        FinancialAssessmentDTO response =
-                maatCourtDataService.getFinancialAssessment(TestModelDataBuilder.TEST_REP_ID);
+        FinancialAssessmentDTO response = maatCourtDataService.getFinancialAssessment(TestModelDataBuilder.TEST_REP_ID);
 
         assertThat(response).isEqualTo(expected);
     }
@@ -102,18 +103,17 @@ class MaatCourtDataServiceTest {
     @Test
     void givenRepId_whenGetRepOrderIsInvoked_thenResponseIsReturned() {
         RepOrderDTO expected = new RepOrderDTO();
-        when(maatAPIClient.getRepOrder(anyInt()))
-                .thenReturn(expected);
+        when(maatAPIClient.getRepOrder(anyInt())).thenReturn(expected);
 
-        RepOrderDTO response =
-                maatCourtDataService.getRepOrder(TestModelDataBuilder.TEST_REP_ID);
+        RepOrderDTO response = maatCourtDataService.getRepOrder(TestModelDataBuilder.TEST_REP_ID);
 
         assertThat(response).isEqualTo(expected);
     }
 
     @Test
     void givenDateCompletionRequest_whenUpdateCompletionDateIsInvoked_thenResponseIsReturned() {
-        maatCourtDataService.updateCompletionDate(DateCompletionRequestDTO.builder().build());
+        maatCourtDataService.updateCompletionDate(
+                DateCompletionRequestDTO.builder().build());
         verify(maatAPIClient).updateCompletionDate(any(DateCompletionRequestDTO.class));
     }
 
@@ -122,5 +122,4 @@ class MaatCourtDataServiceTest {
         maatCourtDataService.rollbackFinancialAssessment(TestModelDataBuilder.TEST_REP_ID, Map.of());
         verify(maatAPIClient).patchFinancialAssessment(anyMap(), anyInt());
     }
-
 }

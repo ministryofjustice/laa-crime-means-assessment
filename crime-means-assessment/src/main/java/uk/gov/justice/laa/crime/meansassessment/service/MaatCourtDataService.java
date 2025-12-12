@@ -2,14 +2,20 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataApiClient;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +26,8 @@ public class MaatCourtDataService {
 
     private final MaatCourtDataApiClient maatCourtDataApiClient;
 
-    public MaatApiAssessmentResponse persistMeansAssessment(MaatApiAssessmentRequest assessment,
-                                                            RequestType requestType) {
+    public MaatApiAssessmentResponse persistMeansAssessment(
+            MaatApiAssessmentRequest assessment, RequestType requestType) {
         log.debug("Request to persist means assessment detail : {}", assessment);
         MaatApiAssessmentResponse response;
         if (RequestType.CREATE.equals(requestType)) {

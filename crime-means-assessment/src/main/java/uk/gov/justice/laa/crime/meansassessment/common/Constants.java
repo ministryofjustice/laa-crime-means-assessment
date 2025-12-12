@@ -5,6 +5,7 @@ public class Constants {
     private Constants() {
         throw new IllegalStateException("Constants class");
     }
+
     public static final String URIVAR_USERNAME = "username";
     public static final String URIVAR_REP_ID = "repId";
     public static final String URIVAR_RESERVATION_ID = "reservationId";

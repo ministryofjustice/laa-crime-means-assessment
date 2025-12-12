@@ -1,23 +1,22 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentResponse;
-import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class MeansAssessmentResponseBuilderTest {
 
-    private final MeansAssessmentResponseBuilder responseBuilder =
-            new MeansAssessmentResponseBuilder();
-    private final AssessmentCriteriaEntity assessmentCriteria =
-            TestModelDataBuilder.getAssessmentCriteriaEntity();
+    private final MeansAssessmentResponseBuilder responseBuilder = new MeansAssessmentResponseBuilder();
+    private final AssessmentCriteriaEntity assessmentCriteria = TestModelDataBuilder.getAssessmentCriteriaEntity();
     private MeansAssessmentDTO completedAssessment;
     private MaatApiAssessmentResponse maatApiAssessmentResponse;
 
@@ -29,24 +28,16 @@ class MeansAssessmentResponseBuilderTest {
 
     private void checkCommonFieldsPopulated(ApiMeansAssessmentResponse response) {
         SoftAssertions.assertSoftly(softly -> {
-            assertThat(response.getAssessmentId())
-                    .isEqualTo(maatApiAssessmentResponse.getId());
+            assertThat(response.getAssessmentId()).isEqualTo(maatApiAssessmentResponse.getId());
             assertThat(response.getRepId())
                     .isEqualTo(completedAssessment.getMeansAssessment().getRepId());
-            assertThat(response.getCriteriaId())
-                    .isEqualTo(assessmentCriteria.getId());
-            assertThat(response.getLowerThreshold())
-                    .isEqualTo(assessmentCriteria.getInitialLowerThreshold());
-            assertThat(response.getUpperThreshold())
-                    .isEqualTo(assessmentCriteria.getInitialUpperThreshold());
-            assertThat(response.getTotalAggregatedIncome())
-                    .isEqualTo(completedAssessment.getTotalAggregatedIncome());
-            assertThat(response.getInitResult())
-                    .isEqualTo(maatApiAssessmentResponse.getInitResult());
-            assertThat(response.getInitResultReason())
-                    .isEqualTo(maatApiAssessmentResponse.getInitResultReason());
-            assertThat(response.getAdjustedIncomeValue())
-                    .isEqualTo(completedAssessment.getAdjustedIncomeValue());
+            assertThat(response.getCriteriaId()).isEqualTo(assessmentCriteria.getId());
+            assertThat(response.getLowerThreshold()).isEqualTo(assessmentCriteria.getInitialLowerThreshold());
+            assertThat(response.getUpperThreshold()).isEqualTo(assessmentCriteria.getInitialUpperThreshold());
+            assertThat(response.getTotalAggregatedIncome()).isEqualTo(completedAssessment.getTotalAggregatedIncome());
+            assertThat(response.getInitResult()).isEqualTo(maatApiAssessmentResponse.getInitResult());
+            assertThat(response.getInitResultReason()).isEqualTo(maatApiAssessmentResponse.getInitResultReason());
+            assertThat(response.getAdjustedIncomeValue()).isEqualTo(completedAssessment.getAdjustedIncomeValue());
             assertThat(response.getAssessmentSectionSummary())
                     .isEqualTo(completedAssessment.getMeansAssessment().getSectionSummaries());
             assertThat(response.getDateCompleted()).isEqualTo(maatApiAssessmentResponse.getDateCompleted());
@@ -75,10 +66,8 @@ class MeansAssessmentResponseBuilderTest {
                     .isEqualTo(completedAssessment.getAdjustedLivingAllowance());
             assertThat(response.getTotalAnnualDisposableIncome())
                     .isEqualTo(completedAssessment.getTotalAnnualDisposableIncome());
-            assertThat(response.getFullThreshold())
-                    .isEqualTo(assessmentCriteria.getFullThreshold());
-            assertThat(response.getTotalAggregatedExpense())
-                    .isEqualTo(completedAssessment.getTotalAggregatedExpense());
+            assertThat(response.getFullThreshold()).isEqualTo(assessmentCriteria.getFullThreshold());
+            assertThat(response.getTotalAggregatedExpense()).isEqualTo(completedAssessment.getTotalAggregatedExpense());
             assertThat(response.getFullResult())
                     .isEqualTo(completedAssessment.getFullAssessmentResult().getResult());
             assertThat(response.getFullResultReason())
@@ -86,6 +75,5 @@ class MeansAssessmentResponseBuilderTest {
             assertThat(response.getChildWeightings())
                     .isNotEqualTo(completedAssessment.getMeansAssessment().getChildWeightings());
         });
-
     }
 }

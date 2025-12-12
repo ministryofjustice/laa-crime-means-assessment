@@ -21,5 +21,4 @@ public class AssessmentCriteriaNotFoundException extends RuntimeException implem
     public AssessmentCriteriaNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

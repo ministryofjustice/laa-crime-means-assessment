@@ -1,16 +1,14 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
+
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiRequest;
@@ -21,7 +19,12 @@ import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
 import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
 import uk.gov.justice.laa.crime.enums.meansassessment.OutgoingType;
 import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
-import uk.gov.justice.laa.crime.meansassessment.*;
+import uk.gov.justice.laa.crime.meansassessment.DependantChild;
+import uk.gov.justice.laa.crime.meansassessment.FrequencyAmount;
+import uk.gov.justice.laa.crime.meansassessment.Income;
+import uk.gov.justice.laa.crime.meansassessment.Outgoing;
+import uk.gov.justice.laa.crime.meansassessment.StatelessFullResult;
+import uk.gov.justice.laa.crime.meansassessment.StatelessInitialResult;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.service.AssessmentCriteriaService;
 import uk.gov.justice.laa.crime.meansassessment.service.stateless.StatelessAssessmentService;
@@ -33,21 +36,30 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(StatelessMeansAssessmentController.class)
 class StatelessMeansAssessmentControllerTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
-    private static final ApiMeansAssessmentRequest testRequest = TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
+    private static final ApiMeansAssessmentRequest testRequest =
+            TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
     private static final DependantChild childOne = new DependantChild(AgeRange.ZERO_TO_ONE, 2);
     private static final DependantChild childTwo = new DependantChild(AgeRange.FIVE_TO_SEVEN, 1);
-    private static final FrequencyAmount incomeAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(2700));
+    private static final FrequencyAmount incomeAmount =
+            new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(2700));
     private static final FrequencyAmount outAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(100));
 
     @Autowired
@@ -76,8 +88,14 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var initialResult = new StatelessResult(
-                null, new StatelessInitialResult(InitAssessmentResult.PASS,
-                BigDecimal.ZERO, BigDecimal.ONE, false, BigDecimal.TEN, BigDecimal.ZERO));
+                null,
+                new StatelessInitialResult(
+                        InitAssessmentResult.PASS,
+                        BigDecimal.ZERO,
+                        BigDecimal.ONE,
+                        false,
+                        BigDecimal.TEN,
+                        BigDecimal.ZERO));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(initialResult);
@@ -99,9 +117,15 @@ class StatelessMeansAssessmentControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
         var fullResult = new StatelessResult(
-                new StatelessFullResult(FullAssessmentResult.PASS, BigDecimal.ONE,
-                        BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ONE),
-                new StatelessInitialResult(InitAssessmentResult.PASS, BigDecimal.ZERO, BigDecimal.ONE, true, BigDecimal.ZERO, BigDecimal.ONE));
+                new StatelessFullResult(
+                        FullAssessmentResult.PASS, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ONE),
+                new StatelessInitialResult(
+                        InitAssessmentResult.PASS,
+                        BigDecimal.ZERO,
+                        BigDecimal.ONE,
+                        true,
+                        BigDecimal.ZERO,
+                        BigDecimal.ONE));
 
         when(statelessAssessmentService.execute(any(Assessment.class), anyMap(), anyList(), anyList()))
                 .thenReturn(fullResult);
@@ -137,11 +161,13 @@ class StatelessMeansAssessmentControllerTest {
 
     private static List<Income> buildIncomes() {
         return Arrays.stream(IncomeType.values())
-                .map(incomeType -> new Income(incomeType, incomeAmount, incomeAmount)).toList();
+                .map(incomeType -> new Income(incomeType, incomeAmount, incomeAmount))
+                .toList();
     }
 
     private static List<Outgoing> buildOutgoings() {
         return Arrays.stream(OutgoingType.values())
-                .map(incomeType -> new Outgoing(incomeType, outAmount, outAmount)).toList();
+                .map(incomeType -> new Outgoing(incomeType, outAmount, outAmount))
+                .toList();
     }
 }

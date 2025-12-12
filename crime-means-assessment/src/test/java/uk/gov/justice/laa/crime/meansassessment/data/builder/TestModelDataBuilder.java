@@ -1,8 +1,22 @@
 package uk.gov.justice.laa.crime.meansassessment.data.builder;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.common.model.common.ApiUserSession;
-import uk.gov.justice.laa.crime.common.model.meansassessment.*;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentChildWeighting;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentStatus;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiCreateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiCrownCourtOverview;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiCrownCourtSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiFullMeansAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidence;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidenceSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiInitialMeansAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiNewWorkReason;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiReviewType;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiUpdateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.enums.CaseType;
@@ -37,6 +51,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class TestModelDataBuilder {
@@ -85,18 +101,14 @@ public class TestModelDataBuilder {
     public static final CurrentStatus TEST_ASSESSMENT_STATUS = CurrentStatus.COMPLETE;
 
     public static final int APPLICANT_ID = 12;
-    public static final LocalDateTime TEST_INCOME_UPLIFT_APPLY_DATE =
-            LocalDateTime.of(2021, 12, 12, 0, 0, 0);
+    public static final LocalDateTime TEST_INCOME_UPLIFT_APPLY_DATE = LocalDateTime.of(2021, 12, 12, 0, 0, 0);
 
-    public static final LocalDateTime TEST_INCOME_UPLIFT_REMOVE_DATE =
-            TEST_INCOME_UPLIFT_APPLY_DATE.plusDays(10);
+    public static final LocalDateTime TEST_INCOME_UPLIFT_REMOVE_DATE = TEST_INCOME_UPLIFT_APPLY_DATE.plusDays(10);
 
-    public static final LocalDateTime TEST_INCOME_EVIDENCE_DUE_DATE =
-            LocalDateTime.of(2020, 10, 5, 0, 0, 0);
+    public static final LocalDateTime TEST_INCOME_EVIDENCE_DUE_DATE = LocalDateTime.of(2020, 10, 5, 0, 0, 0);
 
     public static final LocalDateTime TEST_MAGS_OUTCOME_DATE = LocalDateTime.of(2022, 6, 5, 0, 0);
-    public static final LocalDateTime TEST_DATE_CREATED =
-            LocalDateTime.of(2021, 10, 9, 15, 1, 25);
+    public static final LocalDateTime TEST_DATE_CREATED = LocalDateTime.of(2021, 10, 9, 15, 1, 25);
     public static final LocalDateTime ASSESSMENT_DATE = LocalDateTime.of(2021, 10, 9, 15, 1, 25);
 
     public static final BigDecimal TEST_DISPOSABLE_INCOME = BigDecimal.valueOf(4000d);
@@ -106,7 +118,7 @@ public class TestModelDataBuilder {
     public static final BigDecimal TEST_AGGREGATED_INCOME = BigDecimal.valueOf(12000d);
     public static final BigDecimal TEST_ADJUSTED_INCOME = BigDecimal.valueOf(20000d);
 
-    //create means assessment
+    // create means assessment
     public static final Integer TEST_REP_ID = 42312;
     public static final int MEANS_ASSESSMENT_ID = 1000;
 
@@ -123,7 +135,8 @@ public class TestModelDataBuilder {
     public static final String TEST_DATE_STRING = "2022-10-08";
     private static final Integer TEST_FINANCIAL_ASSESSMENT_ID = 63423;
 
-    public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(BigDecimal[] weightingFactors) {
+    public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithChildWeightings(
+            BigDecimal[] weightingFactors) {
         var criteria = getAssessmentCriteriaEntity();
         var weighting1 = getAssessmentCriteriaChildWeightingEntityWithId(37);
         weighting1.setWeightingFactor(weightingFactors[0]);
@@ -135,9 +148,7 @@ public class TestModelDataBuilder {
 
     public static AssessmentCriteriaEntity getAssessmentCriteriaEntityWithDetails() {
         var criteria = getAssessmentCriteriaEntity();
-        criteria.setAssessmentCriteriaDetails(
-                Set.of(getAssessmentCriteriaDetailEntityWithId())
-        );
+        criteria.setAssessmentCriteriaDetails(Set.of(getAssessmentCriteriaDetailEntityWithId()));
         return criteria;
     }
 
@@ -242,10 +253,7 @@ public class TestModelDataBuilder {
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
-                                new ApiCrownCourtSummary()
-                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
-                        )
-                )
+                                new ApiCrownCourtSummary().withRepOrderDecision("MOCK_REP_ORDER_DECISION")))
                 .withMagCourtOutcome(MagCourtOutcome.COMMITTED_FOR_TRIAL)
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
@@ -271,10 +279,7 @@ public class TestModelDataBuilder {
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
-                                new ApiCrownCourtSummary()
-                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
-                        )
-                )
+                                new ApiCrownCourtSummary().withRepOrderDecision("MOCK_REP_ORDER_DECISION")))
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
@@ -300,10 +305,7 @@ public class TestModelDataBuilder {
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
-                                new ApiCrownCourtSummary()
-                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
-                        )
-                )
+                                new ApiCrownCourtSummary().withRepOrderDecision("MOCK_REP_ORDER_DECISION")))
                 .withSectionSummaries(List.of(getApiAssessmentSectionSummary()));
     }
 
@@ -342,17 +344,13 @@ public class TestModelDataBuilder {
                 .withMandatory("Y")
                 .withOtherText("Other text")
                 .withDateModified(LocalDateTime.of(2021, 12, 11, 10, 0))
-                .withDateReceived(TEST_DATE_CREATED)
-        );
+                .withDateReceived(TEST_DATE_CREATED));
     }
 
     public static ApiCrownCourtOverview getApiCrownCourtOverview() {
         return new ApiCrownCourtOverview()
                 .withAvailable(true)
-                .withCrownCourtSummary(
-                        new ApiCrownCourtSummary()
-                                .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
-                );
+                .withCrownCourtSummary(new ApiCrownCourtSummary().withRepOrderDecision("MOCK_REP_ORDER_DECISION"));
     }
 
     public static ApiIncomeEvidenceSummary getApiIncomeEvidenceSummary() {
@@ -385,33 +383,22 @@ public class TestModelDataBuilder {
                 .withAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
                 .withPartnerAnnualTotal(BigDecimal.ZERO)
                 .withSection("INITA")
-                .withAssessmentDetails(
-                        new ArrayList<>(
-                                List.of(
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
-                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
-                                )
-                        )
-                );
+                .withAssessmentDetails(new ArrayList<>(List.of(new ApiAssessmentDetail()
+                        .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
+                        .withApplicantAmount(TEST_APPLICANT_VALUE)
+                        .withApplicantFrequency(TEST_FREQUENCY))));
     }
 
     public static List<ApiAssessmentSectionSummary> getAssessmentSummaries() {
         ApiAssessmentSectionSummary section = getApiAssessmentSectionSummary();
-        return List.of(section, new ApiAssessmentSectionSummary()
-                .withSection("INITB")
-                .withAssessmentDetails(
-                        new ArrayList<>(
-                                List.of(
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(142)
-                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
-                                )
-                        )
-                )
-        );
+        return List.of(
+                section,
+                new ApiAssessmentSectionSummary()
+                        .withSection("INITB")
+                        .withAssessmentDetails(new ArrayList<>(List.of(new ApiAssessmentDetail()
+                                .withCriteriaDetailId(142)
+                                .withApplicantAmount(TEST_APPLICANT_VALUE)
+                                .withApplicantFrequency(TEST_FREQUENCY)))));
     }
 
     public static ApiUserSession getUserSession() {
@@ -425,13 +412,11 @@ public class TestModelDataBuilder {
                 new ApiAssessmentChildWeighting()
                         .withId(1234)
                         .withChildWeightingId(37)
-                        .withNoOfChildren(1)
-                ,
+                        .withNoOfChildren(1),
                 new ApiAssessmentChildWeighting()
                         .withId(2345)
                         .withChildWeightingId(38)
-                        .withNoOfChildren(2)
-        );
+                        .withNoOfChildren(2));
     }
 
     public static ApiMeansAssessmentResponse getInitMeansAssessmentResponse(boolean isValid) {
@@ -464,8 +449,7 @@ public class TestModelDataBuilder {
         return List.of(new ApiAssessmentSectionSummary()
                 .withApplicantAnnualTotal(BigDecimal.valueOf(14))
                 .withAnnualTotal(isValid ? BigDecimal.valueOf(15) : null)
-                .withAssessmentDetails(getApiAssessmentDetails())
-        );
+                .withAssessmentDetails(getApiAssessmentDetails()));
     }
 
     public static List<ApiAssessmentDetail> getApiAssessmentDetails(boolean withPartner) {
@@ -476,9 +460,7 @@ public class TestModelDataBuilder {
                 .withApplicantFrequency(TEST_FREQUENCY);
 
         if (withPartner) {
-            assessmentDetail
-                    .withPartnerAmount(TEST_PARTNER_VALUE)
-                    .withPartnerFrequency(TEST_FREQUENCY);
+            assessmentDetail.withPartnerAmount(TEST_PARTNER_VALUE).withPartnerFrequency(TEST_FREQUENCY);
         }
         return List.of(assessmentDetail);
     }
@@ -524,13 +506,9 @@ public class TestModelDataBuilder {
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
-                                new ApiCrownCourtSummary()
-                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
-                        )
-                )
+                                new ApiCrownCourtSummary().withRepOrderDecision("MOCK_REP_ORDER_DECISION")))
                 .withSectionSummaries(List.of(getAssessmentSectionSummary(Section.INITB.name(), AssessmentType.INIT)));
     }
-
 
     public static ApiUpdateMeansAssessmentRequest getUpdateMeansAssessmentRequest(boolean isValid) {
         return new ApiUpdateMeansAssessmentRequest()
@@ -554,58 +532,33 @@ public class TestModelDataBuilder {
                 .withCrownCourtOverview(new ApiCrownCourtOverview()
                         .withAvailable(true)
                         .withCrownCourtSummary(
-                                new ApiCrownCourtSummary()
-                                        .withRepOrderDecision("MOCK_REP_ORDER_DECISION")
-                        )
-                )
+                                new ApiCrownCourtSummary().withRepOrderDecision("MOCK_REP_ORDER_DECISION")))
                 .withSectionSummaries(List.of(getAssessmentSectionSummary(Section.INITB.name(), AssessmentType.INIT)));
     }
 
-
-    public static ApiAssessmentSectionSummary getAssessmentSectionSummary(String section, AssessmentType assessmentType) {
+    public static ApiAssessmentSectionSummary getAssessmentSectionSummary(
+            String section, AssessmentType assessmentType) {
         return new ApiAssessmentSectionSummary()
                 .withApplicantAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
                 .withAnnualTotal(TEST_APPLICANT_ANNUAL_TOTAL)
                 .withPartnerAnnualTotal(BigDecimal.ZERO)
                 .withSection(section)
                 .withAssessmentType(assessmentType)
-                .withAssessmentDetails(
-                        new ArrayList<>(
-                                List.of(
-                                        new ApiAssessmentDetail()
-                                                .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
-                                                .withApplicantAmount(TEST_APPLICANT_VALUE)
-                                                .withApplicantFrequency(TEST_FREQUENCY)
-                                )
-                        )
-                );
+                .withAssessmentDetails(new ArrayList<>(List.of(new ApiAssessmentDetail()
+                        .withCriteriaDetailId(TEST_CRITERIA_DETAIL_ID)
+                        .withApplicantAmount(TEST_APPLICANT_VALUE)
+                        .withApplicantFrequency(TEST_FREQUENCY))));
     }
 
     public static List<ApiAssessmentChildWeighting> getListOfAssessmentChildWeightings() {
         return List.of(
-                new ApiAssessmentChildWeighting()
-                        .withChildWeightingId(37)
-                        .withNoOfChildren(1)
-                ,
-                new ApiAssessmentChildWeighting()
-                        .withChildWeightingId(38)
-                        .withNoOfChildren(2),
-                new ApiAssessmentChildWeighting()
-                        .withChildWeightingId(39)
-                        .withNoOfChildren(2),
-                new ApiAssessmentChildWeighting()
-                        .withChildWeightingId(40)
-                        .withNoOfChildren(2),
-                new ApiAssessmentChildWeighting()
-                        .withChildWeightingId(41)
-                        .withNoOfChildren(2),
-                new ApiAssessmentChildWeighting()
-                        .withChildWeightingId(42)
-                        .withNoOfChildren(2),
-                new ApiAssessmentChildWeighting()
-                        .withChildWeightingId(43)
-                        .withNoOfChildren(2)
-        );
+                new ApiAssessmentChildWeighting().withChildWeightingId(37).withNoOfChildren(1),
+                new ApiAssessmentChildWeighting().withChildWeightingId(38).withNoOfChildren(2),
+                new ApiAssessmentChildWeighting().withChildWeightingId(39).withNoOfChildren(2),
+                new ApiAssessmentChildWeighting().withChildWeightingId(40).withNoOfChildren(2),
+                new ApiAssessmentChildWeighting().withChildWeightingId(41).withNoOfChildren(2),
+                new ApiAssessmentChildWeighting().withChildWeightingId(42).withNoOfChildren(2),
+                new ApiAssessmentChildWeighting().withChildWeightingId(43).withNoOfChildren(2));
     }
 
     public static FinancialAssessmentDTO getFinancialAssessmentDTOWithChildWeightings() {
@@ -622,7 +575,6 @@ public class TestModelDataBuilder {
         childWeightings.setId(1234);
         childWeightingsList.add(childWeightings);
         return childWeightingsList;
-
     }
 
     public static FinancialAssessmentDTO getFinancialAssessmentDTOWithDetails() {
@@ -658,12 +610,15 @@ public class TestModelDataBuilder {
                 .seq(TEST_SEQ)
                 .createdDateTime(LocalDateTime.now())
                 .modifiedDateTime(LocalDateTime.now())
-                .assessmentDetail(AssessmentDetailEntity.builder().detailCode(TEST_DETAIL_CODE).build())
+                .assessmentDetail(AssessmentDetailEntity.builder()
+                        .detailCode(TEST_DETAIL_CODE)
+                        .build())
                 .build();
     }
 
     public static AssessmentDTO getAssessmentDTO(String section, Integer sequence) {
-        return AssessmentDTO.builder().applicantAmount(BigDecimal.valueOf(10.00))
+        return AssessmentDTO.builder()
+                .applicantAmount(BigDecimal.valueOf(10.00))
                 .applicantFrequency(Frequency.MONTHLY)
                 .partnerAmount(BigDecimal.valueOf(20.00))
                 .partnerFrequency(Frequency.ANNUALLY)
@@ -671,7 +626,8 @@ public class TestModelDataBuilder {
                 .dateModified(LocalDateTime.now())
                 .section(section)
                 .sequence(sequence)
-                .criteriaDetailDescription(TEST_DESCRIPTION).build();
+                .criteriaDetailDescription(TEST_DESCRIPTION)
+                .build();
     }
 
     public static List<FinancialAssessmentDetails> getAssessmentDetails() {
@@ -690,8 +646,7 @@ public class TestModelDataBuilder {
                         .applicantFrequency(Frequency.ANNUALLY)
                         .partnerAmount(BigDecimal.valueOf(10.00))
                         .partnerFrequency(Frequency.ANNUALLY)
-                        .build()
-        );
+                        .build());
     }
 
     public static FinancialAssessmentDetails getAssessmentDetailsWithoutList() {
@@ -743,9 +698,7 @@ public class TestModelDataBuilder {
     }
 
     public static ApplicantDTO getApplicantDTO() {
-        return ApplicantDTO.builder()
-                .id(APPLICANT_ID)
-                .build();
+        return ApplicantDTO.builder().id(APPLICANT_ID).build();
     }
 
     public static FinancialAssessmentDTO getFinancialAssessmentDTOWithIncomeEvidence() {
@@ -756,7 +709,8 @@ public class TestModelDataBuilder {
         return financialAssessment;
     }
 
-    public static FinancialAssessmentDTO getFinancialAssessmentDTO(String status, String newWorkReason, String reviewType) {
+    public static FinancialAssessmentDTO getFinancialAssessmentDTO(
+            String status, String newWorkReason, String reviewType) {
         return FinancialAssessmentDTO.builder()
                 .id(TEST_FINANCIAL_ASSESSMENT_ID)
                 .cmuId(CMU_ID)
@@ -795,8 +749,8 @@ public class TestModelDataBuilder {
                 .build();
     }
 
-    public static ApiInitialMeansAssessment getApiInitialMeansAssessment(CurrentStatus currentStatus, NewWorkReason newWorkReason,
-                                                                         ReviewType reviewType) {
+    public static ApiInitialMeansAssessment getApiInitialMeansAssessment(
+            CurrentStatus currentStatus, NewWorkReason newWorkReason, ReviewType reviewType) {
         ApiInitialMeansAssessment apiInitialMeansAssessment = new ApiInitialMeansAssessment();
         apiInitialMeansAssessment.setId(TEST_CRITERIA_ID);
         apiInitialMeansAssessment.setAssessmentDate(LocalDateTime.parse("2021-10-09T15:02:25"));
@@ -854,5 +808,4 @@ public class TestModelDataBuilder {
         }
         return apiFullMeansAssessment;
     }
-
 }

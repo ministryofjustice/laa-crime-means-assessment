@@ -10,7 +10,8 @@ public final class SortUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static <T, U extends Comparable> void sortListWithComparing(List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc, Comparator<U> comparator) {
+    public static <T, U extends Comparable> void sortListWithComparing(
+            List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc, Comparator<U> comparator) {
         if (t != null) {
             t.sort(Comparator.comparing(compFunction, comparator).thenComparing(thenCompFunc, comparator));
         }

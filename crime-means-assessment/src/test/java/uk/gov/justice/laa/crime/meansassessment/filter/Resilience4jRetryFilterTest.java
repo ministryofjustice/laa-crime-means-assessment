@@ -1,9 +1,17 @@
 package uk.gov.justice.laa.crime.meansassessment.filter;
 
+import static org.mockito.Mockito.when;
+
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.InjectSoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -15,14 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.reactive.function.client.*;
-import reactor.core.publisher.Mono;
-
-import java.net.URI;
-import java.util.Arrays;
-import java.util.LinkedList;
-
-import static org.mockito.Mockito.when;
+import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.ExchangeFunction;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -44,11 +49,11 @@ class Resilience4jRetryFilterTest {
     void setupConfiguration() {
         RetryConfig retryConfig = RetryConfig.custom()
                 .maxAttempts(NUM_RETRIES)
-                .retryExceptions(WebClientRequestException.class,
-                                 WebClientResponseException.BadGateway.class,
-                                 WebClientResponseException.TooManyRequests.class,
-                                 WebClientResponseException.NotFound.class
-                )
+                .retryExceptions(
+                        WebClientRequestException.class,
+                        WebClientResponseException.BadGateway.class,
+                        WebClientResponseException.TooManyRequests.class,
+                        WebClientResponseException.NotFound.class)
                 .failAfterMaxAttempts(true)
                 .build();
         retryRegistry = RetryRegistry.of(retryConfig);
@@ -56,25 +61,21 @@ class Resilience4jRetryFilterTest {
 
     @Test
     void givenRetriesExhausted_whenRetryFilterIsInvoked_thenFinalExceptionIsThrown() {
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
-        LinkedList<RuntimeException> errors = new LinkedList<>(
-                Arrays.asList(getWebClientResponseException(HttpStatus.NOT_FOUND),
-                              getWebClientResponseException(HttpStatus.TOO_MANY_REQUESTS),
-                              getWebClientResponseException(HttpStatus.BAD_GATEWAY)
-                )
-        );
+        ClientRequest request =
+                ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
+        LinkedList<RuntimeException> errors = new LinkedList<>(Arrays.asList(
+                getWebClientResponseException(HttpStatus.NOT_FOUND),
+                getWebClientResponseException(HttpStatus.TOO_MANY_REQUESTS),
+                getWebClientResponseException(HttpStatus.BAD_GATEWAY)));
         Mono<ClientResponse> errorMono = getClientResponseMono(errors);
 
-        when(exchangeFunction.exchange(request))
-                .thenReturn(errorMono);
+        when(exchangeFunction.exchange(request)).thenReturn(errorMono);
 
         Mono<ClientResponse> response =
-                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME)
-                        .filter(request, exchangeFunction);
+                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME).filter(request, exchangeFunction);
 
-        softly.assertThatThrownBy(
-                        response::block
-                ).isInstanceOf(WebClientResponseException.BadGateway.class)
+        softly.assertThatThrownBy(response::block)
+                .isInstanceOf(WebClientResponseException.BadGateway.class)
                 .hasMessageContaining("502 Bad Gateway");
 
         verifyCorrectNumberOfCalls(NUM_RETRIES, DEFAULT_CONFIG_NAME);
@@ -83,15 +84,15 @@ class Resilience4jRetryFilterTest {
 
     @Test
     void givenSuccessfulResponseWithoutRetry_whenRetryFilterIsInvoked_thenOkResponseIsReturned() {
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
-        Mono<ClientResponse> responseMono = Mono.just(ClientResponse.create(HttpStatus.OK).build());
+        ClientRequest request =
+                ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
+        Mono<ClientResponse> responseMono =
+                Mono.just(ClientResponse.create(HttpStatus.OK).build());
 
-        when(exchangeFunction.exchange(request))
-                .thenReturn(responseMono);
+        when(exchangeFunction.exchange(request)).thenReturn(responseMono);
 
         Mono<ClientResponse> clientResponse =
-                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME)
-                        .filter(request, exchangeFunction);
+                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME).filter(request, exchangeFunction);
 
         ClientResponse response = clientResponse.block();
 
@@ -102,22 +103,18 @@ class Resilience4jRetryFilterTest {
 
     @Test
     void givenSuccessfulResponseFollowingRetry_whenRetryFilterIsInvoked_thenOkResponseIsReturned() {
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
-        LinkedList<RuntimeException> errors = new LinkedList<>(
-                Arrays.asList(getWebClientResponseException(HttpStatus.TOO_MANY_REQUESTS),
-                              getWebClientResponseException(HttpStatus.BAD_GATEWAY)
-                )
-        );
+        ClientRequest request =
+                ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
+        LinkedList<RuntimeException> errors = new LinkedList<>(Arrays.asList(
+                getWebClientResponseException(HttpStatus.TOO_MANY_REQUESTS),
+                getWebClientResponseException(HttpStatus.BAD_GATEWAY)));
 
-        Mono<ClientResponse> responseMono =
-                getClientResponseMono(errors);
+        Mono<ClientResponse> responseMono = getClientResponseMono(errors);
 
-        when(exchangeFunction.exchange(request))
-                .thenReturn(responseMono);
+        when(exchangeFunction.exchange(request)).thenReturn(responseMono);
 
         Mono<ClientResponse> clientResponse =
-                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME)
-                        .filter(request, exchangeFunction);
+                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME).filter(request, exchangeFunction);
 
         ClientResponse response = clientResponse.block();
 
@@ -134,18 +131,17 @@ class Resilience4jRetryFilterTest {
 
     @Test
     void givenUnRetryableException_whenRetryFilterIsInvoked_thenNoRetriesAreAttempted() {
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
+        ClientRequest request =
+                ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
 
         when(exchangeFunction.exchange(request))
                 .thenReturn(Mono.error(getWebClientResponseException(HttpStatus.UNAUTHORIZED)));
 
         Mono<ClientResponse> response =
-                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME)
-                        .filter(request, exchangeFunction);
+                new Resilience4jRetryFilter(retryRegistry, DEFAULT_CONFIG_NAME).filter(request, exchangeFunction);
 
-        softly.assertThatThrownBy(
-                        response::block
-                ).isInstanceOf(WebClientResponseException.class)
+        softly.assertThatThrownBy(response::block)
+                .isInstanceOf(WebClientResponseException.class)
                 .hasMessageContaining("401 Unauthorized");
 
         verifyCorrectNumberOfCalls(1, DEFAULT_CONFIG_NAME);
@@ -161,27 +157,23 @@ class Resilience4jRetryFilterTest {
                 .build();
         retryRegistry.retry("override", retryConfig);
 
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
+        ClientRequest request =
+                ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
 
-        LinkedList<RuntimeException> errors = new LinkedList<>(
-                Arrays.asList(getWebClientResponseException(HttpStatus.CONFLICT),
-                              getWebClientResponseException(HttpStatus.CONFLICT),
-                              getWebClientResponseException(HttpStatus.CONFLICT)
-                )
-        );
+        LinkedList<RuntimeException> errors = new LinkedList<>(Arrays.asList(
+                getWebClientResponseException(HttpStatus.CONFLICT),
+                getWebClientResponseException(HttpStatus.CONFLICT),
+                getWebClientResponseException(HttpStatus.CONFLICT)));
 
         Mono<ClientResponse> errorMono = getClientResponseMono(errors);
 
-        when(exchangeFunction.exchange(request))
-                .thenReturn(errorMono);
+        when(exchangeFunction.exchange(request)).thenReturn(errorMono);
 
         Mono<ClientResponse> response =
-                new Resilience4jRetryFilter(retryRegistry, "override")
-                        .filter(request, exchangeFunction);
+                new Resilience4jRetryFilter(retryRegistry, "override").filter(request, exchangeFunction);
 
-        softly.assertThatThrownBy(
-                        response::block
-                ).isInstanceOf(WebClientResponseException.Conflict.class)
+        softly.assertThatThrownBy(response::block)
+                .isInstanceOf(WebClientResponseException.Conflict.class)
                 .hasMessageContaining("409 Conflict");
 
         verifyCorrectNumberOfCalls(2, "override");
@@ -190,27 +182,23 @@ class Resilience4jRetryFilterTest {
 
     @Test
     void givenMissingOverrideConfiguration_whenRetryFilterIsInvoked_thenDefaultConfigurationIsApplied() {
-        ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
+        ClientRequest request =
+                ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
 
-        LinkedList<RuntimeException> errors = new LinkedList<>(
-                Arrays.asList(getWebClientResponseException(HttpStatus.BAD_GATEWAY),
-                              getWebClientResponseException(HttpStatus.CONFLICT),
-                              getWebClientResponseException(HttpStatus.TOO_MANY_REQUESTS)
-                )
-        );
+        LinkedList<RuntimeException> errors = new LinkedList<>(Arrays.asList(
+                getWebClientResponseException(HttpStatus.BAD_GATEWAY),
+                getWebClientResponseException(HttpStatus.CONFLICT),
+                getWebClientResponseException(HttpStatus.TOO_MANY_REQUESTS)));
 
         Mono<ClientResponse> errorMono = getClientResponseMono(errors);
 
-        when(exchangeFunction.exchange(request))
-                .thenReturn(errorMono);
+        when(exchangeFunction.exchange(request)).thenReturn(errorMono);
 
         Mono<ClientResponse> response =
-                new Resilience4jRetryFilter(retryRegistry, "override")
-                        .filter(request, exchangeFunction);
+                new Resilience4jRetryFilter(retryRegistry, "override").filter(request, exchangeFunction);
 
-        softly.assertThatThrownBy(
-                        response::block
-                ).isInstanceOf(WebClientResponseException.Conflict.class)
+        softly.assertThatThrownBy(response::block)
+                .isInstanceOf(WebClientResponseException.Conflict.class)
                 .hasMessageContaining("409 Conflict");
 
         verifyCorrectNumberOfCalls(2, DEFAULT_CONFIG_NAME);
@@ -219,24 +207,17 @@ class Resilience4jRetryFilterTest {
 
     private static WebClientResponseException getWebClientResponseException(HttpStatus status) {
         return WebClientResponseException.create(
-                status.value(),
-                status.getReasonPhrase(),
-                new HttpHeaders(),
-                new byte[0],
-                null
-        );
+                status.value(), status.getReasonPhrase(), new HttpHeaders(), new byte[0], null);
     }
 
     private static Mono<ClientResponse> getClientResponseMono(LinkedList<RuntimeException> errors) {
-        return Mono.defer(
-                () -> {
-                    if (errors.isEmpty()) {
-                        return Mono.just(ClientResponse.create(HttpStatus.OK).build());
-                    }
-                    Throwable error = errors.pop();
-                    log.info("Simulating failure: {}", error.getClass().getSimpleName());
-                    return Mono.error(error);
-                }
-        );
+        return Mono.defer(() -> {
+            if (errors.isEmpty()) {
+                return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+            }
+            Throwable error = errors.pop();
+            log.info("Simulating failure: {}", error.getClass().getSimpleName());
+            return Mono.error(error);
+        });
     }
 }

@@ -1,6 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -57,4 +61,3 @@ public class PassportAssessmentDTO extends Assessment {
     private String whoDWPChecked;
     private String rtCode;
 }
-

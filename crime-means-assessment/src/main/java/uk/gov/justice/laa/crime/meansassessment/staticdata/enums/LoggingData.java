@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum LoggingData{
-
+public enum LoggingData {
     MAAT_ID("maatId"),
     LAA_TRANSACTION_ID("laaTransactionId");
 

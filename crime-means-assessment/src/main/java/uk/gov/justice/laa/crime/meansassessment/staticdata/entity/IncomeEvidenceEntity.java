@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Data
-@Table(name = "income_evidence", schema = "crime_means_assessment" )
+@Table(name = "income_evidence", schema = "crime_means_assessment")
 public class IncomeEvidenceEntity {
     @Id
     @Column(name = "EVIDENCE", nullable = false, length = 20)
@@ -31,5 +31,4 @@ public class IncomeEvidenceEntity {
 
     @Column(name = "ADHOC", length = 1)
     private String adhoc;
-
 }
