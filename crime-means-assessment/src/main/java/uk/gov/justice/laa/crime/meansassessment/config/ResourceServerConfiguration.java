@@ -52,13 +52,5 @@ public class ResourceServerConfiguration {
                         .authenticationEntryPoint(bearerTokenAuthenticationEntryPoint())
                         .jwt(withDefaults()));
         return http.build();
-
-        //        http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        //            .csrf((csrf) -> csrf.disable())
-        //            .authorizeHttpRequests(authorize -> authorize
-        //                .anyRequest().permitAll());
-        //
-        //        return http.build();
-
     }
 }
