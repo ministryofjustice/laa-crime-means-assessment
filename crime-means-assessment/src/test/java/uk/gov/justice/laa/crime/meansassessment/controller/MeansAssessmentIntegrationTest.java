@@ -1,26 +1,23 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.enums.NewWorkReason;
@@ -41,15 +38,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 @DirtiesContext
 @ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
-@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class}, webEnvironment = DEFINED_PORT)
+@SpringBootTest(
+        classes = {CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class},
+        webEnvironment = DEFINED_PORT)
 @AutoConfigureObservability
 @AutoConfigureWireMock(port = 9999)
 class MeansAssessmentIntegrationTest {
@@ -82,7 +102,8 @@ class MeansAssessmentIntegrationTest {
     void setup() throws JsonProcessingException {
         stubForOAuth();
         this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
-                .addFilter(springSecurityFilterChain).build();
+                .addFilter(springSecurityFilterChain)
+                .build();
     }
 
     @AfterEach
@@ -98,12 +119,11 @@ class MeansAssessmentIntegrationTest {
         return buildRequest(method, content, endpointUrl, true);
     }
 
-    private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String content,
-                                                       String endpointUrl, boolean withAuth) {
-        MockHttpServletRequestBuilder requestBuilder =
-                MockMvcRequestBuilders.request(method, endpointUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constants.LAA_TRANSACTION_ID, UUID.randomUUID());
+    private MockHttpServletRequestBuilder buildRequest(
+            HttpMethod method, String content, String endpointUrl, boolean withAuth) {
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.request(method, endpointUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(Constants.LAA_TRANSACTION_ID, UUID.randomUUID());
         if (content != null) {
             requestBuilder.content(content);
         }
@@ -115,11 +135,8 @@ class MeansAssessmentIntegrationTest {
 
     private void stubForOAuth() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> token = Map.of(
-                "expires_in", 3600,
-                "token_type", "Bearer",
-                "access_token", UUID.randomUUID()
-        );
+        Map<String, Object> token =
+                Map.of("expires_in", 3600, "token_type", "Bearer", "access_token", UUID.randomUUID());
 
         stubFor(post("/oauth2/token")
                 .willReturn(WireMock.ok()
@@ -128,21 +145,23 @@ class MeansAssessmentIntegrationTest {
     }
 
     private void stubForRoleActionAndReservationUrl() {
-        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/actions/([a-zA-Z_]*)")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody("true")));
+        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/actions/([a-zA-Z_]*)"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody("true")));
 
-        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/reservations/([0-9]*)/sessions/([a-zA-Z0-9_.-]*)")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody("true")));
+        stubFor(get(urlPathMatching(
+                        AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/reservations/([0-9]*)/sessions/([a-zA-Z0-9_.-]*)"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody("true")));
     }
 
     @Test
     void givenAInvalidContent_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
-        mvc.perform(buildRequest(HttpMethod.POST, "{}", ENDPOINT_URL))
-                .andExpect(status().isBadRequest());
+        mvc.perform(buildRequest(HttpMethod.POST, "{}", ENDPOINT_URL)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -153,8 +172,7 @@ class MeansAssessmentIntegrationTest {
 
     @Test
     void givenAnInvalidRepId_whenCreateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
-        var initialMeansAssessmentRequest =
-                TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
+        var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         initialMeansAssessmentRequest.setRepId(-1000);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
@@ -165,25 +183,29 @@ class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    void givenAValidCreateMeansAssessmentRequest_whenDateCompletionCallFails_thenServerErrorResponseIsReturned() throws Exception {
+    void givenAValidCreateMeansAssessmentRequest_whenDateCompletionCallFails_thenServerErrorResponseIsReturned()
+            throws Exception {
         var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlPathMatching(FINANCIAL_ASSESSMENT_ENDPOINT + "/check-outstanding/([0-9]*)")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
+        stubFor(get(urlPathMatching(FINANCIAL_ASSESSMENT_ENDPOINT + "/check-outstanding/([0-9]*)"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
 
-        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody("true")));
+        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody("true")));
 
-        stubFor(post(urlPathMatching(REP_ORDER_ENDPOINT + "/update-date-completed")).willReturn(aResponse()
-                .withStatus(504)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))));
+        stubFor(post(urlPathMatching(REP_ORDER_ENDPOINT + "/update-date-completed"))
+                .willReturn(aResponse()
+                        .withStatus(504)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))));
 
         mvc.perform(buildRequest(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().is5xxServerError())
@@ -195,32 +217,41 @@ class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    void givenAValidCreateMeansAssessmentRequest_WhenCreateAssessmentInvoked_ThenSuccessResponseIsReturned() throws Exception {
+    void givenAValidCreateMeansAssessmentRequest_WhenCreateAssessmentInvoked_ThenSuccessResponseIsReturned()
+            throws Exception {
         var initialMeansAssessmentRequest = TestModelDataBuilder.getCreateMeansAssessmentRequest(IS_VALID);
         var initialMeansAssessmentRequestJson = objectMapper.writeValueAsString(initialMeansAssessmentRequest);
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlPathMatching(FINANCIAL_ASSESSMENT_ENDPOINT + "/check-outstanding/([0-9]*)")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
+        stubFor(get(urlPathMatching(FINANCIAL_ASSESSMENT_ENDPOINT + "/check-outstanding/([0-9]*)"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(new OutstandingAssessmentResultDTO()))));
 
-        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody("true")));
+        stubFor(get(urlPathMatching(AUTHORIZATION_ENDPOINT + "/users/([a-zA-Z]*)/work-reasons/([a-zA-Z]*)"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody("true")));
 
-        stubFor(post(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed")).atPriority(1).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))));
+        stubFor(post(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed"))
+                .atPriority(1)
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder()
+                                .dateModified(LocalDateTime.now())
+                                .build()))));
 
         // MaatCourtDataService - Persist means assessment
-        stubFor(post(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT)).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiInitAssessmentResponse()))));
+        stubFor(post(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(
+                                TestModelDataBuilder.getMaatApiInitAssessmentResponse()))));
 
         mvc.perform(buildRequest(HttpMethod.POST, initialMeansAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().isOk())
@@ -233,8 +264,7 @@ class MeansAssessmentIntegrationTest {
 
     @Test
     void givenAInvalidContent_whenUpdateAssessmentInvoked_thenBadRequestErrorResponseIsReturned() throws Exception {
-        mvc.perform(buildRequest(HttpMethod.PUT, "{}", ENDPOINT_URL))
-                .andExpect(status().isBadRequest());
+        mvc.perform(buildRequest(HttpMethod.PUT, "{}", ENDPOINT_URL)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -244,29 +274,36 @@ class MeansAssessmentIntegrationTest {
     }
 
     @Test
-    void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ThenSuccessResponseIsReturned() throws Exception {
+    void givenAValidUpdateMeansAssessmentRequest_whenUpdateAssessmentInvoked_ThenSuccessResponseIsReturned()
+            throws Exception {
         var updateAssessmentRequest = TestModelDataBuilder.getUpdateMeansAssessmentRequest(IS_VALID);
         updateAssessmentRequest.setAssessmentType(AssessmentType.FULL);
         var updateAssessmentRequestJson = objectMapper.writeValueAsString(updateAssessmentRequest);
 
         stubForRoleActionAndReservationUrl();
 
-        stubFor(get(urlMatching(REP_ORDER_ENDPOINT + "/.*")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getFinancialAssessmentDTO()))));
+        stubFor(get(urlMatching(REP_ORDER_ENDPOINT + "/.*"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getFinancialAssessmentDTO()))));
 
         // DateCompletionService - retrieve rep order
-        stubFor(post(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder().dateModified(LocalDateTime.now()).build()))));
+        stubFor(post(urlEqualTo(REP_ORDER_ENDPOINT + "/update-date-completed"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(RepOrderDTO.builder()
+                                .dateModified(LocalDateTime.now())
+                                .build()))));
 
         // MaatCourtDataService - Persist means assessment
-        stubFor(put(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT)).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(TestModelDataBuilder.getMaatApiFullAssessmentResponse()))));
+        stubFor(put(urlEqualTo(FINANCIAL_ASSESSMENT_ENDPOINT))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(
+                                TestModelDataBuilder.getMaatApiFullAssessmentResponse()))));
 
         mvc.perform(buildRequest(HttpMethod.PUT, updateAssessmentRequestJson, ENDPOINT_URL))
                 .andExpect(status().isOk())
@@ -285,39 +322,38 @@ class MeansAssessmentIntegrationTest {
 
     @Test
     void givenNoOAuthToken_whenGetOldAssessmentInvoked_thenUnauthorizedErrorResponseIsReturned() throws Exception {
-        mvc.perform(buildRequest(HttpMethod.GET, ENDPOINT_URL + "/"
-                        + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/" +
-                        TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID, Boolean.FALSE))
+        mvc.perform(buildRequest(
+                        HttpMethod.GET,
+                        ENDPOINT_URL + "/"
+                                + TestModelDataBuilder.MEANS_ASSESSMENT_ID + "/"
+                                + TestModelDataBuilder.MEANS_ASSESSMENT_TRANSACTION_ID,
+                        Boolean.FALSE))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @Disabled("Flaky test")
     void givenAValidFinancialAssessmentId_whenGetOldAssessmentInvoked_thenAssessmentIsReturned() throws Exception {
-        FinancialAssessmentDTO financialAssessmentDTO =
-                TestModelDataBuilder.getFinancialAssessmentDTO(
-                        CurrentStatus.IN_PROGRESS.getStatus(),
-                        NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode()
-                );
+        FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(
+                CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
 
         financialAssessmentDTO.setAssessmentDetails(TestModelDataBuilder.getAssessmentDetails());
         financialAssessmentDTO.setChildWeightings(TestModelDataBuilder.getChildWeightings());
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = new ArrayList<>();
-        finAssIncomeEvidenceDTOList.add(
-                TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE")
-        );
+        finAssIncomeEvidenceDTOList.add(TestModelDataBuilder.getFinAssIncomeEvidenceDTO("Y", "SIGNATURE"));
         financialAssessmentDTO.setFinAssIncomeEvidences(finAssIncomeEvidenceDTOList);
         financialAssessmentDTO.setUpdated(TestModelDataBuilder.TEST_DATE_CREATED);
 
-        stubFor(get(urlEqualTo(API_VERSION + "/search-url")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
-                .withBody(objectMapper.writeValueAsString(financialAssessmentDTO))));
+        stubFor(get(urlEqualTo(API_VERSION + "/search-url"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", String.valueOf(MediaType.APPLICATION_JSON))
+                        .withBody(objectMapper.writeValueAsString(financialAssessmentDTO))));
 
-        mvc.perform(buildRequest(HttpMethod.GET, ENDPOINT_URL + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
+        mvc.perform(buildRequest(
+                        HttpMethod.GET, ENDPOINT_URL + "/" + TestModelDataBuilder.MEANS_ASSESSMENT_ID, Boolean.TRUE))
                 .andExpect(status().isOk());
 
         verify(exactly(1), getRequestedFor(urlPathMatching(API_VERSION + "/search-url")));
     }
-
 }

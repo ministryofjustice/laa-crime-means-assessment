@@ -1,11 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.validation.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import uk.gov.justice.laa.crime.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.meansassessment.client.MaatCourtDataApiClient;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
@@ -13,8 +12,12 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class MeansAssessmentValidationServiceTest {
@@ -26,9 +29,13 @@ class MeansAssessmentValidationServiceTest {
     private static final OutstandingAssessmentResultDTO NO_OUTSTANDING_ASSESSMENT =
             OutstandingAssessmentResultDTO.builder().build();
     private static final OutstandingAssessmentResultDTO IS_OUTSTANDING_ASSESSMENT =
-            OutstandingAssessmentResultDTO.builder().outstandingAssessments(true).build();
+            OutstandingAssessmentResultDTO.builder()
+                    .outstandingAssessments(true)
+                    .build();
+
     @Mock
     MaatCourtDataApiClient maatAPIClient;
+
     private MeansAssessmentRequestDTO requestDTO;
 
     @InjectMocks
@@ -47,98 +54,107 @@ class MeansAssessmentValidationServiceTest {
 
     @Test
     void givenInvalidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenFalseIsReturned() {
-        when(maatAPIClient.getNewWorkReason( anyString(), anyString()))
-                .thenReturn(FALSE_AUTH_RESPONSE);
-        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
+        when(maatAPIClient.getNewWorkReason(anyString(), anyString())).thenReturn(FALSE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO))
+                .isFalse();
     }
 
     @Test
     void givenValidNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenTrueIsReturned() {
-        when(maatAPIClient.getNewWorkReason( anyString(), anyString()))
-                .thenReturn(TRUE_AUTH_RESPONSE);
-        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isTrue();
+        when(maatAPIClient.getNewWorkReason(anyString(), anyString())).thenReturn(TRUE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO))
+                .isTrue();
     }
 
     @Test
     void givenNullNewWorkReason_whenIsNewWorkReasonValidIsInvoked_thenFalseIsReturned() {
         requestDTO.setNewWorkReason(NewWorkReason.getFrom(""));
-        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO)).isFalse();
+        assertThat(meansAssessmentValidationService.isNewWorkReasonValid(requestDTO))
+                .isFalse();
     }
 
     @Test
     void givenBlankUserId_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
         requestDTO.getUserSession().setUserName("");
-        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isFalse();
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA"))
+                .isFalse();
     }
 
     @Test
     void givenBlankAction_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
-        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "")).isFalse();
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, ""))
+                .isFalse();
     }
 
     @Test
     void givenInvalidRoleAction_whenIsRoleActionValidIsInvoked_thenFalseIsReturned() {
-        when(maatAPIClient.getUserRoleAction(anyString(), anyString()))
-                .thenReturn(FALSE_AUTH_RESPONSE);
-        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isFalse();
+        when(maatAPIClient.getUserRoleAction(anyString(), anyString())).thenReturn(FALSE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA"))
+                .isFalse();
     }
 
     @Test
     void givenValidRoleAction_whenIsRoleActionValidIsInvoked_thenTrueIsReturned() {
-        when(maatAPIClient.getUserRoleAction(anyString(), anyString()))
-                .thenReturn(TRUE_AUTH_RESPONSE);
-        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA")).isTrue();
+        when(maatAPIClient.getUserRoleAction(anyString(), anyString())).thenReturn(TRUE_AUTH_RESPONSE);
+        assertThat(meansAssessmentValidationService.isRoleActionValid(requestDTO, "FMA"))
+                .isTrue();
     }
 
     @Test
     void givenValidReservation_whenIsRepOrderReserved_thenTrueIsReturned() {
         when(maatAPIClient.getReservationDetail(anyString(), anyInt(), anyString()))
                 .thenReturn(TRUE_AUTH_RESPONSE);
-        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isTrue();
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO))
+                .isTrue();
     }
 
     @Test
     void givenInvalidReservation_whenIsRepOrderReserved_thenFalseIsReturned() {
         when(maatAPIClient.getReservationDetail(anyString(), anyInt(), anyString()))
                 .thenReturn(FALSE_AUTH_RESPONSE);
-        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO))
+                .isFalse();
     }
 
     @Test
     void givenBlankUserIdInRequest_whenIsRepOrderReserved_thenFalseIsReturned() {
         requestDTO.getUserSession().setUserName("");
-        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO))
+                .isFalse();
     }
 
     @Test
     void givenBlankSessionIDInRequest_whenIsRepOrderReserved_thenFalseIsReturned() {
         requestDTO.getUserSession().setSessionId("");
-        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO))
+                .isFalse();
     }
 
     @Test
     void givenNullRepIdInRequest_whenIsRepOrderReserved_thenFalseIsReturned() {
         requestDTO.setRepId(null);
-        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO)).isFalse();
+        assertThat(meansAssessmentValidationService.isRepOrderReserved(requestDTO))
+                .isFalse();
     }
 
     @Test
     void givenAnOutstandingAssessment_whenIsOutstandingAssessmentIsInvoked_thenTrueIsReturned() {
-        when(maatAPIClient.getOutstandingAssessment(anyInt()))
-                .thenReturn(IS_OUTSTANDING_ASSESSMENT);
-        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isTrue();
+        when(maatAPIClient.getOutstandingAssessment(anyInt())).thenReturn(IS_OUTSTANDING_ASSESSMENT);
+        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO))
+                .isTrue();
     }
 
     @Test
     void givenNoOutstandingAssessments_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
-        when(maatAPIClient.getOutstandingAssessment(anyInt()))
-                .thenReturn(NO_OUTSTANDING_ASSESSMENT);
-        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
+        when(maatAPIClient.getOutstandingAssessment(anyInt())).thenReturn(NO_OUTSTANDING_ASSESSMENT);
+        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO))
+                .isFalse();
     }
 
     @Test
     void givenNoRepId_whenIsOutstandingAssessmentIsInvoked_thenFalseIsReturned() {
         requestDTO.setRepId(null);
-        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO)).isFalse();
+        assertThat(meansAssessmentValidationService.isOutstandingAssessment(requestDTO))
+                .isFalse();
     }
 }

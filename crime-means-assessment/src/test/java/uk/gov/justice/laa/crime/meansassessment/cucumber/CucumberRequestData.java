@@ -1,7 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.cucumber;
 
 import io.cucumber.spring.ScenarioScope;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiResponse;
@@ -21,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+
+import org.springframework.stereotype.Component;
 
 @Component
 @ScenarioScope
@@ -69,16 +70,19 @@ public class CucumberRequestData {
 
     public void addIncome(FrequencyAmount value) {
         var income = request.getIncome();
-        var newIncome = List.of((new Income(IncomeType.EMPLOYMENT_INCOME,
-                new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.ZERO), value)));
+        var newIncome = List.of((new Income(
+                IncomeType.EMPLOYMENT_INCOME, new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.ZERO), value)));
         request.withIncome(Stream.concat(income.stream(), newIncome.stream()).toList());
     }
 
     public void addOutgoings(FrequencyAmount frequencyAmount) {
         var outgoings = request.getOutgoings();
-        var newIncome = List.of((new Outgoing(OutgoingType.RENT_OR_MORTGAGE,
-                new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.ZERO), frequencyAmount)));
-        request.withOutgoings(Stream.concat(outgoings.stream(), newIncome.stream()).toList());
+        var newIncome = List.of((new Outgoing(
+                OutgoingType.RENT_OR_MORTGAGE,
+                new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.ZERO),
+                frequencyAmount)));
+        request.withOutgoings(
+                Stream.concat(outgoings.stream(), newIncome.stream()).toList());
     }
 
     public void setChildren(List<DependantChild> dependantChildren) {

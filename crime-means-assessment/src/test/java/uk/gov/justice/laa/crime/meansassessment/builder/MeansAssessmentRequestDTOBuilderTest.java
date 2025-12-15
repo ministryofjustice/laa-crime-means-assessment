@@ -1,24 +1,23 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.Test;
-import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiCreateMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiUpdateMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.Test;
 
 class MeansAssessmentRequestDTOBuilderTest {
 
-    private final MeansAssessmentRequestDTOBuilder requestDTOBuilder =
-            new MeansAssessmentRequestDTOBuilder();
+    private final MeansAssessmentRequestDTOBuilder requestDTOBuilder = new MeansAssessmentRequestDTOBuilder();
 
     @Test
     void givenMeansAssessmentRequest_whenBuildRequestDTOisInvoked_thenCommonFieldsArePopulated() {
-        ApiMeansAssessmentRequest meansAssessment =
-                TestModelDataBuilder.getApiMeansAssessmentRequest(true);
+        ApiMeansAssessmentRequest meansAssessment = TestModelDataBuilder.getApiMeansAssessmentRequest(true);
 
         MeansAssessmentRequestDTO resultDto = requestDTOBuilder.buildRequestDTO(meansAssessment);
 
@@ -68,7 +67,8 @@ class MeansAssessmentRequestDTOBuilderTest {
         SoftAssertions.assertSoftly(softly -> {
             assertThat(resultDto.getFullAssessmentDate()).isEqualTo(updateMeansAssessment.getFullAssessmentDate());
             assertThat(resultDto.getOtherHousingNote()).isEqualTo(updateMeansAssessment.getOtherHousingNote());
-            assertThat(resultDto.getInitTotalAggregatedIncome()).isEqualTo(updateMeansAssessment.getInitTotalAggregatedIncome());
+            assertThat(resultDto.getInitTotalAggregatedIncome())
+                    .isEqualTo(updateMeansAssessment.getInitTotalAggregatedIncome());
             assertThat(resultDto.getFullAssessmentNotes()).isEqualTo(updateMeansAssessment.getFullAssessmentNotes());
         });
     }

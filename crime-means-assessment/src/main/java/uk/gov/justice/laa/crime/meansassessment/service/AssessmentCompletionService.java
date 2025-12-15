@@ -2,14 +2,19 @@ package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.MagCourtOutcome;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 
 import java.time.LocalDateTime;
+
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -38,8 +43,7 @@ public class AssessmentCompletionService {
 
     void updateApplicationCompletionDate(MeansAssessmentDTO assessment) {
         assessment.setDateCompleted(LocalDateTime.now());
-        DateCompletionRequestDTO dateCompletionRequestDTO = DateCompletionRequestDTO
-                .builder()
+        DateCompletionRequestDTO dateCompletionRequestDTO = DateCompletionRequestDTO.builder()
                 .repId(assessment.getMeansAssessment().getRepId())
                 .assessmentDateCompleted(assessment.getDateCompleted())
                 .build();
@@ -56,8 +60,9 @@ public class AssessmentCompletionService {
             if (CaseType.SUMMARY_ONLY.equals(caseType) || CaseType.COMMITAL.equals(caseType)) {
                 return true;
             } else {
-                return CaseType.EITHER_WAY.equals(caseType) &&
-                        MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(assessment.getMeansAssessment().getMagCourtOutcome());
+                return CaseType.EITHER_WAY.equals(caseType)
+                        && MagCourtOutcome.COMMITTED_FOR_TRIAL.equals(
+                                assessment.getMeansAssessment().getMagCourtOutcome());
             }
         }
         return false;

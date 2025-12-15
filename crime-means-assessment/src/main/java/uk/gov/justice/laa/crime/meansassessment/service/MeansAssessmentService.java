@@ -1,9 +1,16 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Service;
-import uk.gov.justice.laa.crime.common.model.meansassessment.*;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentChildWeighting;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiFullMeansAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiGetMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidence;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidenceSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiInitialMeansAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiRollbackMeansAssessmentResponse;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.enums.CurrentStatus;
@@ -22,12 +29,18 @@ import uk.gov.justice.laa.crime.meansassessment.factory.MeansAssessmentServiceFa
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaChildWeightingEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.IncomeEvidenceEntity;
 import uk.gov.justice.laa.crime.meansassessment.util.SortUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -44,16 +57,17 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     private final AssessmentCriteriaDetailService assessmentCriteriaDetailService;
     private final EligibilityChecker crownCourtEligibilityService;
 
-    public MeansAssessmentService(MaatCourtDataService maatCourtDataService,
-                                  AssessmentCriteriaService assessmentCriteriaService,
-                                  MeansAssessmentResponseBuilder responseBuilder,
-                                  MaatCourtDataAssessmentBuilder assessmentBuilder,
-                                  FullAssessmentAvailabilityService fullAssessmentAvailabilityService,
-                                  MeansAssessmentServiceFactory meansAssessmentServiceFactory,
-                                  AssessmentCompletionService assessmentCompletionService,
-                                  MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder,
-                                  AssessmentCriteriaDetailService assessmentCriteriaDetailService,
-                                  EligibilityChecker crownCourtEligibilityService) {
+    public MeansAssessmentService(
+            MaatCourtDataService maatCourtDataService,
+            AssessmentCriteriaService assessmentCriteriaService,
+            MeansAssessmentResponseBuilder responseBuilder,
+            MaatCourtDataAssessmentBuilder assessmentBuilder,
+            FullAssessmentAvailabilityService fullAssessmentAvailabilityService,
+            MeansAssessmentServiceFactory meansAssessmentServiceFactory,
+            AssessmentCompletionService assessmentCompletionService,
+            MeansAssessmentSectionSummaryBuilder meansAssessmentBuilder,
+            AssessmentCriteriaDetailService assessmentCriteriaDetailService,
+            EligibilityChecker crownCourtEligibilityService) {
 
         super(assessmentCriteriaService);
         this.maatCourtDataService = maatCourtDataService;
@@ -72,12 +86,11 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         log.info("Processing assessment request - Start");
         try {
             AssessmentType assessmentType = requestDTO.getAssessmentType();
-            LocalDateTime assessmentDate =
-                    (AssessmentType.FULL.equals(assessmentType)) ? requestDTO.getFullAssessmentDate()
-                            : requestDTO.getInitialAssessmentDate();
+            LocalDateTime assessmentDate = (AssessmentType.FULL.equals(assessmentType))
+                    ? requestDTO.getFullAssessmentDate()
+                    : requestDTO.getInitialAssessmentDate();
 
-            AssessmentService assessmentService =
-                    meansAssessmentServiceFactory.getService(assessmentType);
+            AssessmentService assessmentService = meansAssessmentServiceFactory.getService(assessmentType);
 
             AssessmentCriteriaEntity assessmentCriteria = assessmentCriteriaService.getAssessmentCriteria(
                     assessmentDate, requestDTO.getHasPartner(), requestDTO.getPartnerContraryInterest());
@@ -85,7 +98,8 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             BigDecimal summariesTotal = calculateSummariesTotal(requestDTO, assessmentCriteria);
 
             if (AssessmentType.FULL == assessmentType) {
-                requestDTO.setEligibilityCheckRequired(crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO));
+                requestDTO.setEligibilityCheckRequired(
+                        crownCourtEligibilityService.isEligibilityCheckRequired(requestDTO));
             }
             MeansAssessmentDTO completedAssessment =
                     assessmentService.execute(summariesTotal, requestDTO, assessmentCriteria);
@@ -94,11 +108,8 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
 
             assessmentCompletionService.execute(completedAssessment);
 
-            MaatApiAssessmentResponse maatApiAssessmentResponse =
-                    maatCourtDataService.persistMeansAssessment(
-                            assessmentBuilder.build(completedAssessment, requestType),
-                            requestType
-                    );
+            MaatApiAssessmentResponse maatApiAssessmentResponse = maatCourtDataService.persistMeansAssessment(
+                    assessmentBuilder.build(completedAssessment, requestType), requestType);
             log.info("Posting completed means assessment to Court Data API");
 
             updateDetailIds(completedAssessment, maatApiAssessmentResponse);
@@ -107,25 +118,27 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
                     responseBuilder.build(maatApiAssessmentResponse, assessmentCriteria, completedAssessment);
 
             if (AssessmentType.INIT.equals(assessmentType)) {
-                boolean fullAssessmentAvailable = fullAssessmentAvailabilityService
-                        .isFullAssessmentAvailable(requestDTO.getCaseType(),
-                                requestDTO.getMagCourtOutcome(),
-                                requestDTO.getNewWorkReason(),
-                                completedAssessment.getInitAssessmentResult());
+                boolean fullAssessmentAvailable = fullAssessmentAvailabilityService.isFullAssessmentAvailable(
+                        requestDTO.getCaseType(),
+                        requestDTO.getMagCourtOutcome(),
+                        requestDTO.getNewWorkReason(),
+                        completedAssessment.getInitAssessmentResult());
                 assessmentResponse.setFullAssessmentAvailable(fullAssessmentAvailable);
             }
 
             return assessmentResponse;
         } catch (Exception exception) {
             throw new AssessmentProcessingException(
-                    String.format("An error occurred whilst processing the assessment request with RepID: %d",
-                            requestDTO.getRepId()), exception
-            );
+                    String.format(
+                            "An error occurred whilst processing the assessment request with RepID: %d",
+                            requestDTO.getRepId()),
+                    exception);
         }
     }
 
     void updateDetailIds(MeansAssessmentDTO completedAssessment, MaatApiAssessmentResponse maatApiAssessmentResponse) {
-        for (ApiAssessmentSectionSummary assessmentSectionSummary : completedAssessment.getMeansAssessment().getSectionSummaries()) {
+        for (ApiAssessmentSectionSummary assessmentSectionSummary :
+                completedAssessment.getMeansAssessment().getSectionSummaries()) {
             for (ApiAssessmentDetail assessmentDetail : assessmentSectionSummary.getAssessmentDetails()) {
                 for (ApiAssessmentDetail responseAssessmentDetail : maatApiAssessmentResponse.getAssessmentDetails()) {
                     if (assessmentDetail.getCriteriaDetailId().equals(responseAssessmentDetail.getCriteriaDetailId())) {
@@ -149,8 +162,9 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         return assessmentResponse;
     }
 
-    protected void mapIncomeEvidence(ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse,
-                                     FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapIncomeEvidence(
+            ApiGetMeansAssessmentResponse apiGetMeansAssessmentResponse,
+            FinancialAssessmentDTO financialAssessmentDTO) {
 
         List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList = financialAssessmentDTO.getFinAssIncomeEvidences();
 
@@ -186,18 +200,20 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
     }
 
     protected void sortFinAssIncomeEvidenceSummary(List<FinAssIncomeEvidenceDTO> finAssIncomeEvidenceDTOList) {
-        SortUtils.sortListWithComparing(finAssIncomeEvidenceDTOList, FinAssIncomeEvidenceDTO::getMandatory,
-                FinAssIncomeEvidenceDTO::getIncomeEvidence, SortUtils.getReverseComparator()
-        );
+        SortUtils.sortListWithComparing(
+                finAssIncomeEvidenceDTOList,
+                FinAssIncomeEvidenceDTO::getMandatory,
+                FinAssIncomeEvidenceDTO::getIncomeEvidence,
+                SortUtils.getReverseComparator());
     }
 
-    protected void mapChildWeightings(ApiInitialMeansAssessment assessment, FinancialAssessmentDTO financialAssessmentDTO) {
+    protected void mapChildWeightings(
+            ApiInitialMeansAssessment assessment, FinancialAssessmentDTO financialAssessmentDTO) {
         List<ApiAssessmentChildWeighting> apiAssessmentChildWeightings = new ArrayList<>();
         financialAssessmentDTO.getChildWeightings().forEach(childWeightings -> {
             Optional<AssessmentCriteriaChildWeightingEntity> criteriaChildWeighting =
                     assessmentCriteriaService.getAssessmentCriteriaChildWeightingsById(
-                            childWeightings.getChildWeightingId()
-                    );
+                            childWeightings.getChildWeightingId());
             if (criteriaChildWeighting.isPresent()) {
                 AssessmentCriteriaChildWeightingEntity assessmentCriteriaChildWeightingEntity =
                         criteriaChildWeighting.get();
@@ -214,8 +230,8 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         assessment.setChildWeighting(apiAssessmentChildWeightings);
     }
 
-    public void buildMeansAssessmentResponse(ApiGetMeansAssessmentResponse assessmentResponse,
-                                             FinancialAssessmentDTO financialAssessmentDTO) {
+    public void buildMeansAssessmentResponse(
+            ApiGetMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO) {
 
         assessmentResponse.setId(financialAssessmentDTO.getId());
         assessmentResponse.setUsn(financialAssessmentDTO.getUsn());
@@ -223,20 +239,19 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         assessmentResponse.setFullAssessment(new ApiFullMeansAssessment());
         assessmentResponse.setIncomeEvidenceSummary(new ApiIncomeEvidenceSummary());
 
-        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = getAssessmentSectionSummary(financialAssessmentDTO);
+        List<ApiAssessmentSectionSummary> assessmentSectionSummaryList =
+                getAssessmentSectionSummary(financialAssessmentDTO);
         Optional<AssessmentCriteriaEntity> initAssessmentCriteria =
                 assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getInitialAscrId());
         meansAssessmentBuilder.buildInitialAssessment(
-                assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria
-        );
+                assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, initAssessmentCriteria);
 
         if (AssessmentType.FULL.equals(AssessmentType.getFrom(financialAssessmentDTO.getAssessmentType()))) {
             Optional<AssessmentCriteriaEntity> fullAssessmentCriteria =
                     assessmentCriteriaService.getAssessmentCriteriaById(financialAssessmentDTO.getFullAscrId());
 
             meansAssessmentBuilder.buildFullAssessment(
-                    assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria
-            );
+                    assessmentResponse, financialAssessmentDTO, assessmentSectionSummaryList, fullAssessmentCriteria);
         }
 
         assessmentResponse.setFullAvailable(Boolean.FALSE);
@@ -248,7 +263,8 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         mapIncomeEvidence(assessmentResponse, financialAssessmentDTO);
     }
 
-    protected List<ApiAssessmentSectionSummary> getAssessmentSectionSummary(FinancialAssessmentDTO financialAssessmentDTO) {
+    protected List<ApiAssessmentSectionSummary> getAssessmentSectionSummary(
+            FinancialAssessmentDTO financialAssessmentDTO) {
 
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
         if (!financialAssessmentDTO.getAssessmentDetails().isEmpty()) {
@@ -267,16 +283,14 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
             Optional<AssessmentCriteriaDetailEntity> assessmentCriteriaDetailEntity =
                     assessmentCriteriaDetailService.getAssessmentCriteriaDetailById(e.getCriteriaDetailId());
             assessmentCriteriaDetailEntity.ifPresent(criteriaDetailEntity ->
-                    assessmentDTOList.add(meansAssessmentBuilder.buildAssessmentDTO(criteriaDetailEntity, e))
-            );
+                    assessmentDTOList.add(meansAssessmentBuilder.buildAssessmentDTO(criteriaDetailEntity, e)));
         });
         return assessmentDTOList;
     }
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
         SortUtils.sortListWithComparing(
-                assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator()
-        );
+                assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator());
     }
 
     public ApiRollbackMeansAssessmentResponse rollbackAssessment(int financialAssessmentId) {

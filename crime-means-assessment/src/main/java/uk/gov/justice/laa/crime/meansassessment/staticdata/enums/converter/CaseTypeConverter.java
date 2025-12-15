@@ -1,10 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums.converter;
 
-import org.apache.commons.lang3.StringUtils;
-
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import uk.gov.justice.laa.crime.enums.CaseType;
+
+import org.apache.commons.lang3.StringUtils;
 
 @Converter(autoApply = true)
 public class CaseTypeConverter implements AttributeConverter<CaseType, String> {

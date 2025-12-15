@@ -1,9 +1,11 @@
 package uk.gov.justice.laa.crime.meansassessment.staticdata.enums.converter;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
 import uk.gov.justice.laa.crime.enums.CaseType;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class CaseTypeConverterTest {
 
@@ -15,31 +17,30 @@ class CaseTypeConverterTest {
     @Test
     void givenWhenEnumIsProvidedThenMatchingValueForDBIsReturned() {
         String result = caseTypeConverter.convertToDatabaseColumn(CaseType.APPEAL_CC);
-        assertEquals(CaseType.APPEAL_CC.getCaseType(), result);
+        assertThat(result).isEqualTo(CaseType.APPEAL_CC.getCaseType());
     }
 
     @Test
     void givenWhenValidValueIsInDBThenCorrectEnumIsReturned() {
         CaseType result = caseTypeConverter.convertToEntityAttribute(VALID_VALUE);
-        assertEquals(CaseType.APPEAL_CC, result);
+        assertThat(result).isEqualTo(CaseType.APPEAL_CC);
     }
 
     @Test
     void givenWhenEnumIsNullThenNullDBValueReturned() {
         String result = caseTypeConverter.convertToDatabaseColumn(null);
-        assertNull(result);
+        assertThat(result).isNull();
     }
 
     @Test
     void givenWhenDBValueIsNullThenNoEnumIsReturned() {
         CaseType result = caseTypeConverter.convertToEntityAttribute(null);
-        assertNull(result);
+        assertThat(result).isNull();
     }
 
     @Test
     void givenWhenInvalidValueIsInDBThenExceptionIsThrown() {
-        assertThrows(IllegalArgumentException.class,
-                () -> caseTypeConverter.convertToEntityAttribute(INVALID_VALUE));
+        assertThatThrownBy(() -> caseTypeConverter.convertToEntityAttribute(INVALID_VALUE))
+                .isInstanceOf(IllegalArgumentException.class);
     }
-
 }

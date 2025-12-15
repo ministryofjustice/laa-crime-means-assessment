@@ -1,6 +1,32 @@
 package uk.gov.justice.laa.crime.meansassessment.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
+
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiRequest;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
+import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
+import uk.gov.justice.laa.crime.enums.meansassessment.OutgoingType;
+import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
+import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
+import uk.gov.justice.laa.crime.meansassessment.DependantChild;
+import uk.gov.justice.laa.crime.meansassessment.FrequencyAmount;
+import uk.gov.justice.laa.crime.meansassessment.Income;
+import uk.gov.justice.laa.crime.meansassessment.Outgoing;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,51 +41,34 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.justice.laa.crime.common.model.meansassessment.ApiMeansAssessmentRequest;
-import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
-import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.StatelessApiRequest;
-import uk.gov.justice.laa.crime.enums.Frequency;
-import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
-import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
-import uk.gov.justice.laa.crime.enums.meansassessment.OutgoingType;
-import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
-import uk.gov.justice.laa.crime.meansassessment.*;
-import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.justice.laa.crime.meansassessment.util.RequestBuilderUtils.buildRequestGivenContent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(
-        classes = {
-                CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class
-        }, webEnvironment = DEFINED_PORT)
+        classes = {CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class},
+        webEnvironment = DEFINED_PORT)
 @AutoConfigureObservability
 class StatelessMeansAssessmentIntegrationTest {
     private static final String MEANS_ASSESSMENT_ENDPOINT_URL = "/api/internal/v2/assessment/means";
-    private static final FrequencyAmount incomeAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(2700));
+    private static final FrequencyAmount incomeAmount =
+            new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(2700));
     private static final FrequencyAmount taxAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(1700));
     private static final FrequencyAmount niAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(1700));
     private static final FrequencyAmount outAmount = new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.valueOf(100));
-    private static final ApiMeansAssessmentRequest testRequest = TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
+    private static final ApiMeansAssessmentRequest testRequest =
+            TestModelDataBuilder.getApiCreateMeansAssessmentRequest(true);
     private static final DependantChild childOne = new DependantChild(AgeRange.ZERO_TO_ONE, 2);
     private static final DependantChild childTwo = new DependantChild(AgeRange.FIVE_TO_SEVEN, 1);
     private MockMvc mvc;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
+
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -76,18 +85,21 @@ class StatelessMeansAssessmentIntegrationTest {
 
     private static List<Income> buildIncomes() {
         return Arrays.stream(IncomeType.values())
-                .map(incomeType -> new Income(incomeType, incomeAmount, incomeAmount)).toList();
+                .map(incomeType -> new Income(incomeType, incomeAmount, incomeAmount))
+                .toList();
     }
 
     private static List<Outgoing> buildOutgoings() {
         return Arrays.stream(OutgoingType.values())
-                .map(incomeType -> new Outgoing(incomeType, outAmount, outAmount)).toList();
+                .map(incomeType -> new Outgoing(incomeType, outAmount, outAmount))
+                .toList();
     }
 
     @BeforeEach
     void setup() {
         this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
-                .addFilter(springSecurityFilterChain).build();
+                .addFilter(springSecurityFilterChain)
+                .build();
     }
 
     @Test

@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AssessmentDTO {
 
-    private  Integer criteriaDetailId;
-    private  String section;
-    private  String assessmentDetailCode;
-    private  String criteriaDetailDescription;
-    private  Integer financialDetailId;
+    private Integer criteriaDetailId;
+    private String section;
+    private String assessmentDetailCode;
+    private String criteriaDetailDescription;
+    private Integer financialDetailId;
     private BigDecimal applicantAmount;
     private Frequency applicantFrequency;
     private BigDecimal partnerAmount;

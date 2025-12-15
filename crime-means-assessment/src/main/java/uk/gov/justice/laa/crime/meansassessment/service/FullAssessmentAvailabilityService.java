@@ -1,14 +1,15 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import static uk.gov.justice.laa.crime.enums.MagCourtOutcome.COMMITTED_FOR_TRIAL;
+import static uk.gov.justice.laa.crime.enums.NewWorkReason.HR;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.enums.CaseType;
 import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
 import uk.gov.justice.laa.crime.enums.MagCourtOutcome;
 import uk.gov.justice.laa.crime.enums.NewWorkReason;
 
-import static uk.gov.justice.laa.crime.enums.MagCourtOutcome.COMMITTED_FOR_TRIAL;
-import static uk.gov.justice.laa.crime.enums.NewWorkReason.HR;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -38,10 +39,11 @@ public class FullAssessmentAvailabilityService {
         return (magCourtOutcome == COMMITTED_FOR_TRIAL);
     }
 
-    public boolean isFullAssessmentAvailable(final CaseType caseType,
-                                             final MagCourtOutcome magCourtOutcome,
-                                             final NewWorkReason newWorkReason,
-                                             final InitAssessmentResult initAssessmentResult) {
+    public boolean isFullAssessmentAvailable(
+            final CaseType caseType,
+            final MagCourtOutcome magCourtOutcome,
+            final NewWorkReason newWorkReason,
+            final InitAssessmentResult initAssessmentResult) {
         var returnValue = false;
 
         if (initAssessmentResult != null) {

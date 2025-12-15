@@ -1,8 +1,9 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
 import uk.gov.justice.laa.crime.enums.NewWorkReason;
@@ -13,7 +14,7 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -23,30 +24,32 @@ public class InitMeansAssessmentService implements AssessmentService {
     private final AssessmentCriteriaChildWeightingService childWeightingService;
 
     @Override
-    public MeansAssessmentDTO execute(BigDecimal annualTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
+    public MeansAssessmentDTO execute(
+            BigDecimal annualTotal, MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria) {
         log.info("Create initial means assessment - Start");
         BigDecimal adjustedIncomeValue = getAdjustedIncome(requestDTO, assessmentCriteria, annualTotal);
         CurrentStatus status = requestDTO.getAssessmentStatus();
         log.info("Init means assessment calculation complete for Rep ID: {}", requestDTO.getRepId());
-        return MeansAssessmentDTO
-                .builder()
+        return MeansAssessmentDTO.builder()
                 .currentStatus(status)
                 .initAssessmentResult(
-                        status.equals(CurrentStatus.COMPLETE) ? getResult(
-                                adjustedIncomeValue, assessmentCriteria, requestDTO.getNewWorkReason()
-                        ) : null
-                )
+                        status.equals(CurrentStatus.COMPLETE)
+                                ? getResult(adjustedIncomeValue, assessmentCriteria, requestDTO.getNewWorkReason())
+                                : null)
                 .adjustedIncomeValue(adjustedIncomeValue)
-                .totalAggregatedIncome(annualTotal).build();
+                .totalAggregatedIncome(annualTotal)
+                .build();
     }
 
-    BigDecimal getAdjustedIncome(MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
-        BigDecimal totalChildWeighting =
-                setStandardScale(childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria));
+    BigDecimal getAdjustedIncome(
+            MeansAssessmentRequestDTO requestDTO, AssessmentCriteriaEntity assessmentCriteria, BigDecimal annualTotal) {
+        BigDecimal totalChildWeighting = setStandardScale(
+                childWeightingService.getTotalChildWeighting(requestDTO.getChildWeightings(), assessmentCriteria));
 
         if (BigDecimal.ZERO.compareTo(annualTotal) <= 0) {
             return setStandardScale(annualTotal)
-                    .divide(setStandardScale(assessmentCriteria.getApplicantWeightingFactor())
+                    .divide(
+                            setStandardScale(assessmentCriteria.getApplicantWeightingFactor())
                                     .add(setStandardScale(assessmentCriteria.getPartnerWeightingFactor()))
                                     .add(totalChildWeighting),
                             RoundingMode.HALF_UP);
@@ -54,7 +57,8 @@ public class InitMeansAssessmentService implements AssessmentService {
         return BigDecimal.ZERO;
     }
 
-    InitAssessmentResult getResult(BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, NewWorkReason newWorkReason) {
+    InitAssessmentResult getResult(
+            BigDecimal adjustedIncomeValue, AssessmentCriteriaEntity assessmentCriteria, NewWorkReason newWorkReason) {
         BigDecimal lowerThreshold = assessmentCriteria.getInitialLowerThreshold();
         BigDecimal upperThreshold = assessmentCriteria.getInitialUpperThreshold();
         if (adjustedIncomeValue.compareTo(lowerThreshold) <= 0) {

@@ -1,6 +1,5 @@
 package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 @Data
 @Builder
