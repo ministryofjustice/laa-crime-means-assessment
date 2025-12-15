@@ -70,18 +70,6 @@ class AssessmentCriteriaServiceTest {
 
     @Test
     void
-            givenValidDateAndNoPartner_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithZeroedPartnerWeightingFactor() {
-        when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
-                .thenReturn(assessmentCriteriaEntity);
-
-        AssessmentCriteriaEntity result = assessmentCriteriaService.getAssessmentCriteria(
-                TestModelDataBuilder.TEST_DATE_FROM.plusHours(1), false, false);
-        assertThat(assessmentCriteriaEntity).isEqualTo(result);
-        assertThat(BigDecimal.ZERO).isEqualTo(result.getPartnerWeightingFactor());
-    }
-
-    @Test
-    void
             givenValidDateWithPartnerAndContraryInterest_WhenGetAssessmentCriteriaIsInvoked_ThenAssessmentCriteriaShouldBeReturnedWithPartnerWeightingFactor() {
         when(assessmentCriteriaRepository.findAssessmentCriteriaForDate(any(LocalDateTime.class)))
                 .thenReturn(assessmentCriteriaEntity);

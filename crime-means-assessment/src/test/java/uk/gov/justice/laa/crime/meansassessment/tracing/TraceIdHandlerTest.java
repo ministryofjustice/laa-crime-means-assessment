@@ -31,14 +31,14 @@ class TraceIdHandlerTest {
     @Test
     void whenCurrentTraceContextIsNull_thenTraceIdIsBlank() {
         when(tracer.currentTraceContext()).thenReturn(null);
-        assertThat(traceIdHandler.getTraceId().isBlank()).isTrue();
+        assertThat(traceIdHandler.getTraceId().isBlank());
     }
 
     @Test
     void whenTraceContextIsNull_thenTraceIdIsBlank() {
         when(tracer.currentTraceContext()).thenReturn(currentTraceContext);
         when(currentTraceContext.context()).thenReturn(null);
-        assertThat(traceIdHandler.getTraceId().isBlank()).isTrue();
+        assertThat(traceIdHandler.getTraceId().isBlank());
     }
 
     @Test

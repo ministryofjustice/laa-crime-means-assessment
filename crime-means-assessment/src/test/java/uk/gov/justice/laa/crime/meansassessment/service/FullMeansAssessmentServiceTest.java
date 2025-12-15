@@ -26,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FullMeansAssessmentServiceTest {
 
-    private final BigDecimal EXPECTED_ADJUSTED_LIVING_ALLOWANCE =
+    private static final BigDecimal EXPECTED_ADJUSTED_LIVING_ALLOWANCE =
             BigDecimal.valueOf(6000).setScale(2, RoundingMode.HALF_UP);
 
     private final AssessmentCriteriaEntity assessmentCriteria =

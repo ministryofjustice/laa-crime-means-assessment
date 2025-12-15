@@ -13,7 +13,6 @@ import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilde
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
@@ -66,7 +65,7 @@ class MaatCourtDataAssessmentBuilderTest {
             assertThat(resultDto.getAssessmentDetails())
                     .isEqualTo(assessmentDTO.getMeansAssessment().getSectionSummaries().stream()
                             .flatMap(section -> section.getAssessmentDetails().stream())
-                            .collect(Collectors.toList()));
+                            .toList());
             assertThat(resultDto.getDateCompleted()).isEqualTo(assessmentDTO.getDateCompleted());
         });
     }

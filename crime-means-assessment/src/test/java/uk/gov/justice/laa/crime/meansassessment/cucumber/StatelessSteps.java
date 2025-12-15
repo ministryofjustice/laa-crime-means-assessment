@@ -121,57 +121,57 @@ public class StatelessSteps extends CucumberSpringConfiguration {
 
     static Map<String, Consumer<Pair<String, StatelessInitialResult>>> initialCheckers = Map.of(
             "imaResult",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getResult())
-                                .isEqualTo(InitAssessmentResult.valueOf(result_pair.getLeft()));
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getResult())
+                                .isEqualTo(InitAssessmentResult.valueOf(resultPair.getLeft()));
                     },
             "imaReason",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getResultReason()).isEqualTo(result_pair.getLeft());
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getResultReason()).isEqualTo(resultPair.getLeft());
                     },
             "fullAssessmentAvailable",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().isFullAssessmentPossible())
-                                .isEqualTo(Boolean.parseBoolean(result_pair.getLeft()));
+                    resultPair -> {
+                        assertThat(resultPair.getRight().isFullAssessmentPossible())
+                                .isEqualTo(Boolean.parseBoolean(resultPair.getLeft()));
                     },
             "totalAggregatedIncome",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getTotalAggregatedIncome())
-                                .isEqualTo(new BigDecimal(result_pair.getLeft()));
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getTotalAggregatedIncome())
+                                .isEqualTo(new BigDecimal(resultPair.getLeft()));
                     },
             "adjustedIncome",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getAdjustedIncomeValue())
-                                .isEqualTo(new BigDecimal(result_pair.getLeft()));
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getAdjustedIncomeValue())
+                                .isEqualTo(new BigDecimal(resultPair.getLeft()));
                     });
 
     static Map<String, Consumer<Pair<String, StatelessFullResult>>> fullCheckers = Map.of(
             "fmaResult",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getResult())
-                                .isEqualTo(FullAssessmentResult.valueOf(result_pair.getLeft()));
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getResult())
+                                .isEqualTo(FullAssessmentResult.valueOf(resultPair.getLeft()));
                     },
             "fmaReason",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getResultReason()).isEqualTo(result_pair.getLeft());
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getResultReason()).isEqualTo(resultPair.getLeft());
                     },
             "adjustedLivingAllowance",
-                    result_pair -> {
-                        assertThat(result_pair
+                    resultPair -> {
+                        assertThat(resultPair
                                         .getRight()
                                         .getAdjustedLivingAllowance()
                                         .setScale(2))
-                                .isEqualTo(new BigDecimal(result_pair.getLeft()));
+                                .isEqualTo(new BigDecimal(resultPair.getLeft()));
                     },
             "totalAggregatedExpense",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getTotalAnnualAggregatedExpenditure())
-                                .isEqualTo(new BigDecimal(result_pair.getLeft()));
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getTotalAnnualAggregatedExpenditure())
+                                .isEqualTo(new BigDecimal(resultPair.getLeft()));
                     },
             "totalAnnualDisposableIncome",
-                    result_pair -> {
-                        assertThat(result_pair.getRight().getDisposableIncome())
-                                .isEqualTo(new BigDecimal(result_pair.getLeft()));
+                    resultPair -> {
+                        assertThat(resultPair.getRight().getDisposableIncome())
+                                .isEqualTo(new BigDecimal(resultPair.getLeft()));
                     });
 
     @Then("I expect the result to be")
