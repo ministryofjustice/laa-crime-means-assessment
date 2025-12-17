@@ -9,22 +9,6 @@ import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDat
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_SECTION;
 import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_SEQ;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLA;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_FULLB;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITA;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_ASSESSMENT_SECTION_INITB;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_FREQUENCY;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_SECTION;
-import static uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder.TEST_SEQ;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiFullMeansAssessment;
@@ -40,6 +24,15 @@ import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 class MeansAssessmentSectionSummaryBuilderTest {
@@ -267,10 +260,14 @@ class MeansAssessmentSectionSummaryBuilderTest {
         FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(
                 CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
-        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
-        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
-        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
-        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assessmentSectionSummaryList.add(
+                TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(
+                TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity =
+                Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildInitialAssessment(
+                response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
         assertThat(response.getInitialAssessment()).isEqualTo(expectedInitAssessment);
     }
 
@@ -346,10 +343,14 @@ class MeansAssessmentSectionSummaryBuilderTest {
         FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(
                 CurrentStatus.IN_PROGRESS.getStatus(), NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
-        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
-        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
-        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
-        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assessmentSectionSummaryList.add(
+                TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(
+                TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity =
+                Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(
+                response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
         assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 
@@ -365,10 +366,14 @@ class MeansAssessmentSectionSummaryBuilderTest {
         FinancialAssessmentDTO financialAssessmentDTO = TestModelDataBuilder.getFinancialAssessmentDTO(
                 null, NewWorkReason.HR.getCode(), ReviewType.NAFI.getCode());
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
-        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
-        assessmentSectionSummaryList.add(TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
-        Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
-        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        assessmentSectionSummaryList.add(
+                TestModelDataBuilder.getAssessmentSectionSummary(Section.INITA.name(), AssessmentType.INIT));
+        assessmentSectionSummaryList.add(
+                TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
+        Optional<AssessmentCriteriaEntity> criteriaEntity =
+                Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(
+                response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
         assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 
@@ -390,7 +395,8 @@ class MeansAssessmentSectionSummaryBuilderTest {
         assessmentSectionSummaryList.add(
                 TestModelDataBuilder.getAssessmentSectionSummary(Section.FULLA.name(), AssessmentType.FULL));
         Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
-        meansAssessmentSectionSummaryBuilder.buildFullAssessment(response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
+        meansAssessmentSectionSummaryBuilder.buildFullAssessment(
+                response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
         assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 }

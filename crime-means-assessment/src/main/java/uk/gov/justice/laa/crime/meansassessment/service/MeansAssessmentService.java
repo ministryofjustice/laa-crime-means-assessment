@@ -1,14 +1,6 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentChildWeighting;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
@@ -47,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j

@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
@@ -33,41 +34,22 @@ class SortUtilsTest {
 
     @Test
     void sortList_sortsByPrimaryThenSecondary() {
-        List<Foo> list = new ArrayList<>(List.of(
-                new Foo("b", 2),
-                new Foo("a", 3),
-                new Foo("a", 1)
-        ));
+        List<Foo> list = new ArrayList<>(List.of(new Foo("b", 2), new Foo("a", 3), new Foo("a", 1)));
 
-        SortUtils.sortListWithComparing(
-                list,
-                Foo::a, SortUtils.getComparator(),
-                Foo::b, SortUtils.getComparator()
-        );
+        SortUtils.sortListWithComparing(list, Foo::a, SortUtils.getComparator(), Foo::b, SortUtils.getComparator());
 
         assertThat(list)
                 .asInstanceOf(InstanceOfAssertFactories.list(Foo.class))
                 .extracting(Foo::a, Foo::b)
-                .containsExactly(
-                        tuple("a", 1),
-                        tuple("a", 3),
-                        tuple("b", 2)
-                );
+                .containsExactly(tuple("a", 1), tuple("a", 3), tuple("b", 2));
     }
 
     @Test
     void sortList_canUseReverseOrder() {
-        List<Foo> list = new ArrayList<>(List.of(
-                new Foo("a", 1),
-                new Foo("c", 3),
-                new Foo("b", 2)
-        ));
+        List<Foo> list = new ArrayList<>(List.of(new Foo("a", 1), new Foo("c", 3), new Foo("b", 2)));
 
         SortUtils.sortListWithComparing(
-                list,
-                Foo::a, SortUtils.getReverseComparator(),
-                Foo::b, SortUtils.getReverseComparator()
-        );
+                list, Foo::a, SortUtils.getReverseComparator(), Foo::b, SortUtils.getReverseComparator());
 
         assertThat(list)
                 .asInstanceOf(InstanceOfAssertFactories.list(Foo.class))

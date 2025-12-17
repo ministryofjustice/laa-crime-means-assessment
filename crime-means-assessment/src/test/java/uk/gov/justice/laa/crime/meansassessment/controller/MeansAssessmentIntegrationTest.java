@@ -18,15 +18,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
+import uk.gov.justice.laa.crime.enums.ReviewType;
+import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
+import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
+import uk.gov.justice.laa.crime.meansassessment.common.Constants;
+import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
+import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -47,19 +58,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.wiremock.spring.EnableWireMock;
 import org.wiremock.spring.InjectWireMock;
-import uk.gov.justice.laa.crime.enums.AssessmentType;
-import uk.gov.justice.laa.crime.enums.CurrentStatus;
-import uk.gov.justice.laa.crime.enums.NewWorkReason;
-import uk.gov.justice.laa.crime.enums.ReviewType;
-import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
-import uk.gov.justice.laa.crime.meansassessment.builder.MeansAssessmentResponseBuilder;
-import uk.gov.justice.laa.crime.meansassessment.common.Constants;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
-import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinAssIncomeEvidenceDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 @EnableWireMock
 @DirtiesContext
