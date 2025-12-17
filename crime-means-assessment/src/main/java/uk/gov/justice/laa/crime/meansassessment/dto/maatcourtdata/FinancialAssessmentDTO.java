@@ -1,6 +1,10 @@
 package uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -54,10 +58,13 @@ public class FinancialAssessmentDTO extends Assessment {
     private LocalDateTime firstReminderDate;
     private LocalDateTime secondReminderDate;
     private LocalDateTime evidenceReceivedDate;
+
     @Builder.Default
     private List<FinancialAssessmentDetails> assessmentDetails = new ArrayList<>();
+
     @Builder.Default
     private List<ChildWeightings> childWeightings = new ArrayList<>();
+
     @Builder.Default
     private List<FinAssIncomeEvidenceDTO> finAssIncomeEvidences = new ArrayList<>();
 }

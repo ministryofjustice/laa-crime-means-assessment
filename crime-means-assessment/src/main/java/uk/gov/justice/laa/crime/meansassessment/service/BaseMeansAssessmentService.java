@@ -1,5 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +13,6 @@ import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCrit
 
 import java.math.BigDecimal;
 import java.util.List;
-
-import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
 
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
@@ -26,8 +26,8 @@ public abstract class BaseMeansAssessmentService {
         } else return setStandardScale(BigDecimal.ZERO);
     }
 
-    protected BigDecimal calculateSummariesTotal(final MeansAssessmentRequestDTO requestDTO,
-                                                 final AssessmentCriteriaEntity assessmentCriteria) {
+    protected BigDecimal calculateSummariesTotal(
+            final MeansAssessmentRequestDTO requestDTO, final AssessmentCriteriaEntity assessmentCriteria) {
 
         List<ApiAssessmentSectionSummary> sectionSummaries = requestDTO.getSectionSummaries();
         BigDecimal annualTotal = BigDecimal.ZERO;
@@ -39,15 +39,13 @@ public abstract class BaseMeansAssessmentService {
             applicantTotal = partnerTotal = BigDecimal.ZERO;
             for (ApiAssessmentDetail assessmentDetail : sectionSummary.getAssessmentDetails()) {
                 assessmentCriteriaService.checkAssessmentDetail(
-                        requestDTO.getCaseType(), sectionSummary.getSection(), assessmentCriteria, assessmentDetail
-                );
+                        requestDTO.getCaseType(), sectionSummary.getSection(), assessmentCriteria, assessmentDetail);
 
-                applicantTotal = applicantTotal.add(
-                        calculateDetailTotal(assessmentDetail.getApplicantAmount(), assessmentDetail.getApplicantFrequency()));
+                applicantTotal = applicantTotal.add(calculateDetailTotal(
+                        assessmentDetail.getApplicantAmount(), assessmentDetail.getApplicantFrequency()));
 
-                partnerTotal = partnerTotal.add(
-                        calculateDetailTotal(assessmentDetail.getPartnerAmount(), assessmentDetail.getPartnerFrequency()));
-
+                partnerTotal = partnerTotal.add(calculateDetailTotal(
+                        assessmentDetail.getPartnerAmount(), assessmentDetail.getPartnerFrequency()));
             }
             summaryTotal = applicantTotal.add(partnerTotal);
             sectionSummary.setApplicantAnnualTotal(applicantTotal);

@@ -5,6 +5,7 @@ plugins {
     id "info.solidsoft.pitest" version "1.15.0"
     id "org.springframework.boot" version "3.5.7"
     id 'io.spring.dependency-management' version '1.1.7'
+    id "com.diffplug.spotless" version "8.0.0"
 }
 
 def versions = [
@@ -156,5 +157,31 @@ sonar {
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
 
+    }
+}
+
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+        targetExclude '**/generated/**', '**/build/**'
+
+        formatAnnotations()
+        palantirJavaFormat()
+        importOrder('', 'java', 'javax', 'org', 'com')
+
+        endWithNewline()
+        trimTrailingWhitespace()
+        removeUnusedImports()
+        forbidWildcardImports()
+
+        // Custom rule: Disallow JUnit assertions
+        custom("Refuse JUnit assertions", { text ->
+            if (text =~ /\bassert(?:Equals|True|False|Null|NotNull|Same|NotSame|ArrayEquals)\b/) {
+                throw new IllegalStateException(
+                        "Use AssertJ (assertThat(...)) instead of JUnit assertions."
+                )
+            }
+            text
+        } as Closure<String>)
     }
 }

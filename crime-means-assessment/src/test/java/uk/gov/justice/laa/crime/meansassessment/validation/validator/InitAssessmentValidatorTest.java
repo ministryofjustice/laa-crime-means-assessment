@@ -1,12 +1,13 @@
 package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import uk.gov.justice.laa.crime.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class InitAssessmentValidatorTest {
 
@@ -22,9 +23,7 @@ class InitAssessmentValidatorTest {
 
     @Test
     void givenReviewTypeIsNullAndRepOrderRefused_whenValidateIsInvoked_thenReturnsFalse() {
-        meansAssessment.getCrownCourtOverview()
-                .getCrownCourtSummary()
-                .setRepOrderDecision(REFUSED_REP_ORDER_DECISION);
+        meansAssessment.getCrownCourtOverview().getCrownCourtSummary().setRepOrderDecision(REFUSED_REP_ORDER_DECISION);
         assertThat(initAssessmentValidator.validate(meansAssessment)).isEqualTo(Boolean.FALSE);
     }
 
@@ -36,24 +35,19 @@ class InitAssessmentValidatorTest {
 
     @Test
     void givenReviewTypeIsNullAndCrownCourtSummaryIsNull_whenValidateIsInvoked_thenReturnsTrue() {
-        meansAssessment.getCrownCourtOverview()
-                .setCrownCourtSummary(null);
+        meansAssessment.getCrownCourtOverview().setCrownCourtSummary(null);
         assertThat(initAssessmentValidator.validate(meansAssessment)).isEqualTo(Boolean.TRUE);
     }
 
     @Test
     void givenReviewTypeIsNullAndRepOrderDecisionIsNull_whenValidateIsInvoked_thenReturnsTrue() {
-        meansAssessment.getCrownCourtOverview()
-                .getCrownCourtSummary()
-                .setRepOrderDecision(null);
+        meansAssessment.getCrownCourtOverview().getCrownCourtSummary().setRepOrderDecision(null);
         assertThat(initAssessmentValidator.validate(meansAssessment)).isEqualTo(Boolean.TRUE);
     }
 
     @Test
     void givenReviewTypeIsNullAndEligibleRepOrderDecision_whenValidateIsInvoked_thenReturnsTrue() {
-        meansAssessment.getCrownCourtOverview()
-                .getCrownCourtSummary()
-                .setRepOrderDecision("ELIGIBLE");
+        meansAssessment.getCrownCourtOverview().getCrownCourtSummary().setRepOrderDecision("ELIGIBLE");
         assertThat(initAssessmentValidator.validate(meansAssessment)).isEqualTo(Boolean.TRUE);
     }
 

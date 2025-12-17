@@ -1,10 +1,7 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
 import uk.gov.justice.laa.crime.enums.Frequency;
@@ -17,7 +14,11 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class BaseMeansAssessmentServiceTest {
@@ -25,8 +26,10 @@ class BaseMeansAssessmentServiceTest {
     static final BigDecimal EXPECTED_TOTAL_AMOUNT = new BigDecimal("120.00");
     private final AssessmentCriteriaEntity assessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntityWithDetails();
+
     @Mock
     private AssessmentCriteriaService assessmentCriteriaService;
+
     private MockConcreteClass mockAssessmentService;
     private MeansAssessmentRequestDTO meansAssessment;
 
@@ -63,44 +66,36 @@ class BaseMeansAssessmentServiceTest {
     @Test
     void givenSingleSectionSingleDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         BigDecimal annualTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
-        assertThat(annualTotal).isEqualTo(
-                TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
-                        BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
-                ).setScale(2, RoundingMode.HALF_UP)
-        );
+        assertThat(annualTotal)
+                .isEqualTo(TestModelDataBuilder.TEST_APPLICANT_VALUE
+                        .multiply(BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting()))
+                        .setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test
     void givenSingleSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        ApiAssessmentSectionSummary section = meansAssessment.getSectionSummaries().get(0);
-        section.getAssessmentDetails().add(
-                new ApiAssessmentDetail()
+        ApiAssessmentSectionSummary section =
+                meansAssessment.getSectionSummaries().get(0);
+        section.getAssessmentDetails()
+                .add(new ApiAssessmentDetail()
                         .withApplicantAmount(BigDecimal.TEN)
-                        .withApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY)
-        );
+                        .withApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY));
 
         BigDecimal annualTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
-        assertThat(annualTotal).isEqualTo(
-                TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
-                        BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
-                ).add(BigDecimal.TEN.multiply(
-                                BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
-                        )
-                ).setScale(2, RoundingMode.HALF_UP)
-        );
+        assertThat(annualTotal)
+                .isEqualTo(TestModelDataBuilder.TEST_APPLICANT_VALUE
+                        .multiply(BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting()))
+                        .add(BigDecimal.TEN.multiply(
+                                BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())))
+                        .setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test
     void givenSingleSectionSingleDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         ApiAssessmentSectionSummary section = new ApiAssessmentSectionSummary()
-                .withAssessmentDetails(
-                        new ArrayList<>(
-                                List.of(new ApiAssessmentDetail()
-                                        .withPartnerAmount(BigDecimal.TEN)
-                                        .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY)
-                                )
-                        )
-                );
+                .withAssessmentDetails(new ArrayList<>(List.of(new ApiAssessmentDetail()
+                        .withPartnerAmount(BigDecimal.TEN)
+                        .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY))));
         meansAssessment.setSectionSummaries(List.of(section));
         BigDecimal annualTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
         assertThat(annualTotal).isEqualTo(EXPECTED_TOTAL_AMOUNT);
@@ -108,34 +103,32 @@ class BaseMeansAssessmentServiceTest {
 
     @Test
     void givenSingleSectionTwoDetailWithPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
-        ApiAssessmentSectionSummary section = meansAssessment.getSectionSummaries().get(0);
-        section.getAssessmentDetails().add(
-                new ApiAssessmentDetail()
+        ApiAssessmentSectionSummary section =
+                meansAssessment.getSectionSummaries().get(0);
+        section.getAssessmentDetails()
+                .add(new ApiAssessmentDetail()
                         .withApplicantAmount(BigDecimal.TEN)
                         .withApplicantFrequency(TestModelDataBuilder.TEST_FREQUENCY)
                         .withPartnerAmount(BigDecimal.TEN)
-                        .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY)
-        );
+                        .withPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY));
 
         BigDecimal annualTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
-        assertThat(annualTotal).isEqualTo(
-                TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
-                        BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
-                ).add(BigDecimal.valueOf(20).multiply(
-                                BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
-                        )
-                ).setScale(2, RoundingMode.HALF_UP)
-        );
+        assertThat(annualTotal)
+                .isEqualTo(TestModelDataBuilder.TEST_APPLICANT_VALUE
+                        .multiply(BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting()))
+                        .add(BigDecimal.valueOf(20)
+                                .multiply(BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())))
+                        .setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test
     void givenTwoSectionTwoDetailNoPartner_whenCalculateSummariesTotalIsInvoked_thenCorrectTotalIsCalculated() {
         meansAssessment.setSectionSummaries(TestModelDataBuilder.getAssessmentSummaries());
         BigDecimal annualTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
-        BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
-                BigDecimal.valueOf(
-                        TestModelDataBuilder.TEST_FREQUENCY.getWeighting()
-                ).multiply(BigDecimal.valueOf(2))).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE
+                .multiply(BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
+                        .multiply(BigDecimal.valueOf(2)))
+                .setScale(2, RoundingMode.HALF_UP);
         assertThat(annualTotal).isEqualTo(expected);
     }
 
@@ -148,13 +141,11 @@ class BaseMeansAssessmentServiceTest {
         section.get(0).setPartnerFrequency(TestModelDataBuilder.TEST_FREQUENCY);
         section.get(0).setPartnerAmount(TestModelDataBuilder.TEST_APPLICANT_VALUE);
 
-        BigDecimal summariesTotal =
-                mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
+        BigDecimal summariesTotal = mockAssessmentService.calculateSummariesTotal(meansAssessment, assessmentCriteria);
 
-        BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE.multiply(
-                        BigDecimal.valueOf(
-                                TestModelDataBuilder.TEST_FREQUENCY.getWeighting()
-                        ).multiply(BigDecimal.valueOf(3)))
+        BigDecimal expected = TestModelDataBuilder.TEST_APPLICANT_VALUE
+                .multiply(BigDecimal.valueOf(TestModelDataBuilder.TEST_FREQUENCY.getWeighting())
+                        .multiply(BigDecimal.valueOf(3)))
                 .setScale(2, RoundingMode.HALF_UP);
 
         assertThat(summariesTotal).isEqualTo(expected);
@@ -165,5 +156,4 @@ class BaseMeansAssessmentServiceTest {
             super(assessmentCriteriaService);
         }
     }
-
 }

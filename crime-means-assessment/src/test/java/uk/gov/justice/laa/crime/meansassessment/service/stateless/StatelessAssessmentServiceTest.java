@@ -1,14 +1,21 @@
 package uk.gov.justice.laa.crime.meansassessment.service.stateless;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.Mockito.when;
+
 import uk.gov.justice.laa.crime.common.model.meansassessment.stateless.Assessment;
-import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.MagCourtOutcome;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.enums.meansassessment.AgeRange;
 import uk.gov.justice.laa.crime.enums.meansassessment.IncomeType;
 import uk.gov.justice.laa.crime.enums.meansassessment.StatelessRequestType;
@@ -32,9 +39,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 class StatelessAssessmentServiceTest {
@@ -42,24 +53,28 @@ class StatelessAssessmentServiceTest {
     private static final AssessmentCriteriaEntity mockAssessmentCriteria =
             TestModelDataBuilder.getAssessmentCriteriaEntity();
     private static final BigDecimal adjustedLivingAllowance = BigDecimal.valueOf(10000.67);
+
     @InjectMocks
     private StatelessAssessmentService statelessAssessmentService;
+
     @Mock
     private InitMeansAssessmentService initMeansAssessmentService;
+
     @Mock
     private FullMeansAssessmentService fullMeansAssessmentService;
+
     @Mock
     private MeansAssessmentServiceFactory meansAssessmentServiceFactory;
+
     @Mock
     private AssessmentCriteriaService assessmentCriteriaService;
+
     @Mock
     private FullAssessmentAvailabilityService fullAssessmentAvailabilityService;
 
     private void setupStubs() {
-        when(meansAssessmentServiceFactory.getService(AssessmentType.INIT))
-                .thenReturn(initMeansAssessmentService);
-        when(meansAssessmentServiceFactory.getService(AssessmentType.FULL))
-                .thenReturn(fullMeansAssessmentService);
+        when(meansAssessmentServiceFactory.getService(AssessmentType.INIT)).thenReturn(initMeansAssessmentService);
+        when(meansAssessmentServiceFactory.getService(AssessmentType.FULL)).thenReturn(fullMeansAssessmentService);
         when(assessmentCriteriaService.getAssessmentCriteria(any(LocalDateTime.class), anyBoolean(), anyBoolean()))
                 .thenReturn(mockAssessmentCriteria);
     }
@@ -70,16 +85,24 @@ class StatelessAssessmentServiceTest {
         setupStubs();
 
         when(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
-                any(CaseType.class), any(MagCourtOutcome.class), any(NewWorkReason.class), any(InitAssessmentResult.class))
-        ).thenReturn(false);
+                        any(CaseType.class),
+                        any(MagCourtOutcome.class),
+                        any(NewWorkReason.class),
+                        any(InitAssessmentResult.class)))
+                .thenReturn(false);
 
         when(initMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(MeansAssessmentDTO.builder().initAssessmentResult(InitAssessmentResult.PASS).build());
+                        any(BigDecimal.class),
+                        any(MeansAssessmentRequestDTO.class),
+                        any(AssessmentCriteriaEntity.class)))
+                .thenReturn(MeansAssessmentDTO.builder()
+                        .initAssessmentResult(InitAssessmentResult.PASS)
+                        .build());
 
         try (MockedStatic<StatelessDataAdapter> adapter = Mockito.mockStatic(StatelessDataAdapter.class)) {
 
-            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(
+                            any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
             adapter.when(() -> StatelessDataAdapter.mapChildGroupings(anyMap(), anySet()))
@@ -87,7 +110,8 @@ class StatelessAssessmentServiceTest {
 
             var overallResult = getAssessmentOutcome(StatelessRequestType.INITIAL);
             validateInitialResult(overallResult.getInitialResult(), InitAssessmentResult.PASS);
-            assertThat(overallResult.getInitialResult().isFullAssessmentPossible()).isFalse();
+            assertThat(overallResult.getInitialResult().isFullAssessmentPossible())
+                    .isFalse();
             assertThat(overallResult.getFullResult()).isNull();
         }
     }
@@ -98,25 +122,34 @@ class StatelessAssessmentServiceTest {
         setupStubs();
 
         when(initMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(MeansAssessmentDTO.builder().initAssessmentResult(InitAssessmentResult.FULL).build());
+                        any(BigDecimal.class),
+                        any(MeansAssessmentRequestDTO.class),
+                        any(AssessmentCriteriaEntity.class)))
+                .thenReturn(MeansAssessmentDTO.builder()
+                        .initAssessmentResult(InitAssessmentResult.FULL)
+                        .build());
 
         when(fullMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(MeansAssessmentDTO.builder()
-                .fullAssessmentResult(FullAssessmentResult.PASS)
-                .adjustedLivingAllowance(adjustedLivingAllowance).build());
+                        any(BigDecimal.class),
+                        any(MeansAssessmentRequestDTO.class),
+                        any(AssessmentCriteriaEntity.class)))
+                .thenReturn(MeansAssessmentDTO.builder()
+                        .fullAssessmentResult(FullAssessmentResult.PASS)
+                        .adjustedLivingAllowance(adjustedLivingAllowance)
+                        .build());
 
         when(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
-                any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class))
-        ).thenReturn(true);
+                        any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class)))
+                .thenReturn(true);
 
         try (MockedStatic<StatelessDataAdapter> adapter = Mockito.mockStatic(StatelessDataAdapter.class)) {
 
-            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(
+                            any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
-            adapter.when(() -> StatelessDataAdapter.mapOutgoingsToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapOutgoingsToSectionSummaries(
+                            any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
             adapter.when(() -> StatelessDataAdapter.mapChildGroupings(anyMap(), anySet()))
@@ -133,16 +166,21 @@ class StatelessAssessmentServiceTest {
         setupStubs();
 
         when(initMeansAssessmentService.execute(
-                any(BigDecimal.class), any(MeansAssessmentRequestDTO.class), any(AssessmentCriteriaEntity.class))
-        ).thenReturn(MeansAssessmentDTO.builder().initAssessmentResult(InitAssessmentResult.FAIL).build());
+                        any(BigDecimal.class),
+                        any(MeansAssessmentRequestDTO.class),
+                        any(AssessmentCriteriaEntity.class)))
+                .thenReturn(MeansAssessmentDTO.builder()
+                        .initAssessmentResult(InitAssessmentResult.FAIL)
+                        .build());
 
         when(fullAssessmentAvailabilityService.isFullAssessmentAvailable(
-                any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class))
-        ).thenReturn(false);
+                        any(CaseType.class), any(MagCourtOutcome.class), any(), any(InitAssessmentResult.class)))
+                .thenReturn(false);
 
         try (MockedStatic<StatelessDataAdapter> adapter = Mockito.mockStatic(StatelessDataAdapter.class)) {
 
-            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(any(AssessmentCriteriaEntity.class), anyList()))
+            adapter.when(() -> StatelessDataAdapter.mapIncomesToSectionSummaries(
+                            any(AssessmentCriteriaEntity.class), anyList()))
                     .thenReturn(TestModelDataBuilder.getApiAssessmentSummaries(true));
 
             adapter.when(() -> StatelessDataAdapter.mapChildGroupings(anyMap(), anySet()))
@@ -150,7 +188,8 @@ class StatelessAssessmentServiceTest {
 
             var overallResult = getAssessmentOutcome(StatelessRequestType.BOTH);
             validateInitialResult(overallResult.getInitialResult(), InitAssessmentResult.FAIL);
-            assertThat(overallResult.getInitialResult().isFullAssessmentPossible()).isFalse();
+            assertThat(overallResult.getInitialResult().isFullAssessmentPossible())
+                    .isFalse();
             assertThat(overallResult.getFullResult()).isNull();
         }
     }
@@ -168,17 +207,18 @@ class StatelessAssessmentServiceTest {
     }
 
     private StatelessResult getAssessmentOutcome(StatelessRequestType requestType) {
-        var employmentIncome = new Income(IncomeType.EMPLOYMENT_INCOME,
-                new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.TEN), null);
-        return statelessAssessmentService
-                .execute(new Assessment().withAssessmentType(requestType)
-                                .withAssessmentDate(LocalDateTime.now())
-                                .withHasPartner(false)
-                                .withEligibilityCheckRequired(true)
-                                .withCaseType(CaseType.APPEAL_CC)
-                                .withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
-                        Map.of(AgeRange.ZERO_TO_ONE, 1, AgeRange.EIGHT_TO_TEN, 4),
-                        List.of(employmentIncome), Collections.emptyList()
-                );
+        var employmentIncome =
+                new Income(IncomeType.EMPLOYMENT_INCOME, new FrequencyAmount(Frequency.ANNUALLY, BigDecimal.TEN), null);
+        return statelessAssessmentService.execute(
+                new Assessment()
+                        .withAssessmentType(requestType)
+                        .withAssessmentDate(LocalDateTime.now())
+                        .withHasPartner(false)
+                        .withEligibilityCheckRequired(true)
+                        .withCaseType(CaseType.APPEAL_CC)
+                        .withMagistrateCourtOutcome(MagCourtOutcome.APPEAL_TO_CC),
+                Map.of(AgeRange.ZERO_TO_ONE, 1, AgeRange.EIGHT_TO_TEN, 4),
+                List.of(employmentIncome),
+                Collections.emptyList());
     }
 }

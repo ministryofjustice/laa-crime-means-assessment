@@ -1,15 +1,25 @@
 package uk.gov.justice.laa.crime.meansassessment.client;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.service.annotation.*;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentResponse;
 import uk.gov.justice.laa.crime.meansassessment.dto.AuthorizationResponseDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.OutstandingAssessmentResultDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.*;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.HardshipReviewDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.IOJAppealDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.PassportAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.RepOrderDTO;
 
 import java.util.Map;
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PatchExchange;
+import org.springframework.web.service.annotation.PostExchange;
+import org.springframework.web.service.annotation.PutExchange;
 
 @HttpExchange()
 public interface MaatCourtDataApiClient {
@@ -24,8 +34,8 @@ public interface MaatCourtDataApiClient {
     FinancialAssessmentDTO getFinancialAssessment(@PathVariable Integer financialAssessmentId);
 
     @PatchExchange("/financial-assessments/rollback/{financialAssessmentId}")
-    void patchFinancialAssessment(@RequestBody Map<String, Object> updateFields,
-                                  @PathVariable Integer financialAssessmentId);
+    void patchFinancialAssessment(
+            @RequestBody Map<String, Object> updateFields, @PathVariable Integer financialAssessmentId);
 
     @PostExchange("/rep-orders/update-date-completed")
     RepOrderDTO updateCompletionDate(@RequestBody DateCompletionRequestDTO dateCompletionRequestDTO);
@@ -52,7 +62,6 @@ public interface MaatCourtDataApiClient {
     OutstandingAssessmentResultDTO getOutstandingAssessment(@PathVariable Integer repId);
 
     @GetExchange("/authorization/users/{username}/reservations/{reservationId}/sessions/{sessionId}")
-    AuthorizationResponseDTO getReservationDetail(@PathVariable String username, @PathVariable Integer reservationId,
-                                                  @PathVariable String sessionId);
-
+    AuthorizationResponseDTO getReservationDetail(
+            @PathVariable String username, @PathVariable Integer reservationId, @PathVariable String sessionId);
 }

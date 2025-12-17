@@ -1,5 +1,13 @@
 package uk.gov.justice.laa.crime.meansassessment.filter;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -8,18 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
-
-import java.net.URI;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class WebClientFiltersTest {
 
-    public static final ClientRequest CLIENT_REQUEST =
-            ClientRequest.create(HttpMethod.GET, URI.create("https://example.com")).build();
+    public static final ClientRequest CLIENT_REQUEST = ClientRequest.create(
+                    HttpMethod.GET, URI.create("https://example.com"))
+            .build();
 
     @Test
     void givenRequestWithHeaders_whenLogRequestHeadersFilterApplied_thenResponseIsPassedThrough() {
@@ -30,11 +32,10 @@ class WebClientFiltersTest {
         AtomicReference<ClientRequest> capturedRequest = new AtomicReference<>();
 
         // when
-        Mono<ClientResponse> result = WebClientFilters.logRequestHeaders()
-                .filter(CLIENT_REQUEST, req -> {
-                    capturedRequest.set(req);
-                    return Mono.just(dummyResponse);
-                });
+        Mono<ClientResponse> result = WebClientFilters.logRequestHeaders().filter(CLIENT_REQUEST, req -> {
+            capturedRequest.set(req);
+            return Mono.just(dummyResponse);
+        });
         ClientResponse response = result.block();
 
         // then
@@ -47,14 +48,12 @@ class WebClientFiltersTest {
     @Test
     void givenClientResponse_whenLogResponseFilterApplied_thenResponseIsUnchanged() {
         // given
-        ClientResponse response =
-                ClientResponse.create(HttpStatus.OK)
-                        .header("X-Test", "headerValue")
-                        .build();
+        ClientResponse response = ClientResponse.create(HttpStatus.OK)
+                .header("X-Test", "headerValue")
+                .build();
 
         // when
-        Mono<ClientResponse> result = WebClientFilters.logResponse()
-                .filter(CLIENT_REQUEST, req -> Mono.just(response));
+        Mono<ClientResponse> result = WebClientFilters.logResponse().filter(CLIENT_REQUEST, req -> Mono.just(response));
         ClientResponse filteredResponse = result.block();
 
         // then
@@ -68,8 +67,8 @@ class WebClientFiltersTest {
         ClientResponse successResponse = ClientResponse.create(HttpStatus.OK).build();
 
         // when
-        Mono<ClientResponse> result = WebClientFilters.errorResponseHandler()
-                .filter(CLIENT_REQUEST, req -> Mono.just(successResponse));
+        Mono<ClientResponse> result =
+                WebClientFilters.errorResponseHandler().filter(CLIENT_REQUEST, req -> Mono.just(successResponse));
         ClientResponse filteredResponse = result.block();
 
         // then
@@ -81,14 +80,14 @@ class WebClientFiltersTest {
     @ValueSource(ints = {400, 500})
     void givenErrorResponse_whenErrorResponseHandlerApplied_thenThrowsWebClientResponseException(int statusCode) {
         // given
-        ClientResponse errorResponse = ClientResponse.create(HttpStatus.valueOf(statusCode)).build();
+        ClientResponse errorResponse =
+                ClientResponse.create(HttpStatus.valueOf(statusCode)).build();
         // when
-        Mono<ClientResponse> result = WebClientFilters.errorResponseHandler()
-                .filter(CLIENT_REQUEST, req -> Mono.just(errorResponse));
+        Mono<ClientResponse> result =
+                WebClientFilters.errorResponseHandler().filter(CLIENT_REQUEST, req -> Mono.just(errorResponse));
 
         // then
-        assertThatThrownBy(result::block)
-                .isInstanceOf(WebClientResponseException.class);
+        assertThatThrownBy(result::block).isInstanceOf(WebClientResponseException.class);
     }
 
     @Test
@@ -99,8 +98,8 @@ class WebClientFiltersTest {
                 .build();
 
         // when
-        Mono<ClientResponse> result = WebClientFilters.handleNotFoundResponse()
-                .filter(CLIENT_REQUEST, req -> Mono.just(notFoundResponse));
+        Mono<ClientResponse> result =
+                WebClientFilters.handleNotFoundResponse().filter(CLIENT_REQUEST, req -> Mono.just(notFoundResponse));
         ClientResponse syntheticResponse = result.block();
 
         // then
@@ -111,11 +110,12 @@ class WebClientFiltersTest {
     @Test
     void givenNonNotFoundResponse_whenHandleNotFoundResponseApplied_thenResponseIsUnchanged() {
         // given
-        ClientResponse errorResponse = ClientResponse.create(HttpStatus.BAD_REQUEST).build();
+        ClientResponse errorResponse =
+                ClientResponse.create(HttpStatus.BAD_REQUEST).build();
 
         // when
-        Mono<ClientResponse> result = WebClientFilters.handleNotFoundResponse()
-                .filter(CLIENT_REQUEST, req -> Mono.just(errorResponse));
+        Mono<ClientResponse> result =
+                WebClientFilters.handleNotFoundResponse().filter(CLIENT_REQUEST, req -> Mono.just(errorResponse));
         ClientResponse response = result.block();
 
         // then

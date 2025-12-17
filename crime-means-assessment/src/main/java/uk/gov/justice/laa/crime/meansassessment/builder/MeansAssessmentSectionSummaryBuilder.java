@@ -1,17 +1,28 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
+import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
-import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentDetail;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentSectionSummary;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiAssessmentStatus;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiFullMeansAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiGetMeansAssessmentResponse;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiInitialMeansAssessment;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiNewWorkReason;
+import uk.gov.justice.laa.crime.common.model.meansassessment.ApiReviewType;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.Frequency;
+import uk.gov.justice.laa.crime.enums.NewWorkReason;
+import uk.gov.justice.laa.crime.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDetails;
-import uk.gov.justice.laa.crime.common.model.meansassessment.*;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaDetailEntity;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
+import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.Section;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,17 +30,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.gov.justice.laa.crime.meansassessment.util.RoundingUtils.setStandardScale;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @AllArgsConstructor
 public class MeansAssessmentSectionSummaryBuilder {
 
-
-    public void buildInitialAssessment(ApiGetMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO,
-                                       List<ApiAssessmentSectionSummary> assessmentSectionSummaryList,
-                                       Optional<AssessmentCriteriaEntity> criteriaEntity) {
+    public void buildInitialAssessment(
+            ApiGetMeansAssessmentResponse assessmentResponse,
+            FinancialAssessmentDTO financialAssessmentDTO,
+            List<ApiAssessmentSectionSummary> assessmentSectionSummaryList,
+            Optional<AssessmentCriteriaEntity> criteriaEntity) {
 
         ApiInitialMeansAssessment initialMeansAssessment = assessmentResponse.getInitialAssessment();
         initialMeansAssessment.setId(financialAssessmentDTO.getInitialAscrId());
@@ -49,36 +62,42 @@ public class MeansAssessmentSectionSummaryBuilder {
         ApiAssessmentStatus assessmentStatus = new ApiAssessmentStatus();
         if (StringUtils.isNotBlank(financialAssessmentDTO.getFassInitStatus())) {
             assessmentStatus.setStatus(financialAssessmentDTO.getFassInitStatus());
-            assessmentStatus.setDescription(CurrentStatus.getFrom(financialAssessmentDTO.getFassInitStatus()).getDescription());
+            assessmentStatus.setDescription(CurrentStatus.getFrom(financialAssessmentDTO.getFassInitStatus())
+                    .getDescription());
             initialMeansAssessment.setAssessmentStatus(assessmentStatus);
         }
 
         ApiNewWorkReason newWorkReason = new ApiNewWorkReason();
         if (StringUtils.isNotBlank(financialAssessmentDTO.getNewWorkReason())) {
             newWorkReason.setCode(financialAssessmentDTO.getNewWorkReason());
-            newWorkReason.setDescription(NewWorkReason.getFrom(financialAssessmentDTO.getNewWorkReason()).getDescription());
-            newWorkReason.setType(NewWorkReason.getFrom(financialAssessmentDTO.getNewWorkReason()).getType());
+            newWorkReason.setDescription(NewWorkReason.getFrom(financialAssessmentDTO.getNewWorkReason())
+                    .getDescription());
+            newWorkReason.setType(NewWorkReason.getFrom(financialAssessmentDTO.getNewWorkReason())
+                    .getType());
             initialMeansAssessment.setNewWorkReason(newWorkReason);
         }
 
         ApiReviewType apiReviewType = new ApiReviewType();
         if (StringUtils.isNotBlank(financialAssessmentDTO.getRtCode())) {
             apiReviewType.setCode(financialAssessmentDTO.getRtCode());
-            apiReviewType.setDescription(ReviewType.getFrom(financialAssessmentDTO.getRtCode()).getDescription());
+            apiReviewType.setDescription(
+                    ReviewType.getFrom(financialAssessmentDTO.getRtCode()).getDescription());
             initialMeansAssessment.setReviewType(apiReviewType);
         }
 
         List<ApiAssessmentSectionSummary> initAssessmentSectionSummaries = assessmentSectionSummaryList.stream()
-                .filter(e -> e.getAssessmentType().equals(AssessmentType.INIT)).toList();
+                .filter(e -> e.getAssessmentType().equals(AssessmentType.INIT))
+                .toList();
 
         initialMeansAssessment.setAssessmentSectionSummary(initAssessmentSectionSummaries);
         assessmentResponse.setInitialAssessment(initialMeansAssessment);
-
     }
 
-    public void buildFullAssessment(ApiGetMeansAssessmentResponse assessmentResponse, FinancialAssessmentDTO financialAssessmentDTO,
-                                    List<ApiAssessmentSectionSummary> assessmentSectionSummaryList,
-                                    Optional<AssessmentCriteriaEntity> criteriaEntity) {
+    public void buildFullAssessment(
+            ApiGetMeansAssessmentResponse assessmentResponse,
+            FinancialAssessmentDTO financialAssessmentDTO,
+            List<ApiAssessmentSectionSummary> assessmentSectionSummaryList,
+            Optional<AssessmentCriteriaEntity> criteriaEntity) {
 
         ApiFullMeansAssessment apiFullMeansAssessment = assessmentResponse.getFullAssessment();
         apiFullMeansAssessment.setCriteriaId(financialAssessmentDTO.getFullAscrId());
@@ -87,34 +106,39 @@ public class MeansAssessmentSectionSummaryBuilder {
         apiFullMeansAssessment.setAdjustedLivingAllowance(financialAssessmentDTO.getFullAdjustedLivingAllowance());
         apiFullMeansAssessment.setOtherHousingNote(financialAssessmentDTO.getFullOtherHousingNote());
         apiFullMeansAssessment.setTotalAggregatedExpense(financialAssessmentDTO.getFullTotalAggregatedExpenses());
-        apiFullMeansAssessment.setTotalAnnualDisposableIncome(financialAssessmentDTO.getFullTotalAnnualDisposableIncome());
-        criteriaEntity.ifPresent(assessmentCriteriaEntity -> apiFullMeansAssessment.setThreshold(assessmentCriteriaEntity.getFullThreshold()));
+        apiFullMeansAssessment.setTotalAnnualDisposableIncome(
+                financialAssessmentDTO.getFullTotalAnnualDisposableIncome());
+        criteriaEntity.ifPresent(assessmentCriteriaEntity ->
+                apiFullMeansAssessment.setThreshold(assessmentCriteriaEntity.getFullThreshold()));
         apiFullMeansAssessment.setResult(financialAssessmentDTO.getFullResult());
         apiFullMeansAssessment.setResultReason(financialAssessmentDTO.getFullResultReason());
 
         ApiAssessmentStatus assessmentStatus = new ApiAssessmentStatus();
         if (StringUtils.isNotBlank(financialAssessmentDTO.getFassFullStatus())) {
             assessmentStatus.setStatus(financialAssessmentDTO.getFassFullStatus());
-            assessmentStatus.setDescription(CurrentStatus.getFrom(financialAssessmentDTO.getFassInitStatus()).getDescription());
+            assessmentStatus.setDescription(CurrentStatus.getFrom(financialAssessmentDTO.getFassInitStatus())
+                    .getDescription());
             apiFullMeansAssessment.setAssessmentStatus(assessmentStatus);
         }
 
         List<ApiAssessmentSectionSummary> fullAssessmentSectionSummaries = assessmentSectionSummaryList.stream()
-                .filter(e -> e.getAssessmentType().equals(AssessmentType.FULL)).toList();
+                .filter(e -> e.getAssessmentType().equals(AssessmentType.FULL))
+                .toList();
 
         apiFullMeansAssessment.setAssessmentSectionSummary(fullAssessmentSectionSummaries);
         assessmentResponse.setFullAssessment(apiFullMeansAssessment);
     }
 
-
     public List<ApiAssessmentSectionSummary> buildAssessmentSectionSummary(List<AssessmentDTO> assessmentDTOList) {
 
         List<ApiAssessmentSectionSummary> assessmentSectionSummaryList = new ArrayList<>();
         Arrays.stream(Section.values()).forEach(section -> {
-            List<AssessmentDTO> assessmentDTOS = assessmentDTOList.stream().filter(e -> e.getSection().equals(section.name()))
+            List<AssessmentDTO> assessmentDTOS = assessmentDTOList.stream()
+                    .filter(e -> e.getSection().equals(section.name()))
                     .toList();
             if (!assessmentDTOS.isEmpty()) {
-                ApiAssessmentSectionSummary assessmentSectionSummary = getAssessmentSectionSummary(section.name(), assessmentDTOS);
+                ApiAssessmentSectionSummary assessmentSectionSummary =
+                        getAssessmentSectionSummary(section.name(), assessmentDTOS);
                 if (section.equals(Section.INITA) || section.equals(Section.INITB)) {
                     assessmentSectionSummary.setAssessmentType(AssessmentType.INIT);
                 } else if (section.equals(Section.FULLA) || section.equals(Section.FULLB)) {
@@ -126,23 +150,26 @@ public class MeansAssessmentSectionSummaryBuilder {
         return assessmentSectionSummaryList;
     }
 
-
-    private ApiAssessmentSectionSummary getAssessmentSectionSummary(String section, List<AssessmentDTO> assessmentDTOS) {
+    private ApiAssessmentSectionSummary getAssessmentSectionSummary(
+            String section, List<AssessmentDTO> assessmentDTOS) {
         ApiAssessmentSectionSummary assessmentSectionSummary = new ApiAssessmentSectionSummary();
         assessmentSectionSummary.setSection(section);
         BigDecimal applicantTotalAmt = BigDecimal.ZERO;
         BigDecimal partnerTotalAmt = BigDecimal.ZERO;
         for (AssessmentDTO assessmentDTO : assessmentDTOS) {
             assessmentSectionSummary.getAssessmentDetails().add(getAssessmentDetail(assessmentDTO));
-            applicantTotalAmt = applicantTotalAmt.add(getAssessmentSectionSummaryTotal(assessmentDTO.getApplicantAmount(), assessmentDTO.getApplicantFrequency()));
-            partnerTotalAmt = partnerTotalAmt.add(getAssessmentSectionSummaryTotal(assessmentDTO.getPartnerAmount(), assessmentDTO.getPartnerFrequency()));
+            applicantTotalAmt = applicantTotalAmt.add(getAssessmentSectionSummaryTotal(
+                    assessmentDTO.getApplicantAmount(), assessmentDTO.getApplicantFrequency()));
+            partnerTotalAmt = partnerTotalAmt.add(getAssessmentSectionSummaryTotal(
+                    assessmentDTO.getPartnerAmount(), assessmentDTO.getPartnerFrequency()));
         }
         assessmentSectionSummary.setApplicantAnnualTotal(applicantTotalAmt);
         assessmentSectionSummary.setPartnerAnnualTotal(partnerTotalAmt);
-        assessmentSectionSummary.setAnnualTotal(assessmentSectionSummary.getApplicantAnnualTotal().add(assessmentSectionSummary.getPartnerAnnualTotal()));
+        assessmentSectionSummary.setAnnualTotal(assessmentSectionSummary
+                .getApplicantAnnualTotal()
+                .add(assessmentSectionSummary.getPartnerAnnualTotal()));
         return assessmentSectionSummary;
     }
-
 
     protected ApiAssessmentDetail getAssessmentDetail(AssessmentDTO assessmentDTO) {
         ApiAssessmentDetail assessmentDetail = new ApiAssessmentDetail();
@@ -162,15 +189,14 @@ public class MeansAssessmentSectionSummaryBuilder {
 
         BigDecimal detailTotal = BigDecimal.ZERO;
         if (assessmentAmt != null && !BigDecimal.ZERO.equals(assessmentAmt) && frequency != null) {
-            detailTotal = setStandardScale(assessmentAmt)
-                    .multiply(BigDecimal.valueOf(frequency.getWeighting()));
+            detailTotal = setStandardScale(assessmentAmt).multiply(BigDecimal.valueOf(frequency.getWeighting()));
         }
         return detailTotal;
-
     }
 
-    public AssessmentDTO buildAssessmentDTO(AssessmentCriteriaDetailEntity assessmentCriteriaDetailEntity,
-                                            FinancialAssessmentDetails financialAssessmentDetails) {
+    public AssessmentDTO buildAssessmentDTO(
+            AssessmentCriteriaDetailEntity assessmentCriteriaDetailEntity,
+            FinancialAssessmentDetails financialAssessmentDetails) {
 
         AssessmentDTO assessmentDTO = new AssessmentDTO();
         assessmentDTO.setCriteriaDetailId(financialAssessmentDetails.getCriteriaDetailId());
@@ -185,7 +211,8 @@ public class MeansAssessmentSectionSummaryBuilder {
         assessmentDTO.setSequence(assessmentCriteriaDetailEntity.getSeq());
 
         if (null != assessmentCriteriaDetailEntity.getAssessmentDetail()) {
-            assessmentDTO.setAssessmentDetailCode(assessmentCriteriaDetailEntity.getAssessmentDetail().getDetailCode());
+            assessmentDTO.setAssessmentDetailCode(
+                    assessmentCriteriaDetailEntity.getAssessmentDetail().getDetailCode());
         }
 
         return assessmentDTO;

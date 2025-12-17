@@ -1,11 +1,11 @@
 package uk.gov.justice.laa.crime.meansassessment.util;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import org.junit.jupiter.api.Test;
 
 class RoundingUtilsTest {
 

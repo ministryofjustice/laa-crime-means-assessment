@@ -2,8 +2,9 @@ package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
+
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -15,9 +16,16 @@ public class InitAssessmentValidator {
         String refusedRepOrderDecision = "Refused - Ineligible";
         if ((requestDTO.getReviewType() == null)
                 && (requestDTO.getCrownCourtOverview() != null
-                && requestDTO.getCrownCourtOverview().getCrownCourtSummary() != null
-                && requestDTO.getCrownCourtOverview().getCrownCourtSummary().getRepOrderDecision() != null
-                && refusedRepOrderDecision.equalsIgnoreCase(requestDTO.getCrownCourtOverview().getCrownCourtSummary().getRepOrderDecision()))) {
+                        && requestDTO.getCrownCourtOverview().getCrownCourtSummary() != null
+                        && requestDTO
+                                        .getCrownCourtOverview()
+                                        .getCrownCourtSummary()
+                                        .getRepOrderDecision()
+                                != null
+                        && refusedRepOrderDecision.equalsIgnoreCase(requestDTO
+                                .getCrownCourtOverview()
+                                .getCrownCourtSummary()
+                                .getRepOrderDecision()))) {
 
             isValid = false;
         }

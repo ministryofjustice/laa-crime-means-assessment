@@ -1,5 +1,23 @@
 package uk.gov.justice.laa.crime.meansassessment.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CaseType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.MagCourtOutcome;
+import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
+import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
+import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
+
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,29 +25,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.laa.crime.enums.*;
-import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
-import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
-import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.DateCompletionRequestDTO;
-import uk.gov.justice.laa.crime.meansassessment.staticdata.enums.*;
-
-import java.time.LocalDate;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AssessmentCompletionServiceTest {
 
     private MeansAssessmentDTO assessment;
+
     @Spy
     @InjectMocks
     private AssessmentCompletionService assessmentCompletionService;
 
     @Mock
     private MaatCourtDataService maatCourtDataService;
-
 
     @BeforeEach
     void setup() {
@@ -48,7 +55,8 @@ class AssessmentCompletionServiceTest {
     @Test
     void givenPassedInitAssessmentResult_whenIsInitAssessmentCompleteIsInvoked_thenReturnTrue() {
         assessment.setInitAssessmentResult(InitAssessmentResult.PASS);
-        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isTrue();
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment))
+                .isTrue();
     }
 
     @Test
@@ -61,7 +69,8 @@ class AssessmentCompletionServiceTest {
     void givenFailedSummaryOnly_whenIsInitAssessmentCompleteIsInvoked_thenReturnTrue() {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.SUMMARY_ONLY);
-        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isTrue();
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment))
+                .isTrue();
     }
 
     @Test
@@ -75,7 +84,8 @@ class AssessmentCompletionServiceTest {
     void givenFailedIndictable_whenIsInitAssessmentCompleteIsInvoked_thenReturnFalse() {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.INDICTABLE);
-        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isFalse();
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment))
+                .isFalse();
     }
 
     @Test
@@ -83,7 +93,8 @@ class AssessmentCompletionServiceTest {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.EITHER_WAY);
         assessment.getMeansAssessment().setMagCourtOutcome(MagCourtOutcome.COMMITTED_FOR_TRIAL);
-        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isTrue();
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment))
+                .isTrue();
     }
 
     @Test
@@ -91,21 +102,20 @@ class AssessmentCompletionServiceTest {
         assessment.setInitAssessmentResult(InitAssessmentResult.FAIL);
         assessment.getMeansAssessment().setCaseType(CaseType.EITHER_WAY);
         assessment.getMeansAssessment().setMagCourtOutcome(MagCourtOutcome.APPEAL_TO_CC);
-        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment)).isFalse();
+        assertThat(assessmentCompletionService.isInitAssessmentComplete(assessment))
+                .isFalse();
     }
 
     @Test
     void givenIncompleteAssessment_whenExecuteIsInvoked_thenCompletionDateIsNotUpdated() {
         assessment.getMeansAssessment().setAssessmentStatus(CurrentStatus.IN_PROGRESS);
         assessmentCompletionService.execute(assessment);
-        verify(maatCourtDataService, never())
-                .updateCompletionDate(any(DateCompletionRequestDTO.class));
+        verify(maatCourtDataService, never()).updateCompletionDate(any(DateCompletionRequestDTO.class));
     }
 
     @Test
     void givenCompleteInitAssessment_whenExecuteIsInvoked_thenCompletionDateIsUpdated() {
-        doReturn(true)
-                .when(assessmentCompletionService).isInitAssessmentComplete(any(MeansAssessmentDTO.class));
+        doReturn(true).when(assessmentCompletionService).isInitAssessmentComplete(any(MeansAssessmentDTO.class));
 
         when(maatCourtDataService.updateCompletionDate(any(DateCompletionRequestDTO.class)))
                 .thenReturn(TestModelDataBuilder.getRepOrderDTO());
@@ -135,5 +145,4 @@ class AssessmentCompletionServiceTest {
         assertThat(assessment.getDateCompleted()).isNull();
         verify(maatCourtDataService, never()).updateCompletionDate(any(DateCompletionRequestDTO.class));
     }
-
 }

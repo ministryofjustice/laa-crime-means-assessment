@@ -1,8 +1,12 @@
 package uk.gov.justice.laa.crime.meansassessment.exception;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.justice.laa.crime.dto.ErrorDTO;
+import uk.gov.justice.laa.crime.meansassessment.tracing.TraceIdHandler;
+
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +17,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import uk.gov.justice.laa.crime.dto.ErrorDTO;
-import uk.gov.justice.laa.crime.meansassessment.tracing.TraceIdHandler;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestControllerAdvice
 @Slf4j
@@ -41,14 +43,16 @@ public class RestControllerAdviser {
 
     @ExceptionHandler(WebClientRequestException.class)
     public ResponseEntity<ErrorDTO> onRuntimeException(WebClientRequestException exception) {
-        return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), traceIdHandler.getTraceId());
+        return getNewErrorResponseWith(
+                HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), traceIdHandler.getTraceId());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDTO> adviceBadRequests(MethodArgumentNotValidException ex) {
         log.error("Bad request is passed in: ", ex);
-        return getNewErrorResponseWith(HttpStatus.BAD_REQUEST, String.valueOf(ex.getBindingResult()), traceIdHandler.getTraceId());
+        return getNewErrorResponseWith(
+                HttpStatus.BAD_REQUEST, String.valueOf(ex.getBindingResult()), traceIdHandler.getTraceId());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -70,8 +74,14 @@ public class RestControllerAdviser {
         return getNewErrorResponseWith(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), traceIdHandler.getTraceId());
     }
 
-    private static ResponseEntity<ErrorDTO> getNewErrorResponseWith(HttpStatusCode status, String errorMessage, String traceId) {
-        return new ResponseEntity<>(ErrorDTO.builder().traceId(traceId).code(status.toString()).message(errorMessage).build(), status);
+    private static ResponseEntity<ErrorDTO> getNewErrorResponseWith(
+            HttpStatusCode status, String errorMessage, String traceId) {
+        return new ResponseEntity<>(
+                ErrorDTO.builder()
+                        .traceId(traceId)
+                        .code(status.toString())
+                        .message(errorMessage)
+                        .build(),
+                status);
     }
-
 }

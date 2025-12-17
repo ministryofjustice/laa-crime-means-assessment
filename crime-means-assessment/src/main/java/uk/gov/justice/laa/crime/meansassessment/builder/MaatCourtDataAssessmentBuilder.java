@@ -1,7 +1,8 @@
 package uk.gov.justice.laa.crime.meansassessment.builder;
 
+import static java.util.Optional.ofNullable;
+
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.common.model.common.ApiUserSession;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidence;
 import uk.gov.justice.laa.crime.common.model.meansassessment.ApiIncomeEvidenceSummary;
@@ -9,14 +10,19 @@ import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.FinancialAs
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiAssessmentRequest;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiCreateAssessment;
 import uk.gov.justice.laa.crime.common.model.meansassessment.maatapi.MaatApiUpdateAssessment;
-import uk.gov.justice.laa.crime.enums.*;
+import uk.gov.justice.laa.crime.enums.AssessmentType;
+import uk.gov.justice.laa.crime.enums.CurrentStatus;
+import uk.gov.justice.laa.crime.enums.FullAssessmentResult;
+import uk.gov.justice.laa.crime.enums.InitAssessmentResult;
+import uk.gov.justice.laa.crime.enums.RequestType;
+import uk.gov.justice.laa.crime.enums.ReviewType;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
 import uk.gov.justice.laa.crime.meansassessment.staticdata.entity.AssessmentCriteriaEntity;
 
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
+import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
@@ -38,9 +44,7 @@ public class MaatCourtDataAssessmentBuilder {
         }
 
         if (AssessmentType.INIT.equals(assessmentType)) {
-            apiAssessmentRequest = apiAssessmentRequest.withChildWeightings(
-                    requestDTO.getChildWeightings()
-            );
+            apiAssessmentRequest = apiAssessmentRequest.withChildWeightings(requestDTO.getChildWeightings());
             apiAssessmentRequest.withFassInitStatus(assessmentStatus.getStatus());
         }
 
@@ -56,19 +60,21 @@ public class MaatCourtDataAssessmentBuilder {
                 .withInitTotAggregatedIncome(assessment.getTotalAggregatedIncome())
                 .withInitAdjustedIncomeValue(assessment.getAdjustedIncomeValue())
                 .withInitResult(ofNullable(assessment.getInitAssessmentResult())
-                                        .map(InitAssessmentResult::getResult).orElse(null))
+                        .map(InitAssessmentResult::getResult)
+                        .orElse(null))
                 .withInitResultReason(ofNullable(assessment.getInitAssessmentResult())
-                                              .map(InitAssessmentResult::getReason).orElse(null))
+                        .map(InitAssessmentResult::getReason)
+                        .orElse(null))
                 .withIncomeEvidenceDueDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
-                                                   .map(ApiIncomeEvidenceSummary::getEvidenceDueDate).orElse(null))
+                        .map(ApiIncomeEvidenceSummary::getEvidenceDueDate)
+                        .orElse(null))
                 .withIncomeEvidenceNotes(ofNullable(requestDTO.getIncomeEvidenceSummary())
-                                                 .map(ApiIncomeEvidenceSummary::getIncomeEvidenceNotes).orElse(null))
+                        .map(ApiIncomeEvidenceSummary::getIncomeEvidenceNotes)
+                        .orElse(null))
                 .withInitApplicationEmploymentStatus(requestDTO.getEmploymentStatus())
-                .withAssessmentDetails(
-                        requestDTO.getSectionSummaries().stream()
-                                .flatMap(section -> section.getAssessmentDetails().stream())
-                                .toList()
-                )
+                .withAssessmentDetails(requestDTO.getSectionSummaries().stream()
+                        .flatMap(section -> section.getAssessmentDetails().stream())
+                        .toList())
                 .withDateCompleted(assessment.getDateCompleted());
     }
 
@@ -76,13 +82,16 @@ public class MaatCourtDataAssessmentBuilder {
         return new MaatApiCreateAssessment()
                 .withUsn(requestDTO.getUsn())
                 .withRtCode(ofNullable(requestDTO.getReviewType())
-                                    .map(ReviewType::getCode).orElse(null))
+                        .map(ReviewType::getCode)
+                        .orElse(null))
                 .withNworCode(requestDTO.getNewWorkReason().getCode())
                 .withUserCreated(requestDTO.getUserSession().getUserName())
                 .withIncomeUpliftRemoveDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
-                                                    .map(ApiIncomeEvidenceSummary::getUpliftRemovedDate).orElse(null))
+                        .map(ApiIncomeEvidenceSummary::getUpliftRemovedDate)
+                        .orElse(null))
                 .withIncomeUpliftApplyDate(ofNullable(requestDTO.getIncomeEvidenceSummary())
-                                                   .map(ApiIncomeEvidenceSummary::getUpliftAppliedDate).orElse(null));
+                        .map(ApiIncomeEvidenceSummary::getUpliftAppliedDate)
+                        .orElse(null));
     }
 
     private MaatApiUpdateAssessment buildUpdate(MeansAssessmentDTO assessment) {
@@ -97,9 +106,11 @@ public class MaatCourtDataAssessmentBuilder {
                     .withFassFullStatus(assessment.getCurrentStatus().getStatus())
                     .withFullAssessmentDate(meansAssessment.getFullAssessmentDate())
                     .withFullResult(ofNullable(assessment.getFullAssessmentResult())
-                                            .map(FullAssessmentResult::getResult).orElse(null))
+                            .map(FullAssessmentResult::getResult)
+                            .orElse(null))
                     .withFullResultReason(ofNullable(assessment.getFullAssessmentResult())
-                                                  .map(FullAssessmentResult::getReason).orElse(null))
+                            .map(FullAssessmentResult::getReason)
+                            .orElse(null))
                     .withFullAssessmentNotes(meansAssessment.getFullAssessmentNotes())
                     .withFullAdjustedLivingAllowance(assessment.getAdjustedLivingAllowance())
                     .withFullTotalAnnualDisposableIncome(assessment.getTotalAnnualDisposableIncome())
@@ -113,13 +124,23 @@ public class MaatCourtDataAssessmentBuilder {
                 .withFinancialAssessmentId(meansAssessment.getFinancialAssessmentId());
     }
 
-    private List<FinancialAssessmentIncomeEvidence> mapIncomeEvidence(List<ApiIncomeEvidence> incomeEvidences,
-                                                                      ApiUserSession userSession) {
-        return incomeEvidences == null ? null : incomeEvidences.stream()
-                .map(item -> new FinancialAssessmentIncomeEvidence(
-                        item.getId(), item.getDateReceived(), item.getDateModified(), item.getActive(),
-                        item.getIncomeEvidence(), item.getMandatory(), item.getApplicantId(),
-                        item.getOtherText(), userSession.getUserName(), userSession.getUserName(), item.getAdhoc()
-                )).toList();
+    private List<FinancialAssessmentIncomeEvidence> mapIncomeEvidence(
+            List<ApiIncomeEvidence> incomeEvidences, ApiUserSession userSession) {
+        return incomeEvidences == null
+                ? null
+                : incomeEvidences.stream()
+                        .map(item -> new FinancialAssessmentIncomeEvidence(
+                                item.getId(),
+                                item.getDateReceived(),
+                                item.getDateModified(),
+                                item.getActive(),
+                                item.getIncomeEvidence(),
+                                item.getMandatory(),
+                                item.getApplicantId(),
+                                item.getOtherText(),
+                                userSession.getUserName(),
+                                userSession.getUserName(),
+                                item.getAdhoc()))
+                        .toList();
     }
 }

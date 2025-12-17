@@ -1,8 +1,9 @@
 package uk.gov.justice.laa.crime.meansassessment.validation.validator;
 
+import static uk.gov.justice.laa.crime.meansassessment.common.Constants.ACTION_CREATE_ASSESSMENT;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.laa.crime.enums.AssessmentType;
 import uk.gov.justice.laa.crime.enums.RequestType;
 import uk.gov.justice.laa.crime.meansassessment.dto.MeansAssessmentRequestDTO;
@@ -11,7 +12,7 @@ import uk.gov.justice.laa.crime.meansassessment.validation.service.MeansAssessme
 
 import java.util.Optional;
 
-import static uk.gov.justice.laa.crime.meansassessment.common.Constants.ACTION_CREATE_ASSESSMENT;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -25,14 +26,17 @@ public class MeansAssessmentValidationProcessor {
     public static final String MSG_REP_ID_REQUIRED = "Rep Id is missing from request and is required";
     public static final String MSG_ROLE_ACTION_IS_NOT_VALID = "Role action is not valid";
     public static final String MSG_NEW_WORK_REASON_IS_NOT_VALID = "New work reason is not valid";
-    public static final String MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER = """
+    public static final String MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER =
+            """
             This record is not reserved by current user. Please try logging out and logging back in again.
             Please contact your system administrator if this issue persists.
             """;
-    public static final String MSG_INCOMPLETE_ASSESSMENT_FOUND = "An incomplete assessment is associated with the current application";
-    public static final String MSG_INCORRECT_REVIEW_TYPE = "Review Type - As the current Crown Court Rep Order Decision is Refused - " +
-            "Ineligible (applicants disposable income exceeds eligibility threshold) you must select the appropriate review type - " +
-            "Eligibility Review, Miscalculation Review or New Application Following Ineligibility.";
+    public static final String MSG_INCOMPLETE_ASSESSMENT_FOUND =
+            "An incomplete assessment is associated with the current application";
+    public static final String MSG_INCORRECT_REVIEW_TYPE =
+            "Review Type - As the current Crown Court Rep Order Decision is Refused - "
+                    + "Ineligible (applicants disposable income exceeds eligibility threshold) you must select the appropriate review type - "
+                    + "Eligibility Review, Miscalculation Review or New Application Following Ineligibility.";
     public static final String MSG_FULL_ASSESSMENT_DATE_REQUIRED = "Full assessment date is required";
 
     public Optional<Void> validate(MeansAssessmentRequestDTO requestDTO, RequestType requestType) {
@@ -45,8 +49,8 @@ public class MeansAssessmentValidationProcessor {
             throw new ValidationException(MSG_RECORD_NOT_RESERVED_BY_CURRENT_USER);
         }
 
-        if (RequestType.CREATE.equals(requestType) &&
-                meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
+        if (RequestType.CREATE.equals(requestType)
+                && meansAssessmentValidationService.isOutstandingAssessment(requestDTO)) {
             throw new ValidationException(MSG_INCOMPLETE_ASSESSMENT_FOUND);
         }
 
