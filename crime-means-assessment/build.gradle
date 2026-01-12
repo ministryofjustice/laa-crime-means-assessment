@@ -1,35 +1,31 @@
 plugins {
     id "java"
     id "jacoco"
-    id "org.springframework.boot" version "3.4.6"
-    id 'io.spring.dependency-management' version '1.1.7'
-    id "org.sonarqube" version "6.2.0.5505"
+    id "org.sonarqube" version "7.0.1.6134"
     id "info.solidsoft.pitest" version "1.15.0"
-    id "org.jsonschema2dataclass" version "6.0.0"
+    id "org.springframework.boot" version "3.5.7"
+    id 'io.spring.dependency-management' version '1.1.7'
     id "com.diffplug.spotless" version "8.0.0"
 }
 
 def versions = [
-        pitest                       : "1.4.10",
-        springdocVersion             : "2.1.0",
-        liquibase                    : "4.29.1",
+        sentry                       : "8.26.0",
+        wiremock                     : "4.0.8",
+        springdocVersion             : "2.8.14",
         crimeCommonsClassesVersion   : "4.10.0",
         crimeCommonsModsSchemas      : "1.36.0",
-        mockitoInlineVersion         : "5.2.0",
         cucumberVersion              : "7.22.2",
-        jUnitPlatformSuiteVersion    : "1.10.0",
-        springCloudStubRunnerVersion : "4.2.1",
-        h2DBVersion                  : '2.1.210',
-        postgresqlVersion            : "42.7.5",
-        resilience4jVersion          : "2.2.0"
+        jUnitPlatformSuiteVersion    : "1.14.1",
+        resilience4jVersion          : "2.3.0"
 ]
 
 
 group = "uk.gov.justice.laa.crime"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 
@@ -41,47 +37,56 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains:annotations:24.1.0")
+    // ---- Monitoring & Logging ----
+    implementation "io.sentry:sentry-logback"
+    implementation "io.micrometer:micrometer-tracing"
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "io.sentry:sentry-spring-boot-starter-jakarta"
+    implementation platform("io.sentry:sentry-bom:$versions.sentry")
+
+    // ---- Core Application ----
     implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
     implementation "uk.gov.justice.service.laa-crime:crime-commons-mod-schemas:$versions.crimeCommonsModsSchemas"
-    
+
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-validation"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-    implementation "org.springframework.security:spring-security-crypto"
-    implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$versions.springdocVersion"
 
-    implementation "org.apache.tomcat.embed:tomcat-embed-core"
+    implementation "org.postgresql:postgresql"
+    implementation "org.liquibase:liquibase-core"
 
-    implementation "org.postgresql:postgresql:$versions.postgresqlVersion"
-    implementation "org.liquibase:liquibase-core:$versions.liquibase"
-
-    implementation "io.micrometer:micrometer-registry-prometheus"
-    implementation "io.micrometer:micrometer-tracing"
-
+    // ---- Resilience4j ----
     implementation "io.github.resilience4j:resilience4j-reactor:$versions.resilience4jVersion"
     implementation "io.github.resilience4j:resilience4j-spring-boot3:$versions.resilience4jVersion"
 
+    // ---- Lombok ----
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
 
-    testImplementation group: 'com.h2database', name: 'h2', version: versions.h2DBVersion
-    testImplementation "org.mockito:mockito-inline:$versions.mockitoInlineVersion"
-    testImplementation "org.pitest:pitest:$versions.pitest"
-    testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner:$versions.springCloudStubRunnerVersion"
+    // ---- Testing ----
+    testCompileOnly "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
 
-    //  cucumber
+    testImplementation "com.h2database:h2"
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.wiremock.integrations:wiremock-spring-boot:$versions.wiremock"
+
+    //  Cucumber
     testImplementation platform("io.cucumber:cucumber-bom:$versions.cucumberVersion")
     testImplementation "io.cucumber:cucumber-java"
     testImplementation "io.cucumber:cucumber-spring"
     testImplementation "io.cucumber:cucumber-junit-platform-engine"
-    testImplementation "org.junit.platform:junit-platform-suite:$versions.jUnitPlatformSuiteVersion"
-    testCompileOnly "org.projectlombok:lombok"
-    testAnnotationProcessor "org.projectlombok:lombok"
+
+    testImplementation "org.junit.platform:junit-platform-suite-api"
+    testRuntimeOnly "org.junit.platform:junit-platform-suite-engine"
+
 }
 
 configurations {
@@ -116,17 +121,31 @@ jacocoTestReport {
 }
 
 pitest {
-    targetClasses = ["uk.gov.justice.laa.crime.meansassessment.service.*", "uk.gov.justice.laa.crime.meansassessment.controller.*", "uk.gov.justice.laa.crime.meansassessment.validation.*"]
-    excludedClasses = ["uk.gov.justice.laa.crime.meansassessment.dto.*", "uk.gov.justice.laa.crime.meansassessment.mapper.*", "uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication"]
+    targetClasses = ["uk.gov.justice.laa.crime.meansassessment.service.*",
+                     "uk.gov.justice.laa.crime.meansassessment.controller.*",
+                     "uk.gov.justice.laa.crime.meansassessment.validation.*"
+    ]
+    excludedClasses = ["uk.gov.justice.laa.crime.meansassessment.dto.*",
+                       "uk.gov.justice.laa.crime.meansassessment.mapper.*",
+                       "uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication"
+    ]
     threads = 5
     outputFormats = ["XML", "HTML"]
     timestampedReports = false
     mutationThreshold = 60
 }
 
-tasks["sonar"].dependsOn test
+
+def isCiBuild = System.getenv("SONAR_TOKEN") != null
+
+if (isCiBuild) {
+    tasks.named("sonar") {
+        dependsOn "test"
+    }
+}
 
 sonar {
+    skipProject = !isCiBuild
     properties {
         property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java, , **/StatelessCucumberTest.java"
@@ -138,20 +157,6 @@ sonar {
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
 
-    }
-}
-
-jsonSchema2Pojo {
-    executions {
-        main {
-            methods.builders = true
-            methods.buildersDynamic = true
-            methods.annotateJsr303Jakarta = true
-            fields.floatUseBigDecimal = true
-            dateTime.dateTimeType = "java.time.LocalDateTime"
-            klass.targetPackage = "uk.gov.justice.laa.crime.meansassessment.model.common"
-            io.source.setFrom files("${project.rootDir}/src/main/resources/schemas")
-        }
     }
 }
 

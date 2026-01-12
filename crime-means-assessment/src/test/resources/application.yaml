@@ -31,7 +31,7 @@ spring:
       client:
         provider:
           maat-api:
-            token-uri: http://localhost:9999/oauth2/token
+            token-uri: http://localhost:${wiremock.server.port:9999}/oauth2/token
         registration:
           maat-api:
             client-id: dummy-client
@@ -53,7 +53,7 @@ swagger-ui:
 
 services:
   maat-api:
-    baseUrl: http://localhost:9999/api/internal/v1/assessment
+    base-url: http://localhost:${wiremock.server.port:9999}/api/internal/v1/assessment
     registrationId: maat-api
 
 means-assessment:

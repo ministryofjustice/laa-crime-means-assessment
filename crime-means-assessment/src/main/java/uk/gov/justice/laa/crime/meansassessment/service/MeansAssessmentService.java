@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -187,7 +186,6 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         apiGetMeansAssessmentResponse.setIncomeEvidenceSummary(apiIncomeEvidenceSummary);
     }
 
-    @NotNull
     private static ApiIncomeEvidenceSummary getApiIncomeEvidenceSummary(FinancialAssessmentDTO financialAssessmentDTO) {
         return new ApiIncomeEvidenceSummary()
                 .withEvidenceDueDate(financialAssessmentDTO.getIncomeEvidenceDueDate())
@@ -203,6 +201,7 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
         SortUtils.sortListWithComparing(
                 finAssIncomeEvidenceDTOList,
                 FinAssIncomeEvidenceDTO::getMandatory,
+                SortUtils.getReverseComparator(),
                 FinAssIncomeEvidenceDTO::getIncomeEvidence,
                 SortUtils.getReverseComparator());
     }
@@ -290,7 +289,11 @@ public class MeansAssessmentService extends BaseMeansAssessmentService {
 
     protected void sortAssessmentDetail(List<AssessmentDTO> assessmentDTOList) {
         SortUtils.sortListWithComparing(
-                assessmentDTOList, AssessmentDTO::getSection, AssessmentDTO::getSequence, SortUtils.getComparator());
+                assessmentDTOList,
+                AssessmentDTO::getSection,
+                SortUtils.getComparator(),
+                AssessmentDTO::getSequence,
+                SortUtils.getComparator());
     }
 
     public ApiRollbackMeansAssessmentResponse rollbackAssessment(int financialAssessmentId) {

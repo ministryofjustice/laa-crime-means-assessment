@@ -19,8 +19,6 @@ import uk.gov.justice.laa.crime.enums.CurrentStatus;
 import uk.gov.justice.laa.crime.enums.Frequency;
 import uk.gov.justice.laa.crime.enums.NewWorkReason;
 import uk.gov.justice.laa.crime.enums.ReviewType;
-import uk.gov.justice.laa.crime.meansassessment.CrimeMeansAssessmentApplication;
-import uk.gov.justice.laa.crime.meansassessment.config.CrimeMeansAssessmentTestConfiguration;
 import uk.gov.justice.laa.crime.meansassessment.data.builder.TestModelDataBuilder;
 import uk.gov.justice.laa.crime.meansassessment.dto.AssessmentDTO;
 import uk.gov.justice.laa.crime.meansassessment.dto.maatcourtdata.FinancialAssessmentDTO;
@@ -34,26 +32,14 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @ExtendWith(SpringExtension.class)
-@Import(CrimeMeansAssessmentTestConfiguration.class)
-@SpringBootTest(classes = {CrimeMeansAssessmentApplication.class})
-@AutoConfigureObservability
 class MeansAssessmentSectionSummaryBuilderTest {
 
     static final BigDecimal EXPECTED_AMOUNT = new BigDecimal("280.00");
     private final MeansAssessmentSectionSummaryBuilder meansAssessmentSectionSummaryBuilder =
             new MeansAssessmentSectionSummaryBuilder();
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     void givenInvalidASectionAssessment_whenBuildInvoked_shouldReturnEmpty() {
@@ -262,8 +248,7 @@ class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    void givenAValidFinancialAssessment_whenBuildInitialAssessmentInvoked_shouldBuildInitialAssessment()
-            throws Exception {
+    void givenAValidFinancialAssessment_whenBuildInitialAssessmentInvoked_shouldBuildInitialAssessment() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setInitialAssessment(new ApiInitialMeansAssessment());
@@ -283,8 +268,7 @@ class MeansAssessmentSectionSummaryBuilderTest {
                 Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
         meansAssessmentSectionSummaryBuilder.buildInitialAssessment(
                 response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getInitialAssessment()))
-                .isEqualTo(objectMapper.writeValueAsString(expectedInitAssessment));
+        assertThat(response.getInitialAssessment()).isEqualTo(expectedInitAssessment);
     }
 
     @Test
@@ -348,7 +332,7 @@ class MeansAssessmentSectionSummaryBuilderTest {
     }
 
     @Test
-    void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() throws Exception {
+    void givenAValidFinancialAssessment_whenBuildFullAssessmentInvoked_shouldBuildFullAssessment() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -367,12 +351,11 @@ class MeansAssessmentSectionSummaryBuilderTest {
                 Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(
                 response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getFullAssessment()))
-                .isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+        assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 
     @Test
-    void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() throws Exception {
+    void givenEmptyCurrentStatus_whenBuildFullAssessmentInvoked_shouldNotReturnCurrentStatus() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -391,12 +374,11 @@ class MeansAssessmentSectionSummaryBuilderTest {
                 Optional.of(TestModelDataBuilder.getAssessmentCriteriaEntity());
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(
                 response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getFullAssessment()))
-                .isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+        assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 
     @Test
-    void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() throws Exception {
+    void givenEmptyAssessmentCriteriaEntity_whenBuildFullAssessmentInvoked_shouldNotReturnThreshold() {
 
         ApiGetMeansAssessmentResponse response = new ApiGetMeansAssessmentResponse();
         response.setFullAssessment(new ApiFullMeansAssessment());
@@ -415,7 +397,6 @@ class MeansAssessmentSectionSummaryBuilderTest {
         Optional<AssessmentCriteriaEntity> criteriaEntity = Optional.empty();
         meansAssessmentSectionSummaryBuilder.buildFullAssessment(
                 response, financialAssessmentDTO, assessmentSectionSummaryList, criteriaEntity);
-        assertThat(objectMapper.writeValueAsString(response.getFullAssessment()))
-                .isEqualTo(objectMapper.writeValueAsString(expectedFullAssessment));
+        assertThat(response.getFullAssessment()).isEqualTo(expectedFullAssessment);
     }
 }

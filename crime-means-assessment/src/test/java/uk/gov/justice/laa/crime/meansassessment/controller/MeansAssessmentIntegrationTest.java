@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -58,30 +56,29 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.wiremock.spring.EnableWireMock;
+import org.wiremock.spring.InjectWireMock;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 
+@EnableWireMock
 @DirtiesContext
+@AutoConfigureObservability
 @ExtendWith(SpringExtension.class)
 @Import(CrimeMeansAssessmentTestConfiguration.class)
 @SpringBootTest(
         classes = {CrimeMeansAssessmentApplication.class, MeansAssessmentResponseBuilder.class},
         webEnvironment = DEFINED_PORT)
-@AutoConfigureObservability
-@AutoConfigureWireMock(port = 9999)
 class MeansAssessmentIntegrationTest {
 
     private static final boolean IS_VALID = true;
-
     private static final String API_VERSION = "/api/internal/v1/assessment";
     private static final String ENDPOINT_URL = API_VERSION + "/means";
     private static final String AUTHORIZATION_ENDPOINT = API_VERSION + "/authorization";
-
     private static final String FINANCIAL_ASSESSMENT_ENDPOINT = API_VERSION + "/financial-assessments";
-
     private static final String REP_ORDER_ENDPOINT = API_VERSION + "/rep-orders";
 
     private MockMvc mvc;
@@ -89,14 +86,14 @@ class MeansAssessmentIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @InjectWireMock
+    private static WireMockServer wiremock;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
-
-    @Autowired
-    private WireMockServer mockMaatCourtDataApi;
 
     @BeforeEach
     void setup() throws JsonProcessingException {
@@ -104,11 +101,6 @@ class MeansAssessmentIntegrationTest {
         this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
                 .addFilter(springSecurityFilterChain)
                 .build();
-    }
-
-    @AfterEach
-    void clean() {
-        mockMaatCourtDataApi.resetAll();
     }
 
     private MockHttpServletRequestBuilder buildRequest(HttpMethod method, String endpointUrl, boolean withAuth) {

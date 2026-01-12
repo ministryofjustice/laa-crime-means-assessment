@@ -1,27 +1,30 @@
 package uk.gov.justice.laa.crime.meansassessment.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 
+@UtilityClass
 public final class SortUtils {
 
-    private SortUtils() {
-        throw new IllegalStateException("Utility class");
-    }
-
-    public static <T, U extends Comparable> void sortListWithComparing(
-            List<T> t, Function<T, U> compFunction, Function<T, U> thenCompFunc, Comparator<U> comparator) {
+    public static <T, U extends Comparable<? super U>, V extends Comparable<? super V>> void sortListWithComparing(
+            List<T> t,
+            Function<T, U> compFunction,
+            Comparator<U> primaryComparator,
+            Function<T, V> thenCompFunc,
+            Comparator<V> secondComparator) {
         if (t != null) {
-            t.sort(Comparator.comparing(compFunction, comparator).thenComparing(thenCompFunc, comparator));
+            t.sort(Comparator.comparing(compFunction, primaryComparator).thenComparing(thenCompFunc, secondComparator));
         }
     }
 
-    public static <U extends Comparable> Comparator<U> getComparator() {
+    public static <U extends Comparable<? super U>> Comparator<U> getComparator() {
         return Comparator.naturalOrder();
     }
 
-    public static <U extends Comparable> Comparator<U> getReverseComparator() {
+    public static <U extends Comparable<? super U>> Comparator<U> getReverseComparator() {
         return Comparator.reverseOrder();
     }
 }
