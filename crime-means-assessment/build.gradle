@@ -135,17 +135,7 @@ pitest {
     mutationThreshold = 60
 }
 
-
-def isCiBuild = System.getenv("SONAR_TOKEN") != null
-
-if (isCiBuild) {
-    tasks.named("sonar") {
-        dependsOn "test"
-    }
-}
-
 sonar {
-    skipProject = !isCiBuild
     properties {
         property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java, , **/StatelessCucumberTest.java"
@@ -156,7 +146,6 @@ sonar {
         property "sonar.projectName", "Crime Apps :: crime-means-assessment"
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-
     }
 }
 
