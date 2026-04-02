@@ -1,9 +1,9 @@
 plugins {
     id "java"
     id "jacoco"
-    id "org.sonarqube" version "7.0.1.6134"
+    id "org.sonarqube" version "7.2.3.7755"
     id "info.solidsoft.pitest" version "1.15.0"
-    id "org.springframework.boot" version "3.5.7"
+    id "org.springframework.boot" version "3.5.12"
     id 'io.spring.dependency-management' version '1.1.7'
     id "com.diffplug.spotless" version "8.0.0"
 }
@@ -16,7 +16,7 @@ def versions = [
         crimeCommonsModsSchemas      : "1.36.0",
         cucumberVersion              : "7.22.2",
         jUnitPlatformSuiteVersion    : "1.14.1",
-        resilience4jVersion          : "2.3.0"
+        resilience4jVersion          : "2.4.0"
 ]
 
 
@@ -38,11 +38,11 @@ repositories {
 
 dependencies {
     // ---- Monitoring & Logging ----
+    implementation platform("io.sentry:sentry-bom:$versions.sentry")
     implementation "io.sentry:sentry-logback"
     implementation "io.micrometer:micrometer-tracing"
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "io.sentry:sentry-spring-boot-starter-jakarta"
-    implementation platform("io.sentry:sentry-bom:$versions.sentry")
 
     // ---- Core Application ----
     implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
@@ -135,28 +135,17 @@ pitest {
     mutationThreshold = 60
 }
 
-
-def isCiBuild = System.getenv("SONAR_TOKEN") != null
-
-if (isCiBuild) {
-    tasks.named("sonar") {
-        dependsOn "test"
-    }
-}
-
 sonar {
-    skipProject = !isCiBuild
     properties {
         property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java, , **/StatelessCucumberTest.java"
-        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.projectKey", "ministryofjustice_laa-crime-means-assessment"
         property "sonar.organization", "ministryofjustice"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.projectName", "Crime Apps :: crime-means-assessment"
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-
     }
 }
 
