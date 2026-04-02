@@ -246,6 +246,7 @@ workflows:
             branches:
               only:
                 - main
+          context: SonarCloud
 
       - build_scan_and_push_image:
           requires:
@@ -294,6 +295,7 @@ workflows:
             branches:
               ignore:
                 - main
+          context: SonarCloud
 
       - build_scan_and_push_image:
           requires:
