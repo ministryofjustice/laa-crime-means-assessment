@@ -139,7 +139,7 @@ sonar {
     properties {
         property "sonar.exclusions", "**/entity/**.java , **/model/**.java , **/dto/**.java , **/config/**.java, **/jms/**.java,**/exception/**.java,**/handler/**.java, **/**StoredProcedureRepository.java"
         property "sonar.coverage.exclusions", "**/CrimeMeansAssessmentApplication.java, , **/StatelessCucumberTest.java"
-        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.projectKey", "ministryofjustice_laa-crime-means-assessment"
         property "sonar.organization", "ministryofjustice"
         property "sonar.host.url", "https://sonarcloud.io"
