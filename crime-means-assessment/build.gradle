@@ -12,8 +12,8 @@ def versions = [
         sentry                       : "8.26.0",
         wiremock                     : "4.0.8",
         springdocVersion             : "2.8.14",
-        crimeCommonsClassesVersion   : "4.10.0",
-        crimeCommonsModsSchemas      : "1.36.0",
+        crimeCommonsClasses          : "4.33.0",
+        crimeCommonsModSchemas       : "1.50.0",
         cucumberVersion              : "7.22.2",
         jUnitPlatformSuiteVersion    : "1.14.1",
         resilience4jVersion          : "2.4.0"
@@ -45,8 +45,8 @@ dependencies {
     implementation "io.sentry:sentry-spring-boot-starter-jakarta"
 
     // ---- Core Application ----
-    implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClassesVersion"
-    implementation "uk.gov.justice.service.laa-crime:crime-commons-mod-schemas:$versions.crimeCommonsModsSchemas"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-classes:$versions.crimeCommonsClasses"
+    implementation "uk.gov.justice.service.laa-crime:crime-commons-mod-schemas:$versions.crimeCommonsModSchemas"
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
