@@ -9,14 +9,14 @@ plugins {
 }
 
 def versions = [
-        sentry                       : "8.26.0",
-        wiremock                     : "4.0.8",
-        springdocVersion             : "2.8.14",
-        crimeCommonsClasses          : "4.33.0",
-        crimeCommonsModSchemas       : "1.50.0",
-        cucumberVersion              : "7.22.2",
-        jUnitPlatformSuiteVersion    : "1.14.1",
-        resilience4jVersion          : "2.4.0"
+        sentry                      : "8.26.0",
+        wiremock                    : "4.0.8",
+        springdocVersion            : "2.8.14",
+        crimeCommonsClasses         : "4.33.0",
+        crimeCommonsModSchemas      : "1.50.0",
+        cucumberVersion             : "7.22.2",
+        jUnitPlatformSuiteVersion   : "1.14.1",
+        resilience4jVersion         : "2.4.0"
 ]
 
 
